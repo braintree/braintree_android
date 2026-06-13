@@ -141,6 +141,28 @@ class PayPalVaultRequestTest {
     }
 
     @Test
+    fun createRequestBody_withAppSwitchEnabled_returnsNestedNativeAppStructure() {
+        val request = PayPalVaultRequest(hasUserLocationConsent = true).apply {
+            enablePayPalAppSwitch = true
+        }
+
+        val result = request.createRequestBody(
+            configuration,
+            authorization,
+            "https://example.com/success",
+            "https://example.com/cancel",
+            "https://merchant.example.com/applink"
+        )
+
+        val json = JSONObject(result)
+        assertTrue(json.getBoolean("launch_paypal_app"))
+        val nativeApp = json.getJSONObject("app_switch_context").getJSONObject("native_app")
+        assertEquals("ANDROID", nativeApp.getString("os_type"))
+        assertNotNull(nativeApp.getString("os_version"))
+        assertEquals("https://merchant.example.com/applink", nativeApp.getString("app_url"))
+    }
+
+    @Test
     fun parcels_correctly() {
         val original = PayPalVaultRequest(
             hasUserLocationConsent = true,

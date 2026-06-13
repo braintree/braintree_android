@@ -57,6 +57,7 @@ class PayPalInternalClientUnitTest {
 
     private lateinit var context: Context
     private lateinit var configuration: Configuration
+    private lateinit var activityManager: ActivityManager
 
     private lateinit var clientToken: ClientToken
     private lateinit var tokenizationKey: TokenizationKey
@@ -76,8 +77,13 @@ class PayPalInternalClientUnitTest {
     @Throws(JSONException::class)
     fun beforeEach() {
         context = mockk(relaxed = true)
-        val activityManager = mockk<ActivityManager>(relaxed = true)
+        activityManager = mockk<ActivityManager>(relaxed = true)
         every { context.getSystemService(Context.ACTIVITY_SERVICE) } returns activityManager
+        every { activityManager.getMemoryInfo(any()) } answers {
+            val memInfo = firstArg<ActivityManager.MemoryInfo>()
+            memInfo.availMem = 1024L * 1024L * 1024L
+            memInfo.totalMem = 4096L * 1024L * 1024L
+        }
 
         every { resolvePayPalUseCase() } returns false
 
@@ -1089,9 +1095,6 @@ class PayPalInternalClientUnitTest {
             every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
             every { deviceInspector.isPayPalInstalled() } returns true
             every { resolvePayPalUseCase() } returns true
-
-            val activityManager = mockk<ActivityManager>(relaxed = true)
-            every { context.getSystemService(Context.ACTIVITY_SERVICE) } returns activityManager
             every { activityManager.getMemoryInfo(any()) } answers {
                 val memInfo = firstArg<ActivityManager.MemoryInfo>()
                 memInfo.availMem = 350L * 1024L * 1024L
@@ -1132,6 +1135,64 @@ class PayPalInternalClientUnitTest {
 
             val payPalRequest = PayPalCheckoutRequest("1.00", true).apply {
                 enablePayPalAppSwitch = false
+            }
+
+            sut.sendRequest(context, payPalRequest, configuration)
+
+            val actual = JSONObject(slot.captured)
+            assertFalse(actual.has("app_switch_context"))
+        }
+
+    @Test
+    fun `sendRequest vault with app switch enabled injects device_info in app_switch_context`() =
+        runTest(testDispatcher) {
+            every { clientToken.bearer } returns "client-token-bearer"
+            every { merchantRepository.authorization } returns clientToken
+            every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+            every { deviceInspector.isPayPalInstalled() } returns true
+            every { resolvePayPalUseCase() } returns true
+            every { activityManager.getMemoryInfo(any()) } answers {
+                val memInfo = firstArg<ActivityManager.MemoryInfo>()
+                memInfo.availMem = 512L * 1024L * 1024L
+                memInfo.totalMem = 8192L * 1024L * 1024L
+            }
+
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+
+            val payPalRequest = PayPalVaultRequest(true).apply {
+                enablePayPalAppSwitch = true
+            }
+
+            sut.sendRequest(context, payPalRequest, configuration)
+
+            val actual = JSONObject(slot.captured)
+            val appSwitchContext = actual.getJSONObject("app_switch_context")
+            val deviceInfo = appSwitchContext.getJSONObject("device_info")
+            assertTrue(deviceInfo.has("model"))
+            assertEquals(512, deviceInfo.getInt("memory_available_mb"))
+            assertEquals(8192, deviceInfo.getInt("memory_total_mb"))
+
+            val nativeApp = appSwitchContext.getJSONObject("native_app")
+            assertEquals("ANDROID", nativeApp.getString("os_type"))
+            assertNotNull(nativeApp.getString("os_version"))
+            assertNotNull(nativeApp.getString("app_url"))
+        }
+
+    @Test
+    fun `sendRequest with app switch enabled but no app link does not inject app_switch_context`() =
+        runTest(testDispatcher) {
+            every { clientToken.bearer } returns "client-token-bearer"
+            every { merchantRepository.authorization } returns clientToken
+            every { deviceInspector.isPayPalInstalled() } returns true
+            every { resolvePayPalUseCase() } returns true
+            every { getReturnLinkUseCase.invoke(any()) } returns DeepLink("com.example.app")
+
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+
+            val payPalRequest = PayPalCheckoutRequest("1.00", true).apply {
+                enablePayPalAppSwitch = true
             }
 
             sut.sendRequest(context, payPalRequest, configuration)

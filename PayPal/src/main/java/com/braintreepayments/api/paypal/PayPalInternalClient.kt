@@ -18,6 +18,8 @@ import com.braintreepayments.api.core.usecase.GetAppSwitchUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -80,8 +82,8 @@ internal class PayPalInternalClient(
             appLink = appLinkParam
         ) ?: throw JSONException("Error creating requestBody")
 
-        val requestBody = if (payPalRequest.enablePayPalAppSwitch) {
-            injectDeviceInfo(context, baseRequestBody)
+        val requestBody = if (payPalRequest.enablePayPalAppSwitch && appLinkParam != null) {
+            withContext(Dispatchers.IO) { injectDeviceInfo(context, baseRequestBody) }
         } else {
             baseRequestBody
         }
@@ -200,12 +202,12 @@ internal class PayPalInternalClient(
         val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val memInfo = ActivityManager.MemoryInfo().also { activityManager.getMemoryInfo(it) }
         return JSONObject(requestBody).apply {
-            getJSONObject(PayPalRequest.APP_SWITCH_CONTEXT_KEY)
-                .put(PayPalRequest.DEVICE_INFO_KEY, JSONObject().apply {
-                    put(PayPalRequest.MODEL_KEY, Build.MODEL)
-                    put(PayPalRequest.MEMORY_AVAILABLE_MB_KEY, (memInfo.availMem / BYTES_PER_MB).toInt())
-                    put(PayPalRequest.MEMORY_TOTAL_MB_KEY, (memInfo.totalMem / BYTES_PER_MB).toInt())
-                })
+            val appSwitchContext = optJSONObject(PayPalRequest.APP_SWITCH_CONTEXT_KEY) ?: return@apply
+            appSwitchContext.put(PayPalRequest.DEVICE_INFO_KEY, JSONObject().apply {
+                put(PayPalRequest.DEVICE_MODEL_KEY, Build.MODEL)
+                put(PayPalRequest.MEMORY_AVAILABLE_MB_KEY, (memInfo.availMem / BYTES_PER_MB).toInt())
+                put(PayPalRequest.MEMORY_TOTAL_MB_KEY, (memInfo.totalMem / BYTES_PER_MB).toInt())
+            })
         }.toString()
     }
 

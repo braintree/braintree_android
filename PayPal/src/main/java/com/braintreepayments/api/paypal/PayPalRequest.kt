@@ -148,6 +148,7 @@ abstract class PayPalRequest internal constructor(
         internal const val APP_URL_KEY: String = "app_url"
         internal const val OS_VERSION_KEY: String = "os_version"
         internal const val OS_TYPE_KEY: String = "os_type"
+        internal const val OS_TYPE_VALUE: String = "ANDROID"
         internal const val PLAN_TYPE_KEY: String = "plan_type"
         internal const val PLAN_METADATA_KEY: String = "plan_metadata"
         internal const val PAYER_PHONE_KEY: String = "payer_phone"
@@ -158,7 +159,7 @@ abstract class PayPalRequest internal constructor(
         internal const val SHOPPER_SESSION_ID_KEY: String = "shopper_session_id"
         internal const val AMOUNT_BREAKDOWN_KEY: String = "amount_breakdown"
         internal const val DEVICE_INFO_KEY: String = "device_info"
-        internal const val MODEL_KEY: String = "model"
+        internal const val DEVICE_MODEL_KEY: String = "model"
         internal const val MEMORY_AVAILABLE_MB_KEY: String = "memory_available_mb"
         internal const val MEMORY_TOTAL_MB_KEY: String = "memory_total_mb"
     }
