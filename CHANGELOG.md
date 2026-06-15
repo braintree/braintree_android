@@ -1,6 +1,7 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
 * Google Pay
     * Update Google Pay dependency (play-services-wallet) to version 19.5.0
 
