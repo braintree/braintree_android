@@ -53,7 +53,9 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         View navHostView = findViewById(R.id.nav_host);
         ViewCompat.setOnApplyWindowInsetsListener(navHostView, (v, insets) -> {
             @InsetsType int insetTypeMask =
-                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+                            | WindowInsetsCompat.Type.ime();
             Insets bars = insets.getInsets(insetTypeMask);
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
             return WindowInsetsCompat.CONSUMED;
