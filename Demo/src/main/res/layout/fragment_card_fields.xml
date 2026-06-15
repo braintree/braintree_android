@@ -25,7 +25,8 @@
             android:enabled="false"
             android:gravity="center"
             android:minHeight="52dp"
-            android:paddingVertical="14dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:text="@string/card_fields_pay" />
