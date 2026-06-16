@@ -207,15 +207,6 @@ class GooglePayClient internal constructor(
         analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_STARTED)
 
-        if (!validateManifest()) {
-            return GooglePayPaymentAuthRequest.Failure(
-                BraintreeException(
-                    "GooglePayActivity was not found in the Android " +
-                            "manifest, or did not have a theme of R.style.bt_transparent_activity"
-                )
-            )
-        }
-
         try {
             val configuration = braintreeClient.getConfiguration()
             if (configuration.isGooglePayEnabled) {
@@ -584,13 +575,6 @@ class GooglePayClient internal constructor(
         request.setEnvironment(configuration.googlePayEnvironment)
     }
 
-    private fun validateManifest(): Boolean {
-        val activityInfo =
-            braintreeClient.getManifestActivityInfo(GooglePayActivity::class.java)
-        return activityInfo != null &&
-            activityInfo.themeResource == R.style.bt_transparent_activity
-    }
-
     private fun callbackPaymentRequestSuccess(
         request: GooglePayPaymentAuthRequest.ReadyToLaunch,
         callback: GooglePayPaymentAuthRequestCallback
@@ -635,7 +619,12 @@ class GooglePayClient internal constructor(
     }
 
     companion object {
+        // NEXT_MAJOR_VERSION: Remove the following constants that are no longer used in the Google Pay flow
+        @Deprecated("This constant is no longer used in the Google Pay flow and will be removed in a future release.")
         const val EXTRA_ENVIRONMENT: String = "com.braintreepayments.api.EXTRA_ENVIRONMENT"
+
+        // NEXT_MAJOR_VERSION: Remove the following constants that are no longer used in the Google Pay flow
+        @Deprecated("This constant is no longer used in the Google Pay flow and will be removed in a future release.")
         const val EXTRA_PAYMENT_DATA_REQUEST: String =
             "com.braintreepayments.api.EXTRA_PAYMENT_DATA_REQUEST"
 

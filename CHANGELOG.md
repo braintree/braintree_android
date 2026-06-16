@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* GooglePay
+    * Remove requirement for `GooglePayActivity` to be declared in the Android manifest (fixes #1572)
+        * Note: If upgrading from v4, any manual `GooglePayActivity` declaration in your app's manifest should be removed
+    * Deprecate unused `GooglePayClient.EXTRA_ENVIRONMENT` and `GooglePayClient.EXTRA_PAYMENT_DATA_REQUEST` constants
+
 ## 5.28.1 (2026-06-01)
 
 * PayPal
