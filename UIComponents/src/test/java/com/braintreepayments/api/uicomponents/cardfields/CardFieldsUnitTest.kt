@@ -10,8 +10,11 @@ import com.braintreepayments.api.card.CardClient
 import com.braintreepayments.api.card.CardNonce
 import com.braintreepayments.api.card.CardResult
 import com.braintreepayments.api.card.CardTokenizeCallback
+import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.uicomponents.R
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import com.braintreepayments.api.uicomponents.util.CoroutineTestRule
 import io.mockk.Runs
 import io.mockk.every
@@ -44,6 +47,7 @@ class CardFieldsUnitTest {
     private lateinit var activity: Activity
     private lateinit var viewModel: CardFieldsViewModel
     private val cardClient: CardClient = mockk(relaxed = true)
+    private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
 
     // Controllable backing flows so each test can drive the ViewModel's outputs directly.
     private val cardNumberValidation = MutableStateFlow<ValidationResult>(ValidationResult.Validating)
@@ -64,10 +68,11 @@ class CardFieldsUnitTest {
         every { viewModel.isFormValid } returns isFormValid
     }
 
-    private fun createCardFields() = CardFields(activity, viewModel = viewModel)
+    private fun createCardFields() =
+        CardFields(activity, viewModel = viewModel, analyticsClient = analyticsClient)
 
     private fun createCardFieldsWithClient() =
-        CardFields(activity, viewModel = viewModel, cardClient = cardClient)
+        CardFields(activity, viewModel = viewModel, cardClient = cardClient, analyticsClient = analyticsClient)
 
     private fun CardFields.attach() = activity.setContentView(this)
 
@@ -472,6 +477,53 @@ class CardFieldsUnitTest {
         // No payment request was set, so metadata fields fall back to the empty Card() defaults.
         assertNull(captured.cardholderName)
         assertNull(captured.postalCode)
+    }
+
+    // endregion
+
+    // region Analytics
+
+    @Test
+    fun `initialize sends the card fields presented event`() {
+        val cardFields = createCardFields()
+
+        cardFields.initialize("fake-authorization")
+
+        verify {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.CARD_FIELDS_PRESENTED,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+            )
+        }
+    }
+
+    @Test
+    fun `submit sends the card fields validated event`() {
+        val cardFields = createCardFieldsWithClient()
+
+        cardFields.submit()
+
+        verify {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+            )
+        }
+    }
+
+    @Test
+    fun `submit before initialize does not send the validated event`() {
+        val cardFields = createCardFields()
+        cardFields.setCardFieldsResultCallback { }
+
+        cardFields.submit()
+
+        verify(exactly = 0) {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
+                any()
+            )
+        }
     }
 
     // endregion
