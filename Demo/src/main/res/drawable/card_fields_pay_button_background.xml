@@ -9,10 +9,14 @@
     </item>
 
     <item>
-        <shape android:shape="rectangle">
-            <solid android:color="#000000" />
-            <corners android:radius="12dp" />
-        </shape>
+        <ripple android:color="?attr/colorControlHighlight">
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="#000000" />
+                    <corners android:radius="12dp" />
+                </shape>
+            </item>
+        </ripple>
     </item>
 
 </selector>

@@ -58,7 +58,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
                             | WindowInsetsCompat.Type.ime();
             Insets bars = insets.getInsets(insetTypeMask);
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
-            return WindowInsetsCompat.CONSUMED;
+            return insets;
         });
     }
 
