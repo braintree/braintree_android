@@ -1,6 +1,5 @@
 package com.braintreepayments.api.googlepay
 
-import android.content.pm.ActivityInfo
 import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
@@ -53,7 +52,6 @@ class GooglePayClientUnitTest {
     private lateinit var readyToPayCallback: GooglePayIsReadyToPayCallback
     private lateinit var intentDataCallback: GooglePayPaymentAuthRequestCallback
     private lateinit var activityResultCallback: GooglePayTokenizeCallback
-    private lateinit var activityInfo: ActivityInfo
     private lateinit var analyticsParamRepository: AnalyticsParamRepository
     private lateinit var merchantRepository: MerchantRepository
     private lateinit var testScope: TestScope
@@ -64,13 +62,11 @@ class GooglePayClientUnitTest {
         readyToPayCallback = mockk(relaxed = true)
         activityResultCallback = mockk(relaxed = true)
         intentDataCallback = mockk(relaxed = true)
-        activityInfo = mockk(relaxed = true)
         analyticsParamRepository = mockk(relaxed = true)
         merchantRepository = mockk(relaxed = true)
         testScope = TestScope(testDispatcher)
 
         baseRequest = GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
-        every { activityInfo.themeResource } returns R.style.bt_transparent_activity
     }
 
     @Test
@@ -177,7 +173,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.TOKENIZATION_KEY)
@@ -245,7 +240,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.TOKENIZATION_KEY)
@@ -287,7 +281,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every {
@@ -427,7 +420,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.TOKENIZATION_KEY)
@@ -479,7 +471,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN)
@@ -532,7 +523,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -564,7 +554,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN)
@@ -617,7 +606,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -665,7 +653,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -713,7 +700,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -762,7 +748,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -810,7 +795,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -862,7 +846,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -916,7 +899,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -971,7 +953,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -1036,7 +1017,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -1087,7 +1067,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -1127,54 +1106,6 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenManifestInvalid_forwardsExceptionToListener() = runTest(testDispatcher) {
-        val configuration = Configuration.fromJson(TestConfigurationBuilder()
-            .googlePay(
-                TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
-                    .environment("sandbox")
-                    .googleAuthorizationFingerprint("google-auth-fingerprint")
-                    .paypalClientId("paypal-client-id-for-google-payment")
-                    .supportedNetworks(arrayOf("visa", "mastercard", "amex", "discover"))
-                    .enabled(true)
-            )
-            .withAnalytics()
-            .build())
-
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .configurationSuccess(configuration)
-            .build()
-
-        every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
-
-        val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
-
-        val sut = GooglePayClient(
-            braintreeClient,
-            internalGooglePayClient,
-            analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
-        )
-        sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
-        advanceUntilIdle()
-
-        val captor = slot<GooglePayPaymentAuthRequest>()
-        verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
-
-        val request = captor.captured
-        assertTrue(request is GooglePayPaymentAuthRequest.Failure)
-        val exception = request.error
-        assertTrue(exception is BraintreeException)
-        assertEquals(
-            "GooglePayActivity was not found in the Android manifest, " +
-                    "or did not have a theme of R.style.bt_transparent_activity",
-            exception.message
-        )
-        verify { braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_FAILED, any()) }
-    }
-
-    @Test
     fun tokenize_withCardToken_returnsGooglePayNonce() {
         val paymentDataJson = Fixtures.RESPONSE_GOOGLE_PAY_CARD
 
@@ -1192,7 +1123,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -1235,7 +1165,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -1359,7 +1288,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -1395,7 +1323,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         val authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
@@ -1437,7 +1364,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         val authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN)
@@ -1468,7 +1394,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         val authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
@@ -1523,7 +1448,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.TOKENIZATION_KEY)
