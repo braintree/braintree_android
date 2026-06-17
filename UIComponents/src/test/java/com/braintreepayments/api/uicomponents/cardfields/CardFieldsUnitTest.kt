@@ -422,6 +422,69 @@ class CardFieldsUnitTest {
         assertEquals("", cardFields.cardNumberView().editText().text.toString())
     }
 
+    @Test
+    fun `restoring re-resolves errors for fields that were showing them`() {
+        cardNumberValidation.value = ValidationResult.Invalid(R.string.card_number_error)
+        cvvValidation.value = ValidationResult.Invalid(R.string.cvv_error)
+        val original = createCardFields().withSaveId()
+        original.cardNumberView().setText("4111")
+        original.cvvView().setText("1")
+        val container = SparseArray<Parcelable>()
+        original.saveHierarchyState(container)
+
+        val restored = createCardFields().withSaveId()
+        restored.restoreHierarchyState(container)
+
+        verify { viewModel.onFieldFocusChanged(CardField.CARD_NUMBER, false) }
+        verify { viewModel.onFieldFocusChanged(CardField.CVV, false) }
+        // The expiration field never showed an error, so its blur is not replayed.
+        verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.EXPIRY, false) }
+    }
+
+    @Test
+    fun `restoring does not force errors on fields that were not showing them`() {
+        // All validation flows stay at their default Validating value.
+        val original = createCardFields().withSaveId()
+        original.cardNumberView().setText("4111")
+        val container = SparseArray<Parcelable>()
+        original.saveHierarchyState(container)
+
+        val restored = createCardFields().withSaveId()
+        restored.restoreHierarchyState(container)
+
+        verify(exactly = 0) { viewModel.onFieldFocusChanged(any(), false) }
+    }
+
+    @Test
+    fun `error label reappears after restore for a previously invalid field`() =
+        runTest(coroutineTestRule.testDispatcher) {
+            val originalViewModel = CardFieldsViewModel()
+            val original = CardFields(activity, viewModel = originalViewModel).withSaveId()
+            original.attach()
+            advanceUntilIdle()
+
+            // Enter an incomplete card number and blur it so the error is shown.
+            original.cardNumberView().setText("4111")
+            val originalEditText = original.cardNumberView().editText()
+            originalEditText.onFocusChangeListener.onFocusChange(originalEditText, false)
+            advanceUntilIdle()
+            assertEquals(View.VISIBLE, original.cardNumberView().errorLabel().visibility)
+
+            val container = SparseArray<Parcelable>()
+            original.saveHierarchyState(container)
+
+            val restored = CardFields(activity, viewModel = CardFieldsViewModel()).withSaveId()
+            restored.restoreHierarchyState(container)
+            restored.attach()
+            advanceUntilIdle()
+
+            assertEquals(View.VISIBLE, restored.cardNumberView().errorLabel().visibility)
+            assertEquals(
+                activity.getString(R.string.card_number_error),
+                restored.cardNumberView().errorLabel().text.toString()
+            )
+        }
+
     // endregion
 
     private fun CardFields.withSaveId() = apply { id = SAVE_VIEW_ID }

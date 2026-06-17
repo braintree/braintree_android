@@ -152,6 +152,12 @@ class CardFields internal constructor(
             cardNumber = cardNumberView.getText()?.toString().orEmpty()
             expiration = expirationView.getText()?.toString().orEmpty()
             cvv = cvvView.getText()?.toString().orEmpty()
+            // Remember which fields were showing an error so we can resurface it after restore.
+            // A field only shows an error once it has resolved to Invalid (i.e. on blur), so this
+            // distinguishes "user saw an error" from "user is still typing / never touched it".
+            cardNumberHasError = viewModel.cardNumberValidation.value is ValidationResult.Invalid
+            expirationHasError = viewModel.expirationValidation.value is ValidationResult.Invalid
+            cvvHasError = viewModel.cvvValidation.value is ValidationResult.Invalid
         }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
@@ -164,6 +170,16 @@ class CardFields internal constructor(
         cardNumberView.setText(state.cardNumber)
         expirationView.setText(state.expiration)
         cvvView.setText(state.cvv)
+
+        restoreFieldError(state.cardNumberHasError, CardField.CARD_NUMBER)
+        restoreFieldError(state.expirationHasError, CardField.EXPIRY)
+        restoreFieldError(state.cvvHasError, CardField.CVV)
+    }
+
+    private fun restoreFieldError(hadError: Boolean, field: CardField) {
+        if (hadError) {
+            viewModel.onFieldFocusChanged(field, hasFocus = false)
+        }
     }
 
     override fun dispatchSaveInstanceState(container: SparseArray<Parcelable>) {
@@ -179,6 +195,9 @@ class CardFields internal constructor(
         var cardNumber: String = ""
         var expiration: String = ""
         var cvv: String = ""
+        var cardNumberHasError: Boolean = false
+        var expirationHasError: Boolean = false
+        var cvvHasError: Boolean = false
 
         constructor(superState: Parcelable?) : super(superState)
 
@@ -186,6 +205,9 @@ class CardFields internal constructor(
             cardNumber = parcel.readString().orEmpty()
             expiration = parcel.readString().orEmpty()
             cvv = parcel.readString().orEmpty()
+            cardNumberHasError = parcel.readInt() != 0
+            expirationHasError = parcel.readInt() != 0
+            cvvHasError = parcel.readInt() != 0
         }
 
         override fun writeToParcel(out: Parcel, flags: Int) {
@@ -193,6 +215,9 @@ class CardFields internal constructor(
             out.writeString(cardNumber)
             out.writeString(expiration)
             out.writeString(cvv)
+            out.writeInt(if (cardNumberHasError) 1 else 0)
+            out.writeInt(if (expirationHasError) 1 else 0)
+            out.writeInt(if (cvvHasError) 1 else 0)
         }
 
         companion object {
