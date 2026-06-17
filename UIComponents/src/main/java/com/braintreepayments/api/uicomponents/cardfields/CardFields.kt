@@ -166,9 +166,10 @@ class CardFields internal constructor(
             return
         }
         super.onRestoreInstanceState(state.superState)
-        // Restore card number first so the brand is detected (and the CVV length filter applied)
+        // Restore card number first so the brand is detected
         cardNumberView.setText(state.cardNumber)
         expirationView.setText(state.expiration)
+        cvvView.updateCardBrand(viewModel.detectedCardBrand.value)
         cvvView.setText(state.cvv)
 
         restoreFieldError(state.cardNumberHasError, CardField.CARD_NUMBER)

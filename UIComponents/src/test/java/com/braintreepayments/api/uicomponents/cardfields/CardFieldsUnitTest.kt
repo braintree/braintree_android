@@ -485,6 +485,31 @@ class CardFieldsUnitTest {
             )
         }
 
+    @Test
+    fun `four digit amex cvv is not truncated after restore`() =
+        runTest(coroutineTestRule.testDispatcher) {
+            val original = CardFields(activity, viewModel = CardFieldsViewModel()).withSaveId()
+            original.attach()
+            advanceUntilIdle()
+
+            // Amex test number; collector applies the 4-digit CVV length once the brand is detected.
+            original.cardNumberView().setText("378282246310005")
+            advanceUntilIdle()
+            original.cvvView().setText("1234")
+            advanceUntilIdle()
+            assertEquals("1234", original.cvvView().editText().text.toString())
+
+            val container = SparseArray<Parcelable>()
+            original.saveHierarchyState(container)
+
+            val restored = CardFields(activity, viewModel = CardFieldsViewModel()).withSaveId()
+            restored.restoreHierarchyState(container)
+            restored.attach()
+            advanceUntilIdle()
+
+            assertEquals("1234", restored.cvvView().editText().text.toString())
+        }
+
     // endregion
 
     private fun CardFields.withSaveId() = apply { id = SAVE_VIEW_ID }
