@@ -1,11 +1,15 @@
 package com.braintreepayments.api.uicomponents.cardfields
 
 import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.uicomponents.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -13,6 +17,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
+@Suppress("TooManyFunctions")
 class CardFields internal constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -139,6 +144,63 @@ class CardFields internal constructor(
     ) {
         if (result is ValidationResult.Valid && from.hasFocus()) {
             to.requestFocus()
+        }
+    }
+
+    override fun onSaveInstanceState(): Parcelable =
+        SavedState(super.onSaveInstanceState()).apply {
+            cardNumber = cardNumberView.getText()?.toString().orEmpty()
+            expiration = expirationView.getText()?.toString().orEmpty()
+            cvv = cvvView.getText()?.toString().orEmpty()
+        }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        if (state !is SavedState) {
+            super.onRestoreInstanceState(state)
+            return
+        }
+        super.onRestoreInstanceState(state.superState)
+        // Restore card number first so the brand is detected (and the CVV length filter applied)
+        cardNumberView.setText(state.cardNumber)
+        expirationView.setText(state.expiration)
+        cvvView.setText(state.cvv)
+    }
+
+    override fun dispatchSaveInstanceState(container: SparseArray<Parcelable>) {
+        dispatchFreezeSelfOnly(container)
+    }
+
+    override fun dispatchRestoreInstanceState(container: SparseArray<Parcelable>) {
+        dispatchThawSelfOnly(container)
+    }
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    internal class SavedState : BaseSavedState {
+        var cardNumber: String = ""
+        var expiration: String = ""
+        var cvv: String = ""
+
+        constructor(superState: Parcelable?) : super(superState)
+
+        private constructor(parcel: Parcel) : super(parcel) {
+            cardNumber = parcel.readString().orEmpty()
+            expiration = parcel.readString().orEmpty()
+            cvv = parcel.readString().orEmpty()
+        }
+
+        override fun writeToParcel(out: Parcel, flags: Int) {
+            super.writeToParcel(out, flags)
+            out.writeString(cardNumber)
+            out.writeString(expiration)
+            out.writeString(cvv)
+        }
+
+        companion object {
+            @JvmField
+            val CREATOR = object : Parcelable.Creator<SavedState> {
+                override fun createFromParcel(parcel: Parcel): SavedState = SavedState(parcel)
+                override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
+            }
         }
     }
 }

@@ -1,7 +1,10 @@
 package com.braintreepayments.api.uicomponents.cardfields
 
 import android.app.Activity
+import android.os.Parcel
+import android.os.Parcelable
 import android.text.InputFilter
+import android.util.SparseArray
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -338,6 +341,96 @@ class CardFieldsUnitTest {
 
     // endregion
 
+    // region State saving across configuration change
+
+    @Test
+    fun `saving then restoring the hierarchy restores all three fields`() {
+        val original = createCardFields().withSaveId()
+        original.cardNumberView().setText("4111111111111111")
+        original.expirationView().setText("12/26")
+        original.cvvView().setText("123")
+
+        val container = SparseArray<Parcelable>()
+        original.saveHierarchyState(container)
+
+        val restored = createCardFields().withSaveId()
+        restored.restoreHierarchyState(container)
+
+        assertEquals(
+            original.cardNumberView().editText().text.toString(),
+            restored.cardNumberView().editText().text.toString()
+        )
+        assertEquals(
+            original.expirationView().editText().text.toString(),
+            restored.expirationView().editText().text.toString()
+        )
+        assertEquals(
+            original.cvvView().editText().text.toString(),
+            restored.cvvView().editText().text.toString()
+        )
+    }
+
+    @Test
+    fun `restoring forwards the saved values back to the view model`() {
+        val original = createCardFields().withSaveId()
+        original.cardNumberView().setText("4111111111111111")
+        original.expirationView().setText("12/26")
+        original.cvvView().setText("123")
+        val container = SparseArray<Parcelable>()
+        original.saveHierarchyState(container)
+
+        val restored = createCardFields().withSaveId()
+        restored.restoreHierarchyState(container)
+
+        verify { viewModel.onCardNumberChanged("4111111111111111") }
+        verify { viewModel.onExpiryChanged("1226") }
+        verify { viewModel.onCvvChanged("123") }
+    }
+
+    @Test
+    fun `SavedState survives parcelling for process death`() {
+        val original = createCardFields().withSaveId()
+        original.cardNumberView().setText("4111111111111111")
+        original.expirationView().setText("12/26")
+        original.cvvView().setText("123")
+        val container = SparseArray<Parcelable>()
+        original.saveHierarchyState(container)
+        val state = container.get(SAVE_VIEW_ID) as CardFields.SavedState
+
+        val parcel = Parcel.obtain()
+        try {
+            state.writeToParcel(parcel, 0)
+            parcel.setDataPosition(0)
+            val fromParcel = CardFields.SavedState.CREATOR.createFromParcel(parcel)
+
+            assertEquals(state.cardNumber, fromParcel.cardNumber)
+            assertEquals(state.expiration, fromParcel.expiration)
+            assertEquals(state.cvv, fromParcel.cvv)
+        } finally {
+            parcel.recycle()
+        }
+    }
+
+    @Test
+    fun `restoring a non-SavedState parcelable does not crash`() {
+        val cardFields = createCardFields().withSaveId()
+        val container = SparseArray<Parcelable>()
+        container.put(SAVE_VIEW_ID, View.BaseSavedState.EMPTY_STATE)
+
+        cardFields.restoreHierarchyState(container)
+
+        assertEquals("", cardFields.cardNumberView().editText().text.toString())
+    }
+
+    // endregion
+
+    private fun CardFields.withSaveId() = apply { id = SAVE_VIEW_ID }
+
     private fun EditText.lengthFilterMax(): Int =
         filters.filterIsInstance<InputFilter.LengthFilter>().first().max
+
+    private companion object {
+        // Arbitrary stable id; view state is only saved/restored for views that have one.
+        const val SAVE_VIEW_ID = 0x00BEEF01
+    }
 }
