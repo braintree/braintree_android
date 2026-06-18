@@ -241,9 +241,7 @@ class CardFields internal constructor(
             cardNumber = cardNumberView.getText()?.toString().orEmpty()
             expiration = expirationView.getText()?.toString().orEmpty()
             cvv = cvvView.getText()?.toString().orEmpty()
-            // Remember which fields were showing an error so we can resurface it after restore.
-            // A field only shows an error once it has resolved to Invalid (i.e. on blur), so this
-            // distinguishes "user saw an error" from "user is still typing / never touched it".
+            // Remember which fields were showing an error so we can resurface it after restore
             cardNumberHasError = viewModel.cardNumberValidation.value is ValidationResult.Invalid
             expirationHasError = viewModel.expirationValidation.value is ValidationResult.Invalid
             cvvHasError = viewModel.cvvValidation.value is ValidationResult.Invalid

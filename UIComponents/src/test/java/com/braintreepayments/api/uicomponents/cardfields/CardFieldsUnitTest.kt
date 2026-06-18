@@ -633,7 +633,6 @@ class CardFieldsUnitTest {
 
     @Test
     fun `restoring does not force errors on fields that were not showing them`() {
-        // All validation flows stay at their default Validating value.
         val original = createCardFields().withSaveId()
         original.cardNumberView().setText("4111")
         val container = SparseArray<Parcelable>()
@@ -682,7 +681,6 @@ class CardFieldsUnitTest {
             original.attach()
             advanceUntilIdle()
 
-            // Amex test number; collector applies the 4-digit CVV length once the brand is detected.
             original.cardNumberView().setText("378282246310005")
             advanceUntilIdle()
             original.cvvView().setText("1234")
