@@ -648,7 +648,11 @@ class CardFieldsUnitTest {
     fun `error label reappears after restore for a previously invalid field`() =
         runTest(coroutineTestRule.testDispatcher) {
             val originalViewModel = CardFieldsViewModel()
-            val original = CardFields(activity, viewModel = originalViewModel).withSaveId()
+            val original = CardFields(
+                activity,
+                viewModel = originalViewModel,
+                analyticsClient = analyticsClient,
+            ).withSaveId()
             original.attach()
             advanceUntilIdle()
 
@@ -662,7 +666,11 @@ class CardFieldsUnitTest {
             val container = SparseArray<Parcelable>()
             original.saveHierarchyState(container)
 
-            val restored = CardFields(activity, viewModel = CardFieldsViewModel()).withSaveId()
+            val restored = CardFields(
+                activity,
+                viewModel = CardFieldsViewModel(),
+                analyticsClient = analyticsClient,
+            ).withSaveId()
             restored.restoreHierarchyState(container)
             restored.attach()
             advanceUntilIdle()
@@ -677,7 +685,11 @@ class CardFieldsUnitTest {
     @Test
     fun `four digit amex cvv is not truncated after restore`() =
         runTest(coroutineTestRule.testDispatcher) {
-            val original = CardFields(activity, viewModel = CardFieldsViewModel()).withSaveId()
+            val original = CardFields(
+                activity,
+                viewModel = CardFieldsViewModel(),
+                analyticsClient = analyticsClient,
+            ).withSaveId()
             original.attach()
             advanceUntilIdle()
 
@@ -690,7 +702,11 @@ class CardFieldsUnitTest {
             val container = SparseArray<Parcelable>()
             original.saveHierarchyState(container)
 
-            val restored = CardFields(activity, viewModel = CardFieldsViewModel()).withSaveId()
+            val restored = CardFields(
+                activity,
+                viewModel = CardFieldsViewModel(),
+                analyticsClient = analyticsClient,
+            ).withSaveId()
             restored.restoreHierarchyState(container)
             restored.attach()
             advanceUntilIdle()
