@@ -274,5 +274,15 @@
     <fragment
         android:id="@+id/cardFieldsFragment"
         android:name="com.braintreepayments.demo.CardFieldsFragment"
-        tools:layout="@layout/fragment_card_fields" />
+        tools:layout="@layout/fragment_card_fields">
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
+        <action
+            android:id="@+id/action_cardFieldsFragment_to_displayNonceFragment"
+            app:destination="@id/displayNonceFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
 </navigation>

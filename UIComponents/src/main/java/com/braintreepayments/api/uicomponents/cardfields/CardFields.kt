@@ -9,8 +9,15 @@ import android.util.AttributeSet
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import com.braintreepayments.api.card.Card
+import com.braintreepayments.api.card.CardClient
+import com.braintreepayments.api.card.CardResult
+import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.BraintreeException
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.uicomponents.R
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -22,7 +29,9 @@ class CardFields internal constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-    private val viewModel: CardFieldsViewModel = CardFieldsViewModel()
+    private val viewModel: CardFieldsViewModel = CardFieldsViewModel(),
+    private var cardClient: CardClient? = null,
+    private val analyticsClient: AnalyticsClient = AnalyticsClient.lazyInstance.value
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     @JvmOverloads
@@ -37,6 +46,8 @@ class CardFields internal constructor(
     private val cvvView: CvvTextInputView
     private var observerScope: CoroutineScope? = null
     private var validationChangedListener: OnValidationChangedListener? = null
+    private var request: Card? = null
+    private var resultCallback: CardFieldsResultCallback? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.card_fields_view, this, true)
@@ -80,6 +91,84 @@ class CardFields internal constructor(
         super.onDetachedFromWindow()
         observerScope?.cancel()
         observerScope = null
+    }
+
+    /**
+     * Initializes the card tokenization flow. Must be called before [submit].
+     * @param authorization a tokenization key or client token.
+     */
+    fun initialize(authorization: String) {
+        cardClient = CardClient(context, authorization)
+        analyticsClient.sendEvent(
+            UIComponentsAnalytics.CARD_FIELDS_PRESENTED,
+            AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+        )
+    }
+
+    /**
+     * Optionally accepts a [Card] with additional data to be included in the tokenization request, such as
+     * cardholder name or billing address. The card number, expiration, and CVV provided by the user will
+     * override any values set on the [Card] object.
+     */
+    fun setPaymentRequest(card: Card?) {
+        request = card
+    }
+
+    /**
+     * Register a callback to receive the [CardFieldsResult] from [submit]
+     */
+    fun setCardFieldsResultCallback(callback: CardFieldsResultCallback?) {
+        resultCallback = callback
+    }
+
+    /**
+     * Tokenizes the card details entered by the user, along with any additional data provided in
+     * [setPaymentRequest]. The result is returned via the [CardFieldsResultCallback] registered in
+     * [setCardFieldsResultCallback].
+     *
+     * If called before [initialize], delivers a [CardFieldsResult.Failure].
+     */
+    fun submit() {
+        val client = cardClient
+        if (client == null) {
+            resultCallback?.onCardFieldsResult(
+                CardFieldsResult.Failure(
+                    BraintreeException(
+                        "CardFields must be initialized by calling initialize() before submit()")
+                )
+            )
+            return
+        }
+        analyticsClient.sendEvent(
+            UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
+            AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+        )
+        client.tokenize(buildCard()) { cardResult ->
+            val result = when (cardResult) {
+                is CardResult.Success -> {
+                    CardFieldsResult.Success(cardResult.nonce)
+                }
+                is CardResult.Failure -> {
+                    CardFieldsResult.Failure(cardResult.error)
+                }
+            }
+            resultCallback?.onCardFieldsResult(result)
+        }
+    }
+
+    /**
+     * Builds a [Card] from the user input merged with any additional data from [setPaymentRequest].
+     * [copy] returns a new instance with the typed fields updated, so the merchant's [request] fields
+     * remain unchanged.
+     */
+    private fun buildCard(): Card {
+        val rawExpiration = expirationView.getRawExpiration()
+        return (request ?: Card()).copy(
+            number = cardNumberView.getRawCardNumber(),
+            expirationMonth = rawExpiration.take(2),
+            expirationYear = rawExpiration.drop(2),
+            cvv = cvvView.getRawCvv()
+        )
     }
 
     /**
