@@ -40,7 +40,7 @@ class UIInteractionStatesTest : TestHelper() {
         super.setup()
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         launchApp()
-        DeviceAutomator.onDevice(UiObjectMatcher.withText("Payment Buttons")).waitForEnabled()
+        DeviceAutomator.onDevice(UiObjectMatcher.withText("UI Components")).waitForEnabled()
             .perform(AutomatorAction.click())
         DeviceAutomator.onDevice(UiObjectMatcher.withResourceId("com.braintreepayments.demo:id/button_pp_blue"))
             .waitForExists()
