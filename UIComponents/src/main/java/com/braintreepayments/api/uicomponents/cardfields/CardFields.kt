@@ -31,8 +31,10 @@ class CardFields internal constructor(
     defStyleAttr: Int = 0,
     private val viewModel: CardFieldsViewModel = CardFieldsViewModel(),
     private var cardClient: CardClient? = null,
-    private val analyticsClient: AnalyticsClient = AnalyticsClient.lazyInstance.value
+    private val analyticsClient: AnalyticsClient? = null
 ) : FrameLayout(context, attrs, defStyleAttr) {
+
+    private fun getAnalyticsClient(): AnalyticsClient = analyticsClient ?: AnalyticsClient.lazyInstance.value
 
     @JvmOverloads
     constructor(
@@ -99,7 +101,7 @@ class CardFields internal constructor(
      */
     fun initialize(authorization: String) {
         cardClient = CardClient(context, authorization)
-        analyticsClient.sendEvent(
+        getAnalyticsClient().sendEvent(
             UIComponentsAnalytics.CARD_FIELDS_PRESENTED,
             AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
         )
@@ -139,7 +141,7 @@ class CardFields internal constructor(
             )
             return
         }
-        analyticsClient.sendEvent(
+        getAnalyticsClient().sendEvent(
             UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
             AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
         )
