@@ -220,11 +220,11 @@ class MainFragment : BaseFragment() {
     }
 
     private fun launchUIComponents() {
-       fetchAuthorizationAndHandleError { authString ->
-           val action = MainFragmentDirections.actionMainFragmentToUiComponentsFragment()
-           action.setAuthString(authString)
-           findNavController().navigate(action)
-       }
+        fetchAuthorizationAndHandleError { authString ->
+            val action = MainFragmentDirections.actionMainFragmentToUiComponentsFragment()
+            action.setAuthString(authString)
+            findNavController().navigate(action)
+        }
     }
 
     private fun launchComposePaymentButtons() {

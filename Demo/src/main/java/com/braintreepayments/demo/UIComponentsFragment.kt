@@ -77,7 +77,7 @@ class UIComponentsFragment : BaseFragment() {
                     super.onPaymentMethodNonceCreated(result.nonce)
                     val action = UIComponentsFragmentDirections
                         .actionUiComponentsFragmentToDisplayNonceFragment(result.nonce)
-                    NavHostFragment.Companion.findNavController(this).navigate(action)
+                    NavHostFragment.findNavController(this).navigate(action)
                 }
                 is CardFieldsResult.Failure -> {
                     // display error
