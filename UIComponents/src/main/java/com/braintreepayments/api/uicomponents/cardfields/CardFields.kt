@@ -9,8 +9,11 @@ import android.widget.FrameLayout
 import com.braintreepayments.api.card.Card
 import com.braintreepayments.api.card.CardClient
 import com.braintreepayments.api.card.CardResult
+import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.uicomponents.R
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -23,8 +26,11 @@ class CardFields internal constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     private val viewModel: CardFieldsViewModel = CardFieldsViewModel(),
-    private var cardClient: CardClient? = null
+    private var cardClient: CardClient? = null,
+    private val analyticsClient: AnalyticsClient? = null
 ) : FrameLayout(context, attrs, defStyleAttr) {
+
+    private fun getAnalyticsClient(): AnalyticsClient = analyticsClient ?: AnalyticsClient.lazyInstance.value
 
     @JvmOverloads
     constructor(
@@ -91,6 +97,10 @@ class CardFields internal constructor(
      */
     fun initialize(authorization: String) {
         cardClient = CardClient(context, authorization)
+        getAnalyticsClient().sendEvent(
+            UIComponentsAnalytics.CARD_FIELDS_PRESENTED,
+            AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+        )
     }
 
     /**
@@ -127,6 +137,10 @@ class CardFields internal constructor(
             )
             return
         }
+        getAnalyticsClient().sendEvent(
+            UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
+            AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+        )
         client.tokenize(buildCard()) { cardResult ->
             val result = when (cardResult) {
                 is CardResult.Success -> {
