@@ -94,14 +94,14 @@ class CvvTextInputViewUnitTest {
     }
 
     @Test
-    fun `updateCardBrand from AMEX to VISA truncates existing 4-digit cvv to 3`() {
+    fun `updateCardBrand from AMEX to VISA preserves existing 4-digit cvv`() {
         val view = CvvTextInputView(context)
 
         view.updateCardBrand(CardBrand.AMEX)
         view.setText("1234")
         view.updateCardBrand(CardBrand.VISA)
 
-        assertEquals("123", view.getRawCvv())
+        assertEquals("1234", view.getRawCvv())
     }
 
     @Test
@@ -125,13 +125,33 @@ class CvvTextInputViewUnitTest {
     }
 
     @Test
-    fun `updateCardBrand with UNKNOWN keeps 3 digit limit`() {
+    fun `updateCardBrand with UNKNOWN allows 3 digits`() {
+        val view = CvvTextInputView(context)
+
+        view.updateCardBrand(CardBrand.UNKNOWN)
+        view.setText("123")
+
+        assertEquals("123", view.getRawCvv())
+    }
+
+    @Test
+    fun `updateCardBrand with UNKNOWN allows 4 digits`() {
         val view = CvvTextInputView(context)
 
         view.updateCardBrand(CardBrand.UNKNOWN)
         view.setText("1234")
 
-        assertEquals("123", view.getRawCvv())
+        assertEquals("1234", view.getRawCvv())
+    }
+
+    @Test
+    fun `updateCardBrand with UNKNOWN truncates to 4 digits`() {
+        val view = CvvTextInputView(context)
+
+        view.updateCardBrand(CardBrand.UNKNOWN)
+        view.setText("12345")
+
+        assertEquals("1234", view.getRawCvv())
     }
 
     @Test

@@ -284,6 +284,37 @@ class CardFieldsTest {
         }
     }
 
+    @Test
+    fun cardFields_showsCvvError_whenSwitchingFromAmexToVisa() {
+        launchActivity().use { scenario ->
+            // Enter an Amex card with a valid 4-digit CVV
+            scenario.onActivity { activity ->
+                activity.cardFields.cardNumberEditText().setText("378282246310005")
+                activity.cardFields.cvvEditText().also { cvv ->
+                    cvv.requestFocus()
+                    cvv.setText("1234")
+                }
+            }
+            waitForMain()
+            // Switch to Visa — brand changes, 4-digit CVV is now too long (Visa requires 3)
+            scenario.onActivity { activity ->
+                activity.cardFields.cardNumberEditText().setText("4111111111111111")
+            }
+            waitForMain()
+            // Blur CVV to trigger validation against the new brand
+            scenario.onActivity { activity ->
+                activity.cardFields.expirationEditText().requestFocus()
+            }
+            waitForMain()
+            scenario.onActivity { activity ->
+                val errorLabel = activity.cardFields.cvvErrorLabel()
+                assertTrue(errorLabel.visibility == View.VISIBLE)
+                assertTrue(errorLabel.text.isNotEmpty())
+            }
+        }
+    }
+
+
     // endregion
 
     // region Submit before initialize
