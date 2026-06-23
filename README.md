@@ -285,13 +285,18 @@ The Braintree Android SDK provides a `CardFields` view that renders a complete c
 
 *Note:* Ensure you include the `UIComponents` module in your project to use this feature.
 
-If you would like to integrate `CardFields` in your mobile app, you can do so like this:
+If you would like to integrate `CardFields` into your mobile app, you can do so like this:
 
 ```xml
 <com.braintreepayments.api.uicomponents.cardfields.CardFields
     android:id="@+id/cardFields"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" />
+<Button
+    android:id="@+id/payButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Pay" />
 ```
 
 ```kotlin
