@@ -279,6 +279,52 @@ After you've received a result, clear out the `intent.data` by setting it to nul
 intent.data = null
 ```
 
+## Card Fields
+
+The Braintree Android SDK provides a `CardFields` view that renders a complete card entry form with fields for card number, expiration date, and CVV. It handles input validation, card brand detection, and focus advancement between fields automatically.
+
+*Note:* Ensure you include the `UIComponents` module in your project to use this feature.
+
+If you would like to integrate `CardFields` in your mobile app, you can do so like this:
+
+```xml
+<com.braintreepayments.api.uicomponents.cardfields.CardFields
+    android:id="@+id/cardFields"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+```
+
+```kotlin
+class ExampleFragment : Fragment() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val cardFields = view.findViewById<CardFields>(R.id.cardFields)
+        val payButton = view.findViewById<Button>(R.id.payButton)
+
+        cardFields.initialize("[TOKENIZATION_KEY or CLIENT_TOKEN]")
+        
+        cardFields.setCardFieldsResultCallback { result ->
+            when (result) {
+                is CardFieldsResult.Success -> {
+                    // send result.nonce.string to your server to complete the transaction
+                }
+                is CardFieldsResult.Failure -> {
+                    // handle card tokenization error
+                }
+            }
+        }
+
+        // CardFields reports whether the form is valid; use it to enable your submit button
+        cardFields.setOnValidationChangedListener { isFormValid ->
+            payButton.isEnabled = isFormValid
+        }
+
+        // Tokenize the entered card details when the user taps Pay
+        payButton.setOnClickListener { cardFields.submit() }
+    }
+}
+```
+
 ## Help
 
 * [Read the docs](https://developer.paypal.com/braintree/docs/guides/overview)
