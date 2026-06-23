@@ -13,7 +13,6 @@ import com.braintreepayments.api.core.PaymentMethodNonce
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalRequest
 import com.braintreepayments.api.paypal.PayPalResult
-import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButton
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.PayPalLaunchCallback
@@ -29,7 +28,6 @@ import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage
 import com.braintreepayments.api.venmo.VenmoPendingRequest
 import com.braintreepayments.api.venmo.VenmoRequest
 import com.braintreepayments.api.venmo.VenmoResult
-import com.braintreepayments.api.venmo.VenmoTokenizeCallback
 import com.google.android.material.button.MaterialButtonToggleGroup
 
 @Suppress("TooManyFunctions")
@@ -120,16 +118,16 @@ class UIComponentsFragment : BaseFragment() {
 
     private fun setupPayPalButton() {
         val payPalRequest: PayPalRequest = PayPalRequestFactory.createPayPalCheckoutRequest(
-            requireContext(),
-            "10.0",
-            null,
-            null,
-            null,
-            false,
-            null,
-            false,
-            false,
-            false
+            /* context = */ requireContext(),
+            /* amount = */ "10.0",
+            /* buyerEmailAddress = */ null,
+            /* buyerPhoneCountryCode = */ null,
+            /* buyerPhoneNationalNumber = */ null,
+            /* isContactInformationEnabled = */ false,
+            /* shopperInsightsSessionId = */ null,
+            /* offerPayLater = */ false,
+            /* offerCredit = */ false,
+            /* isAmountBreakdownEnabled = */ false
         )
 
         payPalButton.initialize(
@@ -139,21 +137,18 @@ class UIComponentsFragment : BaseFragment() {
             "com.braintreepayments.demo.braintree"
         )
         payPalButton.setPayPalRequest(payPalRequest)
-        payPalButton.payPalLaunchCallback = PayPalLaunchCallback { request: PayPalPendingRequest? ->
-            if (request is PayPalPendingRequest.Started) {
-                storePayPalPendingRequest(request)
-            } else if (request is PayPalPendingRequest.Failure) {
-                handleError(request.error)
+        payPalButton.payPalLaunchCallback = PayPalLaunchCallback { request: PayPalPendingRequest ->
+            when (request) {
+                is PayPalPendingRequest.Started -> storePayPalPendingRequest(request)
+                is PayPalPendingRequest.Failure -> handleError(request.error)
             }
         }
     }
 
     private fun setupVenmoButton() {
-        val activity = requireActivity()
-        activity.setProgressBarIndeterminateVisibility(true)
-
         val shouldVault =
-            Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity))
+            Settings.vaultVenmo(requireActivity()) &&
+                    !TextUtils.isEmpty(Settings.getCustomerId(requireActivity()))
 
         val venmoPaymentMethodUsage =
             if (shouldVault) VenmoPaymentMethodUsage.MULTI_USE else VenmoPaymentMethodUsage.SINGLE_USE
@@ -180,11 +175,10 @@ class UIComponentsFragment : BaseFragment() {
         )
 
         venmoButton.setVenmoRequest(venmoRequest)
-        venmoButton.venmoLaunchCallback = VenmoLaunchCallback { request: VenmoPendingRequest? ->
-            if (request is VenmoPendingRequest.Started) {
-                storeVenmoPendingRequest(request)
-            } else if (request is VenmoPendingRequest.Failure) {
-                handleError(request.error)
+        venmoButton.venmoLaunchCallback = VenmoLaunchCallback { request: VenmoPendingRequest ->
+            when (request) {
+                is VenmoPendingRequest.Started -> storeVenmoPendingRequest(request)
+                is VenmoPendingRequest.Failure -> handleError(request.error)
             }
         }
     }
@@ -196,8 +190,7 @@ class UIComponentsFragment : BaseFragment() {
         val pendingRequest = getPayPalPendingRequest()
         if (pendingRequest != null) {
             payPalButton.handleReturnToApp(
-                pendingRequest, requireActivity().intent,
-                PayPalTokenizeCallback { payPalResult: PayPalResult? ->
+                pendingRequest, requireActivity().intent) { payPalResult: PayPalResult? ->
                     when (payPalResult) {
                         is PayPalResult.Success -> handlePayPalResult(payPalResult.nonce)
                         is PayPalResult.Cancel ->
@@ -206,7 +199,6 @@ class UIComponentsFragment : BaseFragment() {
                         else -> Unit
                     }
                 }
-            )
             clearPayPalPendingRequest()
             requireActivity().intent.data = null
         }
@@ -216,8 +208,7 @@ class UIComponentsFragment : BaseFragment() {
         if (venmoPendingRequest != null) {
             venmoButton.handleReturnToApp(
                 venmoPendingRequest,
-                requireActivity().intent,
-                VenmoTokenizeCallback { venmoResult: VenmoResult? ->
+                requireActivity().intent) { venmoResult: VenmoResult? ->
                     when (venmoResult) {
                         is VenmoResult.Success -> handleVenmoAccountNonce(venmoResult.nonce)
                         is VenmoResult.Failure -> handleError(venmoResult.error)
@@ -226,7 +217,6 @@ class UIComponentsFragment : BaseFragment() {
                         else -> Unit
                     }
                 }
-            )
             clearVenmoPendingRequest()
             requireActivity().intent.data = null
         }
