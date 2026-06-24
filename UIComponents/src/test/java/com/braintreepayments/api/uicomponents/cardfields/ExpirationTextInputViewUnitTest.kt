@@ -135,84 +135,39 @@ class ExpirationTextInputViewUnitTest {
     }
 
     @Test
-    fun `invalid month triggers onMonthRejected callback`() {
-        val view = ExpirationTextInputView(context)
-        var callCount = 0
-        view.formatter.onMonthRejected = { callCount++ }
-
-        view.setText("13")
-
-        assertEquals(1, callCount)
-    }
-
-    @Test
-    fun `valid month does not trigger onMonthRejected callback`() {
-        val view = ExpirationTextInputView(context)
-        var callCount = 0
-        view.formatter.onMonthRejected = { callCount++ }
-
-        view.setText("12")
-
-        assertEquals(0, callCount)
-    }
-
-    @Test
-    fun `invalid month shows error label`() {
-        val view = ExpirationTextInputView(context)
-
-        view.setText("13")
-
-        val errorLabel = view.findViewById<TextView>(R.id.error_label)
-        assertEquals(View.VISIBLE, errorLabel.visibility)
-    }
-
-    @Test
-    fun `error clears after typing a valid month`() {
-        val view = ExpirationTextInputView(context)
-        view.setText("13")
-
-        view.setText("12")
-
-        val errorLabel = view.findViewById<TextView>(R.id.error_label)
-        assertEquals(View.GONE, errorLabel.visibility)
-    }
-
-    @Test
-    fun `error clears when field is emptied`() {
-        val view = ExpirationTextInputView(context)
-        view.setText("13")
-
-        view.setText("")
-
-        val errorLabel = view.findViewById<TextView>(R.id.error_label)
-        assertEquals(View.GONE, errorLabel.visibility)
-    }
-
-    @Test
-    fun `invalid month 00 rejects second digit`() {
+    fun `month 00 is accepted inline (validation handled by ViewModel)`() {
         val view = ExpirationTextInputView(context)
 
         view.setText("00")
 
-        assertEquals("0", view.getText().toString())
+        assertEquals("00", view.getText().toString())
     }
 
     @Test
-    fun `invalid month 13 rejects second digit`() {
+    fun `month 13 is accepted inline (validation handled by ViewModel)`() {
         val view = ExpirationTextInputView(context)
 
         view.setText("13")
 
-        assertEquals("1", view.getText().toString())
+        assertEquals("13", view.getText().toString())
     }
 
     @Test
-    fun `invalid month 19 rejects second digit`() {
+    fun `month 19 is accepted inline (validation handled by ViewModel)`() {
         val view = ExpirationTextInputView(context)
 
         view.setText("19")
 
-        assertEquals("1", view.getText().toString())
+        assertEquals("19", view.getText().toString())
+    }
+
+    @Test
+    fun `invalid month does not show an inline error`() {
+        val view = ExpirationTextInputView(context)
+        view.setText("13")
+
+        val errorLabel = view.findViewById<TextView>(R.id.error_label)
+        assertEquals(View.GONE, errorLabel.visibility)
     }
 
     @Test
