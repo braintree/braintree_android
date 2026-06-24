@@ -296,6 +296,7 @@ If you would like to integrate `CardFields` into your mobile app, you can do so 
     android:id="@+id/payButton"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:enabled="false"
     android:text="Pay" />
 ```
 
