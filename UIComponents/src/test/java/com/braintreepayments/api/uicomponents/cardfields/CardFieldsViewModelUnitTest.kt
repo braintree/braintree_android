@@ -285,7 +285,7 @@ class CardFieldsViewModelUnitTest {
         assertEquals(ValidationResult.Valid, vm.cvvValidation.value)
 
         vm.onCardNumberChanged("378282246310005")
-        assertEquals(ValidationResult.Validating, vm.cvvValidation.value)
+        assertEquals(ValidationResult.Invalid(R.string.cvv_error), vm.cvvValidation.value)
     }
 
     @Test
