@@ -314,7 +314,6 @@ class CardFieldsTest {
         }
     }
 
-
     // endregion
 
     // region Submit before initialize
