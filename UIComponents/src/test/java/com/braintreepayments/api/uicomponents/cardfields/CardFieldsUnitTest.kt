@@ -625,7 +625,7 @@ class CardFieldsUnitTest {
 
     @Test
     fun `restoring re-resolves expiration date error`() {
-        cvvValidation.value = ValidationResult.Invalid(R.string.expiration_error)
+        expirationValidation.value = ValidationResult.Invalid(R.string.expiration_error)
         val original = createCardFields().withSaveId()
         original.expirationView().setText("12")
         val container = SparseArray<Parcelable>()
@@ -653,7 +653,6 @@ class CardFieldsUnitTest {
         verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.CARD_NUMBER, false) }
         verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.CVV, false) }
         verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.EXPIRY, false) }
-
     }
 
     @Test
@@ -744,12 +743,12 @@ class CardFieldsUnitTest {
             original.attach()
             advanceUntilIdle()
 
-            // Enter an incomplete card number and blur it so the error is shown.
-            original.cardNumberView().setText("4111")
-            val originalEditText = original.cardNumberView().editText()
+            // Enter an incomplete expiration and blur it so the error is shown.
+            original.expirationView().setText("12")
+            val originalEditText = original.expirationView().editText()
             originalEditText.onFocusChangeListener.onFocusChange(originalEditText, false)
             advanceUntilIdle()
-            assertEquals(View.VISIBLE, original.cardNumberView().errorLabel().visibility)
+            assertEquals(View.VISIBLE, original.expirationView().errorLabel().visibility)
 
             val container = SparseArray<Parcelable>()
             original.saveHierarchyState(container)
@@ -763,10 +762,10 @@ class CardFieldsUnitTest {
             restored.attach()
             advanceUntilIdle()
 
-            assertEquals(View.VISIBLE, restored.cardNumberView().errorLabel().visibility)
+            assertEquals(View.VISIBLE, restored.expirationView().errorLabel().visibility)
             assertEquals(
-                activity.getString(R.string.card_number_error),
-                restored.cardNumberView().errorLabel().text.toString()
+                activity.getString(R.string.expiration_error),
+                restored.expirationView().errorLabel().text.toString()
             )
         }
 
