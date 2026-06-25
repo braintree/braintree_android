@@ -5,12 +5,9 @@ import android.text.InputType
 import android.util.AttributeSet
 import android.view.accessibility.AccessibilityEvent
 import androidx.annotation.DrawableRes
-import androidx.annotation.RestrictTo
 import com.braintreepayments.api.uicomponents.R
 
-// TODO change class to internal before releasing
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class CardNumberTextInputView @JvmOverloads constructor(
+internal class CardNumberTextInputView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0

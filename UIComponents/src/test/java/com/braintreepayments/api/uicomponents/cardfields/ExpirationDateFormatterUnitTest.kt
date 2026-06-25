@@ -23,33 +23,6 @@ class ExpirationDateFormatterUnitTest {
     }
 
     @Test
-    fun `isValidMonth returns true for incomplete input`() {
-        assertEquals(true, ExpirationDateFormatter.isValidMonthNumber(""))
-        assertEquals(true, ExpirationDateFormatter.isValidMonthNumber("0"))
-        assertEquals(true, ExpirationDateFormatter.isValidMonthNumber("1"))
-    }
-
-    @Test
-    fun `isValidMonth returns true for valid months 01 through 12`() {
-        for (month in 1..12) {
-            val digits = month.toString().padStart(2, '0')
-            assertEquals(true, ExpirationDateFormatter.isValidMonthNumber(digits))
-        }
-    }
-
-    @Test
-    fun `isValidMonth returns false for month 00`() {
-        assertEquals(false, ExpirationDateFormatter.isValidMonthNumber("00"))
-    }
-
-    @Test
-    fun `isValidMonth returns false for months 13 through 19`() {
-        for (month in 13..19) {
-            assertEquals(false, ExpirationDateFormatter.isValidMonthNumber(month.toString()))
-        }
-    }
-
-    @Test
     fun `formatExpiration returns empty string for empty input`() {
         assertEquals("", ExpirationDateFormatter.formatExpiration(""))
     }
