@@ -4,12 +4,9 @@ import android.content.Context
 import android.text.InputFilter
 import android.text.InputType
 import android.util.AttributeSet
-import androidx.annotation.RestrictTo
 import com.braintreepayments.api.uicomponents.R
 
-// TODO change class to internal before releasing
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class CvvTextInputView @JvmOverloads constructor(
+internal class CvvTextInputView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0

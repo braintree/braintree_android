@@ -20,7 +20,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
-import androidx.annotation.RestrictTo
 import androidx.core.content.ContextCompat
 import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
@@ -28,10 +27,8 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.widget.doAfterTextChanged
 import com.braintreepayments.api.uicomponents.R
 
-// TODO change class to internal before releasing
 @Suppress("TooManyFunctions")
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-open class BaseTextInputView @JvmOverloads constructor(
+internal open class BaseTextInputView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0

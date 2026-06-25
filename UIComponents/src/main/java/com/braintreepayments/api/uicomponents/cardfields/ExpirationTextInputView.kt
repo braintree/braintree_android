@@ -3,14 +3,11 @@ package com.braintreepayments.api.uicomponents.cardfields
 import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
-import androidx.annotation.RestrictTo
 import androidx.autofill.HintConstants
 import androidx.core.view.ViewCompat
 import com.braintreepayments.api.uicomponents.R
 
-// TODO change class to internal before releasing
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class ExpirationTextInputView @JvmOverloads constructor(
+internal class ExpirationTextInputView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
