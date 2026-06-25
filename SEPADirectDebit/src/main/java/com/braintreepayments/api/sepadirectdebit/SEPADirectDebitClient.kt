@@ -40,9 +40,15 @@ class SEPADirectDebitClient internal constructor(
     ) : this(BraintreeClient(context, authorization, returnUrlScheme))
 
     /**
-     * Starts the SEPA tokenization process by creating a [SEPADirectDebitPaymentAuthRequestParams] to be used
-     * to launch the SEPA mandate flow in
-     * [SEPADirectDebitLauncher.launch]
+     * Starts the SEPA tokenization process.
+     *
+     * On success [callback] is called with a [SEPADirectDebitPaymentAuthRequest.ReadyToLaunch]
+     * containing the [SEPADirectDebitPaymentAuthRequestParams] to be used to launch the SEPA mandate
+     * flow in [SEPADirectDebitLauncher.launch] or [SEPADirectDebitPaymentAuthRequest.LaunchNotRequired],
+     * indicating no web-based mandate is required and containing the [SEPADirectDebitNonce] to be
+     * passed to the server.
+     *
+     * On failure [callback] is called with [SEPADirectDebitPaymentAuthRequest.Failure] containing an exception.
      *
      * @param sepaDirectDebitRequest [SEPADirectDebitRequest]
      * @param callback [SEPADirectDebitPaymentAuthRequestCallback]
@@ -57,7 +63,21 @@ class SEPADirectDebitClient internal constructor(
         }
     }
 
-    private suspend fun createPaymentAuthRequest(
+    /**
+     * Starts the SEPA tokenization process.
+     *
+     * On success returns a [SEPADirectDebitPaymentAuthRequest.ReadyToLaunch] containing the
+     * [SEPADirectDebitPaymentAuthRequestParams] to be used to launch the SEPA mandate flow in
+     * [SEPADirectDebitLauncher.launch] or [SEPADirectDebitPaymentAuthRequest.LaunchNotRequired],
+     * indicating no web-based mandate is required and containing the [SEPADirectDebitNonce] to be
+     * passed to the server.
+     *
+     * On failure returns a [SEPADirectDebitPaymentAuthRequest.Failure] containing an exception.
+     *
+     * @param sepaDirectDebitRequest [SEPADirectDebitRequest]
+     * @return [SEPADirectDebitPaymentAuthRequest]
+     */
+    suspend fun createPaymentAuthRequest(
         sepaDirectDebitRequest: SEPADirectDebitRequest,
     ): SEPADirectDebitPaymentAuthRequest {
         braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_STARTED)
@@ -117,12 +137,13 @@ class SEPADirectDebitClient internal constructor(
         )
     }
 
-    // TODO: - The wording in this docstring is confusing to me. Let's improve & align across all clients.
     /**
-     * After receiving a result from the SEPA mandate web flow via
-     * [SEPADirectDebitLauncher.handleReturnToApp] , pass the
-     * [SEPADirectDebitPaymentAuthResult.Success] returned to this method to tokenize the SEPA
-     * account and receive a [SEPADirectDebitNonce] on success.
+     * After receiving a result from the SEPA mandate web flow via [SEPADirectDebitLauncher.handleReturnToApp],
+     * pass the resulting [SEPADirectDebitPaymentAuthResult.Success] to this method to tokenize the
+     * SEPA account and receive a [SEPADirectDebitResult.Success] containing the [SEPADirectDebitNonce]
+     * on success.
+     *
+     * On failure [callback] is called with [SEPADirectDebitResult.Failure] containing an exception.
      *
      * @param paymentAuthResult a [SEPADirectDebitPaymentAuthResult.Success] received from
      * [SEPADirectDebitLauncher.handleReturnToApp]
@@ -138,7 +159,19 @@ class SEPADirectDebitClient internal constructor(
         }
     }
 
-    private suspend fun tokenize(
+    /**
+     * After receiving a result from the SEPA mandate web flow via [SEPADirectDebitLauncher.handleReturnToApp],
+     * pass the resulting [SEPADirectDebitPaymentAuthResult.Success] to this method to tokenize the
+     * SEPA account and receive a [SEPADirectDebitResult.Success] containing the [SEPADirectDebitNonce]
+     * on success.
+     *
+     * On failure returns a [SEPADirectDebitResult.Failure] containing an exception.
+     *
+     * @param paymentAuthResult a [SEPADirectDebitPaymentAuthResult.Success] received from
+     * [SEPADirectDebitLauncher.handleReturnToApp]
+     * @return [SEPADirectDebitResult]
+     */
+    suspend fun tokenize(
         paymentAuthResult: SEPADirectDebitPaymentAuthResult.Success,
     ): SEPADirectDebitResult {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =

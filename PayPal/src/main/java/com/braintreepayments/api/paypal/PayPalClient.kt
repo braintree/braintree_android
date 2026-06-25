@@ -100,6 +100,10 @@ class PayPalClient internal constructor(
      * used to launch the PayPal web authentication flow in
      * [PayPalLauncher.launch].
      *
+     * On success [callback] is called with a [PayPalPaymentAuthRequest.ReadyToLaunch] wrapping a
+     * [PayPalPaymentAuthRequestParams].
+     * On failures [callback] is called with a [PayPalPaymentAuthRequest.Failure] with an exception.
+     *
      * @param context       Android Context
      * @param payPalRequest a [PayPalRequest] used to customize the request.
      * @param callback      [PayPalPaymentAuthCallback]
@@ -116,8 +120,20 @@ class PayPalClient internal constructor(
         }
     }
 
+    /**
+     * Starts the PayPal payment flow by creating a [PayPalPaymentAuthRequestParams] to be
+     * used to launch the PayPal web authentication flow in
+     * [PayPalLauncher.launch].
+     *
+     * On success returns a [PayPalPaymentAuthRequest.ReadyToLaunch] wrapping a [PayPalPaymentAuthRequestParams].
+     * On failures returns a [PayPalPaymentAuthRequest.Failure] with an exception.
+     *
+     * @param context       Android Context
+     * @param payPalRequest a [PayPalRequest] used to customize the request.
+     * @return [PayPalPaymentAuthRequest]
+     */
     @OptIn(ExperimentalBetaApi::class)
-    private suspend fun createPaymentAuthRequest(
+    suspend fun createPaymentAuthRequest(
         context: Context,
         payPalRequest: PayPalRequest
     ): PayPalPaymentAuthRequest {
@@ -245,13 +261,13 @@ class PayPalClient internal constructor(
 
     /**
      * After receiving a result from the PayPal web authentication flow via
-     * [PayPalLauncher.handleReturnToApp],
-     * pass the [PayPalPaymentAuthResult.Success] returned to this method to tokenize the PayPal
-     * account and receive a [PayPalAccountNonce] on success.
+     * [PayPalLauncher.handleReturnToApp], pass the resulting [PayPalPaymentAuthResult.Success]
+     * to this method to tokenize the PayPal account and receive a [PayPalResult.Success] containing
+     * a [PayPalAccountNonce] on success.
      *
      * @param paymentAuthResult a [PayPalPaymentAuthResult.Success] received in the callback
      * from  [PayPalLauncher.handleReturnToApp]
-     * @param callback          [PayPalTokenizeCallback]
+     * @param callback [PayPalTokenizeCallback]
      */
     fun tokenize(
         paymentAuthResult: PayPalPaymentAuthResult.Success,
@@ -263,8 +279,18 @@ class PayPalClient internal constructor(
         }
     }
 
+    /**
+     * After receiving a result from the PayPal web authentication flow via
+     * [PayPalLauncher.handleReturnToApp], pass the resulting [PayPalPaymentAuthResult.Success]
+     * to this method to tokenize the PayPal account and receive a [PayPalResult.Success] containing
+     * a [PayPalAccountNonce] on success.
+     *
+     * @param paymentAuthResult a [PayPalPaymentAuthResult.Success] received in the callback
+     * from  [PayPalLauncher.handleReturnToApp]
+     * @return [PayPalResult]
+     */
     @Suppress("SwallowedException")
-    private suspend fun tokenize(
+    suspend fun tokenize(
         paymentAuthResult: PayPalPaymentAuthResult.Success
     ): PayPalResult {
         val browserSwitchResult = paymentAuthResult.browserSwitchSuccess

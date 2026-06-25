@@ -31,7 +31,6 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import kotlin.toString
 
 /**
  * Used to create and tokenize Google Pay payment methods. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/google-pay/overview)
@@ -76,8 +75,10 @@ class GooglePayClient internal constructor(
 
     /**
      * Before starting the Google Pay flow, use this method to check whether the Google Pay API is
-     * supported and set up on the device. When the callback is called with `true`, show the
-     * Google Pay button. When it is called with `false`, display other checkout options.
+     * supported and set up on the device.
+     *
+     * When [callback] is called with [GooglePayReadinessResult.ReadyToPay], show the Google Pay Button.
+     * When [callback] is called with [GooglePayReadinessResult.NotReadyToPay], display other checkout options.
      *
      * @param context  Android Context
      * @param request  [ReadyForGooglePayRequest]
@@ -95,9 +96,20 @@ class GooglePayClient internal constructor(
         }
     }
 
-    private suspend fun isReadyToPay(context: Context, request: ReadyForGooglePayRequest?): GooglePayReadinessResult {
+    /**
+     * Before starting the Google Pay flow, use this method to check whether the Google Pay API is
+     * supported and set up on the device.
+     *
+     * When the return value is [GooglePayReadinessResult.ReadyToPay], show the Google Pay Button.
+     * When the Return value is [GooglePayReadinessResult.NotReadyToPay], display other checkout options.
+     *
+     * @param context  Android Context
+     * @param request  [ReadyForGooglePayRequest]
+     * @return [GooglePayReadinessResult]
+     */
+    suspend fun isReadyToPay(context: Context, request: ReadyForGooglePayRequest?): GooglePayReadinessResult {
         return try {
-            Class.forName(PaymentsClient::class.java.name)
+            verifyGoogleWalletOnClasspath()
             val configuration = braintreeClient.getConfiguration()
             if (!configuration.isGooglePayEnabled) {
                 NotReadyToPay(null)
@@ -140,6 +152,15 @@ class GooglePayClient internal constructor(
         }
     }
 
+    @Throws(
+        LinkageError::class,
+        ExceptionInInitializerError::class,
+        ClassNotFoundException::class
+    )
+    private fun verifyGoogleWalletOnClasspath() {
+        Class.forName(PaymentsClient::class.java.name)
+    }
+
     /**
      * Get Braintree specific tokenization parameters for a Google Pay. Useful for when full control
      * over the [PaymentDataRequest] is required.
@@ -150,7 +171,7 @@ class GooglePayClient internal constructor(
      * [PaymentDataRequest.Builder.setPaymentMethodTokenizationParameters]
      * and [allowedCardNetworks] should be supplied to the
      * [CardRequirements] via
-     * [CardRequirements.Builder.addAllowedCardNetworks]}.
+     * [CardRequirements.Builder.addAllowedCardNetworks].
      *
      * @param callback [GooglePayGetTokenizationParametersCallback]
      */
@@ -163,7 +184,21 @@ class GooglePayClient internal constructor(
         }
     }
 
-    private suspend fun getTokenizationParameters(): GooglePayTokenizationParameters {
+    /**
+     * Get Braintree specific tokenization parameters for a Google Pay. Useful for when full control
+     * over the [PaymentDataRequest] is required.
+     *
+     *
+     * [PaymentMethodTokenizationParameters] should be supplied to the
+     * [PaymentDataRequest] via
+     * [PaymentDataRequest.Builder.setPaymentMethodTokenizationParameters]
+     * and [allowedCardNetworks] should be supplied to the
+     * [CardRequirements] via
+     * [CardRequirements.Builder.addAllowedCardNetworks].
+     *
+     * @return [GooglePayTokenizationParameters]
+     */
+    suspend fun getTokenizationParameters(): GooglePayTokenizationParameters {
         return try {
             val configuration = braintreeClient.getConfiguration()
             GooglePayTokenizationParameters.Success(
@@ -203,7 +238,15 @@ class GooglePayClient internal constructor(
         }
     }
 
-    private suspend fun createPaymentAuthRequest(request: GooglePayRequest): GooglePayPaymentAuthRequest {
+    /**
+     * Start the Google Pay payment flow. This will return [GooglePayPaymentAuthRequestParams] that are
+     * used to present Google Pay payment sheet in
+     * [GooglePayLauncher.launch]
+     *
+     * @param request  The [GooglePayRequest] containing options for the transaction.
+     * @return [GooglePayPaymentAuthRequest]
+     */
+    suspend fun createPaymentAuthRequest(request: GooglePayRequest): GooglePayPaymentAuthRequest {
         analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_STARTED)
 
@@ -238,13 +281,16 @@ class GooglePayClient internal constructor(
     /**
      * Call this method when you've received a successful [PaymentData] response from a
      * direct Google Play Services integration to get a [GooglePayCardNonce] or
-     * [PayPalAccountNonce].
+     * [com.braintreepayments.api.paypal.PayPalAccountNonce].
      *
      * @param paymentData [PaymentData] retrieved from directly integrating with Google Play
      * Services through [PaymentsClient.loadPaymentData]
      * @param callback    [GooglePayTokenizeCallback]
      */
-    fun tokenize(paymentData: PaymentData, callback: GooglePayTokenizeCallback) {
+    fun tokenize(
+        paymentData: PaymentData,
+        callback: GooglePayTokenizeCallback
+    ) {
         val result = tokenize(paymentData)
         when (result) {
             is GooglePayResult.Success -> callbackTokenizeSuccess(result, callback)
@@ -283,7 +329,7 @@ class GooglePayClient internal constructor(
      * After a user successfully authorizes Google Pay payment via
      * [GooglePayClient.createPaymentAuthRequest], this
      * method should be invoked to tokenize the payment method to retrieve a
-     * [PaymentMethodNonce]
+     * [com.braintreepayments.api.core.PaymentMethodNonce]
      *
      * @param paymentAuthResult the result of [GooglePayLauncher.launch]
      * @param callback        [GooglePayTokenizeCallback]

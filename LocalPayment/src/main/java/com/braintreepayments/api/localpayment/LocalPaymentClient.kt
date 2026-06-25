@@ -71,7 +71,15 @@ class LocalPaymentClient internal constructor(
         }
     }
 
-    private suspend fun createPaymentAuthRequest(
+    /**
+     * Starts the payment flow for a [LocalPaymentRequest] and returns a
+     * [LocalPaymentAuthRequest] on success that should be used to launch the user
+     * authentication flow.
+     *
+     * @param request  [LocalPaymentRequest] with the payment details.
+     * @return [LocalPaymentAuthRequest] that can be used to launch the user authentication flow.
+     */
+    suspend fun createPaymentAuthRequest(
         request: LocalPaymentRequest,
     ): LocalPaymentAuthRequest {
         analyticsParamRepository.reset()
@@ -174,7 +182,18 @@ class LocalPaymentClient internal constructor(
         }
     }
 
-    private suspend fun tokenize(
+    /**
+     * After receiving a result from the web authentication flow via
+     * [LocalPaymentLauncher.handleReturnToApp], pass the
+     * [LocalPaymentAuthResult.Success] returned to this method to tokenize the local
+     * payment method and receive a [LocalPaymentNonce] on success.
+     *
+     * @param context Android Context
+     * @param localPaymentAuthResult a [LocalPaymentAuthResult.Success] received from
+     * [LocalPaymentLauncher.handleReturnToApp]
+     * @return [LocalPaymentResult]
+     */
+    suspend fun tokenize(
         context: Context,
         localPaymentAuthResult: LocalPaymentAuthResult.Success,
     ): LocalPaymentResult {

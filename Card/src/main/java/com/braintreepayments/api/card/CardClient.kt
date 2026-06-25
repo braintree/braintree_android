@@ -66,7 +66,20 @@ class CardClient internal constructor(
         }
     }
 
-    private suspend fun tokenize(card: Card): CardResult {
+    /**
+     * Create a [CardNonce].
+     *
+     * On success [CardResult.Success] containing a [CardNonce] is returned.
+     *
+     * If creation fails validation [CardResult.Failure] is returned including an exception.
+     *
+     * If an error not due to validation (server error, network issue, etc.) occurs, a [CardResult.Failure]
+     * containing an exception is returned.
+     *
+     * @param card [Card]
+     * @return [CardResult]
+     */
+    suspend fun tokenize(card: Card): CardResult {
         analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_STARTED)
         return try {

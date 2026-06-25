@@ -52,8 +52,8 @@ class ThreeDSecureClient internal constructor(
      *
      * Verification is associated with a transaction amount and your merchant account. To specify a
      * different merchant account (or, in turn, currency), you will need to specify the merchant
-     * account id when [
-     * generating a client token](https://developer.paypal.com/braintree/docs/start/hello-client#get-a-client-token)
+     * account id when
+     * [generating a client token](https://developer.paypal.com/braintree/docs/start/hello-client#get-a-client-token).
      *
      * During lookup the original payment method nonce is consumed and a new one is returned, which
      * points to the original payment method, as well as the 3D Secure verification. Transactions
@@ -77,7 +77,24 @@ class ThreeDSecureClient internal constructor(
         }
     }
 
-    private suspend fun createPaymentAuthRequest(
+    /**
+     * Call this method to initiate the 3D Secure flow.
+     *
+     * Verification is associated with a transaction amount and your merchant account. To specify a
+     * different merchant account (or, in turn, currency), you will need to specify the merchant
+     * account id when
+     * [generating a client token](https://developer.paypal.com/braintree/docs/start/hello-client#get-a-client-token).
+     *
+     * During lookup the original payment method nonce is consumed and a new one is returned, which
+     * points to the original payment method, as well as the 3D Secure verification. Transactions
+     * created with this nonce will be 3D Secure, and benefit from the appropriate liability shift
+     * if authentication is successful or fail with a 3D Secure failure.
+     *
+     * @param context  Android context
+     * @param request  the [ThreeDSecureRequest] with information used for authentication.
+     * @return [ThreeDSecurePaymentAuthRequest]
+     */
+    suspend fun createPaymentAuthRequest(
         context: Context,
         request: ThreeDSecureRequest
     ): ThreeDSecurePaymentAuthRequest {
@@ -167,7 +184,15 @@ class ThreeDSecureClient internal constructor(
         }
     }
 
-    private suspend fun prepareLookup(
+    /**
+     * Creates a stringified JSON object containing the information necessary to perform a lookup
+     *
+     * @param context  Android Context
+     * @param request  the [ThreeDSecureRequest] that has a nonce and an optional UI
+     * customization.
+     * @return [ThreeDSecurePrepareLookupResult]
+     */
+    suspend fun prepareLookup(
         context: Context,
         request: ThreeDSecureRequest
     ): ThreeDSecurePrepareLookupResult {
@@ -183,7 +208,7 @@ class ThreeDSecureClient internal constructor(
                         .put("requestedThreeDSecureVersion", "2")
                         .put("sdkVersion", "Android/${BuildConfig.VERSION_NAME}")
                 )
-        } catch (ignored: JSONException) {
+        } catch (_: JSONException) {
         }
 
         try {
@@ -314,8 +339,15 @@ class ThreeDSecureClient internal constructor(
         }
     }
 
+    /**
+     * Call this method from the [ThreeDSecureLauncherCallback] passed to the
+     * [ThreeDSecureLauncher] used to launch the 3DS authentication challenge.
+     *
+     * @param paymentAuthResult a [ThreeDSecurePaymentAuthResult] received in [ThreeDSecureLauncherCallback]
+     * @return [ThreeDSecureResult]
+     */
     @Suppress("LongMethod")
-    private suspend fun tokenize(
+    suspend fun tokenize(
         paymentAuthResult: ThreeDSecurePaymentAuthResult
     ): ThreeDSecureResult {
         val threeDSecureError = paymentAuthResult.error

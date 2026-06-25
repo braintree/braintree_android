@@ -1,7 +1,7 @@
 package com.braintreepayments.api.venmo
 
 /**
- * Callback to handle result from [VenmoClient.tokenize]
+ * Callback to handle result from [VenmoClient.createPaymentAuthRequest].
  */
 fun interface VenmoPaymentAuthRequestCallback {
 
