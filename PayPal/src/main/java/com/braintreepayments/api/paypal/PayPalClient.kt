@@ -333,7 +333,7 @@ class PayPalClient internal constructor(
             val payPalAccountNonce = internalPayPalClient.tokenize(payPalAccount)
             sendTokenizeSuccessEvent(analyticsEventParams)
             PayPalResult.Success(payPalAccountNonce)
-        } catch (e: UserCanceledException) {
+        } catch (_: UserCanceledException) {
             sendBrowserSwitchCancelEvent(isAppSwitchFlow, analyticsEventParams)
             PayPalResult.Cancel
         } catch (e: Exception) {

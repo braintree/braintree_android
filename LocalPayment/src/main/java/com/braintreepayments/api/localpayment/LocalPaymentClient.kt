@@ -141,7 +141,7 @@ class LocalPaymentClient internal constructor(
                     .put("payment-type", localPaymentAuthRequestParams.request.paymentType)
                     .put("has-user-location-consent", hasUserLocationConsent)
             )
-        } catch (e: JSONException) {
+        } catch (_: JSONException) {
             return authRequestFailure(
                 BraintreeException("Error parsing local payment request")
             )

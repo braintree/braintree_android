@@ -137,7 +137,7 @@ class GooglePayClient internal constructor(
                             request.isExistingPaymentMethodRequired
                         )
                     }
-                } catch (ignored: JSONException) {
+                } catch (_: JSONException) {
                 }
                 val readyToPayRequest = IsReadyToPayRequest.fromJson(json.toString())
                 internalGooglePayClient.isReadyToPay(
@@ -304,7 +304,7 @@ class GooglePayClient internal constructor(
         return try {
             val result = JSONObject(paymentData.toJson())
             GooglePayResult.Success(fromJSON(result))
-        } catch (e: JSONException) {
+        } catch (_: JSONException) {
             try {
                 val token =
                     JSONObject(paymentData.toJson()).getJSONObject("paymentMethodData")
@@ -313,7 +313,7 @@ class GooglePayClient internal constructor(
             } catch (e: Exception) {
                 GooglePayResult.Failure(e)
             }
-        } catch (e: NullPointerException) {
+        } catch (_: NullPointerException) {
             try {
                 val token =
                     JSONObject(paymentData.toJson()).getJSONObject("paymentMethodData")
@@ -381,7 +381,7 @@ class GooglePayClient internal constructor(
 
         val version = try {
             metadata.getString("version")
-        } catch (e: JSONException) {
+        } catch (_: JSONException) {
             com.braintreepayments.api.core.BuildConfig.VERSION_NAME
         }
 
@@ -486,7 +486,7 @@ class GooglePayClient internal constructor(
                         .put("phoneNumberRequired", request.isPhoneNumberRequired)
                 )
             }
-        } catch (ignored: JSONException) {
+        } catch (_: JSONException) {
         }
         return defaultParameters
     }
@@ -508,7 +508,7 @@ class GooglePayClient internal constructor(
             )
 
             defaultParameters.put("purchase_context", purchaseContext)
-        } catch (ignored: JSONException) {
+        } catch (_: JSONException) {
         }
 
         return defaultParameters
@@ -541,12 +541,12 @@ class GooglePayClient internal constructor(
                     configuration.googlePayAuthorizationFingerprint
                 parameters.put("braintree:authorizationFingerprint", googlePayAuthFingerprint)
             }
-        } catch (ignored: JSONException) {
+        } catch (_: JSONException) {
         }
 
         try {
             cardJson.put("type", "PAYMENT_GATEWAY").put("parameters", parameters)
-        } catch (ignored: JSONException) {
+        } catch (_: JSONException) {
         }
 
         return cardJson
@@ -574,7 +574,7 @@ class GooglePayClient internal constructor(
                             .put("platform", "android").toString()
                     )
             )
-        } catch (ignored: JSONException) {
+        } catch (_: JSONException) {
         }
 
         return json
