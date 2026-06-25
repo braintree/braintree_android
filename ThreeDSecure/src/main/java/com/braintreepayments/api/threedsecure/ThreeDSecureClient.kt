@@ -226,22 +226,36 @@ class ThreeDSecureClient internal constructor(
      *
      * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure
      * information.
-     * @param callback       [ThreeDSecureResultCallback]
+     * @param callback [ThreeDSecureResultCallback]
      */
     fun initializeChallengeWithLookupResponse(
         lookupResponse: String,
         callback: ThreeDSecurePaymentAuthRequestCallback
     ) {
         coroutineScope.launch {
-            val result = try {
-                braintreeClient.getConfiguration()
-                sendAnalyticsAndResult(fromJson(lookupResponse))
-            } catch (e: Exception) {
-                if (e is CancellationException) throw e
-                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
-                createPaymentAuthFailure(e)
-            }
-            callback.onThreeDSecurePaymentAuthRequest(result)
+            callback.onThreeDSecurePaymentAuthRequest(
+                initializeChallengeWithLookupResponse(lookupResponse)
+            )
+        }
+    }
+
+    /**
+     * Initialize a challenge from a server side lookup call.
+     *
+     * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure
+     * information.
+     * @return [ThreeDSecurePaymentAuthRequest]
+     */
+    suspend fun initializeChallengeWithLookupResponse(
+        lookupResponse: String
+    ): ThreeDSecurePaymentAuthRequest {
+        return try {
+            braintreeClient.getConfiguration()
+            sendAnalyticsAndResult(fromJson(lookupResponse))
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
+            createPaymentAuthFailure(e)
         }
     }
 
