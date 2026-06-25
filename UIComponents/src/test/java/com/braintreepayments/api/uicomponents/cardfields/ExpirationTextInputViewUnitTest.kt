@@ -135,7 +135,7 @@ class ExpirationTextInputViewUnitTest {
     }
 
     @Test
-    fun `month 00 is accepted inline (validation handled by ViewModel)`() {
+    fun `month 00 is accepted inline, validation handled by ViewModel`() {
         val view = ExpirationTextInputView(context)
 
         view.setText("00")
@@ -144,7 +144,7 @@ class ExpirationTextInputViewUnitTest {
     }
 
     @Test
-    fun `month 13 is accepted inline (validation handled by ViewModel)`() {
+    fun `month 13 is accepted inline, validation handled by ViewModel`() {
         val view = ExpirationTextInputView(context)
 
         view.setText("13")
@@ -153,7 +153,7 @@ class ExpirationTextInputViewUnitTest {
     }
 
     @Test
-    fun `month 19 is accepted inline (validation handled by ViewModel)`() {
+    fun `month 19 is accepted inline, validation handled by ViewModel`() {
         val view = ExpirationTextInputView(context)
 
         view.setText("19")

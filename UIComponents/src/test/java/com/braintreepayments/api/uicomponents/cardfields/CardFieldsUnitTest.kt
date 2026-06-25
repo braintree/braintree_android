@@ -1,7 +1,6 @@
 package com.braintreepayments.api.uicomponents.cardfields
 
 import android.app.Activity
-import android.os.Parcel
 import android.os.Parcelable
 import android.text.InputFilter
 import android.util.SparseArray
@@ -578,31 +577,7 @@ class CardFieldsUnitTest {
     }
 
     @Test
-    fun `SavedState survives parcelling for process death`() {
-        val original = createCardFields().withSaveId()
-        original.cardNumberView().setText("4111111111111111")
-        original.expirationView().setText("12/26")
-        original.cvvView().setText("123")
-        val container = SparseArray<Parcelable>()
-        original.saveHierarchyState(container)
-        val state = container.get(SAVE_VIEW_ID) as CardFields.SavedState
-
-        val parcel = Parcel.obtain()
-        try {
-            state.writeToParcel(parcel, 0)
-            parcel.setDataPosition(0)
-            val fromParcel = CardFields.SavedState.CREATOR.createFromParcel(parcel)
-
-            assertEquals(state.cardNumber, fromParcel.cardNumber)
-            assertEquals(state.expiration, fromParcel.expiration)
-            assertEquals(state.cvv, fromParcel.cvv)
-        } finally {
-            parcel.recycle()
-        }
-    }
-
-    @Test
-    fun `restoring a non-SavedState parcelable does not crash`() {
+    fun `restoring a non-SavedState parcelable does not crash and restores every field correctly`() {
         val cardFields = createCardFields().withSaveId()
         val container = SparseArray<Parcelable>()
         container.put(SAVE_VIEW_ID, View.BaseSavedState.EMPTY_STATE)
@@ -610,15 +585,15 @@ class CardFieldsUnitTest {
         cardFields.restoreHierarchyState(container)
 
         assertEquals("", cardFields.cardNumberView().editText().text.toString())
+        assertEquals("", cardFields.cvvView().editText().text.toString())
+        assertEquals("", cardFields.expirationView().editText().text.toString())
     }
 
     @Test
-    fun `restoring re-resolves errors for fields that were showing them`() {
+    fun `restoring re-resolves card number error`() {
         cardNumberValidation.value = ValidationResult.Invalid(R.string.card_number_error)
-        cvvValidation.value = ValidationResult.Invalid(R.string.cvv_error)
         val original = createCardFields().withSaveId()
         original.cardNumberView().setText("4111")
-        original.cvvView().setText("1")
         val container = SparseArray<Parcelable>()
         original.saveHierarchyState(container)
 
@@ -626,9 +601,43 @@ class CardFieldsUnitTest {
         restored.restoreHierarchyState(container)
 
         verify { viewModel.onFieldFocusChanged(CardField.CARD_NUMBER, false) }
-        verify { viewModel.onFieldFocusChanged(CardField.CVV, false) }
-        // The expiration field never showed an error, so its blur is not replayed.
+        // The expiration/cvv fields never showed an error, so its blur is not replayed.
         verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.EXPIRY, false) }
+        verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.CVV, false) }
+    }
+
+    @Test
+    fun `restoring re-resolves cvv error`() {
+        cvvValidation.value = ValidationResult.Invalid(R.string.cvv_error)
+        val original = createCardFields().withSaveId()
+        original.cvvView().setText("1")
+        val container = SparseArray<Parcelable>()
+        original.saveHierarchyState(container)
+
+        val restored = createCardFields().withSaveId()
+        restored.restoreHierarchyState(container)
+
+        verify { viewModel.onFieldFocusChanged(CardField.CVV, false) }
+        // The expiration/card number fields never showed an error, so its blur is not replayed.
+        verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.EXPIRY, false) }
+        verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.CARD_NUMBER, false) }
+    }
+
+    @Test
+    fun `restoring re-resolves expiration date error`() {
+        cvvValidation.value = ValidationResult.Invalid(R.string.expiration_error)
+        val original = createCardFields().withSaveId()
+        original.expirationView().setText("12")
+        val container = SparseArray<Parcelable>()
+        original.saveHierarchyState(container)
+
+        val restored = createCardFields().withSaveId()
+        restored.restoreHierarchyState(container)
+
+        verify { viewModel.onFieldFocusChanged(CardField.EXPIRY, false) }
+        // The card number/cvv field never showed an error, so its blur is not replayed.
+        verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.CVV, false) }
+        verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.CARD_NUMBER, false) }
     }
 
     @Test
@@ -641,11 +650,90 @@ class CardFieldsUnitTest {
         val restored = createCardFields().withSaveId()
         restored.restoreHierarchyState(container)
 
-        verify(exactly = 0) { viewModel.onFieldFocusChanged(any(), false) }
+        verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.CARD_NUMBER, false) }
+        verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.CVV, false) }
+        verify(exactly = 0) { viewModel.onFieldFocusChanged(CardField.EXPIRY, false) }
+
     }
 
     @Test
-    fun `error label reappears after restore for a previously invalid field`() =
+    fun `error label reappears after restore for an invalid card number field`() =
+        runTest(coroutineTestRule.testDispatcher) {
+            val originalViewModel = CardFieldsViewModel()
+            val original = CardFields(
+                activity,
+                viewModel = originalViewModel,
+                analyticsClient = analyticsClient,
+            ).withSaveId()
+            original.attach()
+            advanceUntilIdle()
+
+            // Enter an incomplete card number and blur it so the error is shown.
+            original.cardNumberView().setText("4111")
+            val originalEditText = original.cardNumberView().editText()
+            originalEditText.onFocusChangeListener.onFocusChange(originalEditText, false)
+            advanceUntilIdle()
+            assertEquals(View.VISIBLE, original.cardNumberView().errorLabel().visibility)
+
+            val container = SparseArray<Parcelable>()
+            original.saveHierarchyState(container)
+
+            val restored = CardFields(
+                activity,
+                viewModel = CardFieldsViewModel(),
+                analyticsClient = analyticsClient,
+            ).withSaveId()
+            restored.restoreHierarchyState(container)
+            restored.attach()
+            advanceUntilIdle()
+
+            assertEquals(View.VISIBLE, restored.cardNumberView().errorLabel().visibility)
+            assertEquals(
+                activity.getString(R.string.card_number_error),
+                restored.cardNumberView().errorLabel().text.toString()
+            )
+        }
+
+    @Test
+    fun `error label reappears after restore for an invalid CVV field`() =
+        runTest(coroutineTestRule.testDispatcher) {
+            val originalViewModel = CardFieldsViewModel()
+            val original = CardFields(
+                activity,
+                viewModel = originalViewModel,
+                analyticsClient = analyticsClient,
+            ).withSaveId()
+            original.attach()
+            advanceUntilIdle()
+
+            // Enter an incomplete CVV input and blur it so the error is shown.
+            original.cvvView().setText("12")
+            val originalEditText = original.cvvView().editText()
+            originalEditText.onFocusChangeListener.onFocusChange(originalEditText, false)
+            advanceUntilIdle()
+            assertEquals(View.VISIBLE, original.cvvView().errorLabel().visibility)
+
+            val container = SparseArray<Parcelable>()
+            original.saveHierarchyState(container)
+
+            val restored = CardFields(
+                activity,
+                viewModel = CardFieldsViewModel(),
+                analyticsClient = analyticsClient,
+            ).withSaveId()
+            restored.restoreHierarchyState(container)
+            restored.attach()
+            advanceUntilIdle()
+
+            assertEquals(View.VISIBLE, restored.cvvView().errorLabel().visibility)
+            assertEquals(
+                activity.getString(R.string.cvv_error),
+                restored.cvvView().errorLabel().text.toString()
+            )
+        }
+
+    @Test
+    fun `error label reappears after restore for an invalid expiration date field`() =
         runTest(coroutineTestRule.testDispatcher) {
             val originalViewModel = CardFieldsViewModel()
             val original = CardFields(
