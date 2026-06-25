@@ -1,9 +1,12 @@
 package com.braintreepayments.api.uicomponents.cardfields
 
 import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.braintreepayments.api.card.Card
@@ -12,6 +15,7 @@ import com.braintreepayments.api.card.CardResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeException
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.uicomponents.R
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import kotlinx.coroutines.CoroutineScope
@@ -231,6 +235,87 @@ class CardFields internal constructor(
     ) {
         if (result is ValidationResult.Valid && from.hasFocus()) {
             to.requestFocus()
+        }
+    }
+
+    override fun onSaveInstanceState(): Parcelable =
+        SavedState(super.onSaveInstanceState()).apply {
+            cardNumber = cardNumberView.getText()?.toString().orEmpty()
+            expiration = expirationView.getText()?.toString().orEmpty()
+            cvv = cvvView.getText()?.toString().orEmpty()
+            // Remember which fields were showing an error so we can resurface it after restore
+            cardNumberHasError = viewModel.cardNumberValidation.value is ValidationResult.Invalid
+            expirationHasError = viewModel.expirationValidation.value is ValidationResult.Invalid
+            cvvHasError = viewModel.cvvValidation.value is ValidationResult.Invalid
+        }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        if (state !is SavedState) {
+            super.onRestoreInstanceState(state)
+            return
+        }
+        super.onRestoreInstanceState(state.superState)
+        // Restore card number first so the brand is detected
+        cardNumberView.setText(state.cardNumber)
+        expirationView.setText(state.expiration)
+        cvvView.updateCardBrand(viewModel.detectedCardBrand.value)
+        cvvView.setText(state.cvv)
+
+        restoreFieldError(state.cardNumberHasError, CardField.CARD_NUMBER)
+        restoreFieldError(state.expirationHasError, CardField.EXPIRY)
+        restoreFieldError(state.cvvHasError, CardField.CVV)
+    }
+
+    private fun restoreFieldError(hadError: Boolean, field: CardField) {
+        if (hadError) {
+            viewModel.onFieldFocusChanged(field, hasFocus = false)
+        }
+    }
+
+    override fun dispatchSaveInstanceState(container: SparseArray<Parcelable>) {
+        dispatchFreezeSelfOnly(container)
+    }
+
+    override fun dispatchRestoreInstanceState(container: SparseArray<Parcelable>) {
+        dispatchThawSelfOnly(container)
+    }
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    internal class SavedState : BaseSavedState {
+        var cardNumber: String = ""
+        var expiration: String = ""
+        var cvv: String = ""
+        var cardNumberHasError: Boolean = false
+        var expirationHasError: Boolean = false
+        var cvvHasError: Boolean = false
+
+        constructor(superState: Parcelable?) : super(superState)
+
+        private constructor(parcel: Parcel) : super(parcel) {
+            cardNumber = parcel.readString().orEmpty()
+            expiration = parcel.readString().orEmpty()
+            cvv = parcel.readString().orEmpty()
+            cardNumberHasError = parcel.readInt() != 0
+            expirationHasError = parcel.readInt() != 0
+            cvvHasError = parcel.readInt() != 0
+        }
+
+        override fun writeToParcel(out: Parcel, flags: Int) {
+            super.writeToParcel(out, flags)
+            out.writeString(cardNumber)
+            out.writeString(expiration)
+            out.writeString(cvv)
+            out.writeInt(if (cardNumberHasError) 1 else 0)
+            out.writeInt(if (expirationHasError) 1 else 0)
+            out.writeInt(if (cvvHasError) 1 else 0)
+        }
+
+        companion object {
+            @JvmField
+            val CREATOR = object : Parcelable.Creator<SavedState> {
+                override fun createFromParcel(parcel: Parcel): SavedState = SavedState(parcel)
+                override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
+            }
         }
     }
 }

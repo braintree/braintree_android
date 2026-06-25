@@ -175,6 +175,13 @@ class CardFieldsViewModelUnitTest {
         assertEquals(ValidationResult.Validating, vm.expirationValidation.value)
     }
 
+    @Test
+    fun `invalid month does not show error during typing`() {
+        val vm = createViewModel()
+        vm.onExpiryChanged("1328")
+        assertEquals(ValidationResult.Validating, vm.expirationValidation.value)
+    }
+
     // endregion
 
     // region Expiration — blur
@@ -205,6 +212,17 @@ class CardFieldsViewModelUnitTest {
     fun `expired date shows invalid error on blur`() {
         val vm = createViewModel()
         vm.onExpiryChanged("0119")
+        vm.onFieldFocusChanged(CardField.EXPIRY, hasFocus = false)
+        assertEquals(
+            ValidationResult.Invalid(R.string.expiration_error),
+            vm.expirationValidation.value
+        )
+    }
+
+    @Test
+    fun `invalid month shows invalid error on blur`() {
+        val vm = createViewModel()
+        vm.onExpiryChanged("1328")
         vm.onFieldFocusChanged(CardField.EXPIRY, hasFocus = false)
         assertEquals(
             ValidationResult.Invalid(R.string.expiration_error),
