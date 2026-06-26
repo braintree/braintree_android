@@ -18,8 +18,6 @@ import com.braintreepayments.api.core.usecase.GetAppSwitchUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -83,7 +81,7 @@ internal class PayPalInternalClient(
         ) ?: throw JSONException("Error creating requestBody")
 
         val requestBody = if (payPalRequest.enablePayPalAppSwitch && appLinkParam != null) {
-            withContext(Dispatchers.IO) { injectDeviceInfo(context, baseRequestBody) }
+            injectDeviceInfo(context, baseRequestBody)
         } else {
             baseRequestBody
         }
