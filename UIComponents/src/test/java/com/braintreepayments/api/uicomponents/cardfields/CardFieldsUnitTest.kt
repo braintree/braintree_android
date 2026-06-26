@@ -801,6 +801,26 @@ class CardFieldsUnitTest {
             assertEquals("1234", restored.cvvView().editText().text.toString())
         }
 
+    @Test
+    fun `restoring re-notifies the validation listener so pay button reflects restored validity`() {
+        val original = createCardFields().withSaveId()
+        val container = SparseArray<Parcelable>()
+        original.saveHierarchyState(container)
+
+        // Simulate the view model reflecting valid state after all fields are restored.
+        isFormValid.value = true
+        val restored = createCardFields().withSaveId()
+        val received = mutableListOf<Boolean>()
+        restored.setOnValidationChangedListener { received.add(it) }
+        // Clear the immediate call from setOnValidationChangedListener so we only assert
+        // what onRestoreInstanceState contributes.
+        received.clear()
+
+        restored.restoreHierarchyState(container)
+
+        assertEquals(listOf(true), received)
+    }
+
     // endregion
 
     private fun CardFields.withSaveId() = apply { id = SAVE_VIEW_ID }

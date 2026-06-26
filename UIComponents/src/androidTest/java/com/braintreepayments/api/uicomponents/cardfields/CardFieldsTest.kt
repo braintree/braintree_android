@@ -316,6 +316,35 @@ class CardFieldsTest {
 
     // endregion
 
+    // region Configuration change (rotation)
+
+    @Test
+    fun cardFields_payButton_remainsEnabled_afterConfigurationChange() {
+        launchActivity().use { scenario ->
+            scenario.onActivity { activity ->
+                activity.cardFields.cardNumberEditText().setText("4111111111111111")
+                activity.cardFields.expirationEditText().setText("1245")
+                activity.cardFields.cvvEditText().also { cvv ->
+                    cvv.setText("123")
+                    cvv.clearFocus()
+                }
+            }
+            waitForMain()
+            scenario.onActivity { activity ->
+                assertTrue("Pay button should be enabled before rotation", activity.payButton.isEnabled)
+            }
+
+            scenario.recreate()
+            waitForMain()
+
+            scenario.onActivity { activity ->
+                assertTrue("Pay button should remain enabled after rotation", activity.payButton.isEnabled)
+            }
+        }
+    }
+
+    // endregion
+
     // region Submit before initialize
 
     @Test
