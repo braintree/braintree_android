@@ -756,7 +756,7 @@ class PayPalClientUnitTest {
     fun tokenize_whenCancelUriReceived_sendsAppSwitchCanceledEvent() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
-        val approvalUrl = "https://some-scheme/onetouch/v1/cancel?switch_initiated_time=17166111926211"
+        val approvalUrl = "https://some-scheme/cancel?switch_initiated_time=17166111926211"
 
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>()
 
@@ -792,7 +792,7 @@ class PayPalClientUnitTest {
     fun tokenize_whenCancelUriReceived_sendsBrowserLoginCanceledEvent() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
-        val approvalUrl = "https://some-scheme/onetouch/v1/cancel"
+        val approvalUrl = "https://some-scheme/cancel"
 
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>()
 

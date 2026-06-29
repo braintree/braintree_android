@@ -18,7 +18,7 @@ browserSwitch = "3.5.1"
 cardinal = "2.2.7-7"
 navigationSafeArgsGradlePlugin = "2.5.0"
 paypalMessages = "1.1.13"
-playServices = "19.4.0"
+playServicesWallet = "19.5.0"
 junit = "4.13.2"
 testParameterInjector = "1.18"
 robolectric = "4.14-beta-1"
@@ -48,6 +48,7 @@ deviceAutomator = "1.0.0"
 btCardForm = "5.4.0"
 accompanist = "0.37.3"
 datastore = "1.2.0"
+googlePayButton = "1.1.0"
 
 [libraries]
 # Androidx
@@ -78,7 +79,7 @@ gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 browser-switch = { group = "com.braintreepayments.api", name = "browser-switch", version.ref = "browserSwitch" }
 cardinal = { group = "org.jfrog.cardinalcommerce.gradle", name = "cardinalmobilesdk", version.ref = "cardinal" }
 paypal-messages = { module = "com.paypal.messages:paypal-messages", version.ref = "paypalMessages" }
-play-services-wallet = { group = "com.google.android.gms", name = "play-services-wallet", version.ref = "playServices" }
+play-services-wallet = { group = "com.google.android.gms", name = "play-services-wallet", version.ref = "playServicesWallet" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 json-assert = { group = "org.skyscreamer", name = "jsonassert", version.ref = "jsonAssert" }
@@ -119,6 +120,7 @@ bt-card-form = { module = "com.braintreepayments:card-form", version.ref = "btCa
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview"}
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling"}
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+google-pay-button = { module = "com.google.pay.button:compose-pay-button", version.ref = "googlePayButton" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }

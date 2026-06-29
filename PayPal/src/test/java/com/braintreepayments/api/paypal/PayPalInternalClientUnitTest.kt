@@ -160,8 +160,8 @@ class PayPalInternalClientUnitTest {
                 "currency_iso_code": "USD",
                 "intent": "authorize",
                 "authorization_fingerprint": "client-token-bearer",
-                "return_url": "https://example.com://onetouch/v1/success",
-                "cancel_url": "https://example.com://onetouch/v1/cancel",
+                "return_url": "https://example.com/success",
+                "cancel_url": "https://example.com/cancel",
                 "offer_pay_later": true,
                 "offer_paypal_credit": true,
                 "request_billing_agreement": true,
@@ -255,7 +255,7 @@ class PayPalInternalClientUnitTest {
         assertFalse(params.isVaultRequest)
         assertEquals(PayPalPaymentIntent.AUTHORIZE, params.intent)
         assertEquals("sample-merchant-account-id", params.merchantAccountId)
-        assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
+        assertEquals("https://example.com/success", params.successUrl)
         assertEquals("fake-token", params.contextId)
         assertEquals("sample-client-metadata-id", params.clientMetadataId)
         assertEquals(expectedUrl, params.approvalUrl)
@@ -271,7 +271,7 @@ class PayPalInternalClientUnitTest {
     private fun assertPayPalVaultParams(params: PayPalPaymentAuthRequestParams, expectedUrl: String) {
         assertTrue(params.isVaultRequest)
         assertEquals("sample-merchant-account-id", params.merchantAccountId)
-        assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
+        assertEquals("https://example.com/success", params.successUrl)
         assertEquals("fake-ba-token", params.contextId)
         assertEquals("sample-client-metadata-id", params.clientMetadataId)
         assertEquals(expectedUrl, params.approvalUrl)
@@ -295,8 +295,8 @@ class PayPalInternalClientUnitTest {
 
         val expected = JSONObject()
             .put("authorization_fingerprint", "client-token-bearer")
-            .put("return_url", "https://example.com://onetouch/v1/success")
-            .put("cancel_url", "https://example.com://onetouch/v1/cancel")
+            .put("return_url", "https://example.com/success")
+            .put("cancel_url", "https://example.com/cancel")
             .put("offer_paypal_credit", true)
             .put("description", "Billing Agreement Description")
             .put(
