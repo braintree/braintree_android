@@ -343,6 +343,28 @@ class CardFieldsTest {
         }
     }
 
+    @Test
+    fun cardFields_payButton_remainsDisabled_afterConfigurationChange_whenFormIsInvalid() {
+        launchActivity().use { scenario ->
+            scenario.onActivity { activity ->
+                activity.cardFields.cardNumberEditText().setText("4111111111111111")
+                activity.cardFields.expirationEditText().setText("1245")
+                // CVV intentionally left empty — form is invalid
+            }
+            waitForMain()
+            scenario.onActivity { activity ->
+                assertFalse("Pay button should be disabled before rotation", activity.payButton.isEnabled)
+            }
+
+            scenario.recreate()
+            waitForMain()
+
+            scenario.onActivity { activity ->
+                assertFalse("Pay button should remain disabled after rotation", activity.payButton.isEnabled)
+            }
+        }
+    }
+
     // endregion
 
     // region Submit before initialize
