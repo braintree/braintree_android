@@ -264,6 +264,9 @@ class CardFields internal constructor(
         restoreFieldError(state.cardNumberHasError, CardField.CARD_NUMBER)
         restoreFieldError(state.expirationHasError, CardField.EXPIRY)
         restoreFieldError(state.cvvHasError, CardField.CVV)
+
+        // Re-notifying here ensures the pay button reflects the restored validity state when phone is rotated.
+        validationChangedListener?.onValidationChanged(viewModel.isFormValid.value)
     }
 
     private fun restoreFieldError(hadError: Boolean, field: CardField) {

@@ -15,6 +15,8 @@ internal enum class CardBrand(
     val relaxedPrefixPatterns: List<Regex> = emptyList(),
     val validLengths: Set<Int>,
     val cvvLength: Int,
+    /** Minimum accepted CVV length. Equals [cvvLength] for all known brands; UNKNOWN accepts 3–4. */
+    val minCvvLength: Int = cvvLength,
     val formatGaps: IntArray = intArrayOf(4, 8, 12)
 ) {
     VISA(
@@ -118,7 +120,8 @@ internal enum class CardBrand(
     UNKNOWN(
         prefixPatterns = emptyList(),
         validLengths = setOf(12, 13, 14, 15, 16, 17, 18, 19),
-        cvvLength = 3
+        cvvLength = 4,
+        minCvvLength = 3
     );
 
     val minLength: Int get() = validLengths.min()

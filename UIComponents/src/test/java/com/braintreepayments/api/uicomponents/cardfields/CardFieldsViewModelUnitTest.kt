@@ -252,6 +252,7 @@ class CardFieldsViewModelUnitTest {
     @Test
     fun `over-length CVV does not show error during typing`() {
         val vm = createViewModel()
+        vm.onCardNumberChanged("4111111111111111") // Visa — 3-digit CVV
         vm.onCvvChanged("1234")
         assertEquals(ValidationResult.Validating, vm.cvvValidation.value)
     }
@@ -302,7 +303,7 @@ class CardFieldsViewModelUnitTest {
         assertEquals(ValidationResult.Valid, vm.cvvValidation.value)
 
         vm.onCardNumberChanged("378282246310005")
-        assertEquals(ValidationResult.Validating, vm.cvvValidation.value)
+        assertEquals(ValidationResult.Invalid(R.string.cvv_error), vm.cvvValidation.value)
     }
 
     @Test

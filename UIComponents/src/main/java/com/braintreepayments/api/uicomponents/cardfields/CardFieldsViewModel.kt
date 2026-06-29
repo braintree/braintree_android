@@ -122,7 +122,13 @@ internal class CardFieldsViewModel(
     /** Re-runs CVV validation when the detected card brand changes (e.g., Amex requires 4 digits). */
     private fun revalidateCvv() {
         val result = cvvValidationUseCase(currentCvv, _detectedCardBrand.value)
-        suppressErrorDuringTyping(_cvvValidation, result)
+        if (_cvvValidation.value is ValidationResult.Valid && result is ValidationResult.Validating) {
+            _cvvValidation.value = ValidationResult.Invalid(R.string.cvv_error)
+        } else if (_cvvValidation.value is ValidationResult.Valid) {
+            _cvvValidation.value = result
+        } else {
+            suppressErrorDuringTyping(_cvvValidation, result)
+        }
     }
 
     /**

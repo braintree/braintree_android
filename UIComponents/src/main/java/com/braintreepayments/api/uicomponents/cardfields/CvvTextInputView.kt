@@ -34,13 +34,8 @@ internal class CvvTextInputView @JvmOverloads constructor(
 
     internal fun updateCardBrand(brand: CardBrand) {
         formatter.updateCvvLength(brand.cvvLength)
-        val currentCvv = getRawCvv()
-        if (currentCvv.length > brand.cvvLength) {
-            setText(currentCvv.take(brand.cvvLength))
-        } else {
-            editText.filters = (editText.filters.filterNot { it is InputFilter.LengthFilter } +
-                InputFilter.LengthFilter(brand.cvvLength)).toTypedArray()
-        }
+        editText.filters = (editText.filters.filterNot { it is InputFilter.LengthFilter } +
+            InputFilter.LengthFilter(brand.cvvLength)).toTypedArray()
     }
 
     internal fun getRawCvv(): String {
