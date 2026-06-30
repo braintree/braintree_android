@@ -26,6 +26,7 @@ module:ThreeDSecure
 com.braintreepayments.api.threedsecure
 module:UIComponents
 com.braintreepayments.api.uicomponents
+com.braintreepayments.api.uicomponents.cardfields
 com.braintreepayments.api.uicomponents.compose
 module:Venmo
 com.braintreepayments.api.venmo

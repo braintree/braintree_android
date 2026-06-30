@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.29.0 (2026-06-30)
 
 * GooglePay
     * Remove requirement for `GooglePayActivity` to be declared in the Android manifest (fixes #1572)
