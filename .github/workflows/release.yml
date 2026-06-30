@@ -48,13 +48,13 @@ jobs:
       - name: Decode Signing Key
         uses: ./.github/actions/decode_signing_key_action
         with:
-          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE_TEST }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
       - name: Assemble
         run: ./gradlew --stacktrace assemble
         env:
-          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID_TEST }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD_TEST }}
           SIGNING_KEY_FILE: ${{ env.SIGNING_KEY_FILE_PATH }}
 
   # Once building is finished, we unit test every module in parallel
@@ -278,7 +278,7 @@ jobs:
       - name: Decode Signing Key
         uses: ./.github/actions/decode_signing_key_action
         with:
-          signing_key_file: ${{ secrets.SIGNING_KEY_FILE }}
+          signing_key_file: ${{ secrets.SIGNING_KEY_FILE_TEST }}
           signing_file_path: ${{ env.SIGNING_KEY_FILE_PATH }}
       - name: Update Versions
         uses: ./.github/actions/update_versions
@@ -289,8 +289,8 @@ jobs:
         with:
           sonatype_usr: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           sonatype_pwd: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-          signing_key_id: ${{ secrets.SIGNING_KEY_ID }}
-          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          signing_key_id: ${{ secrets.SIGNING_KEY_ID_TEST }}
+          signing_key_pwd: ${{ secrets.SIGNING_KEY_PASSWORD_TEST }}
           signing_key_file: ${{ env.SIGNING_KEY_FILE_PATH }}
 
   releasing_finished:
