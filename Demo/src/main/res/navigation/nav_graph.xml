@@ -41,11 +41,11 @@
             android:id="@+id/action_mainFragment_to_shopperInsightsFragmentV2"
             app:destination="@id/shopperInsightsFragmentV2" />
         <action
-            android:id="@+id/action_mainFragment_to_paymentButtonsFragment"
-            app:destination="@id/paymentButtonsFragment" />
-        <action
             android:id="@+id/action_mainFragment_to_composePaymentButtonsFragment"
             app:destination="@id/composePaymentButtonsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_uiComponentsFragment"
+            app:destination="@id/uiComponentsFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -240,21 +240,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/paymentButtonsFragment"
-        android:name="com.braintreepayments.demo.PaymentButtonsFragment"
-        tools:layout="@layout/fragment_payment_buttons">
-        <argument
-            android:name="authString"
-            android:defaultValue=""
-            app:argType="string" />
-        <action
-            android:id="@+id/action_paymentButtonsFragment_to_displayNonceFragment"
-            app:destination="@id/displayNonceFragment"
-            app:popUpTo="@id/mainFragment"
-            app:popUpToInclusive="false" />
-    </fragment>
-
-    <fragment
         android:id="@+id/composePaymentButtonsFragment"
         android:name="com.braintreepayments.demo.ComposeButtonsFragment"
         >
@@ -264,6 +249,20 @@
             app:argType="string" />
         <action
             android:id="@+id/action_composePaymentButtonsFragment_to_displayNonceFragment"
+            app:destination="@id/displayNonceFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/uiComponentsFragment"
+        android:name="com.braintreepayments.demo.UIComponentsFragment"
+        tools:layout="@layout/fragment_ui_components">
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
+        <action
+            android:id="@+id/action_uiComponentsFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />

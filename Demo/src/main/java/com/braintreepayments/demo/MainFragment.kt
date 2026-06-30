@@ -72,7 +72,7 @@ class MainFragment : BaseFragment() {
                                     style = MaterialTheme.typography.headlineSmall
                                 )
 
-                                PaymentModuleButton(R.string.payment_buttons_button) { launchPaymentButtons() }
+                                PaymentModuleButton(R.string.ui_components) { launchUIComponents() }
                                 PaymentModuleButton(R.string.payment_buttons_compose_button) {
                                     launchComposePaymentButtons()
                                 }
@@ -219,9 +219,9 @@ class MainFragment : BaseFragment() {
         }
     }
 
-    private fun launchPaymentButtons() {
+    private fun launchUIComponents() {
         fetchAuthorizationAndHandleError { authString ->
-            val action = MainFragmentDirections.actionMainFragmentToPaymentButtonsFragment()
+            val action = MainFragmentDirections.actionMainFragmentToUiComponentsFragment()
             action.setAuthString(authString)
             findNavController().navigate(action)
         }

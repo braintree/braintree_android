@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_number_hint">Card number</string>
+    <string name="cvv_hint">CVV</string>
+    <string name="cvv_hint_icon_description">CVV security code hint</string>
+    <string name="cvv_overlay_close_description">Close CVV hint</string>
+    <string name="cvv_overlay_header">CVV</string>
+    <string name="cvv_overlay_body">The CVV is the 3 or 4-digit number on the back of your card</string>
+    <string name="expiration_hint">Expiration (MM/YY)</string>
+    <string name="expiration_hint_accessibility">Expiration date, two digit month and two digit year</string>
+    <string name="card_icon_unknown">Unknown Card Brand</string>
+    <string name="card_icon_visa">Visa</string>
+    <string name="card_icon_mastercard">Mastercard</string>
+    <string name="card_icon_amex">American Express</string>
+    <string name="card_icon_diners_club">Diners Club</string>
+    <string name="card_icon_discover">Discover</string>
+    <string name="card_icon_jcb">JCB</string>
+    <string name="card_icon_unionpay">UnionPay</string>
+    <string name="card_icon_maestro">Maestro</string>
+    <string name="card_icon_hiper">Hiper</string>
+    <string name="card_icon_hipercard">Hipercard</string>
+    <string name="card_icon_elo">Elo</string>
+    <string name="card_icon_mir">Mir</string>
+    <string name="card_icon_verve">Verve</string>
+    <string name="card_number_required">Card number is required</string>
+    <string name="card_number_error">Card number is invalid</string>
+    <string name="expiration_required">Expiration date is required</string>
+    <string name="expiration_error">Expiration date is invalid</string>
+    <string name="cvv_required">CVV is required</string>
+    <string name="cvv_error">CVV is invalid</string>
+</resources>

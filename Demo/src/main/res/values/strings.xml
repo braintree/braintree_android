@@ -2,6 +2,9 @@
 <resources>
     <string name="app_name">Braintree Demo</string>
 
+    <string name="ui_components">UI Components</string>
+    <string name="card_fields_pay">Pay</string>
+
     <!-- MainActivity -->
     <string name="reset">Reset</string>
     <string name="settings">Settings</string>
@@ -20,7 +23,6 @@
     <string name="shopper_insights_v2_button">Payment Ready V2</string>
     <string name="create_transaction">Create a Transaction</string>
     <string name="loading">Loading…</string>
-    <string name="payment_buttons_button">Payment Buttons</string>
     <string name="payment_buttons_compose_button">Payment Buttons Compose</string>
 
     <!-- CardActivity -->

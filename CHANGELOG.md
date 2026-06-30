@@ -7,6 +7,8 @@
         * Note: If upgrading from v4, any manual `GooglePayActivity` declaration in your app's manifest should be removed
     * Deprecate unused `GooglePayClient.EXTRA_ENVIRONMENT` and `GooglePayClient.EXTRA_PAYMENT_DATA_REQUEST` constants
     * Update Google Pay dependency (play-services-wallet) to version 19.5.0
+* UIComponents
+    * Add `CardFields` to generate a premade credit card form for submitting credit card tokenize requests
 
 ## 5.28.1 (2026-06-01)
 
