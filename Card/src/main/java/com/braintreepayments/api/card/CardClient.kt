@@ -42,7 +42,7 @@ class CardClient internal constructor(
     )
 
     /**
-     * Create a [CardNonce].
+     * Creates a [CardNonce].
      *
      * The tokenization result is returned via a [CardTokenizeCallback] callback.
      *
@@ -67,7 +67,7 @@ class CardClient internal constructor(
     }
 
     /**
-     * Create a [CardNonce].
+     * Creates a [CardNonce].
      *
      * On success [CardResult.Success] containing a [CardNonce] is returned.
      *

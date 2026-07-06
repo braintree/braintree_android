@@ -216,7 +216,7 @@ class GooglePayClient internal constructor(
      * used to present Google Pay payment sheet in
      * [GooglePayLauncher.launch]
      *
-     * @param request  The [GooglePayRequest] containing options for the transaction.
+     * @param request The [GooglePayRequest] containing options for the transaction.
      * @param callback [GooglePayPaymentAuthRequestCallback]
      */
     fun createPaymentAuthRequest(
@@ -243,7 +243,7 @@ class GooglePayClient internal constructor(
      * used to present Google Pay payment sheet in
      * [GooglePayLauncher.launch]
      *
-     * @param request  The [GooglePayRequest] containing options for the transaction.
+     * @param request The [GooglePayRequest] containing options for the transaction.
      * @return [GooglePayPaymentAuthRequest]
      */
     suspend fun createPaymentAuthRequest(request: GooglePayRequest): GooglePayPaymentAuthRequest {

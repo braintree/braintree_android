@@ -58,7 +58,7 @@ class LocalPaymentClient internal constructor(
      * [LocalPaymentAuthRequestParams] on success that should be used to launch the user
      * authentication flow.
      *
-     * @param request  [LocalPaymentRequest] with the payment details.
+     * @param request [LocalPaymentRequest] with the payment details.
      * @param callback [LocalPaymentAuthCallback]
      */
     fun createPaymentAuthRequest(
@@ -76,7 +76,7 @@ class LocalPaymentClient internal constructor(
      * [LocalPaymentAuthRequest] on success that should be used to launch the user
      * authentication flow.
      *
-     * @param request  [LocalPaymentRequest] with the payment details.
+     * @param request [LocalPaymentRequest] with the payment details.
      * @return [LocalPaymentAuthRequest] that can be used to launch the user authentication flow.
      */
     suspend fun createPaymentAuthRequest(
