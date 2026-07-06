@@ -140,8 +140,9 @@ class SEPADirectDebitClient internal constructor(
     /**
      * After receiving a result from the SEPA mandate web flow via [SEPADirectDebitLauncher.handleReturnToApp],
      * pass the resulting [SEPADirectDebitPaymentAuthResult.Success] to this method to tokenize the
-     * SEPA account and receive a [SEPADirectDebitResult.Success] containing the [SEPADirectDebitNonce]
-     * on success.
+     * SEPA account.
+     *
+     * On success [callback] is called with [SEPADirectDebitResult.Success] containing a [SEPADirectDebitNonce].
      *
      * On failure [callback] is called with [SEPADirectDebitResult.Failure] containing an exception.
      *
@@ -162,8 +163,9 @@ class SEPADirectDebitClient internal constructor(
     /**
      * After receiving a result from the SEPA mandate web flow via [SEPADirectDebitLauncher.handleReturnToApp],
      * pass the resulting [SEPADirectDebitPaymentAuthResult.Success] to this method to tokenize the
-     * SEPA account and receive a [SEPADirectDebitResult.Success] containing the [SEPADirectDebitNonce]
-     * on success.
+     * SEPA account.
+     *
+     * On success returns a [SEPADirectDebitResult.Success] containing a [SEPADirectDebitNonce].
      *
      * On failure returns a [SEPADirectDebitResult.Failure] containing an exception.
      *

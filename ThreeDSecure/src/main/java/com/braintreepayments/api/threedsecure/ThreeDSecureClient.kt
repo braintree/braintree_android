@@ -323,8 +323,8 @@ class ThreeDSecureClient internal constructor(
     }
 
     /**
-     * Call this method from the [ThreeDSecureLauncherCallback] passed to the
-     * [ThreeDSecureLauncher] used to launch the 3DS authentication challenge.
+     * When launching the 3DS challenge, call this method from the [ThreeDSecureLauncherCallback]
+     * passed to the [ThreeDSecureLauncher].
      *
      * @param paymentAuthResult a [ThreeDSecurePaymentAuthResult] received in [ThreeDSecureLauncherCallback]
      * @param callback       a [ThreeDSecureResultCallback]
@@ -340,8 +340,8 @@ class ThreeDSecureClient internal constructor(
     }
 
     /**
-     * Call this method from the [ThreeDSecureLauncherCallback] passed to the
-     * [ThreeDSecureLauncher] used to launch the 3DS authentication challenge.
+     * When launching the 3DS challenge, call this method from the [ThreeDSecureLauncherCallback]
+     * passed to the [ThreeDSecureLauncher].
      *
      * @param paymentAuthResult a [ThreeDSecurePaymentAuthResult] received in [ThreeDSecureLauncherCallback]
      * @return [ThreeDSecureResult]

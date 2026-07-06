@@ -41,7 +41,6 @@
 * UIComponents
     * Add `CardFields` to generate a premade credit card form for submitting credit card tokenize requests
 
-
 ## 5.28.1 (2026-06-01)
 
 * PayPal
