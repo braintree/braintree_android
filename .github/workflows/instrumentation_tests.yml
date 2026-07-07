@@ -8,8 +8,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        api-level: [ 23, 31, 35, 37 ]
+        api-level: [ 23, 31, 35 ]
         target: [ default, google_apis ]
+        # API 37 (Android 17) has no `default` or plain `google_apis` image yet —
+        # it only ships as `google_apis_ps16k` under system image level `37.0`,
+        # so it is added as a dedicated combination rather than in the cross-product.
+        include:
+          - api-level: 37
+            target: google_apis_ps16k
+            system-image-api-level: "37.0"
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -26,6 +33,7 @@ jobs:
         continue-on-error: true
         with:
           api-level: ${{ matrix.api-level }}
+          system-image-api-level: ${{ matrix.system-image-api-level }}
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
@@ -36,6 +44,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
+          system-image-api-level: ${{ matrix.system-image-api-level }}
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
