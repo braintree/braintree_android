@@ -14,7 +14,7 @@ jobs:
         # it only ships as `google_apis_ps16k` under system image level `37.0`,
         # so it is added as a dedicated combination rather than in the cross-product.
         include:
-          - api-level: 37
+          - api-level: "37.0"
             target: google_apis_ps16k
             system-image-api-level: "37.0"
     steps:
