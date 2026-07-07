@@ -125,9 +125,13 @@ class VenmoClient internal constructor(
     )
 
     /**
-     * Start the Pay With Venmo flow. This will return a [VenmoPaymentAuthRequestParams] that
-     * will be used to authenticate the user by switching to the Venmo app or mobile browser in
-     * [VenmoLauncher.launch]
+     * Start the Pay With Venmo flow.
+     *
+     * On success calls [callback] with a [VenmoPaymentAuthRequest.ReadyToLaunch] containing the
+     * [VenmoPaymentAuthRequestParams] to be used to authenticate the user by switching to the
+     * Venmo app or mobile browser in [VenmoLauncher.launch].
+     *
+     * On failure calls [callback] with a [VenmoPaymentAuthRequest.Failure] containing an exception.
      *
      * @param context  Android Context
      * @param request  [VenmoRequest]
@@ -145,8 +149,21 @@ class VenmoClient internal constructor(
         }
     }
 
+    /**
+     * Start the Pay With Venmo flow.
+     *
+     * On success returns a [VenmoPaymentAuthRequest.ReadyToLaunch] containing the
+     * [VenmoPaymentAuthRequestParams] to be used to authenticate the user by switching to the
+     * Venmo app or mobile browser in [VenmoLauncher.launch].
+     *
+     * On failure returns a [VenmoPaymentAuthRequest.Failure] containing an exception.
+     *
+     * @param context  Android Context
+     * @param request  [VenmoRequest]
+     * @return [VenmoPaymentAuthRequest]
+     */
     @Suppress("ThrowsCount")
-    private suspend fun createPaymentAuthRequest(
+    suspend fun createPaymentAuthRequest(
         context: Context,
         request: VenmoRequest
     ): VenmoPaymentAuthRequest {
@@ -283,13 +300,12 @@ class VenmoClient internal constructor(
     }
 
     /**
-     * After successfully authenticating a Venmo user account via [ ][VenmoClient.createPaymentAuthRequest],
-     * this method should be invoked to tokenize the account to retrieve a
-     * [VenmoAccountNonce].
+     * After successfully authenticating a Venmo user account via [VenmoClient.createPaymentAuthRequest],
+     * this method should be invoked to tokenize the account to retrieve a [VenmoResult.Success]
+     * containing the [VenmoAccountNonce].
      *
      * @param paymentAuthResult the result of [VenmoLauncher.handleReturnToApp]
-     * @param callback a [VenmoTokenizeCallback] to receive a [VenmoAccountNonce] or
-     * error from Venmo tokenization
+     * @param callback [VenmoTokenizeCallback]
      */
     fun tokenize(
         paymentAuthResult: VenmoPaymentAuthResult.Success,
@@ -301,7 +317,15 @@ class VenmoClient internal constructor(
         }
     }
 
-    private suspend fun tokenize(
+    /**
+     * After successfully authenticating a Venmo user account via [VenmoClient.createPaymentAuthRequest],
+     * this method should be invoked to tokenize the account to retrieve a [VenmoResult.Success]
+     * containing the [VenmoAccountNonce].
+     *
+     * @param paymentAuthResult the result of [VenmoLauncher.handleReturnToApp]
+     * @return [VenmoResult]
+     */
+    suspend fun tokenize(
         paymentAuthResult: VenmoPaymentAuthResult.Success
     ): VenmoResult {
         val browserSwitchResultInfo: BrowserSwitchFinalResult.Success =

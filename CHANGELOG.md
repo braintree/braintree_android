@@ -1,7 +1,38 @@
 # Braintree Android SDK Release Notes
 
-## 5.29.0 (2026-06-30)
+## unreleased
 
+* AmericanExpress
+    * Expose `getRewardsBalance` as a public suspend function
+* Card
+    * Expose `tokenize` as a public suspend function
+* GooglePay
+    * Expose `isReadyToPay` as a public suspend function
+    * Expose `getTokenizationParameters` as a public suspend function
+    * Expose `createPaymentAuthRequest` as a public suspend function
+* LocalPayment
+    * Expose `createPaymentAuthRequest` as a public suspend function
+    * Expose `tokenize` as a public suspend function
+* PayPal
+    * Expose `createPaymentAuthRequest` as a public suspend function
+    * Expose `tokenize` as a public suspend function
+* SEPADirectDebit
+    * Expose `createPaymentAuthRequest` as a public suspend function
+    * Expose `tokenize` as a public suspend function
+* ShopperInsights
+    * Expose `createCustomerSession` as a public suspend function
+    * Expose `updateCustomerSession` as a public suspend function
+    * Expose `generateCustomerRecommendations` as a public suspend function
+* ThreeDSecure
+    * Expose `createPaymentAuthRequest` as a public suspend function
+    * Expose `prepareLookup` as a public suspend function
+    * Expose `initializeChallengeWithLookupResponse` as a public suspend function
+    * Expose `tokenize` as a public suspend function
+* Venmo
+    * Expose `createPaymentAuthRequest` as a public suspend function
+    * Expose `tokenize` as a public suspend function
+  
+## 5.29.0 (2026-06-30)
 * GooglePay
     * Remove requirement for `GooglePayActivity` to be declared in the Android manifest (fixes #1572)
         * Note: If upgrading from v4, any manual `GooglePayActivity` declaration in your app's manifest should be removed

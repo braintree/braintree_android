@@ -62,8 +62,8 @@ class ShopperInsightsClientV2 internal constructor(
     /**
      * Creates a new customer session.
      *
-     * @param customerSessionRequest: a [CustomerSessionRequest] object containing the request parameters
-     * @param customerSessionCallback: a callback that returns the result of the customer session creation
+     * @param customerSessionRequest a [CustomerSessionRequest] object containing the request parameters
+     * @param customerSessionCallback a callback that returns the result of the customer session creation
      *
      * Note: **This feature is in beta. It's public API may change in future releases.**
      */
@@ -77,7 +77,15 @@ class ShopperInsightsClientV2 internal constructor(
         }
     }
 
-    private suspend fun createCustomerSession(
+    /**
+     * Creates a new customer session.
+     *
+     * @param customerSessionRequest a [CustomerSessionRequest] object containing the request parameters
+     * @return [CustomerSessionResult]
+     *
+     * Note: **This feature is in beta. It's public API may change in future releases.**
+     */
+    suspend fun createCustomerSession(
         customerSessionRequest: CustomerSessionRequest
     ): CustomerSessionResult {
         analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
@@ -99,9 +107,9 @@ class ShopperInsightsClientV2 internal constructor(
     /**
      * Updates an existing customer session.
      *
-     * @param customerSessionRequest: a [CustomerSessionRequest] object containing the request parameters
-     * @param sessionId: the ID of the session to update
-     * @param customerSessionCallback: a callback that returns the result of the customer session update
+     * @param customerSessionRequest a [CustomerSessionRequest] object containing the request parameters
+     * @param sessionId the ID of the session to update
+     * @param customerSessionCallback a callback that returns the result of the customer session update
      *
      * Note: **This feature is in beta. Its public API may change in future releases.**
      */
@@ -116,7 +124,16 @@ class ShopperInsightsClientV2 internal constructor(
         }
     }
 
-    private suspend fun updateCustomerSession(
+    /**
+     * Updates an existing customer session.
+     *
+     * @param customerSessionRequest a [CustomerSessionRequest] object containing the request parameters
+     * @param sessionId the ID of the session to update
+     * @return [CustomerSessionResult]
+     *
+     * Note: **This feature is in beta. Its public API may change in future releases.**
+     */
+    suspend fun updateCustomerSession(
         customerSessionRequest: CustomerSessionRequest,
         sessionId: String
     ): CustomerSessionResult {
@@ -139,9 +156,9 @@ class ShopperInsightsClientV2 internal constructor(
     /**
      * Generates customer payment option recommendations.
      *
-     * @param customerSessionRequest Optional: a [CustomerSessionRequest] object containing the request parameters
-     * @param sessionId Optional: The shopper session ID
-     * @param customerRecommendationsCallback: a callback that returns the result of the
+     * @param customerSessionRequest an optional [CustomerSessionRequest] object containing the request parameters
+     * @param sessionId an optional shopper session ID
+     * @param customerRecommendationsCallback a callback that returns the result of the
      * customer recommendation generation
      *
      * Note: **This feature is in beta. It's public API may change in future releases.**
@@ -157,7 +174,16 @@ class ShopperInsightsClientV2 internal constructor(
         }
     }
 
-    private suspend fun generateCustomerRecommendations(
+    /**
+     * Generates customer payment option recommendations.
+     *
+     * @param customerSessionRequest an optional [CustomerSessionRequest] object containing the request parameters
+     * @param sessionId an optional shopper session ID
+     * @return [CustomerRecommendationsResult]
+     *
+     * Note: **This feature is in beta. It's public API may change in future releases.**
+     */
+    suspend fun generateCustomerRecommendations(
         customerSessionRequest: CustomerSessionRequest? = null,
         sessionId: String? = null,
     ): CustomerRecommendationsResult {
