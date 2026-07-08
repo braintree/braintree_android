@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <!-- Venmo toggle column -->
+            <!-- Venmo column -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -65,9 +65,15 @@
                         android:text="@string/white_button_color_option"
                         custom:backgroundTint="@color/toggle_stroke_color" />
                 </com.google.android.material.button.MaterialButtonToggleGroup>
+                <com.braintreepayments.api.uicomponents.VenmoButton
+                    android:id="@+id/venmo_payment_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    custom:buttonColor="blue" />
             </LinearLayout>
 
-            <!-- PayPal toggle column -->
+            <!-- PayPal column -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -116,15 +122,27 @@
                         android:text="@string/white_button_color_option"
                         custom:backgroundTint="@color/toggle_stroke_color" />
                 </com.google.android.material.button.MaterialButtonToggleGroup>
+                <com.braintreepayments.api.uicomponents.PayPalButton
+                    android:id="@+id/pp_payment_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    custom:buttonColor="blue" />
             </LinearLayout>
         </LinearLayout>
 
         <!-- ===== Card Fields section ===== -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/card_fields" />
+
         <com.braintreepayments.api.uicomponents.cardfields.CardFields
             android:id="@+id/card_fields"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp" />
+            android:layout_marginTop="4dp" />
 
         <Button
             android:id="@+id/pay_button"
@@ -140,23 +158,6 @@
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:text="@string/card_fields_pay" />
-
-        <!-- ===== Payment buttons section ===== -->
-        <com.braintreepayments.api.uicomponents.VenmoButton
-            android:id="@+id/venmo_payment_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="24dp"
-            custom:buttonColor="blue" />
-
-        <com.braintreepayments.api.uicomponents.PayPalButton
-            android:id="@+id/pp_payment_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"
-            custom:buttonColor="blue" />
 
     </LinearLayout>
 </ScrollView>

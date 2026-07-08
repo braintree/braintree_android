@@ -298,7 +298,9 @@ class VenmoButton @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(desiredWidth, desiredHeight)
+        val width = resolveSize(desiredWidth, widthMeasureSpec).coerceAtLeast(minDesiredWidth)
+        val height = resolveSize(desiredHeight, heightMeasureSpec)
+        setMeasuredDimension(width, height)
     }
 
     override fun onDraw(canvas: Canvas) {
