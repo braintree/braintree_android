@@ -197,7 +197,8 @@ internal class PayPalInternalClient(
     }
 
     private fun injectDeviceInfo(context: Context, requestBody: String): String {
-        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val activityManager =
+            context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return requestBody
         val memInfo = ActivityManager.MemoryInfo().also { activityManager.getMemoryInfo(it) }
         return JSONObject(requestBody).apply {
             val appSwitchContext = optJSONObject(PayPalRequest.APP_SWITCH_CONTEXT_KEY) ?: return@apply

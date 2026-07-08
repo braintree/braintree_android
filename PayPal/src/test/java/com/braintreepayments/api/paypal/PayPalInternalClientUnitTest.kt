@@ -1124,6 +1124,31 @@ class PayPalInternalClientUnitTest {
         }
 
     @Test
+    fun `sendRequest with app switch enabled and unavailable ActivityManager omits device_info`() =
+        runTest(testDispatcher) {
+            every { clientToken.bearer } returns "client-token-bearer"
+            every { merchantRepository.authorization } returns clientToken
+            every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+            every { deviceInspector.isPayPalInstalled() } returns true
+            every { resolvePayPalUseCase() } returns true
+            every { context.getSystemService(Context.ACTIVITY_SERVICE) } returns null
+
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+
+            val payPalRequest = PayPalCheckoutRequest("1.00", true).apply {
+                enablePayPalAppSwitch = true
+            }
+
+            sut.sendRequest(context, payPalRequest, configuration)
+
+            val actual = JSONObject(slot.captured)
+            val appSwitchContext = actual.getJSONObject("app_switch_context")
+            assertFalse(appSwitchContext.has("device_info"))
+            assertTrue(appSwitchContext.has("native_app"))
+        }
+
+    @Test
     fun `sendRequest with app switch disabled does not inject app_switch_context`() =
         runTest(testDispatcher) {
             every { clientToken.bearer } returns "client-token-bearer"
