@@ -22,7 +22,7 @@ jobs:
 
       - name: run tests
         id: run_tests
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@v2.38.0
         continue-on-error: true
         with:
           api-level: ${{ matrix.api-level }}
@@ -33,7 +33,7 @@ jobs:
 
       - name: retry tests
         if: steps.run_tests.outcome == 'failure'
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@v2.38.0
         with:
           api-level: ${{ matrix.api-level }}
           target: ${{ matrix.target }}
