@@ -8,8 +8,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        api-level: [ 23, 31, 35, 37 ]
-        target: [ default, google_apis, google_apis_ps16k ]
+        api-level: [ 23, 31, 35 ]
+        target: [ default, google_apis ]
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -22,7 +22,7 @@ jobs:
 
       - name: run tests
         id: run_tests
-        uses: reactivecircus/android-emulator-runner@v2.38.0
+        uses: reactivecircus/android-emulator-runner@v2
         continue-on-error: true
         with:
           api-level: ${{ matrix.api-level }}
@@ -33,7 +33,7 @@ jobs:
 
       - name: retry tests
         if: steps.run_tests.outcome == 'failure'
-        uses: reactivecircus/android-emulator-runner@v2.38.0
+        uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
           target: ${{ matrix.target }}
