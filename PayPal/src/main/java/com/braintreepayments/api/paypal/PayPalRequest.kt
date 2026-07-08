@@ -146,6 +146,7 @@ abstract class PayPalRequest internal constructor(
         internal const val APP_SWITCH_CONTEXT_KEY: String = "app_switch_context"
         internal const val NATIVE_APP_KEY: String = "native_app"
         internal const val APP_URL_KEY: String = "app_url"
+        internal const val MERCHANT_APP_RETURN_URL_KEY: String = "merchant_app_return_url"
         internal const val OS_VERSION_KEY: String = "os_version"
         internal const val OS_TYPE_KEY: String = "os_type"
         internal const val OS_TYPE_VALUE: String = "ANDROID"
