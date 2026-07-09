@@ -3,7 +3,7 @@
 ## unreleased
 
 * PayPal
-    * Collect and send device information (`model`, `memory_available_mb`, `memory_total_mb`) in PayPal Hermes requests when PayPal app switch is enabled, to improve app switch eligibility determination
+    * Collect device information to improve PayPal app switch eligibility when it's enabled
 
 ## 5.30.0 (2026-07-21)
 
