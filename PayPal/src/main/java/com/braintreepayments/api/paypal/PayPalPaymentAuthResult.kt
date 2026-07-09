@@ -10,24 +10,31 @@ sealed class PayPalPaymentAuthResult {
     /**
      * A successful result that should be passed to [PayPalClient.tokenize] to complete the flow.
      *
-     * Two internal construction paths exist:
+     * Three internal construction paths exist:
      * - URL return: wraps a [BrowserSwitchFinalResult.Success] from the normal browser switch flow
-     * - Auto-link: [autoLinkPending] is true when the App Link return failed but a stored billing
-     *   agreement session exists. [PayPalClient.tokenize] will tokenize the BA token directly
-     *   with BTGW.
+     * - Auto-link resolved: carries a [autoLinkNonce] already tokenized by the process-level
+     *   foreground trigger ([AppForegroundDetector]); [PayPalClient.tokenize] returns it directly.
+     * - Auto-link pending: [autoLinkPending] is true when the App Link return failed but a stored
+     *   billing agreement session exists. [PayPalClient.tokenize] will tokenize the BA token
+     *   directly with BTGW.
      */
     class Success private constructor(
         internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success?,
+        internal val autoLinkNonce: PayPalAccountNonce?,
         internal val autoLinkPending: Boolean
     ) : PayPalPaymentAuthResult() {
 
         /** URL return path — nonce will be resolved in [PayPalClient.tokenize]. */
         internal constructor(browserSwitchSuccess: BrowserSwitchFinalResult.Success) :
-            this(browserSwitchSuccess, false)
+            this(browserSwitchSuccess, null, false)
 
-        /** Auto-link path — [PayPalClient.tokenize] will tokenize the stored BA token. */
+        /** Auto-link resolved path — nonce already tokenized by the foreground trigger. */
+        internal constructor(autoLinkNonce: PayPalAccountNonce) :
+            this(null, autoLinkNonce, false)
+
+        /** Auto-link pending path — [PayPalClient.tokenize] will tokenize the stored BA token. */
         internal constructor(autoLinkPending: Boolean) :
-            this(null, autoLinkPending)
+            this(null, null, autoLinkPending)
     }
 
     /**

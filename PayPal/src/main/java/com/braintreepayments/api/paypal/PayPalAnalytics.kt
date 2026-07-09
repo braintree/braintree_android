@@ -33,6 +33,10 @@ internal object PayPalAnalytics {
     // Auto-Link via handle-return — completeRequest returned NoResult but a session is pending
     const val AUTO_LINK_HANDLE_RETURN_PENDING = "paypal:tokenize:auto-link:handle-return:pending"
 
+    // Auto-Link via foreground trigger — nonce pre-resolved by ProcessLifecycleOwner and
+    // delivered on handle-return
+    const val AUTO_LINK_HANDLE_RETURN_SUCCEEDED = "paypal:tokenize:auto-link:handle-return:succeeded"
+
     // Auto-Link via re-click — user re-taps PayPal before normal return completes
     const val AUTO_LINK_RECLICK_STARTED = "paypal:tokenize:auto-link:reclick:started"
     const val AUTO_LINK_RECLICK_SUCCEEDED = "paypal:tokenize:auto-link:reclick:succeeded"

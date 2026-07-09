@@ -193,6 +193,13 @@ class PayPalLauncher internal constructor(
      * [PayPalClient.tokenize] can tokenize the stored BA token directly with BTGW.
      */
     private fun handleNoResult(analyticsEventParams: AnalyticsEventParams): PayPalPaymentAuthResult {
+        // Foreground trigger may have already resolved the nonce — return it directly.
+        val resolvedNonce = pendingPaymentStore.autoLinkNonce
+        if (resolvedNonce != null) {
+            analyticsClient.sendEvent(PayPalAnalytics.AUTO_LINK_HANDLE_RETURN_SUCCEEDED, analyticsEventParams)
+            return PayPalPaymentAuthResult.Success(resolvedNonce)
+        }
+
         val session = pendingPaymentStore.pendingSession
         return if (session != null && !session.isExpired()) {
             analyticsClient.sendEvent(PayPalAnalytics.AUTO_LINK_HANDLE_RETURN_PENDING, analyticsEventParams)

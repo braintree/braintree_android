@@ -969,6 +969,23 @@ class PayPalClientUnitTest {
     }
 
     @Test
+    fun `tokenize with resolved auto-link nonce returns Success and clears store`() =
+        runTest(testDispatcher) {
+            val nonce = mockk<PayPalAccountNonce>(relaxed = true)
+            pendingPaymentStore.autoLinkNonce = nonce
+            pendingPaymentStore.pendingSession = autoLinkSession()
+            val braintreeClient = MockkBraintreeClientBuilder().build()
+            val sut = testPaypalClient(braintreeClient, mockk(relaxed = true), testDispatcher, this)
+
+            val result = sut.tokenize(PayPalPaymentAuthResult.Success(nonce))
+
+            assertTrue(result is PayPalResult.Success)
+            assertEquals(nonce, (result as PayPalResult.Success).nonce)
+            assertNull(pendingPaymentStore.pendingSession)
+            verify { braintreeClient.sendAnalyticsEvent(eq(PayPalAnalytics.TOKENIZATION_SUCCEEDED), any()) }
+        }
+
+    @Test
     fun `tokenize with autoLinkPending returns Failure when BTGW fails`() = runTest(testDispatcher) {
         coEvery { autoLinkTokenizeUseCase(any()) } throws BraintreeException("BTGW 422")
         pendingPaymentStore.pendingSession = autoLinkSession()
