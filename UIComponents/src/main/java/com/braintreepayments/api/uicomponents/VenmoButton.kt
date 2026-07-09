@@ -29,7 +29,7 @@ import com.braintreepayments.api.venmo.VenmoTokenizeCallback
  * This button provides a pre-styled Venmo button with configurable colors and handles
  * the complete Venmo payment flow.
  */
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "MagicNumber")
 class VenmoButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

@@ -30,7 +30,7 @@ import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_XML_
  * This button provides a pre-styled PayPal button with configurable colors and handles
  * the complete PayPal payment flow.
  */
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "MagicNumber")
 class PayPalButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
