@@ -1,5 +1,5 @@
 [versions]
-gradle = "8.9.1"
+androidGradlePlugin = "8.13.2"
 kotlinGradlePlugin = "1.8.0"
 gradleNexusPublish = "1.1.0"
 kotlin = "1.9.10"
@@ -75,7 +75,7 @@ kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", vers
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 
-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+gradle = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 browser-switch = { group = "com.braintreepayments.api", name = "browser-switch", version.ref = "browserSwitch" }
 cardinal = { group = "org.jfrog.cardinalcommerce.gradle", name = "cardinalmobilesdk", version.ref = "cardinal" }
 paypal-messages = { module = "com.paypal.messages:paypal-messages", version.ref = "paypalMessages" }
@@ -123,8 +123,8 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 google-pay-button = { module = "com.google.pay.button:compose-pay-button", version.ref = "googlePayButton" }
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "gradle" }
-android-library = { id = "com.android.library", version.ref = "gradle" }
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

@@ -31,6 +31,9 @@
 * Venmo
     * Expose `createPaymentAuthRequest` as a public suspend function
     * Expose `tokenize` as a public suspend function
+* BraintreeCore
+    * Update Android Gradle Plugin version to 8.13.2
+    * Update compileSdkVersion and targetSdkVersion to 37
   
 ## 5.29.0 (2026-06-30)
 * GooglePay
