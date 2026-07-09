@@ -2,6 +2,7 @@ package com.braintreepayments.api.uicomponents
 
 import android.content.Context
 import android.view.View.MeasureSpec
+import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import org.junit.Assert.assertEquals
@@ -76,27 +77,27 @@ class PayPalButtonTest {
     }
 
     @Test
-    fun onMeasure_withUnspecifiedSpec_usesDesiredSize() {
+    fun onMeasure_withUnspecifiedSpec_usesDesiredSizeClampedToMinimum() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val button = PayPalButton(context)
         val spec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
 
         button.measure(spec, spec)
 
-        assertEquals(desiredWidth(context), button.measuredWidth)
-        assertEquals(desiredHeight(context), button.measuredHeight)
+        assertEquals(maxOf(desiredWidth(context), minWidth(context)), button.measuredWidth)
+        assertEquals(maxOf(desiredHeight(context), minHeight(context)), button.measuredHeight)
     }
 
     @Test
-    fun onMeasure_withWrapContentSpec_usesDesiredSize() {
+    fun onMeasure_withWrapContentSpec_usesDesiredSizeClampedToMinimum() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val button = PayPalButton(context)
         val spec = MeasureSpec.makeMeasureSpec(LARGE_BOUND, MeasureSpec.AT_MOST)
 
         button.measure(spec, spec)
 
-        assertEquals(desiredWidth(context), button.measuredWidth)
-        assertEquals(desiredHeight(context), button.measuredHeight)
+        assertEquals(maxOf(desiredWidth(context), minWidth(context)), button.measuredWidth)
+        assertEquals(maxOf(desiredHeight(context), minHeight(context)), button.measuredHeight)
     }
 
     @Test
@@ -115,7 +116,7 @@ class PayPalButtonTest {
     }
 
     @Test
-    fun onMeasure_withExactWidthBelowMinimum_clampsToMinimumWidth() {
+    fun onMeasure_withExactWidthBelowMinimum_clampsToFitLogo() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val button = PayPalButton(context)
         val widthSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.EXACTLY)
@@ -123,7 +124,21 @@ class PayPalButtonTest {
 
         button.measure(widthSpec, heightSpec)
 
-        assertEquals(minDesiredWidth(context), button.measuredWidth)
+        assertEquals(minWidth(context), button.measuredWidth)
+        assertTrue(button.measuredWidth >= logo(context).intrinsicWidth)
+    }
+
+    @Test
+    fun onMeasure_withExactHeightBelowMinimum_clampsToFitLogo() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val button = PayPalButton(context)
+        val widthSpec = MeasureSpec.makeMeasureSpec(desiredWidth(context), MeasureSpec.EXACTLY)
+        val heightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.EXACTLY)
+
+        button.measure(widthSpec, heightSpec)
+
+        assertEquals(minHeight(context), button.measuredHeight)
+        assertTrue(button.measuredHeight >= logo(context).intrinsicHeight)
     }
 
     private fun desiredWidth(context: Context) =
@@ -132,8 +147,17 @@ class PayPalButtonTest {
     private fun desiredHeight(context: Context) =
         context.resources.getDimension(R.dimen.pay_button_height).toInt()
 
-    private fun minDesiredWidth(context: Context) =
-        context.resources.getDimension(R.dimen.pay_button_min_width).toInt()
+    private fun focusPadding(context: Context) =
+        context.resources.getDimension(R.dimen.pay_button_focus_padding).toInt()
+
+    private fun logo(context: Context) =
+        ContextCompat.getDrawable(context, R.drawable.paypal_logo_black)!!
+
+    private fun minWidth(context: Context) =
+        logo(context).intrinsicWidth + 4 * focusPadding(context)
+
+    private fun minHeight(context: Context) =
+        desiredHeight(context)
 
     companion object {
         private const val LARGE_BOUND = 2000

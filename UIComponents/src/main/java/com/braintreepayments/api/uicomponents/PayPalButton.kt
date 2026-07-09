@@ -46,7 +46,6 @@ class PayPalButton @JvmOverloads constructor(
     private var logoOffset = ppLogoOffset
     private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
     private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
-    private val minDesiredWidth = resources.getDimension(R.dimen.pay_button_min_width).toInt()
 
     /**
      * The PayPal client used to create payment auth requests and tokenize results.
@@ -74,6 +73,7 @@ class PayPalButton @JvmOverloads constructor(
         }
         setupBackground()
         applyStyle()
+        setMinimumSize()
     }
 
     /**
@@ -254,7 +254,6 @@ class PayPalButton @JvmOverloads constructor(
         val focusPadding = resources.getDimension(R.dimen.pay_button_focus_padding).toInt()
         layerDrawable.setLayerInset(1, focusPadding, focusPadding, focusPadding, focusPadding)
         background = layerDrawable
-        minWidth = minDesiredWidth
     }
 
     private fun applyStyle() {
@@ -306,9 +305,16 @@ class PayPalButton @JvmOverloads constructor(
         }
     }
 
+    private fun setMinimumSize() {
+        minimumHeight = desiredHeight
+        val logoDrawable = logo ?: return
+        val focusPadding = resources.getDimension(R.dimen.pay_button_focus_padding).toInt()
+        minimumWidth = logoDrawable.intrinsicWidth + 4 * focusPadding
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val width = resolveSize(desiredWidth, widthMeasureSpec).coerceAtLeast(minDesiredWidth)
-        val height = resolveSize(desiredHeight, heightMeasureSpec)
+        val width = resolveSize(desiredWidth, widthMeasureSpec).coerceAtLeast(minimumWidth)
+        val height = resolveSize(desiredHeight, heightMeasureSpec).coerceAtLeast(minimumHeight)
         setMeasuredDimension(width, height)
     }
 

@@ -43,7 +43,6 @@ class VenmoButton @JvmOverloads constructor(
 
     private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
     private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
-    private val minDesiredWidth = resources.getDimension(R.dimen.pay_button_min_width).toInt()
 
     /**
      * The Venmo client used to create payment auth requests and tokenize results.
@@ -71,6 +70,7 @@ class VenmoButton @JvmOverloads constructor(
         }
         setupBackground()
         applyStyle()
+        setMinimumSize()
     }
 
     /**
@@ -245,7 +245,6 @@ class VenmoButton @JvmOverloads constructor(
         val focusPadding = 2 * resources.getDimension(R.dimen.pay_button_focus_border).toInt()
         layerDrawable.setLayerInset(1, focusPadding, focusPadding, focusPadding, focusPadding)
         background = layerDrawable
-        minWidth = minDesiredWidth
     }
 
     private fun applyStyle() {
@@ -297,9 +296,16 @@ class VenmoButton @JvmOverloads constructor(
         }
     }
 
+    private fun setMinimumSize() {
+        minimumHeight = desiredHeight
+        val logoDrawable = logo ?: return
+        val focusPadding = 2 * resources.getDimension(R.dimen.pay_button_focus_border).toInt()
+        minimumWidth = logoDrawable.intrinsicWidth + 4 * focusPadding
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val width = resolveSize(desiredWidth, widthMeasureSpec).coerceAtLeast(minDesiredWidth)
-        val height = resolveSize(desiredHeight, heightMeasureSpec)
+        val width = resolveSize(desiredWidth, widthMeasureSpec).coerceAtLeast(minimumWidth)
+        val height = resolveSize(desiredHeight, heightMeasureSpec).coerceAtLeast(minimumHeight)
         setMeasuredDimension(width, height)
     }
 
