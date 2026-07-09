@@ -15,6 +15,8 @@ import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
+import com.braintreepayments.api.core.AppSwitchRepository
+import com.braintreepayments.api.core.usecase.GetAppSwitchUseCase
 import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
 import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
@@ -42,6 +44,7 @@ import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -68,6 +71,10 @@ class PayPalClientUnitTest {
         mockk<GetReturnLinkTypeUseCase>(relaxed = true)
     private val getReturnLinkUseCase: GetReturnLinkUseCase = mockk(relaxed = true)
     private val analyticsParamRepository: AnalyticsParamRepository = mockk(relaxed = true)
+    private val appSwitchRepository: AppSwitchRepository = mockk(relaxed = true)
+    private val getAppSwitchUseCase: GetAppSwitchUseCase = mockk(relaxed = true)
+    private val pendingPaymentStore = PendingPaymentStore()
+    private val autoLinkTokenizeUseCase: AutoLinkTokenizeUseCase = mockk(relaxed = true)
 
     @Before
     @Throws(JSONException::class)
@@ -935,21 +942,138 @@ class PayPalClientUnitTest {
         verify(exactly = 0) { payPalTokenizeCallback.onPayPalResult(any()) }
     }
 
+    // region auto-link
+
+    private fun autoLinkSession() = PendingPaymentStore.PendingSession(
+        baToken = "BA-XYZ",
+        clientMetadataId = "cmid",
+        merchantAccountId = null,
+        intent = "authorize",
+        paymentType = "billing-agreement"
+    )
+
+    @Test
+    fun `tokenize with autoLinkPending returns Success and clears store`() = runTest(testDispatcher) {
+        val nonce = mockk<PayPalAccountNonce>(relaxed = true)
+        coEvery { autoLinkTokenizeUseCase(any()) } returns nonce
+        pendingPaymentStore.pendingSession = autoLinkSession()
+        val braintreeClient = MockkBraintreeClientBuilder().build()
+        val sut = testPaypalClient(braintreeClient, mockk(relaxed = true), testDispatcher, this)
+
+        val result = sut.tokenize(PayPalPaymentAuthResult.Success(autoLinkPending = true))
+
+        assertTrue(result is PayPalResult.Success)
+        assertEquals(nonce, (result as PayPalResult.Success).nonce)
+        assertNull(pendingPaymentStore.pendingSession)
+        verify { braintreeClient.sendAnalyticsEvent(eq(PayPalAnalytics.TOKENIZATION_SUCCEEDED), any()) }
+    }
+
+    @Test
+    fun `tokenize with autoLinkPending returns Failure when BTGW fails`() = runTest(testDispatcher) {
+        coEvery { autoLinkTokenizeUseCase(any()) } throws BraintreeException("BTGW 422")
+        pendingPaymentStore.pendingSession = autoLinkSession()
+        val braintreeClient = MockkBraintreeClientBuilder().build()
+        val sut = testPaypalClient(braintreeClient, mockk(relaxed = true), testDispatcher, this)
+
+        val result = sut.tokenize(PayPalPaymentAuthResult.Success(autoLinkPending = true))
+
+        assertTrue(result is PayPalResult.Failure)
+        assertNull(pendingPaymentStore.pendingSession)
+        verify { braintreeClient.sendAnalyticsEvent(eq(PayPalAnalytics.AUTO_LINK_TOKENIZE_FAILED), any()) }
+    }
+
+    @Test
+    fun `tokenize with autoLinkPending returns Failure when no session`() = runTest(testDispatcher) {
+        val braintreeClient = MockkBraintreeClientBuilder().build()
+        val sut = testPaypalClient(braintreeClient, mockk(relaxed = true), testDispatcher, this)
+
+        val result = sut.tokenize(PayPalPaymentAuthResult.Success(autoLinkPending = true))
+
+        assertTrue(result is PayPalResult.Failure)
+    }
+
+    @Test
+    fun `createPaymentAuthRequest re-click delivers nonce via tokenizeCallback`() = runTest(testDispatcher) {
+        every { getAppSwitchUseCase() } returns true
+        val nonce = mockk<PayPalAccountNonce>(relaxed = true)
+        coEvery { autoLinkTokenizeUseCase(any()) } returns nonce
+        pendingPaymentStore.pendingSession = autoLinkSession()
+        val braintreeClient = MockkBraintreeClientBuilder().build()
+        val sut = testPaypalClient(braintreeClient, mockk(relaxed = true), testDispatcher, this)
+
+        sut.createPaymentAuthRequest(activity, PayPalVaultRequest(true), paymentAuthCallback, payPalTokenizeCallback)
+        advanceUntilIdle()
+
+        verify { payPalTokenizeCallback.onPayPalResult(any<PayPalResult.Success>()) }
+        verify(exactly = 0) { paymentAuthCallback.onPayPalPaymentAuthRequest(any()) }
+        assertNull(pendingPaymentStore.pendingSession)
+    }
+
+    @Test
+    fun `createPaymentAuthRequest re-click falls through to normal flow when no session`() =
+        runTest(testDispatcher) {
+            every { getAppSwitchUseCase() } returns true
+            val payPalVaultRequest = PayPalVaultRequest(true)
+            val paymentAuthRequest = PayPalPaymentAuthRequestParams(
+                payPalVaultRequest, null, "https://example.com/approval/url",
+                "sample-client-metadata-id", null, "https://example.com/success/url"
+            )
+            val payPalInternalClient =
+                MockkPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest).build()
+            val braintreeClient =
+                MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
+            val sut = testPaypalClient(braintreeClient, payPalInternalClient, testDispatcher, this)
+
+            sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback, payPalTokenizeCallback)
+            advanceUntilIdle()
+
+            verify { paymentAuthCallback.onPayPalPaymentAuthRequest(any()) }
+            verify(exactly = 0) { payPalTokenizeCallback.onPayPalResult(any()) }
+        }
+
+    @Test
+    fun `createPaymentAuthRequest stores pending session for app-switch vault flow`() =
+        runTest(testDispatcher) {
+            every { getAppSwitchUseCase() } returns true
+            every { getReturnLinkUseCase.invoke(any()) } returns AppLink("www.example.com".toUri())
+            val payPalVaultRequest = PayPalVaultRequest(true)
+            val paymentAuthRequest = PayPalPaymentAuthRequestParams(
+                payPalVaultRequest, null, "https://example.com/approval/url?ba_token=BA-STORED",
+                "sample-client-metadata-id", null, "https://example.com/success/url"
+            )
+            val payPalInternalClient =
+                MockkPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest).build()
+            val braintreeClient =
+                MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
+            val sut = testPaypalClient(braintreeClient, payPalInternalClient, testDispatcher, this)
+
+            sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback)
+            advanceUntilIdle()
+
+            assertEquals("BA-STORED", pendingPaymentStore.pendingSession?.baToken)
+        }
+
+    // endregion auto-link
+
     private fun testPaypalClient(
         braintreeClient: BraintreeClient,
         payPalInternalClient: PayPalInternalClient,
         dispatcher: CoroutineDispatcher = Dispatchers.Main,
         scope: CoroutineScope = CoroutineScope(dispatcher)
     ): PayPalClient = PayPalClient(
-        braintreeClient,
-        payPalInternalClient,
-        merchantRepository,
-        getDefaultAppUseCase,
-        getAppLinksCompatibleBrowserUseCase,
-        getReturnLinkTypeUseCase,
-        getReturnLinkUseCase,
-        analyticsParamRepository,
-        dispatcher,
-        scope
+        braintreeClient = braintreeClient,
+        internalPayPalClient = payPalInternalClient,
+        merchantRepository = merchantRepository,
+        getDefaultAppUseCase = getDefaultAppUseCase,
+        getAppLinksCompatibleBrowserUseCase = getAppLinksCompatibleBrowserUseCase,
+        getReturnLinkTypeUseCase = getReturnLinkTypeUseCase,
+        getReturnLinkUseCase = getReturnLinkUseCase,
+        analyticsParamRepository = analyticsParamRepository,
+        appSwitchRepository = appSwitchRepository,
+        getAppSwitchUseCase = getAppSwitchUseCase,
+        pendingPaymentStore = pendingPaymentStore,
+        autoLinkTokenizeUseCase = autoLinkTokenizeUseCase,
+        dispatcher = dispatcher,
+        coroutineScope = scope
     )
 }

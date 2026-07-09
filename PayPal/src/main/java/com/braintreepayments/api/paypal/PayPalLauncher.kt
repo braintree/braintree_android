@@ -25,7 +25,8 @@ class PayPalLauncher internal constructor(
     private val resolvePayPalUseCase: ResolvePayPalUseCase =
         ResolvePayPalUseCase(MerchantRepository.instance),
     lazyAnalyticsClient: Lazy<AnalyticsClient>,
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
+    private val pendingPaymentStore: PendingPaymentStore = PendingPaymentStore.instance
 ) {
     /**
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
@@ -166,6 +167,8 @@ class PayPalLauncher internal constructor(
             val browserSwitchResult = browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)
         ) {
             is BrowserSwitchFinalResult.Success -> {
+                // URL return is authoritative: it supersedes any pending auto-link session.
+                pendingPaymentStore.clear()
                 analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED, analyticsEventParams)
                 PayPalPaymentAuthResult.Success(browserSwitchResult)
             }
@@ -180,10 +183,23 @@ class PayPalLauncher internal constructor(
                 PayPalPaymentAuthResult.Failure(browserSwitchResult.error)
             }
 
-            is BrowserSwitchFinalResult.NoResult -> {
-                analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, analyticsEventParams)
-                PayPalPaymentAuthResult.NoResult
-            }
+            is BrowserSwitchFinalResult.NoResult -> handleNoResult(analyticsEventParams)
+        }
+    }
+
+    /**
+     * No URL return arrived — the deterministic "manual return / App Link failed" signal.
+     * If a valid billing agreement session is pending, route to auto-link so
+     * [PayPalClient.tokenize] can tokenize the stored BA token directly with BTGW.
+     */
+    private fun handleNoResult(analyticsEventParams: AnalyticsEventParams): PayPalPaymentAuthResult {
+        val session = pendingPaymentStore.pendingSession
+        return if (session != null && !session.isExpired()) {
+            analyticsClient.sendEvent(PayPalAnalytics.AUTO_LINK_HANDLE_RETURN_PENDING, analyticsEventParams)
+            PayPalPaymentAuthResult.Success(autoLinkPending = true)
+        } else {
+            analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, analyticsEventParams)
+            PayPalPaymentAuthResult.NoResult
         }
     }
 
