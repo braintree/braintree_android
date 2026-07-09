@@ -31,6 +31,9 @@
 * Venmo
     * Expose `createPaymentAuthRequest` as a public suspend function
     * Expose `tokenize` as a public suspend function
+* BraintreeCore
+    * Update Android Gradle Plugin version to 8.13.2
+    * Update compileSdkVersion and targetSdkVersion to 37
 * UIComponents
     * `PayPalButton` and `VenmoButton` now honor an explicit `layout_width`/`layout_height` or `match_parent` but defaults to the standard size for `wrap_content`
         * Note: if your layout previously set an explicit size or `match_parent` on these buttons, the button will now render at that size
