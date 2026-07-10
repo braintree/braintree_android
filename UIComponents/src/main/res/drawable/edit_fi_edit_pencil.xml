@@ -1,0 +1,15 @@
+<!--
+  Edit pencil icon for the EditFiComponent — outline pencil, exported from the Figma "edit" node
+  (PDS v6). The hollow (outline) look comes from the two subpaths + evenOdd fill. Tinted at render
+  time via EditFiComponentStyle.editIconTint (LLD §12.1).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="18dp"
+    android:height="18dp"
+    android:viewportWidth="18"
+    android:viewportHeight="18">
+    <path
+        android:fillColor="#000000"
+        android:fillType="evenOdd"
+        android:pathData="M2.35569,10.8594L1.4999,16.4851L7.12557,15.6293L16.4994,6.25252L11.7475,1.49965L2.35569,10.8594ZM14.3779,6.25252L6.40974,14.2206L3.29047,14.6945L3.75936,11.6103L11.7475,3.62214L14.3779,6.25252Z" />
+</vector>

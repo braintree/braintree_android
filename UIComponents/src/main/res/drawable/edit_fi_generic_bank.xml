@@ -1,0 +1,29 @@
+<!--
+  Generic-bank fallback glyph for the EditFiComponent FI chip (design: "Generic Bank (Fallback)").
+  Institution building: pediment roof + columns + base. Drawn slightly inset within the 28x20 box so
+  it reads a little smaller than full-bleed brand art, matching the Figma fallback tile. Untinted (dark).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="28dp"
+    android:height="20dp"
+    android:viewportWidth="28"
+    android:viewportHeight="20">
+    <!-- roof -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M14,2.5 L23,8 L5,8 Z" />
+    <!-- columns -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M6.8,9 L9,9 L9,15.5 L6.8,15.5 Z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M12.9,9 L15.1,9 L15.1,15.5 L12.9,15.5 Z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M19,9 L21.2,9 L21.2,15.5 L19,15.5 Z" />
+    <!-- base -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M5,16 L23,16 L23,17.8 L5,17.8 Z" />
+</vector>

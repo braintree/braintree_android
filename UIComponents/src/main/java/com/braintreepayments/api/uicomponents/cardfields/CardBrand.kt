@@ -167,6 +167,17 @@ internal enum class CardBrand(
         }
 
     companion object {
+        /**
+         * Resolves a [CardBrand] from a brand name by matching the enum name case- and
+         * separator-insensitively (e.g. "Visa" → [VISA], "Union Pay" → [UNIONPAY]), returning
+         * [UNKNOWN] when unrecognized. Mirrors [resolveBrand] (number-based) and the SDK's
+         * enum-name matching convention (see `BinType.fromString`).
+         */
+        fun fromDisplayName(name: String?): CardBrand {
+            val normalized = name?.lowercase()?.filter { it.isLetterOrDigit() } ?: return UNKNOWN
+            return entries.firstOrNull { it.name.lowercase().replace("_", "") == normalized } ?: UNKNOWN
+        }
+
         fun resolveBrand(cardNumber: String): CardBrand {
             val matches = detect(cardNumber)
             return when {

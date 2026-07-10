@@ -29,4 +29,20 @@
 
     <dimen name="cvv_overlay_elevation">8dp</dimen>
     <dimen name="cvv_overlay_max_width">261dp</dimen>
+
+    <!-- EditFiComponent (values from the "Edit FI Chip" Figma node) -->
+    <dimen name="edit_fi_chip_corner_radius">6dp</dimen>
+    <dimen name="edit_fi_chip_padding_horizontal">8dp</dimen>
+    <dimen name="edit_fi_chip_padding_vertical">5dp</dimen>
+    <dimen name="edit_fi_icon_width">28dp</dimen>
+    <dimen name="edit_fi_icon_height">20dp</dimen>
+    <dimen name="edit_fi_icon_label_spacing">4dp</dimen>
+    <dimen name="edit_fi_label_edit_spacing">8dp</dimen>
+    <dimen name="edit_fi_label_max_width">150dp</dimen>
+    <dimen name="edit_fi_edit_touch_target">24dp</dimen>
+    <dimen name="edit_fi_edit_icon_size">18dp</dimen>
+    <dimen name="edit_fi_warning_icon_size">16dp</dimen>
+    <dimen name="edit_fi_shimmer_label_width">90dp</dimen>
+    <dimen name="edit_fi_shimmer_label_height">16dp</dimen>
+    <dimen name="edit_fi_shimmer_corner_radius">4dp</dimen>
 </resources>

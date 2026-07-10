@@ -1,0 +1,17 @@
+<!--
+  Warning ("critical") glyph for the EditFiComponent add-card chip (empty/disallowed
+  wallet state). Amber triangle with an exclamation cut-out; the tint is applied at
+  render time from EditFiComponentStyle.warningIconTint. Replace with the exact PDS
+  "critical" asset when available.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="#AA7100">
+    <path
+        android:fillColor="#AA7100"
+        android:fillType="evenOdd"
+        android:pathData="M1,21 L23,21 L12,2 L1,21 Z M13,18 L11,18 L11,16 L13,16 L13,18 Z M13,14 L11,14 L11,10 L13,10 L13,14 Z" />
+</vector>

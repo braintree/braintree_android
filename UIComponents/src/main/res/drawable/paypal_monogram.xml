@@ -1,0 +1,19 @@
+<!--
+  PayPal monogram (full-color "PP" mark). Converted from PayPal-Monogram-FullColor-RGB.svg.
+  Full color (rendered untinted). Used as the PayPal-product FI tile icon.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="19dp"
+    android:height="22dp"
+    android:viewportWidth="19"
+    android:viewportHeight="22">
+    <path
+        android:fillColor="#002991"
+        android:pathData="M15.3859,4.99858C15.3859,7.6905 12.9015,10.8665 9.14266,10.8665H5.52215L5.34433,11.9877L4.49971,17.3864H0L2.70674,0H9.99716C12.452,0 14.3833,1.36819 15.0945,3.26982C15.297,3.80821 15.3958,4.39104 15.3859,4.99858Z" />
+    <path
+        android:fillColor="#60CDFF"
+        android:pathData="M17.9807,9.99711C17.4819,13.0101 14.8887,15.213 11.8214,15.213H9.3073L8.26017,21.7329H3.78516L4.50136,17.3863L5.34598,11.9877L5.52379,10.8664H9.14431C12.8982,10.8664 15.3876,7.69046 15.3876,4.99854C17.2349,5.95182 18.3117,7.87815 17.9807,9.99711Z" />
+    <path
+        android:fillColor="#008CFF"
+        android:pathData="M15.3872,4.99867C14.6118,4.59364 13.6733,4.34668 12.6509,4.34668H6.54587L5.52344,10.8666H9.14395C12.8978,10.8666 15.3872,7.69059 15.3872,4.99867Z" />
+</vector>

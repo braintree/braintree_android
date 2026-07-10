@@ -321,4 +321,43 @@ class CardBrandUnitTest {
     }
 
     // endregion
+
+    // region fromDisplayName
+
+    @Test
+    fun `fromDisplayName returns VISA for Visa`() {
+        assertEquals(CardBrand.VISA, CardBrand.fromDisplayName("Visa"))
+    }
+
+    @Test
+    fun `fromDisplayName is case insensitive`() {
+        assertEquals(CardBrand.MASTERCARD, CardBrand.fromDisplayName("MASTERCARD"))
+    }
+
+    @Test
+    fun `fromDisplayName ignores separators`() {
+        assertEquals(CardBrand.UNIONPAY, CardBrand.fromDisplayName("Union Pay"))
+    }
+
+    @Test
+    fun `fromDisplayName resolves DINERS_CLUB from Diners Club`() {
+        assertEquals(CardBrand.DINERS_CLUB, CardBrand.fromDisplayName("Diners Club"))
+    }
+
+    @Test
+    fun `fromDisplayName returns UNKNOWN for null`() {
+        assertEquals(CardBrand.UNKNOWN, CardBrand.fromDisplayName(null))
+    }
+
+    @Test
+    fun `fromDisplayName returns UNKNOWN for empty`() {
+        assertEquals(CardBrand.UNKNOWN, CardBrand.fromDisplayName(""))
+    }
+
+    @Test
+    fun `fromDisplayName returns UNKNOWN for unrecognized name`() {
+        assertEquals(CardBrand.UNKNOWN, CardBrand.fromDisplayName("SomeBank"))
+    }
+
+    // endregion
 }
