@@ -92,7 +92,7 @@ class VenmoButtonTest {
     fun onMeasure_withWrapContentSpec_usesDesiredSize() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val button = VenmoButton(context)
-        val spec = MeasureSpec.makeMeasureSpec(LARGE_BOUND, MeasureSpec.AT_MOST)
+        val spec = MeasureSpec.makeMeasureSpec(LARGE_BUTTON_SIZE, MeasureSpec.AT_MOST)
 
         button.measure(spec, spec)
 
@@ -104,8 +104,8 @@ class VenmoButtonTest {
     fun onMeasure_withExactSpec_usesProvidedSize() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val button = VenmoButton(context)
-        val exactWidth = desiredWidth(context) + LARGE_BOUND
-        val exactHeight = desiredHeight(context) + LARGE_BOUND
+        val exactWidth = desiredWidth(context) + LARGE_BUTTON_SIZE
+        val exactHeight = desiredHeight(context) + LARGE_BUTTON_SIZE
         val widthSpec = MeasureSpec.makeMeasureSpec(exactWidth, MeasureSpec.EXACTLY)
         val heightSpec = MeasureSpec.makeMeasureSpec(exactHeight, MeasureSpec.EXACTLY)
 
@@ -160,6 +160,6 @@ class VenmoButtonTest {
         desiredHeight(context)
 
     companion object {
-        private const val LARGE_BOUND = 2000
+        private const val LARGE_BUTTON_SIZE = 2000
     }
 }
