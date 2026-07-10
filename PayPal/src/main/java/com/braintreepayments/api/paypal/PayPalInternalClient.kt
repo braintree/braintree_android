@@ -201,7 +201,8 @@ internal class PayPalInternalClient(
             context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return requestBody
         val memInfo = ActivityManager.MemoryInfo().also { activityManager.getMemoryInfo(it) }
         return JSONObject(requestBody).apply {
-            val appSwitchContext = optJSONObject(PayPalRequest.APP_SWITCH_CONTEXT_KEY) ?: return@apply
+            val appSwitchContext = optJSONObject(PayPalRequest.APP_SWITCH_CONTEXT_KEY)
+                ?: JSONObject().also { put(PayPalRequest.APP_SWITCH_CONTEXT_KEY, it) }
             appSwitchContext.put(PayPalRequest.DEVICE_INFO_KEY, JSONObject().apply {
                 put(PayPalRequest.DEVICE_MODEL_KEY, Build.MODEL)
                 put(PayPalRequest.MEMORY_AVAILABLE_MB_KEY, (memInfo.availMem / BYTES_PER_MB).toInt())

@@ -231,11 +231,9 @@ class PayPalCheckoutRequestUnitTest {
         assertNotNull(jsonObject.getString("os_version"))
         assertEquals(appLink, jsonObject.getString("merchant_app_return_url"))
 
-        // nested app_switch_context parameters
-        val nativeApp = jsonObject.getJSONObject("app_switch_context").getJSONObject("native_app")
-        assertEquals("ANDROID", nativeApp.getString("os_type"))
-        assertEquals(appLink, nativeApp.getString("app_url"))
-        assertNotNull(nativeApp.getString("os_version"))
+        // app_switch_context is no longer built here; device_info is injected later by
+        // PayPalInternalClient, so the request body itself carries no app_switch_context.
+        assertFalse(jsonObject.has("app_switch_context"))
     }
 
     @OptIn(ExperimentalBetaApi::class)

@@ -1116,11 +1116,6 @@ class PayPalInternalClientUnitTest {
             assertTrue(deviceInfo.has("model"))
             assertEquals(350, deviceInfo.getInt("memory_available_mb"))
             assertEquals(4096, deviceInfo.getInt("memory_total_mb"))
-
-            val nativeApp = appSwitchContext.getJSONObject("native_app")
-            assertEquals("ANDROID", nativeApp.getString("os_type"))
-            assertNotNull(nativeApp.getString("os_version"))
-            assertNotNull(nativeApp.getString("app_url"))
         }
 
     @Test
@@ -1143,9 +1138,9 @@ class PayPalInternalClientUnitTest {
             sut.sendRequest(context, payPalRequest, configuration)
 
             val actual = JSONObject(slot.captured)
-            val appSwitchContext = actual.getJSONObject("app_switch_context")
-            assertFalse(appSwitchContext.has("device_info"))
-            assertTrue(appSwitchContext.has("native_app"))
+            // With native_app removed, app_switch_context is only created when device_info is
+            // injected; an unavailable ActivityManager means it is never added.
+            assertFalse(actual.has("app_switch_context"))
         }
 
     @Test
@@ -1197,11 +1192,6 @@ class PayPalInternalClientUnitTest {
             assertTrue(deviceInfo.has("model"))
             assertEquals(512, deviceInfo.getInt("memory_available_mb"))
             assertEquals(8192, deviceInfo.getInt("memory_total_mb"))
-
-            val nativeApp = appSwitchContext.getJSONObject("native_app")
-            assertEquals("ANDROID", nativeApp.getString("os_type"))
-            assertNotNull(nativeApp.getString("os_version"))
-            assertNotNull(nativeApp.getString("app_url"))
         }
 
     @Test
