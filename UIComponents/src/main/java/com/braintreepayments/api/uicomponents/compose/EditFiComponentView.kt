@@ -4,6 +4,7 @@ package com.braintreepayments.api.uicomponents.compose
 
 import androidx.annotation.DimenRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,9 +24,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,7 +40,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.braintreepayments.api.uicomponents.EditFiComponentStyle
 import com.braintreepayments.api.uicomponents.EditFiDisplayState
 import com.braintreepayments.api.uicomponents.FiSummary
@@ -57,8 +58,9 @@ import com.braintreepayments.api.uicomponents.R
  * The Pay Later credit-messaging row is a separate view (its own PR) and is not part of this
  * component; embedding the two together is a later pass.
  *
- * @param state      what to render — loading skeleton, an FI chip, the no-FI fallback, or the
- * add-card prompt.
+ * @param state      what to render — loading skeleton, an FI chip, the no-FI fallback, the add-card
+ * prompt, or nothing (on [EditFiDisplayState.Error]).
+ * @param editContentDescription accessibility label for the edit pencil (backend-driven copy).
  * @param modifier   Compose modifier for the outer container.
  * @param style      theming for the chip (see [EditFiComponentStyle]).
  * @param onEditClick invoked when the buyer taps the edit pencil.
@@ -68,24 +70,68 @@ import com.braintreepayments.api.uicomponents.R
 @Composable
 fun EditFiComponentView(
     state: EditFiDisplayState,
+    editContentDescription: String,
     modifier: Modifier = Modifier,
     style: EditFiComponentStyle = EditFiComponentStyle(),
     onEditClick: () -> Unit = {},
     onAddCardClick: () -> Unit = {},
 ) {
-    Box(modifier = modifier) {
-        when (state) {
-            is EditFiDisplayState.Loading ->
+    // Network error / API failure — the component renders nothing (blank); it simply doesn't load.
+    if (state is EditFiDisplayState.Error) return
+
+    val labelSpacing = dimensionResource(R.dimen.edit_fi_paypal_label_spacing)
+
+    // One component: "PayPal" label + the FI chip (card art + ••number + edit pencil). The PayPal
+    // brand Mark (logo) is a SEPARATE view (see [PayPalMark]); the messaging row is separate too —
+    // both embedded with this component in the final PR.
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        if (state is EditFiDisplayState.Loading) {
+            // While the FI loads, the WHOLE component shimmers — including the "PayPal" label — so
+            // nothing real appears until the fetch succeeds.
+            val shimmerShape = RoundedCornerShape(dimensionResource(R.dimen.edit_fi_shimmer_corner_radius))
+            ShimmerBox(
+                modifier = Modifier
+                    .width(dimensionResource(R.dimen.edit_fi_paypal_label_shimmer_width))
+                    .height(dimensionResource(R.dimen.edit_fi_shimmer_label_height)),
+                shape = shimmerShape,
+            )
+            Spacer(modifier = Modifier.width(labelSpacing))
+            Box(modifier = Modifier.weight(1f)) {
                 LoadingChip(style = style)
+            }
+        } else {
+            // Success states: the real "PayPal" label + the FI chip.
+            Text(
+                text = stringResource(R.string.edit_fi_paypal_label),
+                color = colorResource(R.color.edit_fi_paypal_label),
+                fontSize = spDimensionResource(R.dimen.edit_fi_paypal_label_text_size),
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(modifier = Modifier.width(labelSpacing))
+            Box(modifier = Modifier.weight(1f)) {
+                when (state) {
+                    is EditFiDisplayState.Content ->
+                        FiChip(
+                            fiSummary = state.fiSummary,
+                            style = style,
+                            editContentDescription = editContentDescription,
+                            onEditClick = onEditClick,
+                        )
 
-            is EditFiDisplayState.Content ->
-                FiChip(fiSummary = state.fiSummary, style = style, onEditClick = onEditClick)
+                    is EditFiDisplayState.NoFi ->
+                        NoFiChip(
+                            buyerEmail = state.buyerEmail,
+                            style = style,
+                            editContentDescription = editContentDescription,
+                            onEditClick = onEditClick,
+                        )
 
-            is EditFiDisplayState.NoFi ->
-                NoFiChip(buyerEmail = state.buyerEmail, style = style, onEditClick = onEditClick)
+                    is EditFiDisplayState.AddCard ->
+                        AddCardChip(content = state, style = style, onAddCardClick = onAddCardClick)
 
-            is EditFiDisplayState.AddCard ->
-                AddCardChip(style = style, onAddCardClick = onAddCardClick)
+                    else -> Unit // Loading is handled in the branch above
+                }
+            }
         }
     }
 }
@@ -99,17 +145,18 @@ fun EditFiComponentView(
  * Long labels (e.g. "PayPal Cashback Mastercard") ellipsize at `edit_fi_label_max_width`.
  */
 @Composable
-private fun FiChip(fiSummary: FiSummary, style: EditFiComponentStyle, onEditClick: () -> Unit) {
-    // PayPal products use the "Mark" box (45x30dp, monogram centered); card/bank art uses the
-    // standard 28x20dp tile box.
-    val isPayPalMark = fiSummary.type == FiType.PAYPAL
-    val iconWidth = dimensionResource(
-        if (isPayPalMark) R.dimen.edit_fi_paypal_mark_width else R.dimen.edit_fi_icon_width,
-    )
-    val iconHeight = dimensionResource(
-        if (isPayPalMark) R.dimen.edit_fi_paypal_mark_height else R.dimen.edit_fi_icon_height,
-    )
+private fun FiChip(
+    fiSummary: FiSummary,
+    style: EditFiComponentStyle,
+    editContentDescription: String,
+    onEditClick: () -> Unit,
+) {
+    // The chip's icon is the funding-instrument art (card/bank/PayPal-product), drawn in the
+    // standard 28x20dp tile box. The PayPal brand Mark (45x30) is a separate view — see [PayPalMark].
+    val iconWidth = dimensionResource(R.dimen.edit_fi_icon_width)
+    val iconHeight = dimensionResource(R.dimen.edit_fi_icon_height)
     val iconLabelSpacing = dimensionResource(R.dimen.edit_fi_icon_label_spacing)
+    val iconShape = RoundedCornerShape(dimensionResource(R.dimen.edit_fi_icon_corner_radius))
     val labelTextSize = spDimensionResource(R.dimen.edit_fi_label_text_size)
     val labelMaxWidth = dimensionResource(R.dimen.edit_fi_label_max_width)
     val labelEditSpacing = dimensionResource(R.dimen.edit_fi_label_edit_spacing)
@@ -118,14 +165,22 @@ private fun FiChip(fiSummary: FiSummary, style: EditFiComponentStyle, onEditClic
         // Pay Later tiles (Pay in 4 / Pay Monthly) show the product name only — no icon.
         fiSummary.iconRes?.let { iconRes ->
             // Image + ContentScale.Fit so any art aspect (landscape card art, portrait PayPal
-            // monogram) fits the icon box without distortion, centered within it.
+            // monogram) fits the icon box without distortion, centered within it. Rounded #CCC
+            // border matches the PayPal Mark box (Figma "Funding Icon" node); clip keeps the art
+            // inside the rounded corners.
             Image(
                 painter = painterResource(iconRes),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .width(iconWidth)
-                    .height(iconHeight),
+                    .height(iconHeight)
+                    .clip(iconShape)
+                    .border(
+                        width = dimensionResource(R.dimen.edit_fi_icon_border_width),
+                        color = colorResource(R.color.edit_fi_icon_border),
+                        shape = iconShape,
+                    ),
             )
             Spacer(modifier = Modifier.width(iconLabelSpacing))
         }
@@ -139,13 +194,18 @@ private fun FiChip(fiSummary: FiSummary, style: EditFiComponentStyle, onEditClic
             modifier = Modifier.widthIn(max = labelMaxWidth),
         )
         Spacer(modifier = Modifier.width(labelEditSpacing))
-        EditButton(style = style, onClick = onEditClick)
+        EditButton(style = style, contentDescription = editContentDescription, onClick = onEditClick)
     }
 }
 
 /** The no-FI fallback chip: "<buyer email> | Pay in Full" [ edit pencil ]. Fills width to ellipsize. */
 @Composable
-private fun NoFiChip(buyerEmail: String, style: EditFiComponentStyle, onEditClick: () -> Unit) {
+private fun NoFiChip(
+    buyerEmail: String,
+    style: EditFiComponentStyle,
+    editContentDescription: String,
+    onEditClick: () -> Unit,
+) {
     val labelTextSize = spDimensionResource(R.dimen.edit_fi_label_text_size)
     val labelEditSpacing = dimensionResource(R.dimen.edit_fi_label_edit_spacing)
 
@@ -163,16 +223,21 @@ private fun NoFiChip(buyerEmail: String, style: EditFiComponentStyle, onEditClic
             modifier = Modifier.weight(1f),
         )
         Spacer(modifier = Modifier.width(labelEditSpacing))
-        EditButton(style = style, onClick = onEditClick)
+        EditButton(style = style, contentDescription = editContentDescription, onClick = onEditClick)
     }
 }
 
 /**
- * The empty/disallowed-wallet chip: "⚠ To continue, add a card" on an amber background, where
- * "add a card" is styled as a link. The whole chip is the tap target ([onAddCardClick]).
+ * The empty/disallowed-wallet chip: "⚠ <message><actionLabel>" on an amber background, where
+ * [EditFiDisplayState.AddCard.actionLabel] is styled as an underlined link. The whole chip is the
+ * tap target ([onAddCardClick]). Copy is backend-driven (carried on [content]).
  */
 @Composable
-private fun AddCardChip(style: EditFiComponentStyle, onAddCardClick: () -> Unit) {
+private fun AddCardChip(
+    content: EditFiDisplayState.AddCard,
+    style: EditFiComponentStyle,
+    onAddCardClick: () -> Unit,
+) {
     val cornerRadius = dimensionResource(R.dimen.edit_fi_chip_corner_radius)
     val paddingHorizontal = dimensionResource(R.dimen.edit_fi_chip_padding_horizontal)
     val paddingVertical = dimensionResource(R.dimen.edit_fi_chip_padding_vertical)
@@ -201,14 +266,14 @@ private fun AddCardChip(style: EditFiComponentStyle, onAddCardClick: () -> Unit)
             Spacer(modifier = Modifier.width(iconLabelSpacing))
             Text(
                 text = buildAnnotatedString {
-                    append(stringResource(R.string.edit_fi_add_card_prefix))
+                    append(content.message)
                     withStyle(
                         SpanStyle(
                             fontWeight = FontWeight.Medium,
                             textDecoration = TextDecoration.Underline,
                         ),
                     ) {
-                        append(stringResource(R.string.edit_fi_add_card_action))
+                        append(content.actionLabel)
                     }
                 },
                 color = style.primaryTextColor,
@@ -271,7 +336,7 @@ private fun Chip(style: EditFiComponentStyle, modifier: Modifier = Modifier, con
 }
 
 @Composable
-private fun EditButton(style: EditFiComponentStyle, onClick: () -> Unit) {
+private fun EditButton(style: EditFiComponentStyle, contentDescription: String, onClick: () -> Unit) {
     val touchTarget = dimensionResource(R.dimen.edit_fi_edit_touch_target)
     val iconSize = dimensionResource(R.dimen.edit_fi_edit_icon_size)
 
@@ -283,7 +348,7 @@ private fun EditButton(style: EditFiComponentStyle, onClick: () -> Unit) {
     ) {
         Icon(
             painter = painterResource(R.drawable.edit_fi_edit_pencil),
-            contentDescription = stringResource(R.string.edit_fi_edit_content_description),
+            contentDescription = contentDescription,
             tint = style.editIconTint,
             modifier = Modifier.size(iconSize),
         )
@@ -335,37 +400,25 @@ private fun PreviewEditFiAllTagVersions() {
             EditFiDisplayState.Content(FiSummary(last4 = "3339", type = FiType.BANK)),
             EditFiDisplayState.NoFi(buyerEmail = "alex.burgos@gmail.com"),
             EditFiDisplayState.NoFi(buyerEmail = "a.very.long.buyer.email.address@somelongdomainname.example.com"),
-            EditFiDisplayState.AddCard,
+            EditFiDisplayState.AddCard(message = "To continue, ", actionLabel = "add a card"),
+            EditFiDisplayState.Error,
         )
         tags.forEach { tag ->
-            EditFiComponentView(state = tag)
+            EditFiComponentView(state = tag, editContentDescription = "Edit funding instrument")
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
 
-/**
- * Recreates the View/Edit FI design in context: PayPal label → FI chip. The PayPal logo/label
- * chrome here is PREVIEW-ONLY (it belongs to the merchant's payment sheet); the component itself is
- * only the FI chip.
- */
-@Preview(name = "In context (PayPal row)", showBackground = true, widthDp = 420)
+/** The component: "PayPal" label + FI chip (card art + ••number + edit pencil). */
+@Preview(name = "PayPal + FI chip", showBackground = true, widthDp = 420)
 @Composable
-private fun PreviewEditFiInContext() {
-    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            painter = painterResource(R.drawable.paypal_monogram),
-            contentDescription = "PayPal",
-            tint = Color.Unspecified,
-            modifier = Modifier.height(24.dp).width(21.dp),
-        )
-        Spacer(modifier = Modifier.width(10.dp))
-        Text(text = "PayPal", color = Color(0xFF111111), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.width(10.dp))
-        EditFiComponentView(
-            state = EditFiDisplayState.Content(FiSummary(brand = "Visa", last4 = "3339", type = FiType.CARD)),
-        )
-    }
+private fun PreviewEditFiPayPalRow() {
+    EditFiComponentView(
+        modifier = Modifier.padding(16.dp),
+        state = EditFiDisplayState.Content(FiSummary(brand = "Visa", last4 = "3339", type = FiType.CARD)),
+        editContentDescription = "Edit funding instrument",
+    )
 }
 
 // endregion

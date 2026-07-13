@@ -35,4 +35,14 @@
 
     <!-- Base fill for the shared ShimmerBox loading skeleton (alpha animated at runtime). -->
     <color name="shimmer">#E4E7EC</color>
+
+    <!-- PayPal brand "Mark" box (Figma "Mark" node). -->
+    <color name="paypal_mark_border">#CCCCCC</color>
+    <color name="paypal_mark_background">#FFFFFF</color>
+
+    <!-- "PayPal" brand label shown before the FI chip. -->
+    <color name="edit_fi_paypal_label">#222222</color>
+
+    <!-- #CCC border around the funding-instrument icon (Figma "Funding Icon" node), matching the Mark. -->
+    <color name="edit_fi_icon_border">#CCCCCC</color>
 </resources>

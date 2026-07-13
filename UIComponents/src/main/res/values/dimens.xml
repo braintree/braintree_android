@@ -36,11 +36,16 @@
     <dimen name="edit_fi_chip_padding_vertical">5dp</dimen>
     <dimen name="edit_fi_icon_width">28dp</dimen>
     <dimen name="edit_fi_icon_height">20dp</dimen>
-    <!-- PayPal "Mark" box: monogram centered in a 45x30 frame (Figma "Mark" node). -->
-    <dimen name="edit_fi_paypal_mark_width">45dp</dimen>
-    <dimen name="edit_fi_paypal_mark_height">30dp</dimen>
+    <!-- #CCC border around the funding-instrument icon (Figma "Funding Icon" node), matching the Mark. -->
+    <dimen name="edit_fi_icon_border_width">1dp</dimen>
+    <dimen name="edit_fi_icon_corner_radius">3dp</dimen>
     <dimen name="edit_fi_label_text_size">14sp</dimen>
     <dimen name="edit_fi_add_card_text_size">14sp</dimen>
+    <!-- "PayPal" brand label + gap before the FI chip (Figma "Pay with" row). -->
+    <dimen name="edit_fi_paypal_label_text_size">18sp</dimen>
+    <dimen name="edit_fi_paypal_label_spacing">8dp</dimen>
+    <!-- Width of the "PayPal" label shimmer placeholder shown while loading. -->
+    <dimen name="edit_fi_paypal_label_shimmer_width">55dp</dimen>
     <dimen name="edit_fi_icon_label_spacing">4dp</dimen>
     <dimen name="edit_fi_label_edit_spacing">8dp</dimen>
     <dimen name="edit_fi_label_max_width">150dp</dimen>
@@ -50,4 +55,13 @@
     <dimen name="edit_fi_shimmer_label_width">90dp</dimen>
     <dimen name="edit_fi_shimmer_label_height">16dp</dimen>
     <dimen name="edit_fi_shimmer_corner_radius">4dp</dimen>
+
+    <!-- PayPal brand "Mark" box (Figma "Mark" node): whole dp, rounded from JS fractional values. -->
+    <dimen name="paypal_mark_width">45dp</dimen>
+    <dimen name="paypal_mark_height">30dp</dimen>
+    <dimen name="paypal_mark_border_width">1dp</dimen>
+    <dimen name="paypal_mark_corner_radius">2dp</dimen>
+    <dimen name="paypal_mark_padding_horizontal">11dp</dimen>
+    <dimen name="paypal_mark_padding_top">3dp</dimen>
+    <dimen name="paypal_mark_padding_bottom">4dp</dimen>
 </resources>

@@ -20,8 +20,18 @@ sealed interface EditFiDisplayState {
 
     /**
      * The buyer's wallet is empty / disallowed and wallet cycling is not possible, so no FI can be
-     * shown to select — prompt the buyer to add a card. Renders the amber chip
-     * "⚠ To continue, add a card", where "add a card" is a link that opens the add-card flow.
+     * shown to select — prompt the buyer to add a card. Renders the amber chip with a warning glyph,
+     * [message] as leading text and [actionLabel] as an underlined link that opens the add-card
+     * flow. The copy is backend-driven.
+     *
+     * @property message     leading text (e.g. "To continue, ").
+     * @property actionLabel the underlined link text (e.g. "add a card").
      */
-    data object AddCard : EditFiDisplayState
+    data class AddCard(val message: String, val actionLabel: String) : EditFiDisplayState
+
+    /**
+     * The FI fetch failed — network error, API failure, or any other error. For now the component
+     * renders nothing (blank) in this state: it simply doesn't load.
+     */
+    data object Error : EditFiDisplayState
 }

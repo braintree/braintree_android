@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="edit_fi_paypal_label">PayPal</string>
     <string name="edit_fi_masked_number">••%1$s</string>
     <string name="edit_fi_pay_in_full">Pay in Full</string>
     <string name="edit_fi_no_fi_format">%1$s | %2$s</string>
-    <string name="edit_fi_edit_content_description">Edit funding instrument</string>
-    <string name="edit_fi_add_card_prefix">To continue, </string>
-    <string name="edit_fi_add_card_action">add a card</string>
 </resources>
