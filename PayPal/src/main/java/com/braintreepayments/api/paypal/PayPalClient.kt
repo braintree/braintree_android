@@ -100,6 +100,9 @@ class PayPalClient internal constructor(
             ReturnLinkTypeResult.APP_LINK -> LinkType.APP_LINK
             ReturnLinkTypeResult.DEEP_LINK -> LinkType.DEEP_LINK
         }
+        // Merchant-independent foreground trigger (AppForegroundDetector) resolves the nonce
+        // when the app returns after a manual return. Always points at the latest client.
+        pendingPaymentStore.onReturnFromAppSwitch = { attemptAutoLinkTokenizationSilently() }
     }
 
     /**
@@ -373,7 +376,16 @@ class PayPalClient internal constructor(
     suspend fun tokenize(
         paymentAuthResult: PayPalPaymentAuthResult.Success
     ): PayPalResult {
-        // Auto-link path: no URL return — tokenize the stored BA token directly with BTGW.
+        // Auto-link resolved path: foreground trigger already tokenized — short-circuit.
+        paymentAuthResult.autoLinkNonce?.let { nonce ->
+            pendingPaymentStore.clear()
+            sendTokenizeSuccessEvent(
+                AnalyticsEventParams(isVaultRequest = true, shopperSessionId = shopperSessionId)
+            )
+            return PayPalResult.Success(nonce)
+        }
+
+        // Auto-link pending path: no URL return — tokenize the stored BA token directly with BTGW.
         if (paymentAuthResult.autoLinkPending) {
             return tokenizeAutoLink()
         }
@@ -482,7 +494,23 @@ class PayPalClient internal constructor(
                     intent = payPalResponse.intent?.stringValue,
                     paymentType = "billing-agreement"
                 )
+                pendingPaymentStore.state = PendingPaymentStore.State.SWITCH_LAUNCHED
             }
+        }
+    }
+
+    /**
+     * Invoked by [AppForegroundDetector] on foreground return. Runs auto-link tokenization and
+     * stores the resolved nonce on [PendingPaymentStore] for later pickup by handleReturnToApp or
+     * a re-click. Failures are swallowed here — there is no caller to deliver to; analytics are
+     * emitted inside [attemptAutoLinkTokenization] and the session is preserved for retry.
+     */
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    private suspend fun attemptAutoLinkTokenizationSilently() {
+        try {
+            attemptAutoLinkTokenization()
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
         }
     }
 

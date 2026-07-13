@@ -591,6 +591,27 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
+    fun `handleReturnToApp NoResult with resolved auto-link nonce returns Success with nonce`() {
+        val nonce = mockk<PayPalAccountNonce>()
+        pendingPaymentStore.autoLinkNonce = nonce
+        every {
+            browserSwitchClient.completeRequest(intent, pendingRequestString)
+        } returns BrowserSwitchFinalResult.NoResult
+
+        val slot1 = CapturingSlot<String>()
+        every { analyticsClient.sendEvent(capture(slot1), any()) } returns Unit
+
+        val paymentAuthResult = sut.handleReturnToApp(
+            PayPalPendingRequest.Started(pendingRequestString),
+            intent
+        )
+
+        assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
+        assertSame(nonce, (paymentAuthResult as PayPalPaymentAuthResult.Success).autoLinkNonce)
+        assertSame(PayPalAnalytics.AUTO_LINK_HANDLE_RETURN_SUCCEEDED, slot1.captured)
+    }
+
+    @Test
     fun `handleReturnToApp NoResult with expired pending session returns NoResult`() {
         pendingPaymentStore.pendingSession = pendingSession().copy(
             timestampMs = 0L,
