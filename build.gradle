@@ -56,6 +56,7 @@ ext {
     versionCode = 226
     targetSdkVersion = 37
     versionName = version
+    maxRetainedDocVersions = 5
 }
 
 nexusPublishing {
@@ -81,6 +82,7 @@ nexusPublishing {
 dependencies {
     detektPlugins libs.detekt.formatting
     detektPlugins libs.detekt.rules.libraries
+    dokkaHtmlMultiModulePlugin libs.dokka.versioning.plugin
 }
 
 detekt {
@@ -128,9 +130,62 @@ subprojects {
     }
 }
 
+def compareDocVersions(String v1, String v2) {
+    def parts1 = v1.tokenize('.')
+    def parts2 = v2.tokenize('.')
+    def maxLength = Math.max(parts1.size(), parts2.size())
+    for (i in 0..<maxLength) {
+        def p1 = i < parts1.size() ? ((parts1[i].replaceAll(/[^0-9].*/, '') ?: '0') as int) : 0
+        def p2 = i < parts2.size() ? ((parts2[i].replaceAll(/[^0-9].*/, '') ?: '0') as int) : 0
+        if (p1 != p2) {
+            return p1 <=> p2
+        }
+    }
+    return v1 <=> v2
+}
+
+def sortedDocVersions(File versionsDir, String currentVersion) {
+    def versions = versionsDir.exists() ? versionsDir.listFiles({ f -> f.isDirectory() } as FileFilter)*.name : []
+    return ((versions + currentVersion) as Set).sort { a, b -> compareDocVersions(a, b) }
+}
+
+// docs/ is published to GitHub Pages at braintree.github.io/braintree_android/. Each release's
+// output lives under docs/versions/<version> so Dokka's versioning-plugin can render a version
+// picker; docs/index.html (see writeDocsRedirect) redirects the bare root to the latest version.
+def docsVersionsDir = project.file("docs/versions")
+
 dokkaHtmlMultiModule.configure {
-    // redirect dokka output to GitHub pages root directory
-    outputDirectory.set(project.file("docs"))
+    outputDirectory.set(new File(docsVersionsDir, project.version.toString()))
+    pluginsMapConfiguration.set([
+            "org.jetbrains.dokka.versioning.VersioningPlugin": groovy.json.JsonOutput.toJson([
+                    version         : project.version.toString(),
+                    olderVersionsDir: docsVersionsDir.path,
+                    versionsOrdering: sortedDocVersions(docsVersionsDir, project.version.toString())
+            ])
+    ])
+}
+
+task writeDocsRedirect {
+    doLast {
+        def target = "versions/${project.version}/index.html"
+        project.file("docs/index.html").text = """<!DOCTYPE html>
+<html><head><meta http-equiv="refresh" content="0; url=${target}" /></head>
+<body>Redirecting to <a href="${target}">latest docs</a>&hellip;</body></html>
+"""
+    }
+}
+dokkaHtmlMultiModule.finalizedBy(writeDocsRedirect)
+
+task pruneOldDocVersions {
+    doLast {
+        if (!docsVersionsDir.exists()) {
+            return
+        }
+        def kept = docsVersionsDir.listFiles({ f -> f.isDirectory() } as FileFilter)
+                .sort { a, b -> compareDocVersions(a.name, b.name) }
+        def toDelete = kept.dropRight(project.ext.maxRetainedDocVersions as int)
+        toDelete.each { it.deleteDir() }
+    }
 }
 
 task changeGradleReleaseVersion {

@@ -322,7 +322,7 @@ jobs:
           ./gradlew -PversionParam="${RELEASE_VERSION}" changeREADMEVersion
           ./gradlew -PversionParam="${RELEASE_VERSION}" changeMigrationGuideVersion
           ./gradlew -PversionParam="${RELEASE_VERSION}" updateCHANGELOGVersion
-          ./gradlew dokkaHtmlMultiModule
+          ./gradlew dokkaHtmlMultiModule pruneOldDocVersions
           git add -A
           git commit -am "Release ${RELEASE_VERSION}"
           git tag "${RELEASE_VERSION}" -a -m "Release ${RELEASE_VERSION}"
