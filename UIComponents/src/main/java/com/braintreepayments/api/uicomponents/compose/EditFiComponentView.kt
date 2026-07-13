@@ -100,22 +100,23 @@ fun EditFiComponentView(
  */
 @Composable
 private fun FiChip(fiSummary: FiSummary, style: EditFiComponentStyle, onEditClick: () -> Unit) {
+    // PayPal products use the "Mark" box (45x30dp, monogram centered); card/bank art uses the
+    // standard 28x20dp tile box.
+    val isPayPalMark = fiSummary.type == FiType.PAYPAL
+    val iconWidth = dimensionResource(
+        if (isPayPalMark) R.dimen.edit_fi_paypal_mark_width else R.dimen.edit_fi_icon_width,
+    )
+    val iconHeight = dimensionResource(
+        if (isPayPalMark) R.dimen.edit_fi_paypal_mark_height else R.dimen.edit_fi_icon_height,
+    )
+    val iconLabelSpacing = dimensionResource(R.dimen.edit_fi_icon_label_spacing)
+    val labelTextSize = spDimensionResource(R.dimen.edit_fi_label_text_size)
+    val labelMaxWidth = dimensionResource(R.dimen.edit_fi_label_max_width)
+    val labelEditSpacing = dimensionResource(R.dimen.edit_fi_label_edit_spacing)
+
     Chip(style = style) {
         // Pay Later tiles (Pay in 4 / Pay Monthly) show the product name only — no icon.
         fiSummary.iconRes?.let { iconRes ->
-            // PayPal products use the "Mark" box (45x30dp, monogram centered); card/bank art uses
-            // the standard 28x20dp tile box.
-            val isPayPalMark = fiSummary.type == FiType.PAYPAL
-            val iconWidth = if (isPayPalMark) {
-                R.dimen.edit_fi_paypal_mark_width
-            } else {
-                R.dimen.edit_fi_icon_width
-            }
-            val iconHeight = if (isPayPalMark) {
-                R.dimen.edit_fi_paypal_mark_height
-            } else {
-                R.dimen.edit_fi_icon_height
-            }
             // Image + ContentScale.Fit so any art aspect (landscape card art, portrait PayPal
             // monogram) fits the icon box without distortion, centered within it.
             Image(
@@ -123,21 +124,21 @@ private fun FiChip(fiSummary: FiSummary, style: EditFiComponentStyle, onEditClic
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .width(dimensionResource(iconWidth))
-                    .height(dimensionResource(iconHeight)),
+                    .width(iconWidth)
+                    .height(iconHeight),
             )
-            Spacer(modifier = Modifier.width(dimensionResource(R.dimen.edit_fi_icon_label_spacing)))
+            Spacer(modifier = Modifier.width(iconLabelSpacing))
         }
         Text(
             text = fiLabel(fiSummary),
             color = style.primaryTextColor,
-            fontSize = spDimensionResource(R.dimen.edit_fi_label_text_size),
+            fontSize = labelTextSize,
             fontWeight = FontWeight.Normal,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.widthIn(max = dimensionResource(R.dimen.edit_fi_label_max_width)),
+            modifier = Modifier.widthIn(max = labelMaxWidth),
         )
-        Spacer(modifier = Modifier.width(dimensionResource(R.dimen.edit_fi_label_edit_spacing)))
+        Spacer(modifier = Modifier.width(labelEditSpacing))
         EditButton(style = style, onClick = onEditClick)
     }
 }
@@ -145,6 +146,9 @@ private fun FiChip(fiSummary: FiSummary, style: EditFiComponentStyle, onEditClic
 /** The no-FI fallback chip: "<buyer email> | Pay in Full" [ edit pencil ]. Fills width to ellipsize. */
 @Composable
 private fun NoFiChip(buyerEmail: String, style: EditFiComponentStyle, onEditClick: () -> Unit) {
+    val labelTextSize = spDimensionResource(R.dimen.edit_fi_label_text_size)
+    val labelEditSpacing = dimensionResource(R.dimen.edit_fi_label_edit_spacing)
+
     Chip(style = style, modifier = Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(
@@ -153,12 +157,12 @@ private fun NoFiChip(buyerEmail: String, style: EditFiComponentStyle, onEditClic
                 stringResource(R.string.edit_fi_pay_in_full),
             ),
             color = style.primaryTextColor,
-            fontSize = spDimensionResource(R.dimen.edit_fi_label_text_size),
+            fontSize = labelTextSize,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
-        Spacer(modifier = Modifier.width(dimensionResource(R.dimen.edit_fi_label_edit_spacing)))
+        Spacer(modifier = Modifier.width(labelEditSpacing))
         EditButton(style = style, onClick = onEditClick)
     }
 }
@@ -169,15 +173,22 @@ private fun NoFiChip(buyerEmail: String, style: EditFiComponentStyle, onEditClic
  */
 @Composable
 private fun AddCardChip(style: EditFiComponentStyle, onAddCardClick: () -> Unit) {
+    val cornerRadius = dimensionResource(R.dimen.edit_fi_chip_corner_radius)
+    val paddingHorizontal = dimensionResource(R.dimen.edit_fi_chip_padding_horizontal)
+    val paddingVertical = dimensionResource(R.dimen.edit_fi_chip_padding_vertical)
+    val warningIconSize = dimensionResource(R.dimen.edit_fi_warning_icon_size)
+    val iconLabelSpacing = dimensionResource(R.dimen.edit_fi_icon_label_spacing)
+    val addCardTextSize = spDimensionResource(R.dimen.edit_fi_add_card_text_size)
+
     Surface(
         modifier = Modifier.clickable(onClick = onAddCardClick),
-        shape = RoundedCornerShape(dimensionResource(R.dimen.edit_fi_chip_corner_radius)),
+        shape = RoundedCornerShape(cornerRadius),
         color = style.addCardBackgroundColor,
     ) {
         Row(
             modifier = Modifier.padding(
-                horizontal = dimensionResource(R.dimen.edit_fi_chip_padding_horizontal),
-                vertical = dimensionResource(R.dimen.edit_fi_chip_padding_vertical),
+                horizontal = paddingHorizontal,
+                vertical = paddingVertical,
             ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -185,9 +196,9 @@ private fun AddCardChip(style: EditFiComponentStyle, onAddCardClick: () -> Unit)
                 painter = painterResource(R.drawable.edit_fi_warning),
                 contentDescription = null,
                 tint = style.warningIconTint,
-                modifier = Modifier.size(dimensionResource(R.dimen.edit_fi_warning_icon_size)),
+                modifier = Modifier.size(warningIconSize),
             )
-            Spacer(modifier = Modifier.width(dimensionResource(R.dimen.edit_fi_icon_label_spacing)))
+            Spacer(modifier = Modifier.width(iconLabelSpacing))
             Text(
                 text = buildAnnotatedString {
                     append(stringResource(R.string.edit_fi_add_card_prefix))
@@ -201,7 +212,7 @@ private fun AddCardChip(style: EditFiComponentStyle, onAddCardClick: () -> Unit)
                     }
                 },
                 color = style.primaryTextColor,
-                fontSize = spDimensionResource(R.dimen.edit_fi_add_card_text_size),
+                fontSize = addCardTextSize,
                 maxLines = 1,
             )
         }
@@ -211,19 +222,25 @@ private fun AddCardChip(style: EditFiComponentStyle, onAddCardClick: () -> Unit)
 /** The loading skeleton chip. */
 @Composable
 private fun LoadingChip(style: EditFiComponentStyle) {
+    val iconWidth = dimensionResource(R.dimen.edit_fi_icon_width)
+    val iconHeight = dimensionResource(R.dimen.edit_fi_icon_height)
+    val iconLabelSpacing = dimensionResource(R.dimen.edit_fi_icon_label_spacing)
+    val labelWidth = dimensionResource(R.dimen.edit_fi_shimmer_label_width)
+    val labelHeight = dimensionResource(R.dimen.edit_fi_shimmer_label_height)
     val shimmerShape = RoundedCornerShape(dimensionResource(R.dimen.edit_fi_shimmer_corner_radius))
+
     Chip(style = style) {
         ShimmerBox(
             modifier = Modifier
-                .width(dimensionResource(R.dimen.edit_fi_icon_width))
-                .height(dimensionResource(R.dimen.edit_fi_icon_height)),
+                .width(iconWidth)
+                .height(iconHeight),
             shape = shimmerShape,
         )
-        Spacer(modifier = Modifier.width(dimensionResource(R.dimen.edit_fi_icon_label_spacing)))
+        Spacer(modifier = Modifier.width(iconLabelSpacing))
         ShimmerBox(
             modifier = Modifier
-                .width(dimensionResource(R.dimen.edit_fi_shimmer_label_width))
-                .height(dimensionResource(R.dimen.edit_fi_shimmer_label_height)),
+                .width(labelWidth)
+                .height(labelHeight),
             shape = shimmerShape,
         )
     }
@@ -232,15 +249,19 @@ private fun LoadingChip(style: EditFiComponentStyle) {
 /** The shared rounded chip container. */
 @Composable
 private fun Chip(style: EditFiComponentStyle, modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit) {
+    val cornerRadius = dimensionResource(R.dimen.edit_fi_chip_corner_radius)
+    val paddingHorizontal = dimensionResource(R.dimen.edit_fi_chip_padding_horizontal)
+    val paddingVertical = dimensionResource(R.dimen.edit_fi_chip_padding_vertical)
+
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(dimensionResource(R.dimen.edit_fi_chip_corner_radius)),
+        shape = RoundedCornerShape(cornerRadius),
         color = style.chipBackgroundColor,
     ) {
         Row(
             modifier = Modifier.padding(
-                horizontal = dimensionResource(R.dimen.edit_fi_chip_padding_horizontal),
-                vertical = dimensionResource(R.dimen.edit_fi_chip_padding_vertical),
+                horizontal = paddingHorizontal,
+                vertical = paddingVertical,
             ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -251,9 +272,12 @@ private fun Chip(style: EditFiComponentStyle, modifier: Modifier = Modifier, con
 
 @Composable
 private fun EditButton(style: EditFiComponentStyle, onClick: () -> Unit) {
+    val touchTarget = dimensionResource(R.dimen.edit_fi_edit_touch_target)
+    val iconSize = dimensionResource(R.dimen.edit_fi_edit_icon_size)
+
     Box(
         modifier = Modifier
-            .size(dimensionResource(R.dimen.edit_fi_edit_touch_target))
+            .size(touchTarget)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -261,7 +285,7 @@ private fun EditButton(style: EditFiComponentStyle, onClick: () -> Unit) {
             painter = painterResource(R.drawable.edit_fi_edit_pencil),
             contentDescription = stringResource(R.string.edit_fi_edit_content_description),
             tint = style.editIconTint,
-            modifier = Modifier.size(dimensionResource(R.dimen.edit_fi_edit_icon_size)),
+            modifier = Modifier.size(iconSize),
         )
     }
 }
