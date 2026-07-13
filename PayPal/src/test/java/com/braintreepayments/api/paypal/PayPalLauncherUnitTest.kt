@@ -19,6 +19,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.json.JSONException
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -44,6 +45,8 @@ class PayPalLauncherUnitTest {
     private val isPurchase = true
     private val recurringBillingPlanType = PayPalRecurringBillingPlanType.RECURRING.name
 
+    private val pendingPaymentStore = PendingPaymentStore()
+
     private lateinit var sut: PayPalLauncher
 
     @Before
@@ -63,9 +66,18 @@ class PayPalLauncherUnitTest {
             getAppSwitchUseCase = getAppSwitchUseCase,
             resolvePayPalUseCase = resolvePayPalUseCase,
             lazyAnalyticsClient = lazy { analyticsClient },
-            analyticsParamRepository = analyticsParamRepository
+            analyticsParamRepository = analyticsParamRepository,
+            pendingPaymentStore = pendingPaymentStore
         )
     }
+
+    private fun pendingSession() = PendingPaymentStore.PendingSession(
+        baToken = paymentToken,
+        clientMetadataId = "cmid",
+        merchantAccountId = null,
+        intent = "authorize",
+        paymentType = "billing-agreement"
+    )
 
     @Test
     fun `launch starts browser switch and returns pending request`() {
@@ -539,6 +551,61 @@ class PayPalLauncherUnitTest {
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, slot1.captured)
         assertEquals(paymentToken, slot2.captured.contextId)
+    }
+
+    @Test
+    fun `handleReturnToApp when URL return succeeds clears pending auto-link session`() {
+        pendingPaymentStore.pendingSession = pendingSession()
+        val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
+        every {
+            browserSwitchClient.completeRequest(intent, pendingRequestString)
+        } returns browserSwitchFinalResult
+
+        val paymentAuthResult = sut.handleReturnToApp(
+            PayPalPendingRequest.Started(pendingRequestString),
+            intent
+        )
+
+        assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
+        assertNull(pendingPaymentStore.pendingSession)
+    }
+
+    @Test
+    fun `handleReturnToApp NoResult with valid pending session returns auto-link pending`() {
+        pendingPaymentStore.pendingSession = pendingSession()
+        every {
+            browserSwitchClient.completeRequest(intent, pendingRequestString)
+        } returns BrowserSwitchFinalResult.NoResult
+
+        val slot1 = CapturingSlot<String>()
+        every { analyticsClient.sendEvent(capture(slot1), any()) } returns Unit
+
+        val paymentAuthResult = sut.handleReturnToApp(
+            PayPalPendingRequest.Started(pendingRequestString),
+            intent
+        )
+
+        assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
+        assertTrue((paymentAuthResult as PayPalPaymentAuthResult.Success).autoLinkPending)
+        assertSame(PayPalAnalytics.AUTO_LINK_HANDLE_RETURN_PENDING, slot1.captured)
+    }
+
+    @Test
+    fun `handleReturnToApp NoResult with expired pending session returns NoResult`() {
+        pendingPaymentStore.pendingSession = pendingSession().copy(
+            timestampMs = 0L,
+            ttlMs = PendingPaymentStore.TTL_MS
+        )
+        every {
+            browserSwitchClient.completeRequest(intent, pendingRequestString)
+        } returns BrowserSwitchFinalResult.NoResult
+
+        val paymentAuthResult = sut.handleReturnToApp(
+            PayPalPendingRequest.Started(pendingRequestString),
+            intent
+        )
+
+        assertTrue(paymentAuthResult is PayPalPaymentAuthResult.NoResult)
     }
 
     @Test

@@ -28,6 +28,7 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthResult;
 import com.braintreepayments.api.paypal.PayPalPendingRequest;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
+import com.braintreepayments.api.paypal.PayPalTokenizeCallback;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class PayPalFragment extends BaseFragment {
@@ -228,11 +229,24 @@ public class PayPalFragment extends BaseFragment {
                     isAmountBreakdownEnabled
             );
         }
+        // For billing agreement flows, pass a tokenizeCallback to enable auto-link re-click:
+        // if the user re-taps PayPal after a failed App Link return, the SDK will deliver
+        // the nonce directly here instead of restarting the full flow.
+        PayPalTokenizeCallback tokenizeCallback = isBillingAgreement
+            ? payPalResult -> {
+                if (payPalResult instanceof PayPalResult.Failure) {
+                    handleError(((PayPalResult.Failure) payPalResult).getError());
+                } else if (payPalResult instanceof PayPalResult.Success) {
+                    handlePayPalResult(((PayPalResult.Success) payPalResult).getNonce());
+                }
+            }
+            : null;
+
         payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,
             (paymentAuthRequest) -> {
                 if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
                     handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
-                } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
+                } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch) {
                     PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
                             ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
                     if (request instanceof PayPalPendingRequest.Started) {
@@ -241,7 +255,8 @@ public class PayPalFragment extends BaseFragment {
                         handleError(((PayPalPendingRequest.Failure) request).getError());
                     }
                 }
-            });
+            },
+            tokenizeCallback);
     }
 
     private void completePayPalFlow(PayPalPaymentAuthResult.Success paymentAuthResult) {

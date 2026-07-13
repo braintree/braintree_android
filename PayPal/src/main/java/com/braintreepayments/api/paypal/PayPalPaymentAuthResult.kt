@@ -8,11 +8,27 @@ import com.braintreepayments.api.BrowserSwitchFinalResult
 sealed class PayPalPaymentAuthResult {
 
     /**
-     * A successful result that should be passed to [PayPalClient.tokenize] to complete the flow
+     * A successful result that should be passed to [PayPalClient.tokenize] to complete the flow.
+     *
+     * Two internal construction paths exist:
+     * - URL return: wraps a [BrowserSwitchFinalResult.Success] from the normal browser switch flow
+     * - Auto-link: [autoLinkPending] is true when the App Link return failed but a stored billing
+     *   agreement session exists. [PayPalClient.tokenize] will tokenize the BA token directly
+     *   with BTGW.
      */
-    class Success internal constructor(
-        internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success
-    ) : PayPalPaymentAuthResult()
+    class Success private constructor(
+        internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success?,
+        internal val autoLinkPending: Boolean
+    ) : PayPalPaymentAuthResult() {
+
+        /** URL return path — nonce will be resolved in [PayPalClient.tokenize]. */
+        internal constructor(browserSwitchSuccess: BrowserSwitchFinalResult.Success) :
+            this(browserSwitchSuccess, false)
+
+        /** Auto-link path — [PayPalClient.tokenize] will tokenize the stored BA token. */
+        internal constructor(autoLinkPending: Boolean) :
+            this(null, autoLinkPending)
+    }
 
     /**
      * The browser switch failed.
