@@ -36,6 +36,11 @@
     <dimen name="edit_fi_chip_padding_vertical">5dp</dimen>
     <dimen name="edit_fi_icon_width">28dp</dimen>
     <dimen name="edit_fi_icon_height">20dp</dimen>
+    <!-- PayPal "Mark" box: monogram centered in a 45x30 frame (Figma "Mark" node). -->
+    <dimen name="edit_fi_paypal_mark_width">45dp</dimen>
+    <dimen name="edit_fi_paypal_mark_height">30dp</dimen>
+    <dimen name="edit_fi_label_text_size">14sp</dimen>
+    <dimen name="edit_fi_add_card_text_size">14sp</dimen>
     <dimen name="edit_fi_icon_label_spacing">4dp</dimen>
     <dimen name="edit_fi_label_edit_spacing">8dp</dimen>
     <dimen name="edit_fi_label_max_width">150dp</dimen>

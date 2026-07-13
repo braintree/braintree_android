@@ -2,14 +2,8 @@
 
 package com.braintreepayments.api.uicomponents.compose
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
+import androidx.annotation.DimenRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,11 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,6 +36,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.braintreepayments.api.uicomponents.EditFiComponentStyle
@@ -108,22 +103,35 @@ private fun FiChip(fiSummary: FiSummary, style: EditFiComponentStyle, onEditClic
     Chip(style = style) {
         // Pay Later tiles (Pay in 4 / Pay Monthly) show the product name only — no icon.
         fiSummary.iconRes?.let { iconRes ->
+            // PayPal products use the "Mark" box (45x30dp, monogram centered); card/bank art uses
+            // the standard 28x20dp tile box.
+            val isPayPalMark = fiSummary.type == FiType.PAYPAL
+            val iconWidth = if (isPayPalMark) {
+                R.dimen.edit_fi_paypal_mark_width
+            } else {
+                R.dimen.edit_fi_icon_width
+            }
+            val iconHeight = if (isPayPalMark) {
+                R.dimen.edit_fi_paypal_mark_height
+            } else {
+                R.dimen.edit_fi_icon_height
+            }
             // Image + ContentScale.Fit so any art aspect (landscape card art, portrait PayPal
-            // monogram) fits the fixed icon box without distortion.
+            // monogram) fits the icon box without distortion, centered within it.
             Image(
                 painter = painterResource(iconRes),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .width(dimensionResource(R.dimen.edit_fi_icon_width))
-                    .height(dimensionResource(R.dimen.edit_fi_icon_height)),
+                    .width(dimensionResource(iconWidth))
+                    .height(dimensionResource(iconHeight)),
             )
             Spacer(modifier = Modifier.width(dimensionResource(R.dimen.edit_fi_icon_label_spacing)))
         }
         Text(
             text = fiLabel(fiSummary),
             color = style.primaryTextColor,
-            fontSize = LABEL_TEXT_SIZE,
+            fontSize = spDimensionResource(R.dimen.edit_fi_label_text_size),
             fontWeight = FontWeight.Normal,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -145,7 +153,7 @@ private fun NoFiChip(buyerEmail: String, style: EditFiComponentStyle, onEditClic
                 stringResource(R.string.edit_fi_pay_in_full),
             ),
             color = style.primaryTextColor,
-            fontSize = LABEL_TEXT_SIZE,
+            fontSize = spDimensionResource(R.dimen.edit_fi_label_text_size),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
@@ -193,7 +201,7 @@ private fun AddCardChip(style: EditFiComponentStyle, onAddCardClick: () -> Unit)
                     }
                 },
                 color = style.primaryTextColor,
-                fontSize = ADD_CARD_TEXT_SIZE,
+                fontSize = spDimensionResource(R.dimen.edit_fi_add_card_text_size),
                 maxLines = 1,
             )
         }
@@ -203,17 +211,20 @@ private fun AddCardChip(style: EditFiComponentStyle, onAddCardClick: () -> Unit)
 /** The loading skeleton chip. */
 @Composable
 private fun LoadingChip(style: EditFiComponentStyle) {
+    val shimmerShape = RoundedCornerShape(dimensionResource(R.dimen.edit_fi_shimmer_corner_radius))
     Chip(style = style) {
         ShimmerBox(
             modifier = Modifier
                 .width(dimensionResource(R.dimen.edit_fi_icon_width))
                 .height(dimensionResource(R.dimen.edit_fi_icon_height)),
+            shape = shimmerShape,
         )
         Spacer(modifier = Modifier.width(dimensionResource(R.dimen.edit_fi_icon_label_spacing)))
         ShimmerBox(
             modifier = Modifier
                 .width(dimensionResource(R.dimen.edit_fi_shimmer_label_width))
                 .height(dimensionResource(R.dimen.edit_fi_shimmer_label_height)),
+            shape = shimmerShape,
         )
     }
 }
@@ -255,27 +266,6 @@ private fun EditButton(style: EditFiComponentStyle, onClick: () -> Unit) {
     }
 }
 
-/** A simple pulsing skeleton block used by [LoadingChip]. */
-@Composable
-private fun ShimmerBox(modifier: Modifier = Modifier) {
-    val transition = rememberInfiniteTransition(label = "edit-fi-shimmer")
-    val alpha by transition.animateFloat(
-        initialValue = SHIMMER_MIN_ALPHA,
-        targetValue = SHIMMER_MAX_ALPHA,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = SHIMMER_DURATION_MS, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "edit-fi-shimmer-alpha",
-    )
-    Spacer(
-        modifier = modifier.background(
-            color = SHIMMER_COLOR.copy(alpha = alpha),
-            shape = RoundedCornerShape(dimensionResource(R.dimen.edit_fi_shimmer_corner_radius)),
-        ),
-    )
-}
-
 /**
  * The chip label: the product [FiSummary.displayName] for PayPal / Pay Later products, otherwise
  * the masked number (e.g. "••3339"). Empty when neither is available.
@@ -286,15 +276,16 @@ private fun fiLabel(fiSummary: FiSummary): String =
         stringResource(R.string.edit_fi_masked_number, it)
     } ?: ""
 
-// dp/sp layout dimensions live in res/values/dimens.xml (edit_fi_*) — read via dimensionResource,
-// matching the module convention (see PayPalButtonView / CardFields). Font sizes stay here as sp
-// constants since there is no Compose sp-from-resource equivalent for fontSize.
-private val LABEL_TEXT_SIZE = 14.sp
-private val ADD_CARD_TEXT_SIZE = 14.sp
-private val SHIMMER_COLOR = Color(0xFFE4E7EC)
-private const val SHIMMER_MIN_ALPHA = 0.3f
-private const val SHIMMER_MAX_ALPHA = 0.9f
-private const val SHIMMER_DURATION_MS = 800
+/**
+ * Reads an `sp` font-size dimension from resources (Compose has no direct `sp` equivalent of
+ * [dimensionResource], which returns a `Dp`). Reading the value as a `Dp`
+ * and converting it back with `Density.toSp` yields the declared `sp` size
+ * while keeping the dimension in `res/values/dimens.xml` per the module convention (dp/sp live in
+ * dimens.xml, colors in colors.xml — see PayPalButtonView / CardFields).
+ */
+@Composable
+private fun spDimensionResource(@DimenRes id: Int): TextUnit =
+    with(LocalDensity.current) { dimensionResource(id).toSp() }
 
 // region Previews
 // Preview mock data — for design review only; not used at runtime.

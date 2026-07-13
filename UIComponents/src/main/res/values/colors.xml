@@ -32,4 +32,7 @@
     <color name="card_field_text">#212121</color>
     <color name="card_field_background">#FFFFFF</color>
     <color name="card_field_error">#B00020</color>
+
+    <!-- Base fill for the shared ShimmerBox loading skeleton (alpha animated at runtime). -->
+    <color name="shimmer">#E4E7EC</color>
 </resources>
