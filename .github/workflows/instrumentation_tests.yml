@@ -49,7 +49,7 @@ jobs:
       fail-fast: false
       matrix:
         api-level: [ "37.0" ]
-        target: [ google_apis_ps16k ]
+        target: [ playstore_ps16k ]
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -69,6 +69,14 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
+          emulator-options: >
+            -no-window
+            -gpu auto
+            -noaudio
+            -no-boot-anim
+            -camera-back none
+            -memory 4096
+            -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
           script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
 
       - name: retry tests
@@ -79,4 +87,12 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
+          emulator-options: >
+            -no-window
+            -gpu auto
+            -noaudio
+            -no-boot-anim
+            -camera-back none
+            -memory 4096
+            -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
           script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
