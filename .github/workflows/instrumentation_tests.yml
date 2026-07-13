@@ -48,7 +48,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        api-level: [ 37 ]
+        api-level: [ "37.0" ]
         target: [ google_apis_ps16k ]
     steps:
       - name: checkout
