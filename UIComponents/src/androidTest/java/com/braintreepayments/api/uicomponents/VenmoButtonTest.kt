@@ -1,7 +1,11 @@
 package com.braintreepayments.api.uicomponents
 
+import android.content.Context
+import android.view.View.MeasureSpec
+import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -70,5 +74,92 @@ class VenmoButtonTest {
         button.isEnabled = true
 
         assertTrue(button.isEnabled)
+    }
+
+    @Test
+    fun onMeasure_withUnspecifiedSpec_usesDesiredSize() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val button = VenmoButton(context)
+        val spec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+
+        button.measure(spec, spec)
+
+        assertEquals(desiredWidth(context), button.measuredWidth)
+        assertEquals(desiredHeight(context), button.measuredHeight)
+    }
+
+    @Test
+    fun onMeasure_withWrapContentSpec_usesDesiredSize() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val button = VenmoButton(context)
+        val spec = MeasureSpec.makeMeasureSpec(LARGE_BUTTON_SIZE, MeasureSpec.AT_MOST)
+
+        button.measure(spec, spec)
+
+        assertEquals(desiredWidth(context), button.measuredWidth)
+        assertEquals(desiredHeight(context), button.measuredHeight)
+    }
+
+    @Test
+    fun onMeasure_withExactSpec_usesProvidedSize() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val button = VenmoButton(context)
+        val exactWidth = desiredWidth(context) + LARGE_BUTTON_SIZE
+        val exactHeight = desiredHeight(context) + LARGE_BUTTON_SIZE
+        val widthSpec = MeasureSpec.makeMeasureSpec(exactWidth, MeasureSpec.EXACTLY)
+        val heightSpec = MeasureSpec.makeMeasureSpec(exactHeight, MeasureSpec.EXACTLY)
+
+        button.measure(widthSpec, heightSpec)
+
+        assertEquals(exactWidth, button.measuredWidth)
+        assertEquals(exactHeight, button.measuredHeight)
+    }
+
+    @Test
+    fun onMeasure_withExactWidthBelowMinimum_clampsToFitLogo() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val button = VenmoButton(context)
+        val widthSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.EXACTLY)
+        val heightSpec = MeasureSpec.makeMeasureSpec(desiredHeight(context), MeasureSpec.EXACTLY)
+
+        button.measure(widthSpec, heightSpec)
+
+        assertEquals(minWidth(context), button.measuredWidth)
+        assertTrue(button.measuredWidth >= logo(context).intrinsicWidth)
+    }
+
+    @Test
+    fun onMeasure_withExactHeightBelowMinimum_clampsToFitLogo() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val button = VenmoButton(context)
+        val widthSpec = MeasureSpec.makeMeasureSpec(desiredWidth(context), MeasureSpec.EXACTLY)
+        val heightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.EXACTLY)
+
+        button.measure(widthSpec, heightSpec)
+
+        assertEquals(minHeight(context), button.measuredHeight)
+        assertTrue(button.measuredHeight >= logo(context).intrinsicHeight)
+    }
+
+    private fun desiredWidth(context: Context) =
+        context.resources.getDimension(R.dimen.pay_button_width).toInt()
+
+    private fun desiredHeight(context: Context) =
+        context.resources.getDimension(R.dimen.pay_button_height).toInt()
+
+    private fun focusPadding(context: Context) =
+        2 * context.resources.getDimension(R.dimen.pay_button_focus_border).toInt()
+
+    private fun logo(context: Context) =
+        ContextCompat.getDrawable(context, R.drawable.venmo_logo_white)!!
+
+    private fun minWidth(context: Context) =
+        logo(context).intrinsicWidth + 4 * focusPadding(context)
+
+    private fun minHeight(context: Context) =
+        desiredHeight(context)
+
+    companion object {
+        private const val LARGE_BUTTON_SIZE = 2000
     }
 }
