@@ -30,7 +30,7 @@ import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_XML_
  * This button provides a pre-styled PayPal button with configurable colors and handles
  * the complete PayPal payment flow.
  */
-@Suppress("TooManyFunctions", "MagicNumber")
+@Suppress("TooManyFunctions")
 class PayPalButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -308,8 +308,9 @@ class PayPalButton @JvmOverloads constructor(
     private fun setMinimumSize() {
         minimumHeight = desiredHeight
         val logoDrawable = logo ?: return
-        val focusPadding = resources.getDimension(R.dimen.pay_button_focus_padding).toInt()
-        minimumWidth = logoDrawable.intrinsicWidth + 4 * focusPadding
+        val fullButtonFocusPadding = resources.getDimension(R.dimen.pay_button_focus_padding).toInt() * 2
+        val logoBufferPadding = fullButtonFocusPadding
+        minimumWidth = logoDrawable.intrinsicWidth + fullButtonFocusPadding + logoBufferPadding
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

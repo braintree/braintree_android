@@ -29,7 +29,7 @@ import com.braintreepayments.api.venmo.VenmoTokenizeCallback
  * This button provides a pre-styled Venmo button with configurable colors and handles
  * the complete Venmo payment flow.
  */
-@Suppress("TooManyFunctions", "MagicNumber")
+@Suppress("TooManyFunctions")
 class VenmoButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -242,7 +242,7 @@ class VenmoButton @JvmOverloads constructor(
         focusIndicatorDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
         val layers = arrayOf(focusIndicatorDrawable, gradientDrawable)
         val layerDrawable = LayerDrawable(layers)
-        val focusPadding = 2 * resources.getDimension(R.dimen.pay_button_focus_border).toInt()
+        val focusPadding = resources.getDimension(R.dimen.pay_button_focus_padding).toInt()
         layerDrawable.setLayerInset(1, focusPadding, focusPadding, focusPadding, focusPadding)
         background = layerDrawable
     }
@@ -299,8 +299,9 @@ class VenmoButton @JvmOverloads constructor(
     private fun setMinimumSize() {
         minimumHeight = desiredHeight
         val logoDrawable = logo ?: return
-        val focusPadding = 2 * resources.getDimension(R.dimen.pay_button_focus_border).toInt()
-        minimumWidth = logoDrawable.intrinsicWidth + 4 * focusPadding
+        val fullButtonFocusPadding = resources.getDimension(R.dimen.pay_button_focus_padding).toInt() * 2
+        val logoBufferPadding = fullButtonFocusPadding
+        minimumWidth = logoDrawable.intrinsicWidth + fullButtonFocusPadding + logoBufferPadding
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
