@@ -330,10 +330,10 @@ class PayPalCheckoutRequestTest {
 
         val json = JSONObject(result)
         assertTrue(json.getBoolean("launch_paypal_app"))
-        val nativeApp = json.getJSONObject("app_switch_context").getJSONObject("native_app")
-        assertEquals("ANDROID", nativeApp.getString("os_type"))
-        assertNotNull(nativeApp.getString("os_version"))
-        assertEquals("https://merchant.example.com/applink", nativeApp.getString("app_url"))
+        assertEquals("Android", json.getString("os_type"))
+        assertNotNull(json.getString("os_version"))
+        assertEquals("https://merchant.example.com/applink", json.getString("merchant_app_return_url"))
+        assertFalse(json.has("app_switch_context"))
     }
 
     @Test
@@ -354,6 +354,8 @@ class PayPalCheckoutRequestTest {
 
         val json = JSONObject(result)
         assertFalse(json.has("launch_paypal_app"))
+        assertFalse(json.has("os_type"))
+        assertFalse(json.has("merchant_app_return_url"))
         assertFalse(json.has("app_switch_context"))
     }
 
