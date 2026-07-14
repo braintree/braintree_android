@@ -17,6 +17,7 @@
     * Expose `createPaymentAuthRequest` as a public suspend function
     * Expose `tokenize` as a public suspend function
     * Add internal `PendingPaymentStore` for auto-link on manual return (no public API changes)
+    * Add internal `AutoLinkTokenizeUseCase` for auto-link tokenization (no public API changes)
 * SEPADirectDebit
     * Expose `createPaymentAuthRequest` as a public suspend function
     * Expose `tokenize` as a public suspend function
