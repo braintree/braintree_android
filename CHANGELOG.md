@@ -19,6 +19,7 @@
     * Add internal `PendingPaymentStore` for auto-link on manual return (no public API changes)
     * Add internal `AutoLinkTokenizeUseCase` for auto-link tokenization (no public API changes)
     * Wire `PendingPaymentStore`/`AutoLinkTokenizeUseCase` into `PayPalClient` for auto-link on manual return (adds a new `createPaymentAuthRequest` overload accepting an optional tokenize callback for re-click support)
+    * Complete auto-link wiring in `PayPalLauncher`/`PayPalPaymentAuthResult` and the Demo app; add auto-link analytics events
 * SEPADirectDebit
     * Expose `createPaymentAuthRequest` as a public suspend function
     * Expose `tokenize` as a public suspend function
