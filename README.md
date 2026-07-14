@@ -139,7 +139,8 @@ class ExampleFragment : Fragment() {
                 }
             }
         }
-        // clear pending request
+        // clear intent data
+        requireActivity().intent.data = null
     }
 }
 ```
@@ -198,7 +199,8 @@ class ExampleFragment : Fragment() {
                 }
             }
         }
-        // clear pending request
+        // clear intent data
+        requireActivity().intent.data = null
     }
 }
 ```
@@ -230,7 +232,7 @@ private val paypalTokenizeCallback = PayPalTokenizeCallback { payPalResult ->
         }
     }
     // clear intent data
-    // requireActivity().intent.data = null
+    requireActivity().intent.data = null
 }
 
 PayPalButton(
@@ -260,7 +262,7 @@ private val venmoTokenizeCallback = VenmoTokenizeCallback { venmoResult ->
         }
     }
     // clear intent data
-    // requireActivity().intent.data = null
+    requireActivity().intent.data = null
 }
 
 VenmoButton(
@@ -276,7 +278,7 @@ VenmoButton(
 After you've received a result, clear out the `intent.data` by setting it to null.
 
 ```kotlin
-intent.data = null
+requireActivity().intent.data = null
 ```
 
 ## Card Fields

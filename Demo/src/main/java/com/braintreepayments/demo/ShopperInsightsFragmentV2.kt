@@ -196,6 +196,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         super.onResume()
         handleVenmoReturnToApp()
         handlePayPalReturnToApp()
+        requireActivity().intent.data = null
     }
 
     private fun handlePayPalReturnToApp() {
