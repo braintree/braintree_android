@@ -1134,12 +1134,9 @@ class PayPalInternalClientUnitTest {
             val payPalRequest = PayPalCheckoutRequest("1.00", true).apply {
                 enablePayPalAppSwitch = true
             }
-
             sut.sendRequest(context, payPalRequest, configuration)
 
             val actual = JSONObject(slot.captured)
-            // With native_app removed, app_switch_context is only created when device_info is
-            // injected; an unavailable ActivityManager means it is never added.
             assertFalse(actual.has("app_switch_context"))
         }
 

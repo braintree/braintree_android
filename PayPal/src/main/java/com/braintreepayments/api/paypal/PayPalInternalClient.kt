@@ -81,7 +81,7 @@ internal class PayPalInternalClient(
         ) ?: throw JSONException("Error creating requestBody")
 
         val requestBody = if (payPalRequest.enablePayPalAppSwitch && appLinkParam != null) {
-            injectDeviceInfo(context, baseRequestBody)
+            appendDeviceInfo(context, baseRequestBody)
         } else {
             baseRequestBody
         }
@@ -196,7 +196,7 @@ internal class PayPalInternalClient(
             .build()
     }
 
-    private fun injectDeviceInfo(context: Context, requestBody: String): String {
+    private fun appendDeviceInfo(context: Context, requestBody: String): String {
         val activityManager =
             context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return requestBody
         val memInfo = ActivityManager.MemoryInfo().also { activityManager.getMemoryInfo(it) }

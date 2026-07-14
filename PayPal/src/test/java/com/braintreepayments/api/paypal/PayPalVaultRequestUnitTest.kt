@@ -265,14 +265,9 @@ class PayPalVaultRequestUnitTest {
 
         val jsonObject = JSONObject(requestBody)
         assertTrue(jsonObject.getBoolean("launch_paypal_app"))
-
-        // flat app switch parameters
         assertEquals("Android", jsonObject.getString("os_type"))
         assertEquals(versionSDK.toString(), jsonObject.getString("os_version"))
         assertEquals("universal_url", jsonObject.getString("merchant_app_return_url"))
-
-        // app_switch_context is no longer built here; device_info is injected later by
-        // PayPalInternalClient, so the request body itself carries no app_switch_context.
         assertFalse(jsonObject.has("app_switch_context"))
     }
 
@@ -382,14 +377,9 @@ class PayPalVaultRequestUnitTest {
 
         val jsonObject = JSONObject(requestBody)
         assertTrue(jsonObject.getBoolean("launch_paypal_app"))
-
-        // flat app switch parameters
         assertEquals("Android", jsonObject.getString("os_type"))
         assertNotNull(jsonObject.getString("os_version"))
         assertEquals(appLink, jsonObject.getString("merchant_app_return_url"))
-
-        // app_switch_context is no longer built here; device_info is injected later by
-        // PayPalInternalClient, so the request body itself carries no app_switch_context.
         assertFalse(jsonObject.has("app_switch_context"))
     }
 
