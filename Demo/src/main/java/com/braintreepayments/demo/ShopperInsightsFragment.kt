@@ -62,8 +62,8 @@ class ShopperInsightsFragment : BaseFragment() {
     private val venmoLauncher: VenmoLauncher = VenmoLauncher()
     private val paypalLauncher: PayPalLauncher = PayPalLauncher()
 
-    private lateinit var venmoStartedPendingRequest: VenmoPendingRequest.Started
-    private lateinit var paypalStartedPendingRequest: PayPalPendingRequest.Started
+    private var venmoStartedPendingRequest: VenmoPendingRequest.Started? = null
+    private var paypalStartedPendingRequest: PayPalPendingRequest.Started? = null
 
     private var shopperSessionId: String = "test-shopper-session-id"
 
@@ -112,19 +112,17 @@ class ShopperInsightsFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        if (requireActivity().intent.data != null &&
-            (this::venmoStartedPendingRequest.isInitialized || this::paypalStartedPendingRequest.isInitialized)
-        ) {
-            handleVenmoReturnToApp()
-            handlePayPalReturnToApp()
-            requireActivity().intent.data = null
-        }
+        handleVenmoReturnToApp()
+        handlePayPalReturnToApp()
     }
 
     private fun handlePayPalReturnToApp() {
-        if (this::paypalStartedPendingRequest.isInitialized) {
+        val pendingRequest = paypalStartedPendingRequest
+        if (pendingRequest != null) {
+            paypalStartedPendingRequest = null
             val paypalPaymentAuthResult =
-                paypalLauncher.handleReturnToApp(paypalStartedPendingRequest, requireActivity().intent)
+                paypalLauncher.handleReturnToApp(pendingRequest, requireActivity().intent)
+            requireActivity().intent.data = null
             if (paypalPaymentAuthResult is PayPalPaymentAuthResult.Success) {
                 payPalClient.tokenize(paypalPaymentAuthResult) {
                     when (it) {
@@ -153,9 +151,12 @@ class ShopperInsightsFragment : BaseFragment() {
     }
 
     private fun handleVenmoReturnToApp() {
-        if (this::venmoStartedPendingRequest.isInitialized) {
+        val pendingRequest = venmoStartedPendingRequest
+        if (pendingRequest != null) {
+            venmoStartedPendingRequest = null
             val venmoPaymentAuthResult =
-                venmoLauncher.handleReturnToApp(venmoStartedPendingRequest, requireActivity().intent)
+                venmoLauncher.handleReturnToApp(pendingRequest, requireActivity().intent)
+            requireActivity().intent.data = null
             if (venmoPaymentAuthResult is VenmoPaymentAuthResult.Success) {
                 venmoClient.tokenize(venmoPaymentAuthResult) {
                     when (it) {
