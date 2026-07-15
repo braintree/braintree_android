@@ -138,6 +138,8 @@ class ExampleFragment : Fragment() {
                     }
                 }
             }
+            // clear the stored pending request
+            clearPendingRequest()
             // clear intent data
             requireActivity().intent.data = null
         }
@@ -198,6 +200,8 @@ class ExampleFragment : Fragment() {
                     }
                 }
             }
+            // clear the stored pending request
+            clearPendingRequest()
             // clear intent data
             requireActivity().intent.data = null
         }
