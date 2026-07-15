@@ -1,0 +1,9 @@
+// A Dokka plugin (plain Kotlin/JVM library) that suppresses any declaration annotated
+// with androidx.annotation.RestrictTo from generated documentation.
+// Applied to the doc'd modules via the root build.gradle `dokkaHtmlPartialPlugin` wiring.
+apply plugin: 'org.jetbrains.kotlin.jvm'
+
+dependencies {
+    compileOnly libs.dokka.core
+    compileOnly libs.dokka.base
+}
