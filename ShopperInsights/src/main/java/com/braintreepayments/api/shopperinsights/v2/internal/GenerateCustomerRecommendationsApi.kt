@@ -75,6 +75,7 @@ internal class GenerateCustomerRecommendationsApi(
                 val jsonRequestObjects = customerSessionRequestBuilder.createRequestObjects(customerSessionRequest)
                 put(CUSTOMER, jsonRequestObjects.customer)
                 putOpt(PURCHASE_UNITS, jsonRequestObjects.purchaseUnits)
+                putOpt(PAYPAL_CAMPAIGNS, jsonRequestObjects.payPalCampaigns)
             }
         }
 
@@ -116,6 +117,7 @@ internal class GenerateCustomerRecommendationsApi(
         private const val SESSION_ID = "sessionId"
         private const val CUSTOMER = "customer"
         private const val PURCHASE_UNITS = "purchaseUnits"
+        private const val PAYPAL_CAMPAIGNS = "paypalCampaigns"
         private const val GENERATE_CUSTOMER_RECOMMENDATIONS = "generateCustomerRecommendations"
     }
 }
