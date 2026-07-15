@@ -290,6 +290,25 @@ class PayPalVaultRequestUnitTest {
     }
 
     @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody without paypal_campaigns even when campaigns are set`() {
+        val request = PayPalVaultRequest(
+            hasUserLocationConsent = true
+        ).apply {
+            payPalCampaigns = listOf(PayPalCampaign("campaign-1"))
+        }
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<Authorization>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = "universal_url"
+        )
+
+        assertFalse(JSONObject(requestBody).has("paypal_campaigns"))
+    }
+
+    @Test
     fun `creates PayPalVaultRequest and formats JSON correctly`() {
         val postalAddress = PostalAddress(
             recipientName = "Postal Address"
