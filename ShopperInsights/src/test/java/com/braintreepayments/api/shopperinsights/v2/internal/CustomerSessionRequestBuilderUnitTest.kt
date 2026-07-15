@@ -2,6 +2,7 @@ package com.braintreepayments.api.shopperinsights.v2.internal
 
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
+import com.braintreepayments.api.shopperinsights.v2.PayPalCampaign
 import com.braintreepayments.api.shopperinsights.v2.PurchaseUnit
 import org.json.JSONArray
 import org.json.JSONObject
@@ -76,5 +77,34 @@ class CustomerSessionRequestBuilderUnitTest {
 
         JSONAssert.assertEquals(expectedCustomer, result.customer, false)
         assertNull(result.purchaseUnits)
+        assertNull(result.payPalCampaigns)
+    }
+
+    @Test
+    fun `createRequestObjects builds correct JSON array when payPalCampaigns are provided`() {
+        val customerSessionRequest = CustomerSessionRequest(
+            payPalCampaigns = listOf(
+                PayPalCampaign(id = "campaign-1"),
+                PayPalCampaign(id = "campaign-2")
+            )
+        )
+
+        val result = requestBuilder.createRequestObjects(customerSessionRequest)
+
+        val expectedCampaigns = JSONArray().apply {
+            put(JSONObject().put("id", "campaign-1"))
+            put(JSONObject().put("id", "campaign-2"))
+        }
+
+        JSONAssert.assertEquals(expectedCampaigns, result.payPalCampaigns, true)
+    }
+
+    @Test
+    fun `createRequestObjects returns null payPalCampaigns when list is empty`() {
+        val customerSessionRequest = CustomerSessionRequest(payPalCampaigns = emptyList())
+
+        val result = requestBuilder.createRequestObjects(customerSessionRequest)
+
+        assertNull(result.payPalCampaigns)
     }
 }
