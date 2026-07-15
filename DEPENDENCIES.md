@@ -4,14 +4,14 @@ This document lists the runtime dependencies (both internal module dependencies 
 
 ## Build Requirements (Merchant-Facing)
 
-This table lists the minimum requirements for building the Braintree Android SDK, those will impose requirements on the merchant's app as well.
+This table lists the minimum requirements for building the Braintree Android SDK. These requirements may also apply to a merchant's app when integrating the SDK.
 
 | Setting | Value |
 |---|---|
 | `compileSdk` | 37 |
 | `minSdk` | 23 |
-| Java bytecode level (`targetCompatibility`) | 11 | 
-| Kotlin version | 1.9.10 | 
+| Java bytecode level (`targetCompatibility`) | 11 |
+| Kotlin version | 1.9.10 |
 | Android Gradle Plugin | 8.13.2 |
 
 ## Key Third-Party Libraries
