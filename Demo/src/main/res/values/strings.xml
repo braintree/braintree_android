@@ -3,6 +3,7 @@
     <string name="app_name">Braintree Demo</string>
 
     <string name="ui_components">UI Components</string>
+    <string name="card_fields">Card Fields</string>
     <string name="card_fields_pay">Pay</string>
 
     <!-- MainActivity -->
