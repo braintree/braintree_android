@@ -134,11 +134,10 @@ dokkaHtmlMultiModule.configure {
 }
 
 // Apply the custom Dokka plugin that hides @RestrictTo-annotated declarations from generated docs.
-// Runs for every module that applies the Dokka plugin.
-configure(subprojects.findAll { it.name != 'DokkaRestrictToPlugin' }) {
+subprojects {
     plugins.withId('org.jetbrains.dokka') {
         dependencies {
-            dokkaHtmlPartialPlugin project(':DokkaRestrictToPlugin')
+            dokkaHtmlPartialPlugin 'com.braintreepayments.dokka:DokkaRestrictToPlugin:1.0.0'
         }
     }
 }
