@@ -37,7 +37,7 @@ class AmericanExpressClientUnitTest {
     }
 
     @Test
-    fun getRewardsBalance_sendsGETRequestForAmexAwardsBalance() = runTest {
+    fun `when getRewardsBalance is called, GET request includes nonce and currency code in query params`() = runTest {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
         coEvery { braintreeClient.sendGET(any()) } returns """
         {
@@ -67,7 +67,7 @@ class AmericanExpressClientUnitTest {
     }
 
     @Test
-    fun getRewardsBalance_callsListenerWithRewardsBalanceOnSuccess() = runTest {
+    fun `when getRewardsBalance receives a successful response, callback receives success result with rewards balance`() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder().sendGetSuccessfulResponse(
             Fixtures.AMEX_REWARDS_BALANCE_SUCCESS).build()
 
@@ -95,7 +95,7 @@ class AmericanExpressClientUnitTest {
     }
 
     @Test
-    fun getRewardsBalance_callsListenerWithRewardsBalanceWithErrorCode_OnIneligibleCard() = runTest {
+    fun `when getRewardsBalance is called and card is ineligible, callback receives success result with error code`() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder().sendGetSuccessfulResponse(
             Fixtures.AMEX_REWARDS_BALANCE_INELIGIBLE_CARD).build()
         val testDispatcher = StandardTestDispatcher(testScheduler)
@@ -122,7 +122,7 @@ class AmericanExpressClientUnitTest {
     }
 
     @Test
-    fun getRewardsBalance_callsListenerWithRewardsBalanceWithErrorCode_OnInsufficientPoints() = runTest {
+    fun `when getRewardsBalance is called and points are insufficient, callback receives success result with error code`() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder().sendGetSuccessfulResponse(
             Fixtures.AMEX_REWARDS_BALANCE_INSUFFICIENT_POINTS).build()
         val testDispatcher = StandardTestDispatcher(testScheduler)
@@ -149,7 +149,7 @@ class AmericanExpressClientUnitTest {
     }
 
     @Test
-    fun getRewardsBalance_callsBackFailure_OnHttpError() = runTest {
+    fun `when getRewardsBalance http request errors, callback receives failure result`() = runTest {
         val expectedError = IOException("error")
         val braintreeClient = MockkBraintreeClientBuilder().sendGetErrorResponse(
             expectedError).build()
@@ -169,7 +169,7 @@ class AmericanExpressClientUnitTest {
     }
 
     @Test
-    fun getRewardsBalance_sendsAnalyticsEventOnSuccess() = runTest {
+    fun `when getRewardsBalance succeeds, started and succeeded analytics events are sent`() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder().sendGetSuccessfulResponse(
             Fixtures.AMEX_REWARDS_BALANCE_SUCCESS).build()
         val testDispatcher = StandardTestDispatcher(testScheduler)
@@ -185,7 +185,7 @@ class AmericanExpressClientUnitTest {
     }
 
     @Test
-    fun getRewardsBalance_sendsAnalyticsEventOnFailure() = runTest {
+    fun `when getRewardsBalance http request fails, started and failed analytics events are sent with error description`() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder().sendGetErrorResponse(
             AuthorizationException("Bad fingerprint")).build()
         val testDispatcher = StandardTestDispatcher(testScheduler)
@@ -203,7 +203,7 @@ class AmericanExpressClientUnitTest {
     }
 
     @Test
-    fun getRewardsBalance_sendsAnalyticsEventOnParseError() = runTest {
+    fun `when getRewardsBalance response has a json parse error, started and failed analytics events are sent with error description`() = runTest {
         val notJson = "Big blob that is not a valid JSON object"
         val braintreeClient = MockkBraintreeClientBuilder().sendGetSuccessfulResponse(notJson).build()
         val testDispatcher = StandardTestDispatcher(testScheduler)

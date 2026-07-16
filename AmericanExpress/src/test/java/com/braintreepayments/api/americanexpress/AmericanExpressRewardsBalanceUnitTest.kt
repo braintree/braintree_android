@@ -13,7 +13,7 @@ import org.robolectric.RobolectricTestRunner
 class AmericanExpressRewardsBalanceUnitTest {
     @Test
     @Throws(JSONException::class)
-    fun fromJson_parsesResponse() {
+    fun `fromJson parses successful rewards balance response`() {
         val rewardsBalance = fromJson(Fixtures.AMEX_REWARDS_BALANCE_SUCCESS)
 
         assertEquals("0.0070", rewardsBalance.conversionRate)
@@ -28,7 +28,7 @@ class AmericanExpressRewardsBalanceUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun fromJson_parsesResponseForIneligibleCard() {
+    fun `fromJson parses response with error code for ineligible card`() {
         val rewardsBalance = fromJson(Fixtures.AMEX_REWARDS_BALANCE_INELIGIBLE_CARD)
 
         assertNull(rewardsBalance.conversionRate)
@@ -43,7 +43,7 @@ class AmericanExpressRewardsBalanceUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun parcelsCorrectly() {
+    fun `fromJson parses successful rewards balance response with points`() {
         val rewardsBalance = fromJson(Fixtures.AMEX_REWARDS_BALANCE_SUCCESS)
 
         assertEquals("0.0070", rewardsBalance.conversionRate)
@@ -58,7 +58,7 @@ class AmericanExpressRewardsBalanceUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun parcelsCorrectly_forErrorResponse() {
+    fun `fromJson parses response with error code for insufficient points`() {
         val rewardsBalance = fromJson(Fixtures.AMEX_REWARDS_BALANCE_INSUFFICIENT_POINTS)
 
         assertNull(rewardsBalance.conversionRate)

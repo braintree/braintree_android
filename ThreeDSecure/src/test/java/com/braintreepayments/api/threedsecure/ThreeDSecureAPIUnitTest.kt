@@ -26,7 +26,7 @@ class ThreeDSecureAPIUnitTest {
     private val testDispatcher = StandardTestDispatcher()
 
     @Test
-    fun performLookup_sendsPOSTRequest() = runTest(testDispatcher) {
+    fun `when performLookup is called, sends POST request to lookup endpoint with built request data`() = runTest(testDispatcher) {
         val urlSlot = slot<String>()
         val dataSlot = slot<String>()
         val braintreeClient = MockkBraintreeClientBuilder()
@@ -53,7 +53,7 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun performLookup_onSuccess_returnsThreeDSecureResult() = runTest(testDispatcher) {
+    fun `when performLookup succeeds, returns a non-null ThreeDSecureParams result`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE)
             .build()
@@ -67,7 +67,7 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun performLookup_onInvalidJSONResponse_throwsJSONException() = runTest(testDispatcher) {
+    fun `when performLookup receives an invalid JSON response, throws JSONException`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse("invalid json")
             .build()
@@ -82,7 +82,7 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun performLookup_onPOSTFailure_throwsHTTPError() = runTest(testDispatcher) {
+    fun `when the POST request fails, performLookup throws the underlying IOException`() = runTest(testDispatcher) {
         val httpError = IOException("http error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostErrorResponse(httpError)
@@ -101,7 +101,7 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun authenticateCardinalJWT_sendsPOSTRequest() = runTest(testDispatcher) {
+    fun `when authenticateCardinalJWT is called, sends POST request to authenticate_from_jwt endpoint`() = runTest(testDispatcher) {
         val urlSlot = slot<String>()
         val dataSlot = slot<String>()
         val braintreeClient = MockkBraintreeClientBuilder()
@@ -133,7 +133,7 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun authenticateCardinalJWT_onSuccess_returnsThreeDSecureResult() = runTest(testDispatcher) {
+    fun `when authenticateCardinalJWT succeeds, returns a non-null ThreeDSecureParams result`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
             .build()
@@ -147,7 +147,7 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun authenticateCardinalJWT_onThreeDSecureError_returnsResultWithOriginalLookupNonce() =
+    fun `when authenticateCardinalJWT response contains a three d secure error, returns result with a nonce`() =
         runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE_WITH_ERROR)
@@ -162,7 +162,7 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun authenticateCardinalJWT_onInvalidJSONResponse_throwsJSONException() = runTest(testDispatcher) {
+    fun `when authenticateCardinalJWT receives an invalid JSON response, throws JSONException`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse("not-json")
             .build()
@@ -177,7 +177,7 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun authenticateCardinalJWT_onPOSTFailure_throwsHTTPError() = runTest(testDispatcher) {
+    fun `when the POST request fails, authenticateCardinalJWT throws the underlying IOException`() = runTest(testDispatcher) {
         val postError = IOException("post-error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostErrorResponse(postError)
@@ -196,7 +196,7 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun authenticateCardinalJWT_whenCustomerFailsAuthentication_returnsLookupCardNonce() = runTest(testDispatcher) {
+    fun `when customer fails authentication, authenticateCardinalJWT returns lookup nonce with liability not shifted and an error message`() = runTest(testDispatcher) {
         val authResponseJson = Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse(authResponseJson)
@@ -223,7 +223,7 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun authenticateCardinalJWT_whenPostError_throwsException() = runTest(testDispatcher) {
+    fun `when the POST request errors, authenticateCardinalJWT rethrows the exception`() = runTest(testDispatcher) {
         val exception = IOException("Error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostErrorResponse(exception)
@@ -241,7 +241,7 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun authenticateCardinalJWT_whenJWTNull_throwsException() = runTest(testDispatcher) {
+    fun `when jwt is null, authenticateCardinalJWT throws BraintreeException`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         val threeDSecureParams = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE)
 
@@ -253,7 +253,7 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun authenticateCardinalJWT_whenThreeDSecureParamsNull_throwsException() = runTest(testDispatcher) {
+    fun `when threeDSecureParams is null, authenticateCardinalJWT throws BraintreeException`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
         val sut = ThreeDSecureAPI(braintreeClient)

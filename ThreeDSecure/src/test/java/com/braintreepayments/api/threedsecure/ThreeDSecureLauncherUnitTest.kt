@@ -41,7 +41,7 @@ class ThreeDSecureLauncherUnitTest {
     }
 
     @Test
-    fun constructor_createsActivityLauncher() {
+    fun `when constructed, registers an activity result launcher with the expected key`() {
         val expectedKey = "com.braintreepayments.api.ThreeDSecure.RESULT"
         val lifecycleOwner = FragmentActivity()
 
@@ -58,7 +58,7 @@ class ThreeDSecureLauncherUnitTest {
     }
 
     @Test
-    fun launch_launchesAuthChallenge() {
+    fun `when launch is called with a ready to launch request, launches the auth challenge with the three d secure params`() {
         val lifecycleOwner = FragmentActivity()
         val sut = ThreeDSecureLauncher(
             activityResultRegistry!!, lifecycleOwner,
@@ -77,7 +77,7 @@ class ThreeDSecureLauncherUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun launch_whenTransactionTooLarge_callsBackError() {
+    fun `when the activity launcher throws a transaction too large error, calls back a BraintreeException`() {
         val lifecycleOwner = FragmentActivity()
         val sut = ThreeDSecureLauncher(
             activityResultRegistry!!, lifecycleOwner,

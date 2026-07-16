@@ -36,7 +36,7 @@ class ApiClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenizeREST_setsSessionIdBeforeTokenizing() = runTest(testDispatcher) {
+    fun `when tokenizeREST is called, session id is set on card before sending POST`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLDisabledConfig)
             .sendPostSuccessfulResponse("{}")
@@ -76,7 +76,7 @@ class ApiClientUnitTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     @Throws(BraintreeException::class, InvalidArgumentException::class, JSONException::class)
-    fun tokenizeGraphQL_tokenizesCardsWithGraphQL() = runTest(testDispatcher) {
+    fun `when tokenizeGraphQL is called, card is tokenized via sendGraphQLPOST and not sendPOST`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .build()
@@ -98,7 +98,7 @@ class ApiClientUnitTest {
     }
 
     @Test
-    fun tokenizeREST_tokenizesPaymentMethodsWithREST() = runTest(testDispatcher) {
+    fun `when tokenizeREST is called, payment method is tokenized via REST and not GraphQL`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .sendPostSuccessfulResponse("{}")
@@ -134,7 +134,7 @@ class ApiClientUnitTest {
     }
 
     @Test
-    fun versionedPath_returnsv1Path() {
+    fun `when versionedPath is called, the given path is prefixed with v1`() {
         assertEquals("/v1/test/path", ApiClient.versionedPath("test/path"))
     }
 }

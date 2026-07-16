@@ -25,7 +25,7 @@ class VisaCheckoutAccountUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun build_withVisaPaymentSummary_buildsExpectedPaymentMethod() {
+    fun `when buildJSON is called with a visa payment summary, expected json is returned`() {
         every { visaPaymentSummary.callId } returns "stubbedCallId"
         every { visaPaymentSummary.encKey } returns "stubbedEncKey"
         every { visaPaymentSummary.encPaymentData } returns "stubbedEncPaymentData"
@@ -49,7 +49,7 @@ class VisaCheckoutAccountUnitTest {
     }
 
     @Test
-    fun apiPath_returnsCorrectApiPath() {
+    fun `when apiPath is accessed, visa_checkout_cards is returned`() {
         assertEquals("visa_checkout_cards", VisaCheckoutAccount(mockk()).apiPath)
     }
 }

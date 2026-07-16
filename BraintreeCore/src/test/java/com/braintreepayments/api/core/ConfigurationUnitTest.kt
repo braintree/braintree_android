@@ -26,113 +26,113 @@ class ConfigurationUnitTest {
     private val authorization: Authorization = mockk(relaxed = true)
 
     @Test(expected = JSONException::class)
-    fun fromJson_throwsForEmptyString() {
+    fun `when given an empty string, fromJson throws JSONException`() {
         Configuration.fromJson("")
     }
 
     @Test(expected = JSONException::class)
-    fun fromJson_throwsForRandomJson() {
+    fun `when given random json, fromJson throws JSONException`() {
         Configuration.fromJson(Fixtures.RANDOM_JSON)
     }
 
     @Test(expected = JSONException::class)
-    fun fromJson_throwsWhenNoClientApiUrlPresent() {
+    fun `when client api url is absent, fromJson throws JSONException`() {
         Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_CLIENT_API_URL)
     }
 
     @Test
-    fun fromJson_parsesClientApiUrl() {
+    fun `fromJson parses the client api url`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_CLIENT_API_URL)
         assertEquals("client_api_url", sut.clientApiUrl)
     }
 
     @Test
-    fun fromJson_parsesAssetsUrl() {
+    fun `fromJson parses the assets url`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ASSETS_URL)
         assertEquals("https://assets.braintreegateway.com", sut.assetsUrl)
     }
 
     @Test
-    fun fromJson_parsesCardinalAuthenticationJwt() {
+    fun `fromJson parses the cardinal authentication jwt`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_CARDINAL_AUTHENTICATION_JWT)
         assertEquals("cardinal_authentication_jwt", sut.cardinalAuthenticationJwt)
     }
 
     @Test
-    fun fromJson_handlesAbsentChallenges() {
+    fun `when challenges are absent, fromJson reports no cvv or postal code challenge`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_CHALLENGE)
         assertFalse(sut.isCvvChallengePresent)
         assertFalse(sut.isPostalCodeChallengePresent)
     }
 
     @Test
-    fun fromJson_parsesSingleChallenge() {
+    fun `when only cvv challenge is configured, fromJson reports cvv challenge present and postal code absent`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_CVV_CHALLENGE)
         assertTrue(sut.isCvvChallengePresent)
         assertFalse(sut.isPostalCodeChallengePresent)
     }
 
     @Test
-    fun fromJson_parsesAllChallenges() {
+    fun `when multiple challenges are configured, fromJson reports both cvv and postal code challenges present`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_MULTIPLE_CHALLENGES)
         assertTrue(sut.isCvvChallengePresent)
         assertTrue(sut.isPostalCodeChallengePresent)
     }
 
     @Test(expected = JSONException::class)
-    fun fromJson_throwsWhenNoMerchantIdPresent() {
+    fun `when merchant id is absent, fromJson throws JSONException`() {
         Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_MERCHANT_ID)
     }
 
     @Test(expected = JSONException::class)
-    fun fromJson_throwsWhenNoEnvironmentPresent() {
+    fun `when environment is absent, fromJson throws JSONException`() {
         Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ENVIRONMENT)
     }
 
     @Test
-    fun fromJson_parsesEnvironment() {
+    fun `fromJson parses the merchant id from a configuration with environment`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         assertEquals("integration_merchant_id", sut.merchantId)
     }
 
     @Test
-    fun fromJson_parsesMerchantId() {
+    fun `fromJson parses the merchant id`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_MERCHANT_ID)
         assertEquals("integration_merchant_id", sut.merchantId)
     }
 
     @Test
-    fun fromJson_parsesMerchantAccountId() {
+    fun `fromJson parses the merchant account id`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_MERCHANT_ACCOUNT_ID)
         assertEquals("integration_merchant_account_id", sut.merchantAccountId)
     }
 
     @Test
-    fun returnsEmptyVenmoConfigurationWhenNotDefined() {
+    fun `when venmo configuration is not defined, venmoAccessToken is empty`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         assertTrue(TextUtils.isEmpty(sut.venmoAccessToken))
     }
 
     @Test
-    fun payWithVenmoIsEnabledWhenConfigurationExists() {
+    fun `when pay with venmo configuration exists, venmoAccessToken is not empty`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO)
         assertFalse(TextUtils.isEmpty(sut.venmoAccessToken))
     }
 
     @Test
-    fun reportsThreeDSecureEnabledWhenEnabled() {
+    fun `when three d secure configuration is present, isThreeDSecureEnabled is true`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_THREE_D_SECURE)
         assertTrue(sut.isThreeDSecureEnabled)
     }
 
     @Test
-    fun reportsThreeDSecureDisabledWhenAbsent() {
+    fun `when three d secure configuration is absent, isThreeDSecureEnabled is false`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_THREE_D_SECURE)
         assertFalse(sut.isThreeDSecureEnabled)
     }
 
     @Test
-    fun returnsNewGooglePayConfigurationWhenGooglePayIsNull() {
+    fun `when google pay configuration is null, fromJson returns default google pay values`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_GOOGLE_PAY)
         assertFalse(sut.isGooglePayEnabled)
         assertEquals("", sut.googlePayDisplayName)
@@ -140,55 +140,55 @@ class ConfigurationUnitTest {
     }
 
     @Test
-    fun returnsNewCardConfigurationWhenCardConfigurationIsAbsent() {
+    fun `when card configuration is absent, fromJson returns no supported card types`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         assertEquals(0, sut.supportedCardTypes.size)
     }
 
     @Test
-    fun returnsVisaCheckoutConfiguration_whenVisaCheckoutConfigurationIsPresent() {
+    fun `when visa checkout configuration is present, isVisaCheckoutEnabled is true`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT)
         assertTrue(sut.isVisaCheckoutEnabled)
     }
 
     @Test
-    fun returnsNewVisaCheckoutConfigurationWhenVisaCheckoutConfigurationIsAbsent() {
+    fun `when visa checkout configuration is absent, isVisaCheckoutEnabled is false`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         assertFalse(sut.isVisaCheckoutEnabled)
     }
 
     @Test
-    fun returnsBraintreeApiConfigurationWhenBraintreeApiConfigurationPresent() {
+    fun `when braintree api configuration is present, isBraintreeApiEnabled is true`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
         assertTrue(sut.isBraintreeApiEnabled)
     }
 
     @Test
-    fun returnsNewBraintreeApiConfigurationWhenBraintreeApiConfigurationAbsent() {
+    fun `when braintree api configuration is absent, isBraintreeApiEnabled is false`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         assertFalse(sut.isBraintreeApiEnabled)
     }
 
     @Test
-    fun returnsGraphQLConfiguration_whenGraphQLConfigurationIsPresent() {
+    fun `when graphQL configuration is present, isGraphQLEnabled is true`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
         assertTrue(sut.isGraphQLEnabled)
     }
 
     @Test
-    fun returnsNewGraphQLConfigurationWhenGraphQLConfigurationIsAbsent() {
+    fun `when graphQL configuration is absent, isGraphQLEnabled is false`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         assertFalse(sut.isGraphQLEnabled)
     }
 
     @Test
-    fun isFraudDataCollectionEnabled_whenCardFraudDataCollectionEnabled_returnsTrue() {
+    fun `when card fraud data collection is enabled, isFraudDataCollectionEnabled is true`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_CARD_COLLECT_DEVICE_DATA)
         assertTrue(sut.isFraudDataCollectionEnabled)
     }
 
     @Test
-    fun supportedCardTypes_forwardsValuesFromConfiguration() {
+    fun `supportedCardTypes forwards values from the card configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_CARD_COLLECT_DEVICE_DATA)
         assertEquals(5, sut.supportedCardTypes.size)
         assertTrue(sut.supportedCardTypes.contains("American Express"))
@@ -199,201 +199,201 @@ class ConfigurationUnitTest {
     }
 
     @Test
-    fun isVenmoEnabled_whenVenmoAccessTokenValid_returnsTrue() {
+    fun `when venmo access token is valid, isVenmoEnabled is true`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO)
         assertTrue(sut.isVenmoEnabled)
     }
 
     @Test
-    fun venmoAccessToken_forwardsAccessTokenFromVenmoConfiguration() {
+    fun `venmoAccessToken forwards the access token from venmo configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO)
         assertEquals("access-token", sut.venmoAccessToken)
     }
 
     @Test
-    fun venmoAccessToken_forwardsMerchantIdFromVenmoConfiguration() {
+    fun `venmoMerchantId forwards the merchant id from venmo configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO)
         assertEquals("merchant-id", sut.venmoMerchantId)
     }
 
     @Test
-    fun venmoAccessToken_forwardsEnvironmentFromVenmoConfiguration() {
+    fun `venmoEnvironment forwards the environment from venmo configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO)
         assertEquals("environment", sut.venmoEnvironment)
     }
 
     @Test
-    fun isGraphQLEnabled_forwardsInvocationToGraphQLConfiguration() {
+    fun `when graphQL configuration exists, isGraphQLEnabled is true`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
         assertTrue(sut.isGraphQLEnabled)
     }
 
     @Test
-    fun isLocalPaymentsEnabled_whenPayPalEnabled_returnsTrue() {
+    fun `when paypal is enabled, isLocalPaymentEnabled is true`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         assertTrue(sut.isLocalPaymentEnabled)
     }
 
     @Test
-    fun isVisaCheckoutEnabled_returnsFalseWhenConfigurationApiKeyDoesNotExist() {
+    fun `when visa checkout api key does not exist, isVisaCheckoutEnabled is false`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
         assertFalse(sut.isVisaCheckoutEnabled)
     }
 
     @Test
-    fun payPalDisplayName_forwardsValueFromConfiguration() {
+    fun `payPalDisplayName forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         assertEquals("paypal_merchant", sut.payPalDisplayName)
     }
 
     @Test
-    fun payPalClientId_forwardsValueFromConfiguration() {
+    fun `payPalClientId forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         assertEquals("paypal_client_id", sut.payPalClientId)
     }
 
     @Test
-    fun payPalPrivacyUrl_forwardsValueFromConfiguration() {
+    fun `payPalPrivacyUrl forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         assertEquals("http://www.example.com/privacy", sut.payPalPrivacyUrl)
     }
 
     @Test
-    fun payPalUserAgreementUrl_forwardsValueFromConfiguration() {
+    fun `payPalUserAgreementUrl forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         assertEquals("http://www.example.com/user_agreement", sut.payPalUserAgreementUrl)
     }
 
     @Test
-    fun payPalDirectBaseUrl_forwardsVersionedUrlFromConfiguration() {
+    fun `payPalDirectBaseUrl forwards the versioned url from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         assertEquals("https://www.paypal.com/v1/", sut.payPalDirectBaseUrl)
     }
 
     @Test
-    fun payPalEnvironment_forwardsValueFromConfiguration() {
+    fun `payPalEnvironment forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         assertEquals("live", sut.payPalEnvironment)
     }
 
     @Test
-    fun isPayPalTouchDisabled_forwardsValueFromConfiguration() {
+    fun `isPayPalTouchDisabled forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         assertTrue(sut.isPayPalTouchDisabled)
     }
 
     @Test
-    fun payPalCurrencyIsoCode_forwardsValueFromConfiguration() {
+    fun `payPalCurrencyIsoCode forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         assertEquals("USD", sut.payPalCurrencyIsoCode)
     }
 
     @Test
-    fun isVisaCheckoutEnabled_returnsTrueWhenConfigurationApiKeyExists() {
+    fun `when visa checkout api key exists, isVisaCheckoutEnabled is true`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT)
         assertTrue(sut.isVisaCheckoutEnabled)
     }
 
     @Test
-    fun visaCheckoutSupportedNetworks_forwardsInvocationToVisaCheckoutConfiguration() {
+    fun `visaCheckoutSupportedNetworks forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT)
         val expected = listOf("AMEX", "DISCOVER", "MASTERCARD", "VISA")
         assertEquals(expected, sut.visaCheckoutSupportedNetworks)
     }
 
     @Test
-    fun visaCheckoutApiKey_forwardsInvocationToVisaCheckoutConfiguration() {
+    fun `visaCheckoutApiKey forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT)
         assertEquals("gwApikey", sut.visaCheckoutApiKey)
     }
 
     @Test
-    fun visaCheckoutExternalClientId_forwardsInvocationToVisaCheckoutConfiguration() {
+    fun `visaCheckoutExternalClientId forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT)
         assertEquals("gwExternalClientId", sut.visaCheckoutExternalClientId)
     }
 
     @Test
-    fun isGooglePayEnabled_whenGooglePayEnabledInConfig_returnsTrue() {
+    fun `when google pay is enabled in configuration, isGooglePayEnabled is true`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
         assertTrue(sut.isGooglePayEnabled)
     }
 
     @Test
-    fun googlePayAuthorizationFingerprint_forwardsValueFromConfiguration() {
+    fun `googlePayAuthorizationFingerprint forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
         assertEquals("google-auth-fingerprint", sut.googlePayAuthorizationFingerprint)
     }
 
     @Test
-    fun googlePayEnvironment_forwardsValueFromConfiguration() {
+    fun `googlePayEnvironment forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
         assertEquals("sandbox", sut.googlePayEnvironment)
     }
 
     @Test
-    fun googlePayDisplayName_forwardsValueFromConfiguration() {
+    fun `googlePayDisplayName forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
         assertEquals("Google Pay Merchant", sut.googlePayDisplayName)
     }
 
     @Test
-    fun googlePaySupportedNetworks_forwardsValuesFromConfiguration() {
+    fun `googlePaySupportedNetworks forwards the values from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
         val expected = listOf("visa", "mastercard", "amex", "discover")
         assertEquals(expected, sut.googlePaySupportedNetworks)
     }
 
     @Test
-    fun googlePayPayPalClientId_forwardsValuesFromConfiguration() {
+    fun `googlePayPayPalClientId forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
         assertEquals("pay-pal-client-id", sut.googlePayPayPalClientId)
     }
 
     @Test
-    fun isBraintreeApiEnabled_returnsTrueWhenAccessTokenPresent() {
+    fun `when access token is present, isBraintreeApiEnabled returns true`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
         assertTrue(sut.isBraintreeApiEnabled)
     }
 
     @Test
-    fun isBraintreeApiEnabled_returnsFalseWhenAccessTokenNotPresent() {
+    fun `when access token is not present, isBraintreeApiEnabled returns false`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         assertFalse(sut.isBraintreeApiEnabled)
     }
 
     @Test
-    fun braintreeApiAccessToken_forwardsValueFromConfiguration() {
+    fun `braintreeApiAccessToken forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
         assertEquals("access-token-example", sut.braintreeApiAccessToken)
     }
 
     @Test
-    fun braintreeApiUrl_forwardsValueFromConfiguration() {
+    fun `braintreeApiUrl forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
         assertEquals("https://braintree-api.com", sut.braintreeApiUrl)
     }
 
     @Test
-    fun isGraphQLFeatureEnabled_returnsTrue_whenFeatureEnabled() {
+    fun `when the feature is enabled, isGraphQLFeatureEnabled returns true`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
         assertTrue(sut.isGraphQLFeatureEnabled(GraphQLConstants.Features.TOKENIZE_CREDIT_CARDS))
     }
 
     @Test
-    fun isGraphQLFeatureEnabled_returnsFalse_whenFeatureNotEnabled() {
+    fun `when the feature is not enabled, isGraphQLFeatureEnabled returns false`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
         assertFalse(sut.isGraphQLFeatureEnabled("a_different_feature"))
     }
 
     @Test
-    fun graphQLUrl_forwardsValueFromConfiguration() {
+    fun `graphQLUrl forwards the value from configuration`() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
         assertEquals("https://example-graphql.com/graphql", sut.graphQLUrl)
     }
 
     @Test
-    fun `fetch on success calls back with configuration`() = runTest {
+    fun `when loadConfiguration succeeds, fetch calls back with configuration`() = runTest {
         val expectedConfiguration: Configuration = mockk()
         coEvery {
             configurationLoader.loadConfiguration(authorization)
@@ -420,7 +420,7 @@ class ConfigurationUnitTest {
     }
 
     @Test
-    fun `fetch on failure calls back with error`() = runTest {
+    fun `when loadConfiguration fails, fetch calls back with error`() = runTest {
         val expectedError = ConfigurationException("configuration fetch failed")
         coEvery {
             configurationLoader.loadConfiguration(authorization)
@@ -447,7 +447,7 @@ class ConfigurationUnitTest {
     }
 
     @Test
-    fun `fetch on cancellation does not call back`() = runTest {
+    fun `when loadConfiguration is cancelled, fetch does not call back`() = runTest {
         coEvery {
             configurationLoader.loadConfiguration(authorization)
         } throws CancellationException()

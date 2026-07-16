@@ -14,7 +14,7 @@ class UUIDHelperUnitTest {
     private var braintreeSharedPreferences: BraintreeSharedPreferences = mockk(relaxed = true)
 
     @Test
-    fun getInstallationGUID_returnsNewGUIDWhenOneDoesNotExistAndPersistsIt() {
+    fun `when no GUID exists in shared preferences, getInstallationGUID generates and persists a new one`() {
         every {
             braintreeSharedPreferences.getString("InstallationGUID", null)
         } returns null
@@ -26,7 +26,7 @@ class UUIDHelperUnitTest {
     }
 
     @Test
-    fun getInstallationGUID_returnsExistingGUIDWhenOneExist() {
+    fun `when a GUID already exists in shared preferences, getInstallationGUID returns the existing one`() {
         val uuid = UUID.randomUUID().toString()
         every {
             braintreeSharedPreferences.getString("InstallationGUID", null)

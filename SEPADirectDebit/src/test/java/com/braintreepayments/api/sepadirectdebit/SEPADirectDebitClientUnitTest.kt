@@ -45,7 +45,7 @@ class SEPADirectDebitClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun createPaymentAuthRequest_onCreateMandateRequestSuccess_callsBackSEPAResponse_andSendsAnalytics() =
+    fun `when create mandate succeeds with approval url, createPaymentAuthRequest returns ReadyToLaunch with browser switch options and sends analytics`() =
         runTest(testDispatcher) {
         val createMandateResult = CreateMandateResult(
             approvalUrl = "http://www.example.com",
@@ -96,7 +96,7 @@ class SEPADirectDebitClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun createPaymentAuthRequest_whenMandateApproved_onTokenizeSuccess_callsBackWithNonce_andSendsAnalytics() =
+    fun `when mandate already approved and tokenize succeeds, createPaymentAuthRequest returns LaunchNotRequired with nonce and sends analytics`() =
         runTest(testDispatcher) {
         val createMandateResult = CreateMandateResult(
             approvalUrl = "null",
@@ -133,7 +133,7 @@ class SEPADirectDebitClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_onCreateMandateRequestSuccess_whenApprovalURLInvalid_callsBackError() =
+    fun `when create mandate succeeds but approval url is empty, createPaymentAuthRequest returns Failure and sends failure analytics`() =
         runTest(testDispatcher) {
         val createMandateResult = CreateMandateResult(
             approvalUrl = "",
@@ -180,7 +180,7 @@ class SEPADirectDebitClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenMandateApproved_callsTokenizeAndSendsAnalytics() =
+    fun `when mandate already approved, createPaymentAuthRequest calls tokenize with mandate details and sends analytics`() =
         runTest(testDispatcher) {
         val createMandateResult = CreateMandateResult(
             approvalUrl = "null",
@@ -215,7 +215,7 @@ class SEPADirectDebitClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_onCreateMandateError_returnsErrorToListener_andSendsAnalytics() =
+    fun `when create mandate fails with error, createPaymentAuthRequest returns Failure with that error and sends failure analytics`() =
         runTest(testDispatcher) {
         val error = Exception("error")
         val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder()
@@ -254,7 +254,7 @@ class SEPADirectDebitClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenApiThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+    fun `when create mandate throws CancellationException, createPaymentAuthRequest callback is not invoked`() = runTest(testDispatcher) {
         val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder()
             .createMandateError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
             .build()
@@ -270,7 +270,7 @@ class SEPADirectDebitClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenDeepLinkContainsSuccess_callsTokenize_andSendsAnalytics() =
+    fun `when browser switch return url indicates success, tokenize calls api tokenize with metadata and sends challenge succeeded analytics`() =
         runTest(testDispatcher) {
         val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder().build()
 
@@ -309,7 +309,7 @@ class SEPADirectDebitClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_onTokenizeSuccess_callsBackNonce_andSendsAnalytics() =
+    fun `when api tokenize succeeds, tokenize returns Success with nonce and sends tokenize succeeded analytics`() =
         runTest(testDispatcher) {
         val nonce = fromJSON(JSONObject(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE))
         val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder()
@@ -345,7 +345,7 @@ class SEPADirectDebitClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_onTokenizeFailure_callsBackError_andSendsAnalytics() =
+    fun `when api tokenize fails, tokenize returns Failure with that error and sends tokenize failed analytics`() =
         runTest(testDispatcher) {
         val exception = Exception("tokenize error")
         val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder()
@@ -397,7 +397,7 @@ class SEPADirectDebitClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_onTokenizeSuccess_callsBackResult() =
+    fun `when api tokenize succeeds, tokenize returns Success result with nonce`() =
         runTest(testDispatcher) {
         val nonce = fromJSON(JSONObject(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE))
         val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder()
@@ -430,7 +430,7 @@ class SEPADirectDebitClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenDeepLinkContainsCancel_callsBackError_andSendsAnalytics() =
+    fun `when browser switch return url indicates cancel, tokenize returns Cancel and sends challenge canceled analytics`() =
         runTest(testDispatcher) {
         val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder().build()
 
@@ -462,7 +462,7 @@ class SEPADirectDebitClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenApiThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+    fun `when api tokenize throws CancellationException, tokenize callback is not invoked`() = runTest(testDispatcher) {
         val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder()
             .tokenizeError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
             .build()

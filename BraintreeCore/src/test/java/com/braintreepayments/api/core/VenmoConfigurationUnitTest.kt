@@ -11,7 +11,7 @@ import org.junit.runner.RunWith
 class VenmoConfigurationUnitTest {
     @Test
     @Throws(JSONException::class)
-    fun fromJson_parsesFullInput() {
+    fun `when json contains all fields, VenmoConfiguration parses all values and isAccessTokenValid is true`() {
         val input = JSONObject()
             .put("accessToken", "sample-access-token")
             .put("environment", "sample-environment")
@@ -24,7 +24,7 @@ class VenmoConfigurationUnitTest {
     }
 
     @Test
-    fun fromJson_whenInputNull_returnsConfigWithDefaultValues() {
+    fun `when input json is null, VenmoConfiguration has empty fields and isAccessTokenValid is false`() {
         val sut = VenmoConfiguration(null)
         assertEquals("", sut.accessToken)
         assertEquals("", sut.environment)
@@ -33,7 +33,7 @@ class VenmoConfigurationUnitTest {
     }
 
     @Test
-    fun fromJson_whenInputEmpty_returnsConfigWithDefaultValues() {
+    fun `when input json is empty, VenmoConfiguration has empty fields and isAccessTokenValid is false`() {
         val sut = VenmoConfiguration(JSONObject())
         assertEquals("", sut.accessToken)
         assertEquals("", sut.environment)

@@ -78,7 +78,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun initialization_sets_app_link_in_analyticsParamRepository() {
+    fun `when return link type is app link, analyticsParamRepository linkType is set to APP_LINK`() {
         val payPalVaultRequest = PayPalVaultRequest(true)
         val paymentAuthRequest = PayPalPaymentAuthRequestParams(
             payPalVaultRequest,
@@ -105,7 +105,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun initialization_sets_deep_link_in_analyticsParamRepository() {
+    fun `when return link type is deep link, analyticsParamRepository linkType is set to DEEP_LINK`() {
         every { getReturnLinkTypeUseCase.invoke() } returns ReturnLinkTypeResult.DEEP_LINK
         val payPalVaultRequest = PayPalVaultRequest(true)
         val paymentAuthRequest = PayPalPaymentAuthRequestParams(
@@ -135,7 +135,7 @@ class PayPalClientUnitTest {
     @OptIn(ExperimentalBetaApi::class)
     @Test
     @Throws(JSONException::class)
-    fun createPaymentAuthRequest_callsBackPayPalResponse_sendsStartedAnalytics() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest succeeds for vault request, callback receives ready to launch request and started analytics are sent`() = runTest(testDispatcher) {
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
         payPalVaultRequest.shopperSessionId = "test-shopper-session-id"
@@ -203,7 +203,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_launchesBrowserSwitchWith_ACTIVITY_CLEAR_TOP() = runTest(testDispatcher) {
+    fun `when braintreeClient launches browser switch as new task, browserSwitchOptions launchType is ACTIVITY_CLEAR_TOP`() = runTest(testDispatcher) {
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
 
@@ -245,7 +245,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_setsAppLinkReturnUrl() = runTest(testDispatcher) {
+    fun `when getReturnLinkUseCase returns an app link, browserSwitchOptions appLinkUri is set`() = runTest(testDispatcher) {
         every { getReturnLinkUseCase.invoke(any()) } returns AppLink("www.example.com".toUri())
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
@@ -289,7 +289,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_setsDeepLinkReturnUrlScheme() = runTest(testDispatcher) {
+    fun `when getReturnLinkUseCase returns a deep link, browserSwitchOptions returnUrlScheme is set`() = runTest(testDispatcher) {
         every { getReturnLinkUseCase.invoke(any()) } returns DeepLink("com.braintreepayments.demo")
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
@@ -331,7 +331,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_returnsAnErrorWhen_getReturnLinkUseCase_returnsAFailure() = runTest(testDispatcher) {
+    fun `when getReturnLinkUseCase returns a failure, callback receives failure with that error`() = runTest(testDispatcher) {
         val exception = BraintreeException()
         every { getReturnLinkUseCase.invoke(any()) } returns ReturnLinkResult.Failure(exception)
 
@@ -372,7 +372,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenPayPalNotEnabled_returnsError() = runTest(testDispatcher) {
+    fun `when PayPal is not enabled in configuration, callback receives failure and failed analytics are sent`() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
         val braintreeClient =
@@ -409,7 +409,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenCheckoutRequest_whenConfigError_forwardsErrorToListener() =
+    fun `when configuration fetch fails for a checkout request, callback receives failure with that error`() =
         runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
@@ -447,7 +447,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun requestBillingAgreement_whenConfigError_forwardsErrorToListener() = runTest(testDispatcher) {
+    fun `when configuration fetch fails for a vault request, callback receives failure with that error`() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
         val errorMessage = "Error fetching auth"
@@ -480,7 +480,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_sets_analyticsParamRepository_didEnablePayPalAppSwitch() = runTest(testDispatcher) {
+    fun `when payPalRequest enables app switch, analyticsParamRepository didEnablePayPalAppSwitch is set to true`() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
         val braintreeClient =
@@ -507,7 +507,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenVaultRequest_sendsPayPalRequestViaInternalClient() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called with a vault request, internal client sendRequest is invoked with that request`() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
         val braintreeClient =
@@ -534,7 +534,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenCheckoutRequest_sendsPayPalRequestViaInternalClient() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called with a checkout request, internal client sendRequest is invoked with that request`() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
         val braintreeClient =
@@ -562,7 +562,7 @@ class PayPalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_withBillingAgreement_tokenizesResponseOnSuccess() = runTest(testDispatcher) {
+    fun `when tokenize is called with a billing agreement approval url, internal client tokenizes with expected payload`() = runTest(testDispatcher) {
         val payPalAccountNonce = mockk<PayPalAccountNonce>(relaxed = true)
         val payPalInternalClient =
             MockkPayPalInternalClientBuilder().tokenizeSuccess(payPalAccountNonce).build()
@@ -612,7 +612,7 @@ class PayPalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_withOneTimePayment_tokenizesResponseOnSuccess() = runTest(testDispatcher) {
+    fun `when tokenize is called with a one-time payment approval url, internal client tokenizes with expected payload`() = runTest(testDispatcher) {
         val payPalAccountNonce = mockk<PayPalAccountNonce>(relaxed = true)
         val payPalInternalClient =
             MockkPayPalInternalClientBuilder().tokenizeSuccess(payPalAccountNonce).build()
@@ -664,7 +664,7 @@ class PayPalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenCancelUriReceived_notifiesCancellationAndSendsAnalyticsEvent() = runTest(testDispatcher) {
+    fun `when tokenize receives an onetouch cancel url, callback receives Cancel and browser login canceled analytics are sent`() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
         val approvalUrl = "sample-scheme://onetouch/v1/cancel"
@@ -705,7 +705,7 @@ class PayPalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenPayPalInternalClientTokenizeResult_callsBackResult() = runTest(testDispatcher) {
+    fun `when internal client tokenize succeeds, callback receives Success and succeeded analytics are sent`() = runTest(testDispatcher) {
         val payPalAccountNonce = mockk<PayPalAccountNonce>(relaxed = true)
         val payPalInternalClient =
             MockkPayPalInternalClientBuilder().tokenizeSuccess(payPalAccountNonce).build()
@@ -753,7 +753,7 @@ class PayPalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenCancelUriReceived_sendsAppSwitchCanceledEvent() = runTest(testDispatcher) {
+    fun `when tokenize receives a cancel url with switch_initiated_time, callback receives Cancel and app switch canceled analytics are sent`() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
         val approvalUrl = "https://some-scheme/cancel?switch_initiated_time=17166111926211"
@@ -789,7 +789,7 @@ class PayPalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenCancelUriReceived_sendsBrowserLoginCanceledEvent() = runTest(testDispatcher) {
+    fun `when tokenize receives a cancel url without switch_initiated_time, callback receives Cancel and browser login canceled analytics are sent`() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
         val approvalUrl = "https://some-scheme/cancel"
@@ -824,7 +824,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenInternalClientSendRequestThrows_callsBackFailure() = runTest(testDispatcher) {
+    fun `when internal client sendRequest throws, callback receives failure and failed analytics are sent`() = runTest(testDispatcher) {
         val error = BraintreeException("sendRequest failed")
         val payPalInternalClient = MockkPayPalInternalClientBuilder()
             .sendRequestError(error)
@@ -853,7 +853,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenInternalClientTokenizeThrows_callsBackFailure() = runTest(testDispatcher) {
+    fun `when internal client tokenize throws IllegalStateException, callback receives failure and failed analytics are sent`() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
         val approvalUrl =
@@ -892,7 +892,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenInternalClientThrowsCancellationException_callbackIsNotInvoked() =
+    fun `when internal client sendRequest throws CancellationException, callback is not invoked`() =
     runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
@@ -910,7 +910,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenInternalClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+    fun `when internal client tokenize throws CancellationException, callback is not invoked`() = runTest(testDispatcher) {
         val approvalUrl = "sample-scheme://onetouch/v1/success?token=EC-HERMES-SANDBOX-EC-TOKEN"
 
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)

@@ -6,7 +6,7 @@ import org.junit.Test
 class EligiblePaymentsApiResultUnitTest {
 
     @Test
-    fun testVenmoFromJson() {
+    fun `when fromJson is called with venmo eligibility fields, canBeVaulted, eligibleInPayPalNetwork, and recommended are parsed and recommendedPriority defaults to 0`() {
         // Sample JSON string
         val jsonString = """
             {
@@ -33,7 +33,7 @@ class EligiblePaymentsApiResultUnitTest {
     }
 
     @Test
-    fun testPayPalFromJson() {
+    fun `when fromJson is called with paypal eligibility fields, canBeVaulted, eligibleInPayPalNetwork, recommended, and recommendedPriority are parsed`() {
         // Sample JSON string
         val jsonString = """
             {

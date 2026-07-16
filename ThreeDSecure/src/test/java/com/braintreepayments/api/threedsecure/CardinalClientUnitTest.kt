@@ -47,7 +47,7 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_configuresDefaultCardinalConfigurationParameters() = runTest {
+    fun `when initialize is called, configures default cardinal configuration parameters`() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { cardinalInstance.init(any(), any()) } answers {
             secondArg<CardinalInitService>().onSetupCompleted("session-id")
@@ -68,7 +68,7 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_whenV2UiCustomizationNotNull_setsCardinalConfigurationParameters() = runTest {
+    fun `when initialize is called with v2UiCustomization set, sets toolbar customization on cardinal configuration parameters`() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { cardinalInstance.init(any(), any()) } answers {
             secondArg<CardinalInitService>().onSetupCompleted("session-id")
@@ -92,7 +92,7 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_whenEnvironmentProduction_configuresCardinalEnvironmentProduction() = runTest {
+    fun `when initialize is called with production environment, configures cardinal environment as production`() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { configuration.environment } returns "production"
         every { cardinalInstance.init(any(), any()) } answers {
@@ -112,7 +112,7 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_whenUiTypeNotNull_setsCardinalConfigurationParameters() = runTest {
+    fun `when initialize is called with uiType set, sets uiType on cardinal configuration parameters`() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { cardinalInstance.init(any(), any()) } answers {
             secondArg<CardinalInitService>().onSetupCompleted("session-id")
@@ -133,7 +133,7 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_whenRenderTypeNotNull_setsCardinalConfigurationParameters() = runTest {
+    fun `when initialize is called with renderTypes set, sets render types on cardinal configuration parameters`() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { cardinalInstance.init(any(), any()) } answers {
             secondArg<CardinalInitService>().onSetupCompleted("session-id")
@@ -160,7 +160,7 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_returnsConsumerSessionId() = runTest {
+    fun `when initialize completes setup, returns and stores the consumer session id`() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { configuration.cardinalAuthenticationJwt } returns "token"
 
@@ -179,7 +179,7 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_whenConsumerSessionIdIsNull_throwsBraintreeException() = runTest {
+    fun `when initialize validation returns a null session id, throws BraintreeException`() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { configuration.cardinalAuthenticationJwt } returns "token"
 
@@ -218,7 +218,7 @@ class CardinalClientUnitTest {
     }
 
     @Test
-    fun initialize_onCardinalConfigureRuntimeException_throwsError() = runTest {
+    fun `when cardinal configure throws a runtime exception, initialize throws BraintreeException wrapping it`() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { configuration.cardinalAuthenticationJwt } returns "token"
 
@@ -237,7 +237,7 @@ class CardinalClientUnitTest {
     }
 
     @Test
-    fun initialize_onCardinalInitRuntimeException_throwsError() = runTest {
+    fun `when cardinal init throws a runtime exception, initialize throws BraintreeException wrapping it`() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { configuration.cardinalAuthenticationJwt } returns "token"
 
@@ -257,7 +257,7 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun continueLookup_continuesCardinalLookup() {
+    fun `when continueLookup is called, continues cardinal lookup with transaction id and pareq`() {
         every { Cardinal.getInstance() } returns cardinalInstance
 
         val sut = CardinalClient()
@@ -280,7 +280,7 @@ class CardinalClientUnitTest {
     }
 
     @Test
-    fun continueLookup_onCardinalRuntimeException_throwsError() {
+    fun `when cardinal cca_continue throws a runtime exception, continueLookup throws BraintreeException wrapping it`() {
         every { Cardinal.getInstance() } returns cardinalInstance
 
         val runtimeException = RuntimeException("fake message")
@@ -315,7 +315,7 @@ class CardinalClientUnitTest {
     }
 
     @Test
-    fun cleanup_cleansUpCardinalInstance() {
+    fun `when cleanup is called, cleans up cardinal instance`() {
         every { Cardinal.getInstance() } returns cardinalInstance
 
         val sut = CardinalClient()
