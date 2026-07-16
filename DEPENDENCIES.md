@@ -2,18 +2,6 @@
 
 This document lists the runtime dependencies (both internal module dependencies and third-party libraries) for each module in the Braintree Android SDK. For most dependency versions, see [`gradle/libs.versions.toml`](gradle/libs.versions.toml). Exception: the Magnes SDK is a bundled JAR in `DataCollector/libs/`.
 
-## Build Requirements (Merchant-Facing)
-
-This table lists the minimum requirements for building the Braintree Android SDK. These requirements may also apply to a merchant's app when integrating the SDK.
-
-| Setting | Value |
-|---|---|
-| `compileSdk` | 37 |
-| `minSdk` | 23 |
-| Java bytecode level (`targetCompatibility`) | 11 |
-| Kotlin version | 1.9.10 |
-| Android Gradle Plugin | 8.13.2 |
-
 ## Key Third-Party Libraries
 
 | Library                                                                                                                           | Module(s) |
@@ -81,7 +69,7 @@ This table lists the minimum requirements for building the Braintree Android SDK
 | `:BraintreeCore` | — |
 | `:PayPal` | — |
 | `:Card` | — |
-| `com.google.android.gms:play-services-wallet` | 19.5.0 |
+| `com.google.android.gms:play-services-wallet` | 19.4.0 |
 | `androidx.appcompat:appcompat` | 1.6.0 |
 
 ### ThreeDSecure
