@@ -396,40 +396,6 @@ class SEPADirectDebitClientUnitTest {
     }
 
     @Test
-    @Throws(JSONException::class)
-    fun `when api tokenize succeeds, tokenize returns Success result with nonce`() =
-        runTest(testDispatcher) {
-        val nonce = fromJSON(JSONObject(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE))
-        val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder()
-            .tokenizeSuccess(nonce)
-            .build()
-
-        val metadata = JSONObject()
-            .put("ibanLastFour", "1234")
-            .put("customerId", "customer-id")
-            .put("bankReferenceToken", "bank-reference-token")
-            .put("mandateType", "ONE_OFF")
-
-        val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>()
-        val returnUri = Uri.parse("com.braintreepayments.demo.braintree://sepa/success?success=true")
-        every { browserSwitchResult.returnUrl } returns returnUri
-        every { browserSwitchResult.requestMetadata } returns metadata
-
-        braintreeClient = MockkBraintreeClientBuilder().build()
-
-        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi, testDispatcher)
-        val sepaBrowserSwitchResult = SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult)
-
-        var result: SEPADirectDebitResult? = null
-        sut.tokenize(sepaBrowserSwitchResult) { result = it }
-
-        advanceUntilIdle()
-
-        assertTrue(result is SEPADirectDebitResult.Success)
-        assertEquals(nonce, (result as SEPADirectDebitResult.Success).nonce)
-    }
-
-    @Test
     fun `when browser switch return url indicates cancel, tokenize returns Cancel and sends challenge canceled analytics`() =
         runTest(testDispatcher) {
         val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder().build()

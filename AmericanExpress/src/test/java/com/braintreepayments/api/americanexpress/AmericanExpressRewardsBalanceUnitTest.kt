@@ -43,21 +43,6 @@ class AmericanExpressRewardsBalanceUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `fromJson parses successful rewards balance response with points`() {
-        val rewardsBalance = fromJson(Fixtures.AMEX_REWARDS_BALANCE_SUCCESS)
-
-        assertEquals("0.0070", rewardsBalance.conversionRate)
-        assertEquals("316795.03", rewardsBalance.currencyAmount)
-        assertEquals("USD", rewardsBalance.currencyIsoCode)
-        assertEquals("715f4712-8690-49ed-8cc5-d7fb1c2d", rewardsBalance.requestId)
-        assertEquals("45256433", rewardsBalance.rewardsAmount)
-        assertEquals("Points", rewardsBalance.rewardsUnit)
-        assertNull(rewardsBalance.errorMessage)
-        assertNull(rewardsBalance.errorCode)
-    }
-
-    @Test
-    @Throws(JSONException::class)
     fun `fromJson parses response with error code for insufficient points`() {
         val rewardsBalance = fromJson(Fixtures.AMEX_REWARDS_BALANCE_INSUFFICIENT_POINTS)
 

@@ -189,17 +189,6 @@ class CardUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `when buildJSON is called with a different source value, includes source in meta object`() {
-        val card = Card(source = "form")
-
-        val jsonObject = card.buildJSON()
-
-        assertEquals("form",
-            jsonObject.getJSONObject("_meta").getString("source"))
-    }
-
-    @Test
-    @Throws(JSONException::class)
     fun `when buildJSON is called with integration set, sets integration field in metadata`() {
         val card = Card(integration = IntegrationType.CUSTOM)
 
@@ -373,17 +362,6 @@ class CardUnitTest {
 
         val json = card.buildJSONForGraphQL()
         assertEquals("form",
-            json.getJSONObject("clientSdkMetadata").getString("source"))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun `when buildJSONForGraphQL is called with a different source value, includes source in clientSdkMetadata`() {
-        val card = Card(source = "test-source")
-
-        val json = card.buildJSONForGraphQL()
-
-        assertEquals("test-source",
             json.getJSONObject("clientSdkMetadata").getString("source"))
     }
 

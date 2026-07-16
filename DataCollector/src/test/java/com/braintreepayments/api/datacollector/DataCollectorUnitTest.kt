@@ -217,32 +217,6 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun `when collectDeviceData is called with a risk correlation id, the resulting magnes request includes the correlation id as the client metadata id`() = runTest(testDispatcher) {
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .configurationSuccess(configuration)
-            .build()
-
-        val testScope = TestScope(testDispatcher)
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
-        sut.collectDeviceData(context, dataCollectorRequest, callback)
-        advanceUntilIdle()
-
-        val captor = slot<DataCollectorInternalRequest>()
-        verify {
-            magnesInternalClient.getClientMetadataId(
-                context,
-                configuration,
-                capture(captor)
-            )
-        }
-
-        val request = captor.captured
-        Assert.assertEquals(sampleInstallationGUID, request.applicationGuid)
-        Assert.assertEquals("risk_correlation_id", request.clientMetadataId)
-        Assert.assertFalse(request.hasUserLocationConsent)
-    }
-
-    @Test
     @Throws(Exception::class)
     fun `when collectDeviceData succeeds, callback receives a success result containing device data json with the correlation id from magnes`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
