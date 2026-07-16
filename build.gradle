@@ -133,7 +133,6 @@ dokkaHtmlMultiModule.configure {
     outputDirectory.set(project.file("docs"))
 }
 
-// Apply the custom Dokka plugin that hides @RestrictTo-annotated declarations from generated docs.
 subprojects {
     plugins.withId('org.jetbrains.dokka') {
         dependencies {

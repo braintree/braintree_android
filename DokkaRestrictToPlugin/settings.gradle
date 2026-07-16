@@ -9,7 +9,7 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
     }
-    // Reuse the SDK's version catalog so Dokka/Kotlin versions stay in a single source of truth.
+
     versionCatalogs {
         libs {
             from(files("../gradle/libs.versions.toml"))

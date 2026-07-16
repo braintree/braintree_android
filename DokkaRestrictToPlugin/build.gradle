@@ -1,11 +1,7 @@
 // A Dokka plugin (plain Kotlin/JVM library) that suppresses any declaration annotated
 // with androidx.annotation.RestrictTo from generated documentation.
 //
-// This is a standalone included build (see settings.gradle). The root build consumes it via
-// `dokkaHtmlPartialPlugin 'com.braintreepayments.dokka:DokkaRestrictToPlugin:...'`, which Gradle
-// substitutes with this build's output automatically (matching on group + name, not version).
-//
-// Internal build tooling only: never published to Maven Central and not part of any SDK artifact.
+// Internal build tooling only
 plugins {
     alias libs.plugins.kotlin.jvm
 }
