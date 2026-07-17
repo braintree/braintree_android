@@ -9,11 +9,11 @@ import org.jetbrains.dokka.plugability.PluginApiPreviewAcknowledgement
  * Dokka plugin that removes any declaration annotated with `androidx.annotation.RestrictTo`
  * from the generated documentation.
  */
-public class RestrictToPlugin : DokkaPlugin() {
+class RestrictToPlugin : DokkaPlugin() {
 
     private val dokkaBase by lazy { plugin<DokkaBase>() }
 
-    public val hideRestrictedApi by extending {
+    val hideRestrictedApi by extending {
         dokkaBase.preMergeDocumentableTransformer providing ::HideRestrictedTransformer
     }
 

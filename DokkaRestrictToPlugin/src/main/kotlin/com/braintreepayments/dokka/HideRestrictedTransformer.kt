@@ -13,7 +13,7 @@ import org.jetbrains.dokka.plugability.DokkaContext
  * merge, matching how the built-in `@suppress` KDoc filter and the android-documentation-plugin
  * operate.
  */
-public class HideRestrictedTransformer(context: DokkaContext) :
+class HideRestrictedTransformer(context: DokkaContext) :
     SuppressedByConditionDocumentableFilterTransformer(context) {
 
     override fun shouldBeSuppressed(d: Documentable): Boolean {
