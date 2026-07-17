@@ -1,0 +1,15 @@
+// A Dokka plugin (plain Kotlin/JVM library) that suppresses any declaration annotated
+// with androidx.annotation.RestrictTo from generated documentation.
+//
+// Internal build tooling only
+plugins {
+    alias libs.plugins.kotlin.jvm
+}
+
+group = 'com.braintreepayments.dokka'
+version = '1.0.0'
+
+dependencies {
+    compileOnly libs.dokka.core
+    compileOnly libs.dokka.base
+}
