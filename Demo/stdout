@@ -1,0 +1,259 @@
+/Users/brbusby/.gradle/caches/modules-2/files-2.1/org.jacoco/org.jacoco.agent/0.8.13/850ba9544f357712728f89fe3e1fd51b265a0192/org.jacoco.agent-0.8.13-runtime.jar: Warning: Invalid package reference in library; not included in Android: java.lang.instrument. Referenced from org.jacoco.agent.rt.internal_0e20598.AgentModule. [InvalidPackage]
+/Users/brbusby/.gradle/caches/modules-2/files-2.1/org.jacoco/org.jacoco.agent/0.8.13/850ba9544f357712728f89fe3e1fd51b265a0192/org.jacoco.agent-0.8.13-runtime.jar: Warning: Invalid package reference in library; not included in Android: java.lang.management. Referenced from org.jacoco.agent.rt.internal_0e20598.JmxRegistration. [InvalidPackage]
+/Users/brbusby/.gradle/caches/modules-2/files-2.1/org.jacoco/org.jacoco.agent/0.8.13/850ba9544f357712728f89fe3e1fd51b265a0192/org.jacoco.agent-0.8.13-runtime.jar: Warning: Invalid package reference in library; not included in Android: javax.management. Referenced from org.jacoco.agent.rt.internal_0e20598.JmxRegistration. [InvalidPackage]
+
+   Explanation for issues of type "InvalidPackage":
+   This check scans through libraries looking for calls to APIs that are not
+   included in Android.
+
+   When you create Android projects, the classpath is set up such that you can
+   only access classes in the API packages that are included in Android.
+   However, if you add other projects to your libs/ folder, there is no
+   guarantee that those .jar files were built with an Android specific
+   classpath, and in particular, they could be accessing unsupported APIs such
+   as java.applet.
+
+   This check scans through library jars and looks for references to API
+   packages that are not included in Android and flags these. This is only an
+   error if your code calls one of the library classes which wind up
+   referencing the unsupported package.
+
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/debug/AndroidManifest.xml:12: Warning: Attribute networkSecurityConfig is only used in API level 24 and higher (current min is 23) [UnusedAttribute]
+        android:networkSecurityConfig="@xml/network_security_config"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "UnusedAttribute":
+   This check finds attributes set in XML files that were introduced in a
+   version newer than the oldest version targeted by your application (with
+   the minSdkVersion attribute).
+
+   This is not an error; the application will simply ignore the attribute.
+   However, if the attribute is important to the appearance or functionality
+   of your application, you should consider finding an alternative way to
+   achieve the same result with only available attributes, and then you can
+   optionally create a copy of the layout in a layout-vNN folder which will be
+   used on API NN or higher where you can take advantage of the newer
+   attribute.
+
+   Note: This check does not only apply to attributes. For example, some tags
+   can be unused too, such as the new <tag> element in layouts introduced in
+   API 21.
+
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/java/com/braintreepayments/demo/PayPalFragment.java:73: Warning: Use SwitchCompat from AppCompat or SwitchMaterial from Material library [UseSwitchCompatOrMaterialCode from androidx.appcompat]
+        Switch contactInformationSwitch = view.findViewById(R.id.contact_info_switch);
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/java/com/braintreepayments/demo/PayPalFragment.java:74: Warning: Use SwitchCompat from AppCompat or SwitchMaterial from Material library [UseSwitchCompatOrMaterialCode from androidx.appcompat]
+        Switch amountBreakdownSwitch = view.findViewById(R.id.amount_breakdown_switch);
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "UseSwitchCompatOrMaterialCode":
+   Use SwitchCompat from AppCompat or SwitchMaterial from Material library
+
+   Vendor: Android Open Source Project
+   Identifier: androidx.appcompat
+   Feedback: https://issuetracker.google.com/issues/new?component=460343
+
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/layout/fragment_paypal.xml:51: Warning: Use SwitchCompat from AppCompat or SwitchMaterial from Material library [UseSwitchCompatOrMaterialXml from androidx.appcompat]
+    <Switch
+    ^
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/layout/fragment_paypal.xml:57: Warning: Use SwitchCompat from AppCompat or SwitchMaterial from Material library [UseSwitchCompatOrMaterialXml from androidx.appcompat]
+    <Switch
+    ^
+
+   Explanation for issues of type "UseSwitchCompatOrMaterialXml":
+   Use SwitchCompat from AppCompat or SwitchMaterial from Material library
+
+   Vendor: Android Open Source Project
+   Identifier: androidx.appcompat
+   Feedback: https://issuetracker.google.com/issues/new?component=460343
+
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/layout/fragment_ui_components.xml:15: Warning: Set android:baselineAligned="false" on this element for better performance [DisableBaselineAlignment]
+        <LinearLayout
+         ~~~~~~~~~~~~
+
+   Explanation for issues of type "DisableBaselineAlignment":
+   When a LinearLayout is used to distribute the space proportionally between
+   nested layouts, the baseline alignment property should be turned off to
+   make the layout computation faster.
+
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/layout/fragment_display_nonce.xml:8: Warning: Possible overdraw: Root element paints background @color/off_white with a theme that also paints a background (inferred theme is @style/DemoAppTheme) [Overdraw]
+    android:background="@color/off_white"
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "Overdraw":
+   If you set a background drawable on a root view, then you should use a
+   custom theme where the theme background is null. Otherwise, the theme
+   background will be painted first, only to have your custom background
+   completely cover it; this is called "overdraw".
+
+   NOTE: This detector relies on figuring out which layouts are associated
+   with which activities based on scanning the Java code, and it's currently
+   doing that using an inexact pattern matching algorithm. Therefore, it can
+   incorrectly conclude which activity the layout is associated with and then
+   wrongly complain that a background-theme is hidden.
+
+   If you want your custom background on multiple pages, then you should
+   consider making a custom theme with your custom background and just using
+   that theme instead of a root element background.
+
+   Of course it's possible that your custom drawable is translucent and you
+   want it to be mixed with the background. However, you will get better
+   performance if you pre-mix the background with your drawable and use that
+   resulting image or color as a custom theme background instead.
+
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/drawable-xhdpi/button_google_pay.png: Warning: The resource R.drawable.button_google_pay appears to be unused [UnusedResources]
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/values/colors.xml:3: Warning: The resource R.color.left_blue appears to be unused [UnusedResources]
+    <color name="left_blue">#FF003087</color>
+           ~~~~~~~~~~~~~~~~
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/values/colors.xml:4: Warning: The resource R.color.middle_blue appears to be unused [UnusedResources]
+    <color name="middle_blue">#FF001C64</color>
+           ~~~~~~~~~~~~~~~~~~
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/values/colors.xml:5: Warning: The resource R.color.right_blue appears to be unused [UnusedResources]
+    <color name="right_blue">#FF0070E0</color>
+           ~~~~~~~~~~~~~~~~~
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/values/colors.xml:6: Warning: The resource R.color.gold appears to be unused [UnusedResources]
+    <color name="gold">#FFD4A017</color>
+           ~~~~~~~~~~~
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/values/colors.xml:10: Warning: The resource R.color.green appears to be unused [UnusedResources]
+    <color name="green">#008C20</color>
+           ~~~~~~~~~~~~
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/values/dimens.xml:3: Warning: The resource R.dimen.margin_8 appears to be unused [UnusedResources]
+    <dimen name="margin_8">8dp</dimen>
+           ~~~~~~~~~~~~~~~
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/values/dimens.xml:9: Warning: The resource R.dimen.card_corner_radius appears to be unused [UnusedResources]
+    <dimen name="card_corner_radius">8dp</dimen>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/values/strings.xml:119: Warning: The resource R.string.paypal_offer_pay_later appears to be unused [UnusedResources]
+    <string name="paypal_offer_pay_later">Offer Pay Later</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "UnusedResources":
+   Unused resources make applications larger and slow down builds.
+
+
+   The unused resource check can ignore tests. If you want to include
+   resources that are only referenced from tests, consider packaging them in a
+   test source set instead.
+
+   You can include test sources in the unused resource check by setting the
+   system property lint.unused-resources.include-tests =true, and to exclude
+   them (usually for performance reasons), use
+   lint.unused-resources.exclude-tests =true.
+   ,
+
+   Available options:
+
+   **skip-libraries** (default is true):
+   Whether the unused resource check should skip reporting unused resources in libraries.
+
+   Many libraries will declare resources that are part of the library surface; other modules depending on the library will also reference the resources. To avoid reporting all these resources as unused (in the context of a library), the unused resource check normally skips reporting unused resources in libraries. Instead, run the unused resource check on the consuming app module (along with `checkDependencies=true`).
+
+   However, there are cases where you want to check that all the resources declared in a library are used; in that case, you can disable the skip option.
+
+   To configure this option, use a `lint.xml` file with an <option> like this:
+
+   ```xml
+   <lint>
+       <issue id="UnusedResources">
+           <option name="skip-libraries" value="true" />
+       </issue>
+   </lint>
+   ```
+
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/drawable-xhdpi/ic_launcher.png: Warning: Launcher icons should not fill every pixel of their square region; see the design guide for details [IconLauncherShape]
+
+   Explanation for issues of type "IconLauncherShape":
+   According to the Android Design Guide
+   (https://d.android.com/r/studio-ui/designer/material/iconography) your
+   launcher icons should "use a distinct silhouette", a "three-dimensional,
+   front view, with a slight perspective as if viewed from above, so that
+   users perceive some depth."
+
+   The unique silhouette implies that your launcher icon should not be a
+   filled square.
+
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/java/com/braintreepayments/demo/ShopperInsightsFragment.kt:81: Warning: Use the KTX extension function String.toUri instead? [UseKtx]
+            Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"),
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/java/com/braintreepayments/demo/ShopperInsightsFragmentV2.kt:81: Warning: Use the KTX extension function String.toUri instead? [UseKtx]
+            Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"),
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "UseKtx":
+   The Android KTX libraries decorates the Android platform SDK as well as
+   various libraries with more convenient extension functions available from
+   Kotlin, allowing you to use default parameters, named parameters, and
+   more.
+
+   Available options:
+
+   **remove-defaults** (default is true):
+   Whether to skip arguments that match the defaults provided by the extension.
+
+   Extensions often provide default values for some of the parameters. For example:
+   ```kotlin
+   fun Path.readLines(charset: Charset = Charsets.UTF_8): List<String> { return Files.readAllLines(this, charset) }
+   ```
+   This lint check will by default automatically omit parameters that match the default, so if your code was calling
+
+   ```kotlin
+   Files.readAllLines(file, Charset.UTF_8)
+   ```
+   lint would replace this with
+   ```kotlin
+   file.readLines()
+   ```
+   rather than
+
+   ```kotlin
+   file.readLines(Charset.UTF_8
+   ```
+   You can turn this behavior off using this option.
+
+   To configure this option, use a `lint.xml` file with an <option> like this:
+
+   ```xml
+   <lint>
+       <issue id="UseKtx">
+           <option name="remove-defaults" value="true" />
+       </issue>
+   </lint>
+   ```
+
+   **require-present** (default is true):
+   Whether to only offer extensions already available.
+
+   This option lets you only have lint suggest extension replacements if those extensions are already available on the class path (in other words, you're already depending on the library containing the extension method.)
+
+   To configure this option, use a `lint.xml` file with an <option> like this:
+
+   ```xml
+   <lint>
+       <issue id="UseKtx">
+           <option name="require-present" value="true" />
+       </issue>
+   </lint>
+   ```
+
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/layout/fragment_paypal.xml:55: Warning: Hardcoded string "Add Contact Information", should use @string resource [HardcodedText]
+        android:text="Add Contact Information" />
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/brbusby/Documents/repositories/braintree/braintree_android/Demo/src/main/res/layout/fragment_paypal.xml:61: Warning: Hardcoded string "Add Amount Breakdown", should use @string resource [HardcodedText]
+        android:text="Add Amount Breakdown" />
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "HardcodedText":
+   Hardcoding text attributes directly in layout files is bad for several
+   reasons:
+
+   * When creating configuration variations (for example for landscape or
+   portrait) you have to repeat the actual text (and keep it up to date when
+   making changes)
+
+   * The application cannot be translated to other languages by just adding
+   new translations for existing string resources.
+
+   There are quickfixes to automatically extract this hardcoded string into a
+   resource lookup.
+
+0 errors, 24 warnings

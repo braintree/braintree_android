@@ -2,6 +2,11 @@
 
 ## unreleased
 
+* General
+    * Remove `VisaCheckout` module. Visa Checkout is no longer supported.
+    * Deprecate `Configuration#isVisaCheckoutEnabled`, `Configuration#visaCheckoutApiKey`,
+      `Configuration#visaCheckoutExternalClientId`, and `Configuration#visaCheckoutSupportedNetworks`.
+      These will be removed in the next major version.
 * AmericanExpress
     * Expose `getRewardsBalance` as a public suspend function
 * Card

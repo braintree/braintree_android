@@ -29,7 +29,6 @@ body:
       <!-- Examples -->
       <!--  - com.braintreepayments.api:braintree:x.y.z -->
       <!--  - compile 'com.braintreepayments.api:data-collector:2.+' -->
-      <!--  - com.braintreepayments.api:visa-checkout:x.y.z-SNAPSHOT -->
       <!--  - com.braintreepayments.api:drop-in:x.y.z -->
   validations:
     required: true

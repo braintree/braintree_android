@@ -1,0 +1,78 @@
+/Users/brbusby/Documents/repositories/braintree/braintree_android/BraintreeCore/src/main/java/com/braintreepayments/api/core/Authorization.kt:38: Hint: The lambda argument ({ it <= ' ' }) is unnecessary [TrimLambda]
+            val authTrimmed = authorizationString?.trim { it <= ' ' }
+                                                        ~~~~~~~~~~~~~
+/Users/brbusby/Documents/repositories/braintree/braintree_android/BraintreeCore/src/main/java/com/braintreepayments/api/core/Authorization.kt:38: Hint: The lambda argument ({ it <= ' ' }) is unnecessary [TrimLambda]
+            val authTrimmed = authorizationString?.trim { it <= ' ' }
+                                                        ~~~~~~~~~~~~~
+
+   Explanation for issues of type "TrimLambda":
+   The Kotlin standard library trim() call takes an optional lambda to specify
+   which characters are considered whitespace.
+
+   When converting Java code to Kotlin code, the converter will convert calls
+   for Java's s.trim() into s.trim() { it <= ' ' }. This preserves the exact
+   semantics of the Java code, but is likely not what you want: the default in
+   Kotlin uses a better definition of what constitutes a whitespace character
+   (Char::isWhitespace) and also results in less bytecode at the call-site.
+
+/Users/brbusby/Documents/repositories/braintree/braintree_android/BraintreeCore/src/main/java/com/braintreepayments/api/core/ConfigurationLoader.kt:51: Warning: Use the KTX extension function String.toUri instead? [UseKtx]
+        val configUrl = Uri.parse(authorization.configUrl)
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "UseKtx":
+   The Android KTX libraries decorates the Android platform SDK as well as
+   various libraries with more convenient extension functions available from
+   Kotlin, allowing you to use default parameters, named parameters, and
+   more.
+
+   Available options:
+
+   **remove-defaults** (default is true):
+   Whether to skip arguments that match the defaults provided by the extension.
+
+   Extensions often provide default values for some of the parameters. For example:
+   ```kotlin
+   fun Path.readLines(charset: Charset = Charsets.UTF_8): List<String> { return Files.readAllLines(this, charset) }
+   ```
+   This lint check will by default automatically omit parameters that match the default, so if your code was calling
+
+   ```kotlin
+   Files.readAllLines(file, Charset.UTF_8)
+   ```
+   lint would replace this with
+   ```kotlin
+   file.readLines()
+   ```
+   rather than
+
+   ```kotlin
+   file.readLines(Charset.UTF_8
+   ```
+   You can turn this behavior off using this option.
+
+   To configure this option, use a `lint.xml` file with an <option> like this:
+
+   ```xml
+   <lint>
+       <issue id="UseKtx">
+           <option name="remove-defaults" value="true" />
+       </issue>
+   </lint>
+   ```
+
+   **require-present** (default is true):
+   Whether to only offer extensions already available.
+
+   This option lets you only have lint suggest extension replacements if those extensions are already available on the class path (in other words, you're already depending on the library containing the extension method.)
+
+   To configure this option, use a `lint.xml` file with an <option> like this:
+
+   ```xml
+   <lint>
+       <issue id="UseKtx">
+           <option name="require-present" value="true" />
+       </issue>
+   </lint>
+   ```
+
+0 errors, 1 warning, 2 hints
