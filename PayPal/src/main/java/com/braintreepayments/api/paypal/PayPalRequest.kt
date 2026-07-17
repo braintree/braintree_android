@@ -82,7 +82,7 @@ import org.json.JSONException
  * @property recurringBillingDetails Optional: Recurring billing product details.
  * @property recurringBillingPlanType Optional: Recurring billing plan type, or charge pattern.
  * @property userAction The call to action for the PayPal flow.
- * @property payPalCampaigns The PayPal co-marketing campaigns to associate with the order.
+ * @property payPalCampaigns List of PayPal co-marketing campaigns to associate with the order.
  */
 abstract class PayPalRequest internal constructor(
     open val hasUserLocationConsent: Boolean,
@@ -158,6 +158,5 @@ abstract class PayPalRequest internal constructor(
         internal const val SHOPPER_SESSION_ID_KEY: String = "shopper_session_id"
         internal const val AMOUNT_BREAKDOWN_KEY: String = "amount_breakdown"
         internal const val PAYPAL_CAMPAIGNS_KEY: String = "paypal_campaigns"
-        internal const val CAMPAIGN_ID_KEY: String = "id"
     }
 }

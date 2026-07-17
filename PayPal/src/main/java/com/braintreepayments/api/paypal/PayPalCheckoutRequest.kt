@@ -198,7 +198,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
 
         if (payPalCampaigns.isNotEmpty()) {
             val jsonCampaigns = JSONArray()
-            payPalCampaigns.forEach { jsonCampaigns.put(JSONObject().put(CAMPAIGN_ID_KEY, it.id)) }
+            payPalCampaigns.forEach { jsonCampaigns.put(it.toJson()) }
             parameters.put(PAYPAL_CAMPAIGNS_KEY, jsonCampaigns)
         }
 
