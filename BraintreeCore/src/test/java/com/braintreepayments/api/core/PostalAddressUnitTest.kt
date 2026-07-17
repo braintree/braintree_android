@@ -14,7 +14,7 @@ import org.junit.runner.RunWith
 @RunWith(RobolectricTestRunner::class)
 class PostalAddressUnitTest {
     @Test
-    fun constructsCorrectly() {
+    fun `PostalAddress property assignments are readable back correctly`() {
         val postalAddress = PostalAddress().apply {
             streetAddress = "123 Fake St."
             extendedAddress = "Apt. 3"
@@ -35,7 +35,7 @@ class PostalAddressUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun testCanCreatePostalAddress_fromStandardJson() {
+    fun `PostalAddressParser fromJson parses standard address json`() {
         val accountAddressJson = Fixtures.PAYMENT_METHODS_PAYPAL_ADDRESS
         val postalAddress = PostalAddressParser.fromJson(JSONObject(accountAddressJson))
         assertEquals("123 Fake St.", postalAddress.streetAddress)
@@ -49,7 +49,7 @@ class PostalAddressUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun testCanCreatePostalAddress_fromAlternateJson() {
+    fun `PostalAddressParser fromJson parses alternate address json`() {
         val accountAddressJson = Fixtures.PAYMENT_METHODS_PAYPAL_ADDRESS_ALTERNATE
         val postalAddress = PostalAddressParser.fromJson(JSONObject(accountAddressJson))
         assertEquals("123 Fake St.", postalAddress.streetAddress)
@@ -63,7 +63,7 @@ class PostalAddressUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun testCanPostalAddressHandleMissingFieldsInJson() {
+    fun `when json is missing address fields, PostalAddressParser fromJson leaves fields null`() {
         val accountAddressJson = Fixtures.RANDOM_JSON
         val postalAddress = PostalAddressParser.fromJson(JSONObject(accountAddressJson))
         assertNull(postalAddress.streetAddress)
@@ -76,7 +76,7 @@ class PostalAddressUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun testWriteToParcel_serializesCorrectly() {
+    fun `PostalAddress survives Parcel serialization round trip`() {
         val accountAddressJson = Fixtures.PAYMENT_METHODS_PAYPAL_ADDRESS
         val preSerialized = PostalAddressParser.fromJson(JSONObject(accountAddressJson))
 
@@ -95,7 +95,7 @@ class PostalAddressUnitTest {
     }
 
     @Test
-    fun isEmpty_returnsTrueIfCountryCodeIsNotSet() {
+    fun `when countryCodeAlpha2 is not set, isEmpty returns true`() {
         val postalAddress = PostalAddress().apply {
             streetAddress = "123 Fake St."
             extendedAddress = "Apt. 3"
@@ -108,7 +108,7 @@ class PostalAddressUnitTest {
     }
 
     @Test
-    fun isEmpty_returnsFalseIfCountryCodeIsSet() {
+    fun `when countryCodeAlpha2 is set, isEmpty returns false`() {
         val postalAddress = PostalAddress()
         postalAddress.countryCodeAlpha2 = "US"
         assertFalse(postalAddress.isEmpty)

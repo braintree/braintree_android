@@ -11,7 +11,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class ClientTokenUnitTest {
     @Test
-    fun fromString_deserializesClientToken() {
+    fun `when given a base64-encoded CLIENT_TOKEN fixture, fromString deserializes it into a ClientToken`() {
         val clientToken =
             fromString(FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)) as ClientToken
         assertEquals("client_api_configuration_url", clientToken.configUrl)
@@ -19,27 +19,27 @@ class ClientTokenUnitTest {
     }
 
     @Test
-    fun fromString_canDeserializeFromBase64String() {
+    fun `when given the BASE64_CLIENT_TOKEN fixture, fromString deserializes the encoded fields`() {
         val clientToken = fromString(Fixtures.BASE64_CLIENT_TOKEN) as ClientToken
         assertEquals("encoded_capi_configuration_url", clientToken.configUrl)
         assertEquals("encoded_auth_fingerprint", clientToken.authorizationFingerprint)
     }
 
     @Test
-    fun fromString_returnsInvalidTokenWhenGivenRandomJson() {
+    fun `when given random json, fromString returns InvalidAuthorization`() {
         val result = fromString(Fixtures.RANDOM_JSON)
         assertTrue(result is InvalidAuthorization)
     }
 
     @Test
-    fun getBearer_returnsAuthorizationFingerprint() {
+    fun `when clientToken is decoded, bearer returns the authorization fingerprint`() {
         val clientToken =
             fromString(FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)) as ClientToken
         assertEquals(clientToken.authorizationFingerprint, clientToken.bearer)
     }
 
     @Test
-    fun getCustomerId_returnsNull_whenCustomerIdNotPresent() {
+    fun `when customer id is not present in authorization fingerprint options, customerId returns null`() {
         val clientToken =
             fromString(
                 FixturesHelper.base64Encode(
@@ -50,7 +50,7 @@ class ClientTokenUnitTest {
     }
 
     @Test
-    fun getCustomerId_returnsCustomerId() {
+    fun `when customer id is present in authorization fingerprint, customerId returns it`() {
         val clientToken =
             fromString(
                 FixturesHelper.base64Encode(

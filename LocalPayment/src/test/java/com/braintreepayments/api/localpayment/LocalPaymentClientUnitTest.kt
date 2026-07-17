@@ -40,6 +40,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class LocalPaymentClientUnitTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var activity: FragmentActivity
@@ -121,7 +122,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_resetsSessionId() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called, resets the analytics session id`() = runTest(testDispatcher) {
         sut.createPaymentAuthRequest(createLocalPaymentRequest(), localPaymentAuthCallback)
         advanceUntilIdle()
 
@@ -129,7 +130,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_sendsPaymentStartedEvent() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called, sends a payment started analytics event`() = runTest(testDispatcher) {
         sut.createPaymentAuthRequest(createLocalPaymentRequest(), localPaymentAuthCallback)
         advanceUntilIdle()
 
@@ -143,7 +144,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_sendsPaymentFailedEvent_forNullGetPaymentType() = runTest(testDispatcher) {
+    fun `when paymentType is null, createPaymentAuthRequest sends a payment failed analytics event`() = runTest(testDispatcher) {
         val request = createLocalPaymentRequest()
         request.paymentType = null
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
@@ -161,7 +162,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_createsPaymentMethodWithLocalPaymentApi() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called, creates payment method via localPaymentApi`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
@@ -182,7 +183,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_success_forwardsResultToCallback() = runTest(testDispatcher) {
+    fun `when createPaymentMethod succeeds, createPaymentAuthRequest forwards result params to callback`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
@@ -210,7 +211,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_success_sendsAnalyticsEvents() = runTest(testDispatcher) {
+    fun `when createPaymentMethod succeeds, createPaymentAuthRequest sends a browser switch succeeded analytics event`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
@@ -237,7 +238,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_configurationFetchError_forwardsErrorToCallback() = runTest(testDispatcher) {
+    fun `when configuration fetch fails, createPaymentAuthRequest forwards the error to callback`() = runTest(testDispatcher) {
         val configException = IOException("Configuration not fetched")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configException)
@@ -262,7 +263,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_onLocalPaymentApiError_sendsAnalyticsEvents() = runTest(testDispatcher) {
+    fun `when localPaymentApi createPaymentMethod fails, createPaymentAuthRequest sends a payment failed analytics event`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
@@ -291,7 +292,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenPayPalDisabled_returnsErrorToCallback() = runTest(testDispatcher) {
+    fun `when PayPal is disabled in configuration, createPaymentAuthRequest returns a ConfigurationException to callback`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalDisabledConfig)
             .build()
@@ -316,7 +317,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenAmountIsNull_returnsErrorToCallback() = runTest(testDispatcher) {
+    fun `when request amount is null, createPaymentAuthRequest returns a validation error to callback`() = runTest(testDispatcher) {
         val request = createLocalPaymentRequest()
         request.amount = null
 
@@ -337,7 +338,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenPaymentTypeIsNull_returnsErrorToCallback() = runTest(testDispatcher) {
+    fun `when request paymentType is null, createPaymentAuthRequest returns a validation error to callback`() = runTest(testDispatcher) {
         val request = createLocalPaymentRequest()
         request.paymentType = null
 
@@ -358,7 +359,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenCreatePaymentMethodError_returnsErrorToCallback() = runTest(testDispatcher) {
+    fun `when createPaymentMethod fails, createPaymentAuthRequest returns a wrapped BraintreeException to callback`() = runTest(testDispatcher) {
         val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodError(Exception("error"))
             .build()
@@ -388,7 +389,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenCreatePaymentMethodSuccess_returnsLocalPaymentResultToCallback() =
+    fun `when createPaymentMethod succeeds, createPaymentAuthRequest returns ReadyToLaunch params to callback`() =
         runTest(testDispatcher) {
         val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(localPaymentAuthRequestParams)
@@ -413,7 +414,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_success_withEmptyPaymentId_sendsAnalyticsEvents() = runTest(testDispatcher) {
+    fun `when payment id is empty, createPaymentAuthRequest sends analytics events without a payment id`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
@@ -450,7 +451,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_success_withPaymentId_sendsAnalyticsEvents() = runTest(testDispatcher) {
+    fun `when payment id is present, createPaymentAuthRequest sends analytics events with that payment id`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
@@ -489,7 +490,7 @@ class LocalPaymentClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun buildBrowserSwitchOptions_returnsLocalPaymentResultWithBrowserSwitchOptions() = runTest(testDispatcher) {
+    fun `when buildBrowserSwitchOptions is called, returns ReadyToLaunch params with expected browser switch options`() = runTest(testDispatcher) {
         val request = createLocalPaymentRequest()
         val approvalUrl = "https://sample.com/approval?token=sample-token"
         val transaction = LocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
@@ -513,7 +514,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun testBrowserSwitchOptions_NewTask_RequestCode() = runTest(testDispatcher) {
+    fun `when buildBrowserSwitchOptions is called, isLaunchAsNewTask defaults to false`() = runTest(testDispatcher) {
         every { braintreeClient.launchesBrowserSwitchAsNewTask() } returns true
 
         val request = createLocalPaymentRequest()
@@ -530,7 +531,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun buildBrowserSwitchOptions_sendsAnalyticsEvents() = runTest(testDispatcher) {
+    fun `when buildBrowserSwitchOptions is called, sends a browser switch succeeded analytics event`() = runTest(testDispatcher) {
         val request = createLocalPaymentRequest()
         val approvalUrl = "https://sample.com/approval?token=sample-token"
         val transaction = createLocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
@@ -548,7 +549,7 @@ class LocalPaymentClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenPostFailure_notifiesCallbackOfErrorAlongWithAnalyticsEvent() = runTest(testDispatcher) {
+    fun `when tokenize POST fails, notifies callback of the error and sends a payment failed analytics event`() = runTest(testDispatcher) {
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
         every { browserSwitchResult.requestMetadata } returns JSONObject()
             .put("payment-type", "ideal")
@@ -606,7 +607,7 @@ class LocalPaymentClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenResultOKAndSuccessful_tokenizesWithLocalPaymentApi() = runTest(testDispatcher) {
+    fun `when browser switch result is success, tokenize calls localPaymentApi tokenize with expected params`() = runTest(testDispatcher) {
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
         every { browserSwitchResult.requestMetadata } returns JSONObject()
             .put("payment-type", "ideal")
@@ -649,7 +650,7 @@ class LocalPaymentClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenResultOKAndTokenizationSucceeds_sendsResultToCallback() = runTest(testDispatcher) {
+    fun `when tokenization succeeds, tokenize sends the nonce result to callback`() = runTest(testDispatcher) {
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
         every { browserSwitchResult.requestMetadata } returns JSONObject()
             .put("payment-type", "ideal")
@@ -693,7 +694,7 @@ class LocalPaymentClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenResultOKAndTokenizationSuccess_sendsAnalyticsEvent() = runTest(testDispatcher) {
+    fun `when tokenization succeeds, tokenize sends a payment succeeded analytics event`() = runTest(testDispatcher) {
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
         every { browserSwitchResult.requestMetadata } returns JSONObject()
             .put("payment-type", "ideal")
@@ -738,7 +739,7 @@ class LocalPaymentClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenResultOK_onConfigurationError_returnsError() = runTest(testDispatcher) {
+    fun `when configuration fetch fails during tokenize, returns the configuration error to callback`() = runTest(testDispatcher) {
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
         every { browserSwitchResult.requestMetadata } returns JSONObject()
             .put("payment-type", "ideal")
@@ -782,7 +783,7 @@ class LocalPaymentClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenResultOKAndUserCancels_notifiesCallbackAndSendsAnalyticsEvent() = runTest(testDispatcher) {
+    fun `when the return url indicates a user cancellation, tokenize notifies callback and sends a payment canceled analytics event`() = runTest(testDispatcher) {
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
         every { browserSwitchResult.requestMetadata } returns JSONObject()
             .put("payment-type", "ideal")
@@ -816,7 +817,7 @@ class LocalPaymentClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun onBrowserSwitchResult_sends_the_correct_value_of_hasUserLocationConsent_to_getClientMetadataId() =
+    fun `when request has-user-location-consent metadata is true, tokenize passes that value to getClientMetadataId`() =
     runTest(testDispatcher) {
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
         every { browserSwitchResult.requestMetadata } returns JSONObject()
@@ -868,7 +869,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
+    fun `when braintreeClient throws CancellationException, createPaymentAuthRequest never invokes the callback`() =
     runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
@@ -890,7 +891,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
+    fun `when braintreeClient throws CancellationException, tokenize never invokes the callback`() =
     runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))

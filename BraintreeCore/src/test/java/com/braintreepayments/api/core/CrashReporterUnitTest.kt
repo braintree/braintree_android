@@ -10,6 +10,7 @@ import org.robolectric.RobolectricTestRunner
 import java.lang.ref.WeakReference
 
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class CrashReporterUnitTest {
 
     private lateinit var braintreeClient: BraintreeClient
@@ -22,14 +23,14 @@ class CrashReporterUnitTest {
     }
 
     @Test
-    fun start_setsSelfAsThreadDefaultExceptionHandler() {
+    fun `when start is called, CrashReporter sets itself as the thread default exception handler`() {
         val sut = CrashReporter(braintreeClient)
         sut.start()
         assertSame(sut, Thread.getDefaultUncaughtExceptionHandler())
     }
 
     @Test
-    fun uncaughtExceptionHandler_whenClientReferenceNull_forwardsToExceptionHandler() {
+    fun `when braintreeClient weak reference is null, uncaughtException forwards to the default handler`() {
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler)
         val thread = mockk<Thread>()
         val exception = Exception("error")
@@ -41,7 +42,7 @@ class CrashReporterUnitTest {
     }
 
     @Test
-    fun uncaughtExceptionHandler_whenClientReferenceNull_restoresOriginalDefaultExceptionHandler() {
+    fun `when braintreeClient weak reference is null, uncaughtException restores the original default handler`() {
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler)
         val sut = CrashReporter(WeakReference(null))
         sut.start()
@@ -50,7 +51,7 @@ class CrashReporterUnitTest {
     }
 
     @Test
-    fun uncaughtExceptionHandler_whenCauseUnknown_forwardsInvocationToDefaultExceptionHandler() {
+    fun `when stack trace has no known braintree or paypal cause, uncaughtException forwards to the default handler without reporting`() {
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler)
         val thread = mockk<Thread>()
         val exception = Exception()
@@ -67,7 +68,7 @@ class CrashReporterUnitTest {
     }
 
     @Test
-    fun uncaughtExceptionHandler_whenBraintreeInStackTrace_reportsCrashToExceptionHandler() {
+    fun `when stack trace contains a braintree class, uncaughtException reports the crash and forwards to the default handler`() {
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler)
         val thread = mockk<Thread>()
         val exception = Exception()
@@ -86,7 +87,7 @@ class CrashReporterUnitTest {
     }
 
     @Test
-    fun uncaughtExceptionHandler_whenPayPalInStackTrace_reportsCrashToExceptionHandler() {
+    fun `when stack trace contains a paypal class, uncaughtException reports the crash and forwards to the default handler`() {
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler)
         val thread = mockk<Thread>()
         val exception = Exception()
