@@ -125,7 +125,7 @@ class ExampleFragment : Fragment() {
         super.onResume()
         val pendingRequest = fetchPendingRequest()
         if (pendingRequest != null) {
-            payPalButton.handleReturnToApp(pendingRequest, requireActivity().intent) { payPalResult ->
+            payPalButton.handleReturnToApp(pendingRequest, intent) { payPalResult ->
                 when (payPalResult) {
                     is PayPalResult.Success -> {
                         // handle success
@@ -141,7 +141,7 @@ class ExampleFragment : Fragment() {
             // clear the stored pending request
             clearPendingRequest()
             // clear intent data
-            requireActivity().intent.data = null
+            intent.data = null
         }
     }
 }
@@ -187,7 +187,7 @@ class ExampleFragment : Fragment() {
         super.onResume()
         val pendingRequest = fetchPendingRequest()
         if (pendingRequest != null) {
-            venmoButton.handleReturnToApp(pendingRequest, requireActivity().intent) { venmoResult ->
+            venmoButton.handleReturnToApp(pendingRequest, intent) { venmoResult ->
                 when (venmoResult) {
                     is VenmoResult.Success -> {
                         // handle success
@@ -203,7 +203,7 @@ class ExampleFragment : Fragment() {
             // clear the stored pending request
             clearPendingRequest()
             // clear intent data
-            requireActivity().intent.data = null
+            intent.data = null
         }
     }
 }
@@ -236,7 +236,7 @@ private val paypalTokenizeCallback = PayPalTokenizeCallback { payPalResult ->
         }
     }
     // clear intent data
-    requireActivity().intent.data = null
+    intent.data = null
 }
 
 PayPalButton(
@@ -266,7 +266,7 @@ private val venmoTokenizeCallback = VenmoTokenizeCallback { venmoResult ->
         }
     }
     // clear intent data
-    requireActivity().intent.data = null
+    intent.data = null
 }
 
 VenmoButton(
@@ -282,7 +282,7 @@ VenmoButton(
 After you've received a result, clear out the `intent.data` by setting it to null.
 
 ```kotlin
-requireActivity().intent.data = null
+intent.data = null
 ```
 
 ## Card Fields
