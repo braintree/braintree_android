@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Build
+  * Drop Gradle Toolchains usage
 * AmericanExpress
     * Expose `getRewardsBalance` as a public suspend function
 * Card
