@@ -106,7 +106,7 @@ dependencies {
 
     androidTestImplementation libs.device.automator
     androidTestImplementation project(':TestUtils')
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation libs.androidx.test.espresso.core
 
     testImplementation libs.junit
     testImplementation libs.test.parameter.injector
