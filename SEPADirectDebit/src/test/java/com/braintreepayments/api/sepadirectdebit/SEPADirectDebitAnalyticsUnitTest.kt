@@ -6,7 +6,7 @@ import org.junit.Test
 class SEPADirectDebitAnalyticsUnitTest {
 
     @Test
-    fun testAnalyticsEvents_sendsExpectedEventNames() {
+    fun `analytics event constants have expected event name values`() {
         assertEquals(
             "sepa:tokenize:started",
             SEPADirectDebitAnalytics.TOKENIZE_STARTED

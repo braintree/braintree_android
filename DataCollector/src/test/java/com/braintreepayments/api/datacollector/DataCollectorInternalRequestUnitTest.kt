@@ -5,7 +5,7 @@ import org.junit.Test
 
 class DataCollectorInternalRequestUnitTest {
     @Test
-    fun setClientMetadataId_trimsId_to_32characters() {
+    fun `when clientMetadataId is set with a value longer than 32 characters, it is trimmed to 32 characters`() {
         val request = DataCollectorInternalRequest(true)
         request.clientMetadataId = "pairing-id-pairing-id-pairing-idXXX"
 

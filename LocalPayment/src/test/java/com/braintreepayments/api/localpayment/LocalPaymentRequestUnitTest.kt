@@ -14,7 +14,7 @@ import org.robolectric.RobolectricTestRunner
 class LocalPaymentRequestUnitTest {
     @Test
     @Throws(JSONException::class)
-    fun build_setsAllParams() {
+    fun `when build is called, generates JSON payload with all request params set`() {
         val address = PostalAddress()
         address.streetAddress = "836486 of 22321 Park Lake"
         address.extendedAddress = "Apt 2"

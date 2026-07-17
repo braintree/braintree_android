@@ -9,37 +9,37 @@ import org.junit.runners.JUnit4
 class BraintreeRequestCodesUnitTest {
 
     @Test
-    fun threeDSecure() {
+    fun `THREE_D_SECURE request code is 13487`() {
         assertEquals(13487, BraintreeRequestCodes.THREE_D_SECURE.code)
     }
 
     @Test
-    fun venmo() {
+    fun `VENMO request code is 13488`() {
         assertEquals(13488, BraintreeRequestCodes.VENMO.code)
     }
 
     @Test
-    fun paypal() {
+    fun `PAYPAL request code is 13591`() {
         assertEquals(13591, BraintreeRequestCodes.PAYPAL.code)
     }
 
     @Test
-    fun visaCheckout() {
+    fun `VISA_CHECKOUT request code is 13592`() {
         assertEquals(13592, BraintreeRequestCodes.VISA_CHECKOUT.code)
     }
 
     @Test
-    fun googlePay() {
+    fun `GOOGLE_PAY request code is 13593`() {
         assertEquals(13593, BraintreeRequestCodes.GOOGLE_PAY.code)
     }
 
     @Test
-    fun localPayment() {
+    fun `LOCAL_PAYMENT request code is 13596`() {
         assertEquals(13596, BraintreeRequestCodes.LOCAL_PAYMENT.code)
     }
 
     @Test
-    fun sepDebit() {
+    fun `SEPA_DEBIT request code is 13597`() {
         assertEquals(13597, BraintreeRequestCodes.SEPA_DEBIT.code)
     }
 }

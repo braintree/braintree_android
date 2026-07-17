@@ -53,7 +53,7 @@ class VisaCheckoutClientUnitTest {
     }
 
     @Test
-    fun createProfileBuilder_whenNotEnabled_throwsConfigurationException() = runTest(testDispatcher) {
+    fun `when createProfileBuilder is called and visa checkout is not enabled, callback is invoked with configuration exception failure`() = runTest(testDispatcher) {
         val apiClient = MockkApiClientBuilder().build()
         val configuration = TestConfigurationBuilder.basicConfig<Configuration>()
         val braintreeClient = MockkBraintreeClientBuilder()
@@ -86,7 +86,7 @@ class VisaCheckoutClientUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun createProfileBuilder_whenProduction_usesProductionConfig() = runTest(testDispatcher) {
+    fun `when createProfileBuilder is called with a production environment configuration, callback is invoked with success containing profile builder with accepted card brands`() = runTest(testDispatcher) {
         val apiClient = MockkApiClientBuilder().build()
         val configString = TestConfigurationBuilder()
             .environment("production")
@@ -120,7 +120,7 @@ class VisaCheckoutClientUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun createProfileBuilder_whenNotProduction_usesSandboxConfig() = runTest(testDispatcher) {
+    fun `when createProfileBuilder is called with a non-production environment configuration, callback is invoked with success containing profile builder with accepted card brands`() = runTest(testDispatcher) {
         val apiClient = MockkApiClientBuilder().build()
         val configString = TestConfigurationBuilder()
             .environment("environment")
@@ -152,7 +152,7 @@ class VisaCheckoutClientUnitTest {
     }
 
     @Test
-    fun `when createProfileBuilder is called and configuration is null, exception is returned as a failure`() = runTest(testDispatcher) {
+    fun `when createProfileBuilder is called and configuration fetch fails, exception is returned as a failure`() = runTest(testDispatcher) {
         val exception = IOException("test error")
         val callback = mockk<VisaCheckoutCreateProfileBuilderCallback>(relaxed = true)
         val braintreeClient = MockkBraintreeClientBuilder()
@@ -172,7 +172,7 @@ class VisaCheckoutClientUnitTest {
     }
 
     @Test
-    fun createProfileBuilder_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+    fun `when createProfileBuilder is called and braintreeClient throws cancellation exception, callback is not invoked`() = runTest(testDispatcher) {
         val apiClient = MockkApiClientBuilder().build()
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
@@ -187,7 +187,7 @@ class VisaCheckoutClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenSuccessful_postsVisaPaymentMethodNonce() {
+    fun `when tokenize is successful, callback is invoked with success containing visa payment method nonce`() {
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTSuccess(JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
             .build()
@@ -208,7 +208,7 @@ class VisaCheckoutClientUnitTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenSuccessful_sendsAnalyticEvent() = runTest(testDispatcher) {
+    fun `when tokenize is successful, started and succeeded analytics events are sent`() = runTest(testDispatcher) {
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTSuccess(JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
             .build()
@@ -229,7 +229,7 @@ class VisaCheckoutClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenFailure_postsException() {
+    fun `when tokenize fails, callback is invoked with failure containing the tokenize error`() {
         val tokenizeError = Exception("Mock Failure")
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTError(tokenizeError)
@@ -250,7 +250,7 @@ class VisaCheckoutClientUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun tokenize_whenFailure_sendsAnalyticEvent() = runTest(testDispatcher) {
+    fun `when tokenize fails, started and failed analytics events are sent`() = runTest(testDispatcher) {
         val tokenizeError = Exception("Mock Failure")
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTError(tokenizeError)
@@ -277,7 +277,7 @@ class VisaCheckoutClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenApiClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+    fun `when tokenize is called and apiClient throws cancellation exception, callback is not invoked`() = runTest(testDispatcher) {
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
             .build()
