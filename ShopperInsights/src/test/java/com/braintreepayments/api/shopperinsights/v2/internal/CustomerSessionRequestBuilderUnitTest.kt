@@ -107,4 +107,13 @@ class CustomerSessionRequestBuilderUnitTest {
 
         assertNull(result.payPalCampaigns)
     }
+
+    @Test
+    fun `createRequestObjects returns null payPalCampaigns when list is null`() {
+        val customerSessionRequest = CustomerSessionRequest(payPalCampaigns = null)
+
+        val result = requestBuilder.createRequestObjects(customerSessionRequest)
+
+        assertNull(result.payPalCampaigns)
+    }
 }
