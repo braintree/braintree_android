@@ -63,7 +63,8 @@ class CustomerSessionRequestBuilderUnitTest {
             hashedPhoneNumber = "hashedPhoneNumber",
             payPalAppInstalled = true,
             venmoAppInstalled = false,
-            purchaseUnits = null
+            purchaseUnits = null,
+            payPalCampaigns = null
         )
 
         val result = requestBuilder.createRequestObjects(customerSessionRequest)
