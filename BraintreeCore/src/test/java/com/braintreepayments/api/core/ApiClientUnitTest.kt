@@ -17,6 +17,7 @@ import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class ApiClientUnitTest {
 
     private lateinit var analyticsParamRepository: AnalyticsParamRepository

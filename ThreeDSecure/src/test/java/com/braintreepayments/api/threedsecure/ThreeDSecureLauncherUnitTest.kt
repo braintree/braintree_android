@@ -19,6 +19,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class ThreeDSecureLauncherUnitTest {
 
     private var activityResultLauncher: ActivityResultLauncher<ThreeDSecureParams?> =

@@ -27,6 +27,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class AmericanExpressClientUnitTest {
 
     private lateinit var amexRewardsCallback: AmericanExpressGetRewardsBalanceCallback

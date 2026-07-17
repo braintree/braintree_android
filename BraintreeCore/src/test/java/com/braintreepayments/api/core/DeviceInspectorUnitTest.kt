@@ -29,6 +29,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.util.ReflectionHelpers
 
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class DeviceInspectorUnitTest {
 
     private var context: Context = mockk(relaxed = true)

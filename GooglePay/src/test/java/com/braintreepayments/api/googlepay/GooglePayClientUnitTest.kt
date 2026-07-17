@@ -1,3 +1,5 @@
+ @file:Suppress("MaxLineLength")
+
 package com.braintreepayments.api.googlepay
 
 import androidx.fragment.app.FragmentActivity

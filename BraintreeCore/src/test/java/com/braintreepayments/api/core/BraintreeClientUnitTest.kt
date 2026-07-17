@@ -33,6 +33,7 @@ import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class BraintreeClientUnitTest {
 
     private lateinit var authorization: Authorization

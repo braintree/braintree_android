@@ -32,6 +32,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class CardClientUnitTest {
     private val card: Card = Card()
     private val cardTokenizeCallback: CardTokenizeCallback = mockk(relaxed = true)

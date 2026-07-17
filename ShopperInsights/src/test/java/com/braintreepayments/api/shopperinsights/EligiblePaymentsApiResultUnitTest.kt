@@ -3,6 +3,7 @@ package com.braintreepayments.api.shopperinsights
 import org.junit.Assert.*
 import org.junit.Test
 
+@Suppress("MaxLineLength")
 class EligiblePaymentsApiResultUnitTest {
 
     @Test

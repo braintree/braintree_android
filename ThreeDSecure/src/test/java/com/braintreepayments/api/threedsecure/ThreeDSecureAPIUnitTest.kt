@@ -22,6 +22,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("MaxLineLength")
 class ThreeDSecureAPIUnitTest {
     private val testDispatcher = StandardTestDispatcher()
 

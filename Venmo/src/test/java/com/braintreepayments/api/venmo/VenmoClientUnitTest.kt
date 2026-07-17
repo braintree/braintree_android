@@ -46,6 +46,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class VenmoClientUnitTest {
 
     private lateinit var sut: VenmoClient

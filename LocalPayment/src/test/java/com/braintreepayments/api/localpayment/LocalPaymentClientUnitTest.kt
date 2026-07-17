@@ -40,6 +40,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class LocalPaymentClientUnitTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var activity: FragmentActivity

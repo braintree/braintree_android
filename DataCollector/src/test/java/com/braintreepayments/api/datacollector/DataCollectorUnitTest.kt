@@ -27,6 +27,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class DataCollectorUnitTest {
 
     private val testDispatcher = StandardTestDispatcher()

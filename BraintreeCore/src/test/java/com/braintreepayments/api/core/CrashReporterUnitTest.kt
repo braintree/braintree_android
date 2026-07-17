@@ -10,6 +10,7 @@ import org.robolectric.RobolectricTestRunner
 import java.lang.ref.WeakReference
 
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class CrashReporterUnitTest {
 
     private lateinit var braintreeClient: BraintreeClient

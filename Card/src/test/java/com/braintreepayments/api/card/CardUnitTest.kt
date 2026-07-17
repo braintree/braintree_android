@@ -17,6 +17,7 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertFailsWith
 
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class CardUnitTest {
 
     private val CREDIT_CARD_KEY = "creditCard"

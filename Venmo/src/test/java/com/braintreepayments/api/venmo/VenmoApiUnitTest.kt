@@ -30,6 +30,7 @@ import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class VenmoApiUnitTest {
 
     private lateinit var braintreeClient: BraintreeClient

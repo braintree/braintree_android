@@ -21,6 +21,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class ConfigurationLoaderUnitTest {
     private val configurationCache: ConfigurationCache = mockk(relaxed = true)
     private val braintreeHttpClient: BraintreeHttpClient = mockk(relaxed = true)
