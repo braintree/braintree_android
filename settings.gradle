@@ -12,7 +12,6 @@ pluginManagement {
     }
 }
 
-include ':VisaCheckout'
 include ':GooglePay'
 include ':Venmo'
 include ':AmericanExpress'

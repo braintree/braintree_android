@@ -33,8 +33,7 @@ import kotlin.coroutines.cancellation.CancellationException
  * @property isThreeDSecureEnabled `true` if 3D Secure is enabled and supported for the current
  * merchant account, `false` otherwise.
  * @property isVenmoEnabled `true` if Venmo is enabled for the merchant account; `false` otherwise.
- * @property isVisaCheckoutEnabled `true` if Visa Checkout is enabled for the merchant account;
- * `false` otherwise.
+ * @property isVisaCheckoutEnabled Deprecated. Visa Checkout is no longer supported; this always returns `false`.
  * @property merchantAccountId the current Braintree merchant account id.
  * @property merchantId the current Braintree merchant id.
  * @property payPalDirectBaseUrl the url for custom PayPal environments.
@@ -42,6 +41,7 @@ import kotlin.coroutines.cancellation.CancellationException
  * @property payPalUserAgreementUrl the PayPal app user agreement url.
  * @property supportedCardTypes a list of card types supported by the merchant.
  */
+@Suppress("DEPRECATION")
 class Configuration internal constructor(configurationString: String) {
 
     /**
@@ -138,6 +138,7 @@ class Configuration internal constructor(configurationString: String) {
     val isPostalCodeChallengePresent: Boolean
     val isThreeDSecureEnabled: Boolean
     val isVenmoEnabled: Boolean
+    @Deprecated("Visa Checkout is no longer supported and this will be removed in the next major version.")
     val isVisaCheckoutEnabled: Boolean
     val merchantAccountId: String?
     val merchantId: String
@@ -274,18 +275,21 @@ class Configuration internal constructor(configurationString: String) {
      * @return the Visa Checkout API key configured in the Braintree Control Panel.
      * @suppress
      */
+    @Deprecated("Visa Checkout is no longer supported and this will be removed in the next major version.")
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val visaCheckoutApiKey: String
 
     /**
      * @return the Visa Checkout External Client ID configured in the Braintree Control Panel.
      * @suppress
      */
+    @Deprecated("Visa Checkout is no longer supported and this will be removed in the next major version.")
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val visaCheckoutExternalClientId: String
 
     /**
      * @return the Visa Checkout supported networks enabled for the merchant account.
      * @suppress
      */
+    @Deprecated("Visa Checkout is no longer supported and this will be removed in the next major version.")
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val visaCheckoutSupportedNetworks: List<String>
 
     private val braintreeApiConfiguration: BraintreeApiConfiguration

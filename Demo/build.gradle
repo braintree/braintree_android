@@ -81,7 +81,6 @@ dependencies {
     implementation project(':ThreeDSecure')
     implementation project(':UIComponents')
     implementation project(':Venmo')
-    implementation project(':VisaCheckout')
 
     implementation libs.gson
     implementation libs.eventbus

@@ -20,6 +20,7 @@ import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("DEPRECATION")
 class ConfigurationUnitTest {
 
     private val configurationLoader: ConfigurationLoader = mockk(relaxed = true)
