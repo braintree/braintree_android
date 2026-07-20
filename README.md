@@ -138,8 +138,11 @@ class ExampleFragment : Fragment() {
                     }
                 }
             }
+            // clear the stored pending request
+            clearPendingRequest()
+            // clear intent data
+            intent.data = null
         }
-        // clear pending request
     }
 }
 ```
@@ -184,8 +187,8 @@ class ExampleFragment : Fragment() {
         super.onResume()
         val pendingRequest = fetchPendingRequest()
         if (pendingRequest != null) {
-            venmoButton.handleReturnToApp(pendingRequest, intent) { payPalResult ->
-                when (payPalResult) {
+            venmoButton.handleReturnToApp(pendingRequest, intent) { venmoResult ->
+                when (venmoResult) {
                     is VenmoResult.Success -> {
                         // handle success
                     }
@@ -197,8 +200,11 @@ class ExampleFragment : Fragment() {
                     }
                 }
             }
+            // clear the stored pending request
+            clearPendingRequest()
+            // clear intent data
+            intent.data = null
         }
-        // clear pending request
     }
 }
 ```
@@ -230,7 +236,7 @@ private val paypalTokenizeCallback = PayPalTokenizeCallback { payPalResult ->
         }
     }
     // clear intent data
-    // requireActivity().intent.data = null
+    intent.data = null
 }
 
 PayPalButton(
@@ -243,7 +249,7 @@ PayPalButton(
 )
 ```
 
-For Venmo button, you should invoke the PayPalButton composable like this:
+For Venmo button, you should invoke the VenmoButton composable like this:
 ```kotlin
 private val venmoTokenizeCallback = VenmoTokenizeCallback { venmoResult ->
     when (venmoResult) {
@@ -260,7 +266,7 @@ private val venmoTokenizeCallback = VenmoTokenizeCallback { venmoResult ->
         }
     }
     // clear intent data
-    // requireActivity().intent.data = null
+    intent.data = null
 }
 
 VenmoButton(
