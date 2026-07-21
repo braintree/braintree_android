@@ -118,6 +118,7 @@ class PayPalCheckoutRequestUnitTest {
         val lineItems = ArrayList<PayPalLineItem>()
         lineItems.add(PayPalLineItem(PayPalLineItemKind.DEBIT, "An Item", "1", "1"))
         request.lineItems = lineItems
+        request.campaigns = listOf(PayPalCampaign("campaign-1"))
 
         val parcel = Parcel.obtain().apply {
             request.writeToParcel(this, 0)
@@ -142,6 +143,8 @@ class PayPalCheckoutRequestUnitTest {
         assertEquals("merchant_account_id", parceled.merchantAccountId)
         assertEquals(1, parceled.lineItems.size)
         assertEquals("An Item", parceled.lineItems[0].name)
+        assertEquals(1, parceled.campaigns.size)
+        assertEquals("campaign-1", parceled.campaigns[0].id)
         assertTrue(parceled.hasUserLocationConsent)
     }
 
@@ -181,6 +184,43 @@ class PayPalCheckoutRequestUnitTest {
         )
 
         assertFalse(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""))
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody with paypal_campaigns when campaigns are set`() {
+        val request = PayPalCheckoutRequest("1.00", true).apply {
+            campaigns = listOf(PayPalCampaign("campaign-1"), PayPalCampaign("campaign-2"))
+        }
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<Authorization>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        val campaigns = JSONObject(requestBody).getJSONArray("paypal_campaigns")
+        assertEquals(2, campaigns.length())
+        assertEquals("campaign-1", campaigns.getJSONObject(0).getString("id"))
+        assertEquals("campaign-2", campaigns.getJSONObject(1).getString("id"))
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody without paypal_campaigns when campaigns are empty`() {
+        val request = PayPalCheckoutRequest("1.00", true)
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<Authorization>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        assertFalse(JSONObject(requestBody).has("paypal_campaigns"))
     }
 
     @Test

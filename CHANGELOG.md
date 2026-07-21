@@ -22,7 +22,8 @@
     * Expose `tokenize` as a public suspend function
 * PayPal
     * Expose `createPaymentAuthRequest` as a public suspend function
-    * Expose `tokenize` as a public suspend function
+    * Expose `tokenize` as a public suspend function 
+    * Add `PayPalCheckoutRequest.campaigns` to associate PayPal campaigns with a checkout order
 * SEPADirectDebit
     * Expose `createPaymentAuthRequest` as a public suspend function
     * Expose `tokenize` as a public suspend function

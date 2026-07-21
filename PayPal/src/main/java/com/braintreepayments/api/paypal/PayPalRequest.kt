@@ -82,6 +82,7 @@ import org.json.JSONException
  * @property recurringBillingDetails Optional: Recurring billing product details.
  * @property recurringBillingPlanType Optional: Recurring billing plan type, or charge pattern.
  * @property userAction The call to action for the PayPal flow.
+ * @property campaigns List of PayPal co-marketing campaigns to associate with the order.
  */
 abstract class PayPalRequest internal constructor(
     open val hasUserLocationConsent: Boolean,
@@ -104,7 +105,8 @@ abstract class PayPalRequest internal constructor(
     open var shopperSessionId: String? = null,
     open var lineItems: List<PayPalLineItem> = emptyList(),
     open var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT,
-    open var shouldOfferCredit: Boolean = false
+    open var shouldOfferCredit: Boolean = false,
+    open var campaigns: List<PayPalCampaign> = emptyList()
 ) : Parcelable {
 
     @Throws(JSONException::class)
@@ -155,5 +157,6 @@ abstract class PayPalRequest internal constructor(
         internal const val CONTACT_PREFERENCE_KEY: String = "contact_preference"
         internal const val SHOPPER_SESSION_ID_KEY: String = "shopper_session_id"
         internal const val AMOUNT_BREAKDOWN_KEY: String = "amount_breakdown"
+        internal const val PAYPAL_CAMPAIGNS_KEY: String = "paypal_campaigns"
     }
 }
