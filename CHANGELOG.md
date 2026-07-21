@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.30.0 (2026-07-21)
 
 * General
     * Remove `VisaCheckout` module. Visa Checkout is no longer supported.
