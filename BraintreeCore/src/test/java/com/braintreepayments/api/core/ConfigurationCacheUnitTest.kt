@@ -17,7 +17,7 @@ class ConfigurationCacheUnitTest {
     private var braintreeSharedPreferences: BraintreeSharedPreferences = mockk(relaxed = true)
 
     @Test
-    fun saveConfiguration_savesConfigurationInSharedPrefs() {
+    fun `when saveConfiguration is called, configuration is saved to shared preferences`() {
         val configuration = fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         val sut = ConfigurationCache(braintreeSharedPreferences)
         sut.saveConfiguration(configuration, "cacheKey", 123L)
@@ -32,7 +32,7 @@ class ConfigurationCacheUnitTest {
     }
 
     @Test
-    fun getConfiguration_returnsConfigurationFromSharedPrefs() {
+    fun `when cache entry has not expired, getConfiguration returns the cached configuration`() {
         val configuration = fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         every { braintreeSharedPreferences.containsKey("cacheKey_timestamp") } returns true
         every { braintreeSharedPreferences.getLong("cacheKey_timestamp") } returns 0L
@@ -48,7 +48,7 @@ class ConfigurationCacheUnitTest {
     }
 
     @Test
-    fun getConfiguration_whenCacheEntryExpires_returnsNull() {
+    fun `when cache entry has expired, getConfiguration returns null`() {
         val configuration = fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         every { braintreeSharedPreferences.containsKey("cacheKey_timestamp") } returns true
         every { braintreeSharedPreferences.getLong("cacheKey_timestamp") } returns TimeUnit.MINUTES.toMillis(5)

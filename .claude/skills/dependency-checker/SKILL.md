@@ -43,9 +43,7 @@ Check if DEPENDENCIES.md is up to date
 
 ## Excluded Modules
 
-Skip deprecated or legacy modules — they should NOT appear in `DEPENDENCIES.md`. Currently excluded:
-
-- `VisaCheckout`
+Skip deprecated or legacy modules — they should NOT appear in `DEPENDENCIES.md`. There are currently none.
 
 If a deprecated module is found in `DEPENDENCIES.md`, flag it for removal. If a deprecated module is missing from the doc, do not report it as a missing entry.
 

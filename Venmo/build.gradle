@@ -41,12 +41,6 @@ android {
     kotlinOptions {
         jvmTarget = versions.javaTargetCompatibility.toString()
     }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of(versions.javaTargetCompatibility.toString()))
-        }
-    }
 }
 
 dependencies {

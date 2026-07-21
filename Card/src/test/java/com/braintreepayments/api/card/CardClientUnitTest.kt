@@ -32,6 +32,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class CardClientUnitTest {
     private val card: Card = Card()
     private val cardTokenizeCallback: CardTokenizeCallback = mockk(relaxed = true)
@@ -53,7 +54,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_resetsSessionId() = runTest(testDispatcher) {
+    fun `tokenize resets the analytics session id`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         apiClient = MockkApiClientBuilder().build()
 
@@ -71,7 +72,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_sendsTokenizeStartedAnalytics() = runTest(testDispatcher) {
+    fun `tokenize sends card tokenize started analytics event`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         apiClient = MockkApiClientBuilder().build()
 
@@ -89,7 +90,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenGraphQLEnabled_setsSessionIdOnCardBeforeTokenizing() = runTest(testDispatcher) {
+    fun `when GraphQL is enabled, session id is set on card before tokenizing`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .build()
@@ -114,7 +115,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenGraphQLEnabled_tokenizesWithGraphQL() = runTest(testDispatcher) {
+    fun `when GraphQL is enabled, tokenize returns success result from GraphQL response`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .build()
@@ -144,7 +145,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenGraphQLDisabled_tokenizesWithREST() = runTest(testDispatcher) {
+    fun `when GraphQL is disabled, tokenize returns success result from REST response`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLDisabledConfig)
             .build()
@@ -174,7 +175,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenGraphQLEnabled_sendsAnalyticsEventOnSuccess() = runTest(testDispatcher) {
+    fun `when GraphQL is enabled and tokenize succeeds, sends card tokenize succeeded analytics event`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .build()
@@ -197,7 +198,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenGraphQLDisabled_sendsAnalyticsEventOnSuccess() = runTest(testDispatcher) {
+    fun `when GraphQL is disabled and tokenize succeeds, sends card tokenize succeeded analytics event`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLDisabledConfig)
             .build()
@@ -220,7 +221,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenGraphQLEnabled_callsListenerWithErrorOnFailure() = runTest(testDispatcher) {
+    fun `when GraphQL is enabled and tokenize fails, callback receives failure result with the error`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .build()
@@ -250,7 +251,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenGraphQLDisabled_callsListenerWithErrorOnFailure() = runTest(testDispatcher) {
+    fun `when GraphQL is disabled and tokenize fails, callback receives failure result with the error`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLDisabledConfig)
             .build()
@@ -280,7 +281,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenGraphQLEnabled_sendsAnalyticsEventOnFailure() = runTest(testDispatcher) {
+    fun `when GraphQL is enabled and tokenize fails, sends card tokenize failed analytics event`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .build()
@@ -304,7 +305,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenGraphQLDisabled_sendsAnalyticsEventOnFailure() = runTest(testDispatcher) {
+    fun `when GraphQL is disabled and tokenize fails, sends card tokenize failed analytics event`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLDisabledConfig)
             .build()
@@ -328,7 +329,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_propagatesConfigurationFetchError() = runTest(testDispatcher) {
+    fun `when configuration fetch fails, tokenize callback receives failure result with configuration error`() = runTest(testDispatcher) {
         val configError = Exception("Configuration error.")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configError)
@@ -354,7 +355,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenizeException_analyticsEventIsSentWithErrorDescription() = runTest(testDispatcher) {
+    fun `when configuration fetch fails, sends card tokenize failed analytics event with error description`() = runTest(testDispatcher) {
         val errorDescription = "Configuration error."
         val configError = IOException(errorDescription)
         val braintreeClient = MockkBraintreeClientBuilder()
@@ -378,7 +379,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenResponseHasErrorsArray_callsListenerWithErrorOnFailure() = runTest(testDispatcher) {
+    fun `when GraphQL response contains an errors array, callback receives failure result`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .build()
@@ -414,7 +415,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenApiClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+    fun `when apiClient tokenizeGraphQL throws CancellationException, callback is not invoked`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .build()
@@ -438,7 +439,7 @@ class CardClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenResponseHasEmptyErrorsArray_proceedsWithNormalProcessing() = runTest(testDispatcher) {
+    fun `when GraphQL response contains an empty errors array, tokenize proceeds and returns success`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .build()

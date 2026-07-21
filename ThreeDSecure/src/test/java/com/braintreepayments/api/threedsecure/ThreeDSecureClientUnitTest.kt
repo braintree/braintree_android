@@ -33,6 +33,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class ThreeDSecureClientUnitTest {
     private val testDispatcher = StandardTestDispatcher()
 
@@ -67,7 +68,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun prepareLookup_returnsValidLookupJSONString() = runTest(testDispatcher) {
+    fun `when prepareLookup succeeds, returns a valid lookup JSON string containing request data`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("fake-df")
             .build()
@@ -116,7 +117,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun prepareLookup_initializesCardinal() = runTest(testDispatcher) {
+    fun `when prepareLookup is called, initializes the cardinal client`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("fake-df")
             .build()
@@ -149,7 +150,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun prepareLookup_whenCardinalClientInitializeFails_forwardsError() = runTest(testDispatcher) {
+    fun `when cardinal client initialize fails during prepareLookup, forwards the error to the callback`() = runTest(testDispatcher) {
         val initializeRuntimeError = BraintreeException("initialize error")
         val cardinalClient = MockkCardinalClientBuilder()
             .initializeRuntimeError(initializeRuntimeError)
@@ -182,7 +183,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun prepareLookup_whenDfReferenceIdMissing_forwardsError() = runTest(testDispatcher) {
+    fun `when dfReferenceId is missing during prepareLookup, forwards a BraintreeException to the callback`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("")
             .build()
@@ -217,7 +218,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun prepareLookup_withoutCardinalJWT_postsException() = runTest(testDispatcher) {
+    fun `when merchant is not configured for 3D Secure version 2, prepareLookup posts a BraintreeException`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder().build()
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .threeDSecureEnabled(true)
@@ -256,7 +257,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_sendsAnalyticEvent() {
+    fun `when createPaymentAuthRequest is called, sends verify started analytic event`() {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("sample-session-id")
             .build()
@@ -277,7 +278,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_sendsParamsInLookupRequest() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called, sends request params including exemption type in the lookup POST body`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("df-reference-id")
             .build()
@@ -324,7 +325,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_performsLookup_WhenCardinalSDKInitFails() = runTest(testDispatcher) {
+    fun `when cardinal SDK init fails, createPaymentAuthRequest still performs the lookup POST without df reference id`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .error(Exception("error"))
             .build()
@@ -374,7 +375,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_callsLookupListener() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest completes the lookup, calls back the payment auth request listener`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("sample-session-id")
             .build()
@@ -409,7 +410,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_withInvalidRequest_postsException() = runTest(testDispatcher) {
+    fun `when the request nonce and amount are null, createPaymentAuthRequest posts a Failure with a BraintreeException`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder().build()
 
         val braintreeClient = MockkBraintreeClientBuilder().build()
@@ -441,7 +442,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_initializesCardinal() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called, initializes the cardinal client`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("df-reference-id")
             .build()
@@ -466,7 +467,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenCardinalClientInitializeFails_forwardsError() = runTest(testDispatcher) {
+    fun `when cardinal client initialize fails during createPaymentAuthRequest, forwards the error as a Failure`() = runTest(testDispatcher) {
         val initializeRuntimeError = BraintreeException("initialize error")
         val cardinalClient = MockkCardinalClientBuilder()
             .initializeRuntimeError(initializeRuntimeError)
@@ -497,7 +498,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenCardinalSetupFailed_sendsAnalyticEvent() = runTest(testDispatcher) {
+    fun `when cardinal setup fails during createPaymentAuthRequest, sends verify started and verify failed analytics events`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .initializeRuntimeError(BraintreeException("cardinal error"))
             .build()
@@ -526,7 +527,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_withoutCardinalJWT_postsException() = runTest(testDispatcher) {
+    fun `when merchant is not configured for 3D Secure version 2, createPaymentAuthRequest posts a Failure with a BraintreeException`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder().build()
 
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
@@ -563,7 +564,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun sendAnalyticsAndResult_whenAuthenticatingWithCardinal_sendsAnalyticsEvent() = runTest(testDispatcher) {
+    fun `when sendAnalyticsAndResult is called, sends lookup succeeded analytics event`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("reference-id")
             .build()
@@ -588,7 +589,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun sendAnalyticsAndResult_whenChallengeIsRequired_sendsAnalyticsEvent() = runTest(testDispatcher) {
+    fun `when the lookup requires a challenge, sendAnalyticsAndResult sends lookup succeeded and challenge required analytics events`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("reference-id")
             .build()
@@ -615,7 +616,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun sendAnalyticsAndResult_whenChallengeIsNotPresented_returnsResult() = runTest(testDispatcher) {
+    fun `when the lookup has no acs url, sendAnalyticsAndResult returns a LaunchNotRequired result with the nonce and lookup`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("reference-id")
             .build()
@@ -642,7 +643,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun sendAnalyticsAndResult_callsBackThreeDSecureResultForLaunch() = runTest(testDispatcher) {
+    fun `when a challenge is required, sendAnalyticsAndResult returns a ReadyToLaunch result with the request params`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("reference-id")
             .build()
@@ -668,7 +669,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenErrorExists_forwardsErrorToCallback_andSendsAnalytics() = runTest(testDispatcher) {
+    fun `when the payment auth result contains an error, tokenize forwards the error to the callback`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder().build()
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
@@ -694,7 +695,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenValidateResponseTimeout_returnsErrorAndSendsAnalytics() = runTest(testDispatcher) {
+    fun `when the validate response action code is timeout, tokenize returns a Failure and sends verify failed analytics with the error description`() = runTest(testDispatcher) {
         val errorMessage = "Error"
         val cardinalClient = MockkCardinalClientBuilder().build()
         val braintreeClient = MockkBraintreeClientBuilder().build()
@@ -732,7 +733,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenValidateResponseCancel_returnsUserCanceledErrorAndSendsAnalytics() = runTest(testDispatcher) {
+    fun `when the validate response action code is cancel, tokenize returns a Cancel result and sends verify canceled analytics`() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder().build()
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
@@ -762,7 +763,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenValidateResponseSuccess_onAuthenticateCardinalJWTResult_returnsResultAndSendsAnalytics() =
+    fun `when the validate response action code is success and jwt authentication succeeds, tokenize returns a Success result and sends jwt and verify succeeded analytics`() =
         runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder().build()
         val braintreeClient = MockkBraintreeClientBuilder().build()
@@ -799,7 +800,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenValidateResponseSuccess_onAuthenticateCardinalJWTResultWithError_returnsResultAndSendsAnalytics() =
+    fun `when the validate response action code is success but the jwt authentication result has an error, tokenize returns a Failure and sends jwt auth failed analytics`() =
         runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder().build()
         val braintreeClient = MockkBraintreeClientBuilder().build()
@@ -850,7 +851,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenValidateResponseSuccess_onAuthenticateCardinalJWTError_returnsErrorAndSendsAnalytics() =
+    fun `when the validate response action code is success but authenticateCardinalJWT throws, tokenize returns a Failure and sends jwt and verify failed analytics`() =
         runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder().build()
         val braintreeClient = MockkBraintreeClientBuilder().build()
@@ -895,7 +896,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenThreeDSecureAPIThrowsCancellationException_callbackIsNotInvoked() =
+    fun `when the three d secure API throws a CancellationException, createPaymentAuthRequest does not invoke the callback`() =
     runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("fake-df")
@@ -924,7 +925,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun prepareLookup_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+    fun `when the braintree client throws a CancellationException getting configuration, prepareLookup does not invoke the callback`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
             .build()

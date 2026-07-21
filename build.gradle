@@ -133,6 +133,14 @@ dokkaHtmlMultiModule.configure {
     outputDirectory.set(project.file("docs"))
 }
 
+subprojects {
+    plugins.withId('org.jetbrains.dokka') {
+        dependencies {
+            dokkaHtmlPartialPlugin 'com.braintreepayments.dokka:DokkaRestrictToPlugin:1.0.0'
+        }
+    }
+}
+
 task changeGradleReleaseVersion {
     doLast {
         def gradleFile = new File('build.gradle')

@@ -6,7 +6,7 @@ import org.junit.Test
 class GooglePayAnalyticsUnitTest {
 
     @Test
-    fun testAnalyticsEvents_sendsExpectedEventNames() {
+    fun `analytics event constants match expected event names`() {
         assertEquals(
             "google-pay:payment-request:started",
             GooglePayAnalytics.PAYMENT_REQUEST_STARTED

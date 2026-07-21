@@ -15,7 +15,7 @@ class BraintreeErrorUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun parcelsCorrectly() {
+    fun `when BraintreeError is parceled from a field error response, fields survive parceling`() {
         val errorResponse = JSONObject(Fixtures.ERRORS_CREDIT_CARD_ERROR_RESPONSE)
         val errors: List<BraintreeError> =
             BraintreeError.fromJsonArray(errorResponse.getJSONArray("fieldErrors"))
@@ -34,7 +34,7 @@ class BraintreeErrorUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun graphQLErrors_parcelCorrectly() {
+    fun `when BraintreeError is parceled from a GraphQL error response, fields survive parceling`() {
         val errorResponse = JSONObject(Fixtures.ERRORS_GRAPHQL_CREDIT_CARD_ERROR)
         val errors = BraintreeError.fromGraphQLJsonArray(errorResponse.getJSONArray("errors"))
         assertEquals(1, errors.size)

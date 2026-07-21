@@ -28,6 +28,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class LocalPaymentApiUnitTest {
     private val testDispatcher = StandardTestDispatcher()
 
@@ -44,7 +45,7 @@ class LocalPaymentApiUnitTest {
     }
 
     @Test
-    fun createPaymentMethod_sendsCorrectPostParams() = runTest(testDispatcher) {
+    fun `when createPaymentMethod is called, sends expected POST body params`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .returnUrlScheme("sample-scheme")
             .sendPostSuccessfulResponse(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_CREATE_RESPONSE)
@@ -95,7 +96,7 @@ class LocalPaymentApiUnitTest {
     }
 
     @Test
-    fun createPaymentMethod_onPOSTError_throwsException() = runTest(testDispatcher) {
+    fun `when sendPOST fails with an IOException, createPaymentMethod throws that exception`() = runTest(testDispatcher) {
         val error = IOException("error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostErrorResponse(error)
@@ -117,7 +118,7 @@ class LocalPaymentApiUnitTest {
     }
 
     @Test
-    fun createPaymentMethod_onJSONError_throwsException() = runTest(testDispatcher) {
+    fun `when sendPOST returns an error response body, createPaymentMethod throws an exception`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse(Fixtures.ERROR_RESPONSE)
             .build()
@@ -137,7 +138,8 @@ class LocalPaymentApiUnitTest {
     }
 
     @Test
-    fun createPaymentMethod_onPOSTSuccess_returnsResultWithOriginalRequest() = runTest(testDispatcher) {
+    fun `when createPaymentMethod succeeds, returns result containing the original request and approval data`() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_CREATE_RESPONSE)
             .build()
@@ -162,7 +164,7 @@ class LocalPaymentApiUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_sendsCorrectPostParams() = runTest(testDispatcher) {
+    fun `when tokenize is called, sends expected POST body params`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE)
             .build()
@@ -206,7 +208,7 @@ class LocalPaymentApiUnitTest {
     }
 
     @Test
-    fun tokenize_onPOSTError_throwsException() = runTest(testDispatcher) {
+    fun `when sendPOST fails with an IOException, tokenize throws that exception`() = runTest(testDispatcher) {
         val error = IOException("error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostErrorResponse(error)
@@ -229,7 +231,7 @@ class LocalPaymentApiUnitTest {
     }
 
     @Test
-    fun tokenize_onJSONError_throwsException() = runTest(testDispatcher) {
+    fun `when sendPOST returns invalid JSON, tokenize throws a JSONException`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse("not-json")
             .build()
@@ -251,7 +253,7 @@ class LocalPaymentApiUnitTest {
     }
 
     @Test
-    fun tokenize_onPOSTSuccess_returnsResult() = runTest(testDispatcher) {
+    fun `when tokenize succeeds, returns a nonce parsed from the response`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE)
             .build()
