@@ -6,7 +6,7 @@ import org.junit.Test
 class ThreeDSecureAnalyticsUnitTest {
 
     @Test
-    fun testAnalyticsEvents_sendsExpectedEventNames() {
+    fun `analytics event constants match expected event names`() {
         assertEquals("3ds:verify:started", ThreeDSecureAnalytics.VERIFY_STARTED)
         assertEquals("3ds:verify:succeeded", ThreeDSecureAnalytics.VERIFY_SUCCEEDED)
         assertEquals("3ds:verify:failed", ThreeDSecureAnalytics.VERIFY_FAILED)

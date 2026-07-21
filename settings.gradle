@@ -12,7 +12,6 @@ pluginManagement {
     }
 }
 
-include ':VisaCheckout'
 include ':GooglePay'
 include ':Venmo'
 include ':AmericanExpress'
@@ -29,3 +28,5 @@ include ':DataCollector'
 include ':PayPalMessaging'
 include ':ShopperInsights'
 include ':UIComponents'
+
+includeBuild 'DokkaRestrictToPlugin'

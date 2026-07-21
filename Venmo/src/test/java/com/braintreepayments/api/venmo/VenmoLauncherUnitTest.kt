@@ -60,7 +60,7 @@ class VenmoLauncherUnitTest {
     }
 
     @Test
-    fun `launch starts browser switch and returns pending request`() {
+    fun `when launch succeeds, it returns a started pending request`() {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options, true) } returns startedPendingRequest
 
@@ -89,7 +89,7 @@ class VenmoLauncherUnitTest {
     }
 
     @Test
-    fun `launch on error returns pending request failure`() {
+    fun `when browser switch start fails, launch returns a pending request failure`() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         val exception = BrowserSwitchException("error")
         every { browserSwitchClient.start(eq(activity), eq(options), eq(true)) } returns
@@ -119,7 +119,7 @@ class VenmoLauncherUnitTest {
     }
 
     @Test
-    fun `launch when device cant perform browser switch returns pending request failure`() {
+    fun `when the device cannot perform a browser switch, launch returns a pending request failure`() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         val exception = BrowserSwitchException("browser switch error")
         every {
@@ -173,7 +173,7 @@ class VenmoLauncherUnitTest {
     }
 
     @Test
-    fun `handleReturnToApp when result exists returns result`() {
+    fun `when a browser switch result exists, handleReturnToApp returns a success result`() {
         val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
         every {
             browserSwitchClient.completeRequest(
@@ -209,7 +209,7 @@ class VenmoLauncherUnitTest {
     }
 
     @Test
-    fun `handleReturnToApp when result does not exist returns null`() {
+    fun `when no browser switch result exists, handleReturnToApp returns NoResult`() {
         every {
             browserSwitchClient.completeRequest(
                 intent,
@@ -256,7 +256,7 @@ class VenmoLauncherUnitTest {
     }
 
     @Test
-    fun showVenmoInGooglePlayStore_opensVenmoAppStoreURL() {
+    fun `showVenmoInGooglePlayStore starts an activity for the venmo play store url`() {
         val activity = Mockito.mock(
             ComponentActivity::class.java
         )

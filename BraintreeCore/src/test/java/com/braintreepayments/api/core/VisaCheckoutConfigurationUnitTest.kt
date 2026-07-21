@@ -13,7 +13,7 @@ import org.robolectric.RobolectricTestRunner
 class VisaCheckoutConfigurationUnitTest {
 
     @Test
-    fun fromJson_parsesFullInput() {
+    fun `when json contains all fields, VisaCheckoutConfiguration is enabled with values and mapped card brands`() {
         val input = JSONObject()
             .put("apikey", "sample-api-key")
             .put("externalClientId", "sample-external-client-id")
@@ -33,7 +33,7 @@ class VisaCheckoutConfigurationUnitTest {
     }
 
     @Test
-    fun fromJson_whenInputNull_returnsConfigWithDefaultValues() {
+    fun `when input json is null, VisaCheckoutConfiguration is disabled with default values`() {
         val sut = VisaCheckoutConfiguration(null)
         assertFalse(sut.isEnabled)
         assertEquals("", sut.apiKey)
@@ -42,7 +42,7 @@ class VisaCheckoutConfigurationUnitTest {
     }
 
     @Test
-    fun fromJson_whenInputEmpty_returnsConfigWithDefaultValues() {
+    fun `when input json is empty, VisaCheckoutConfiguration is disabled with default values`() {
         val sut = VisaCheckoutConfiguration(JSONObject())
         assertFalse(sut.isEnabled)
         assertEquals("", sut.apiKey)

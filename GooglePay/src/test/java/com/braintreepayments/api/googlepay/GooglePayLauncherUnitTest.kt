@@ -46,7 +46,7 @@ class GooglePayLauncherUnitTest {
     }
 
     @Test
-    fun constructor_createsActivityLauncher() {
+    fun `when GooglePayLauncher is constructed, activity result launcher is registered`() {
         val expectedKey = "com.braintreepayments.api.GooglePay.RESULT"
         val lifecycleOwner = FragmentActivity()
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -64,7 +64,7 @@ class GooglePayLauncherUnitTest {
     }
 
     @Test
-    fun launch_launchesTask() {
+    fun `when launch is called with ready to launch request, activity result launcher launches task`() {
         val lifecycleOwner = FragmentActivity()
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mockTask = mockk<Task<PaymentData>>(relaxed = true)
@@ -85,7 +85,7 @@ class GooglePayLauncherUnitTest {
     }
 
     @Test
-    fun `callback_whenSuccess_passesPaymentDataToCallback`() {
+    fun `when activity result callback receives a successful status, payment data is passed to callback`() {
         val callbackSlot = slot<ActivityResultCallback<ApiTaskResult<PaymentData>>>()
         val registry = mockk<ActivityResultRegistry>(relaxed = true)
         every {
@@ -111,7 +111,7 @@ class GooglePayLauncherUnitTest {
     }
 
     @Test
-    fun `callback_whenCanceled_passesUserCanceledExceptionToCallback`() {
+    fun `when activity result callback receives a canceled status, UserCanceledException is passed to callback`() {
         val callbackSlot = slot<ActivityResultCallback<ApiTaskResult<PaymentData>>>()
         val registry = mockk<ActivityResultRegistry>(relaxed = true)
         every {
@@ -137,7 +137,7 @@ class GooglePayLauncherUnitTest {
     }
 
     @Test
-    fun `callback_whenError_passesGooglePayExceptionToCallback`() {
+    fun `when activity result callback receives an error status, GooglePayException is passed to callback`() {
         val callbackSlot = slot<ActivityResultCallback<ApiTaskResult<PaymentData>>>()
         val registry = mockk<ActivityResultRegistry>(relaxed = true)
         every {

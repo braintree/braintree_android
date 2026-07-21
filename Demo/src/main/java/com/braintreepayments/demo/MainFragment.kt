@@ -79,7 +79,6 @@ class MainFragment : BaseFragment() {
                                 PaymentModuleButton(R.string.venmo) { launchVenmo() }
                                 PaymentModuleButton(R.string.cards) { launchCards() }
                                 PaymentModuleButton(R.string.google_pay) { launchGooglePay() }
-                                PaymentModuleButton(R.string.visa_checkout_button) { launchVisaCheckout() }
                                 PaymentModuleButton(R.string.local_payment_button) { launchLocalPayment() }
                                 PaymentModuleButton(R.string.sepa_direct_debit_button) { launchSEPADirectDebit() }
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -159,14 +158,6 @@ class MainFragment : BaseFragment() {
     private fun launchVenmo() {
         fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToVenmoFragment()
-                .setAuthString(authString)
-            findNavController().navigate(action)
-        }
-    }
-
-    private fun launchVisaCheckout() {
-        fetchAuthorizationAndHandleError { authString ->
-            val action = MainFragmentDirections.actionMainFragmentToVisaCheckoutFragment()
                 .setAuthString(authString)
             findNavController().navigate(action)
         }

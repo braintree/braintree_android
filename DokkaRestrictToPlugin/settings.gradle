@@ -1,0 +1,20 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+
+    versionCatalogs {
+        libs {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
+}
+
+rootProject.name = 'DokkaRestrictToPlugin'

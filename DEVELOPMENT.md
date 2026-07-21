@@ -52,7 +52,6 @@ There are several components that comprise this SDK:
 * [ThreeDSecure](ThreeDSecure) provides 3D Secure authentication support.
 * [UIComponents](UIComponents) provides PayPal/Venmo branded buttons that support complete PayPal/Venmo flows.
 * [Venmo](Venmo) provides Venmo integration.
-* [VisaCheckout](VisaCheckout) provides Visa Checkout integration.
 
 The individual components may be of interest for advanced integrations and are each available as modules in maven.
 

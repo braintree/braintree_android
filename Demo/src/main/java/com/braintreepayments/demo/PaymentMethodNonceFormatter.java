@@ -9,8 +9,6 @@ import com.braintreepayments.api.localpayment.LocalPaymentNonce;
 import com.braintreepayments.api.paypal.PayPalAccountNonce;
 import com.braintreepayments.api.threedsecure.ThreeDSecureNonce;
 import com.braintreepayments.api.venmo.VenmoAccountNonce;
-import com.braintreepayments.api.visacheckout.VisaCheckoutAddress;
-import com.braintreepayments.api.visacheckout.VisaCheckoutNonce;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,8 +24,6 @@ public class PaymentMethodNonceFormatter {
             return convertPayPalNonceToString((PayPalAccountNonce) nonce);
         } else if (nonce instanceof GooglePayCardNonce) {
             return convertGooglePayNonceToString((GooglePayCardNonce) nonce);
-        } else if (nonce instanceof VisaCheckoutNonce) {
-            return convertVisaCheckoutNonceToString((VisaCheckoutNonce) nonce);
         } else if (nonce instanceof VenmoAccountNonce) {
             return convertVenmoNonceToString((VenmoAccountNonce) nonce);
         } else if (nonce instanceof LocalPaymentNonce) {
@@ -66,18 +62,6 @@ public class PaymentMethodNonceFormatter {
                 "Email: " + nonce.getEmail() + "\n" +
                 "Billing Address: " + formatGooglePayAddress(nonce.getBillingAddress()) + "\n" +
                 "Shipping Address: " + formatGooglePayAddress(nonce.getShippingAddress()) + "\n" +
-                convertBinDataToString(nonce.getBinData());
-    }
-
-    private static String convertVisaCheckoutNonceToString(VisaCheckoutNonce nonce) {
-        return "User Data\n" +
-                "First Name: " + nonce.getUserData().getUserFirstName() + "\n" +
-                "Last Name: " + nonce.getUserData().getUserLastName() + "\n" +
-                "Full Name: " + nonce.getUserData().getUserFullName() + "\n" +
-                "User Name: " + nonce.getUserData().getUsername() + "\n" +
-                "Email: " + nonce.getUserData().getUserEmail() + "\n" +
-                "Billing Address: " + formatVisaCheckoutAddress(nonce.getBillingAddress()) + "\n" +
-                "Shipping Address: " + formatVisaCheckoutAddress(nonce.getShippingAddress()) + "\n" +
                 convertBinDataToString(nonce.getBinData());
     }
 
@@ -122,18 +106,6 @@ public class PaymentMethodNonceFormatter {
                 address.getPostalCode() + " " +
                 address.getSortingCode() + " " +
                 address.getCountryCodeAlpha2() + " " +
-                address.getPhoneNumber();
-    }
-
-    private static String formatVisaCheckoutAddress(VisaCheckoutAddress address) {
-        return address.getFirstName() + " " +
-                address.getLastName() + " " +
-                address.getStreetAddress() + " " +
-                address.getExtendedAddress() + " " +
-                address.getLocality() + " " +
-                address.getPostalCode() + " " +
-                address.getRegion() + " " +
-                address.getCountryCode() + " " +
                 address.getPhoneNumber();
     }
 
