@@ -2,6 +2,7 @@ package com.braintreepayments.api.shopperinsights.v2.internal
 
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
+import com.braintreepayments.api.shopperinsights.v2.PayPalCampaign
 import com.braintreepayments.api.shopperinsights.v2.PurchaseUnit
 import org.json.JSONArray
 import org.json.JSONObject
@@ -62,7 +63,8 @@ class CustomerSessionRequestBuilderUnitTest {
             hashedPhoneNumber = "hashedPhoneNumber",
             payPalAppInstalled = true,
             venmoAppInstalled = false,
-            purchaseUnits = null
+            purchaseUnits = null,
+            campaigns = null
         )
 
         val result = requestBuilder.createRequestObjects(customerSessionRequest)
@@ -76,5 +78,43 @@ class CustomerSessionRequestBuilderUnitTest {
 
         JSONAssert.assertEquals(expectedCustomer, result.customer, false)
         assertNull(result.purchaseUnits)
+        assertNull(result.campaigns)
+    }
+
+    @Test
+    fun `createRequestObjects builds correct JSON array when campaigns are provided`() {
+        val customerSessionRequest = CustomerSessionRequest(
+            campaigns = listOf(
+                PayPalCampaign(id = "campaign-1"),
+                PayPalCampaign(id = "campaign-2")
+            )
+        )
+
+        val result = requestBuilder.createRequestObjects(customerSessionRequest)
+
+        val expectedCampaigns = JSONArray().apply {
+            put(JSONObject().put("id", "campaign-1"))
+            put(JSONObject().put("id", "campaign-2"))
+        }
+
+        JSONAssert.assertEquals(expectedCampaigns, result.campaigns, true)
+    }
+
+    @Test
+    fun `createRequestObjects returns null campaigns when list is empty`() {
+        val customerSessionRequest = CustomerSessionRequest(campaigns = emptyList())
+
+        val result = requestBuilder.createRequestObjects(customerSessionRequest)
+
+        assertNull(result.campaigns)
+    }
+
+    @Test
+    fun `createRequestObjects returns null campaigns when list is null`() {
+        val customerSessionRequest = CustomerSessionRequest(campaigns = null)
+
+        val result = requestBuilder.createRequestObjects(customerSessionRequest)
+
+        assertNull(result.campaigns)
     }
 }

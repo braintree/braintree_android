@@ -14,6 +14,7 @@ class CustomerSessionRequestBuilder {
     internal data class JsonRequestObjects(
         val customer: JSONObject,
         val purchaseUnits: JSONArray?,
+        val campaigns: JSONArray? = null,
     )
 
     internal fun createRequestObjects(customerSessionRequest: CustomerSessionRequest): JsonRequestObjects {
@@ -42,7 +43,17 @@ class CustomerSessionRequestBuilder {
                 }
             }
 
-        return JsonRequestObjects(customer, purchaseUnits)
+        val campaigns = customerSessionRequest.campaigns
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { campaigns ->
+                JSONArray().apply {
+                    campaigns.forEach { campaign ->
+                        put(JSONObject().put(CAMPAIGN_ID, campaign.id))
+                    }
+                }
+            }
+
+        return JsonRequestObjects(customer, purchaseUnits, campaigns)
     }
 
     private companion object {
@@ -53,5 +64,6 @@ class CustomerSessionRequestBuilder {
         private const val AMOUNT = "amount"
         private const val VALUE = "value"
         private const val CURRENCY_CODE = "currencyCode"
+        private const val CAMPAIGN_ID = "id"
     }
 }
