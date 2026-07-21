@@ -42,7 +42,10 @@ internal class PendingPaymentStore {
         fun isExpired(): Boolean = System.currentTimeMillis() - timestampMs > ttlMs
     }
 
+    @Volatile
     var pendingSession: PendingSession? = null
+
+    @Volatile
     var tokenizeDeferred: CompletableDeferred<PayPalAccountNonce>? = null
 
     /** Resolved nonce from auto-link tokenization. Volatile for safe cross-thread reads. */
