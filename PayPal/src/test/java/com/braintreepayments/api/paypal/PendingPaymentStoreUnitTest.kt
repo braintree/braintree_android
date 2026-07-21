@@ -8,6 +8,10 @@ import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.util.concurrent.Callable
+import java.util.concurrent.CyclicBarrier
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class PendingPaymentStoreUnitTest {
 
@@ -111,5 +115,33 @@ class PendingPaymentStoreUnitTest {
 
         assertTrue(isInitiator)
         assertFalse(first === second)
+    }
+
+    @Test
+    fun `getOrCreateDeferred returns same deferred and exactly one initiator under concurrent access`() {
+        val executor = Executors.newFixedThreadPool(2)
+        try {
+            repeat(500) {
+                val store = PendingPaymentStore()
+                val barrier = CyclicBarrier(2)
+
+                val task = Callable {
+                    barrier.await()
+                    store.getOrCreateDeferred()
+                }
+
+                val future1 = executor.submit(task)
+                val future2 = executor.submit(task)
+
+                val result1 = future1.get(5, TimeUnit.SECONDS)
+                val result2 = future2.get(5, TimeUnit.SECONDS)
+
+                assertSame(result1.first, result2.first)
+                assertTrue(result1.second != result2.second)
+                assertTrue(result1.second || result2.second)
+            }
+        } finally {
+            executor.shutdown()
+        }
     }
 }
