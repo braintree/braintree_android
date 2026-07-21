@@ -10,7 +10,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
  * @property payPalAppInstalled If the PayPal app is installed on the device.
  * @property venmoAppInstalled If the Venmo app is installed on the device.
  * @property purchaseUnits List of purchase units containing the amount and currency code.
- * @property payPalCampaigns List of PayPal co-marketing campaigns to associate with the session.
+ * @property campaigns List of PayPal co-marketing campaigns to associate with the session.
  *
  * Warning: This feature is in beta. It's public API may change or be removed in future releases.
  */
@@ -21,5 +21,5 @@ data class CustomerSessionRequest(
     var payPalAppInstalled: Boolean? = null,
     var venmoAppInstalled: Boolean? = null,
     var purchaseUnits: List<PurchaseUnit>? = null,
-    var payPalCampaigns: List<PayPalCampaign>? = null,
+    var campaigns: List<PayPalCampaign>? = null,
 )

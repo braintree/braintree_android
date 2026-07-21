@@ -64,7 +64,7 @@ class CustomerSessionRequestBuilderUnitTest {
             payPalAppInstalled = true,
             venmoAppInstalled = false,
             purchaseUnits = null,
-            payPalCampaigns = null
+            campaigns = null
         )
 
         val result = requestBuilder.createRequestObjects(customerSessionRequest)
@@ -78,13 +78,13 @@ class CustomerSessionRequestBuilderUnitTest {
 
         JSONAssert.assertEquals(expectedCustomer, result.customer, false)
         assertNull(result.purchaseUnits)
-        assertNull(result.payPalCampaigns)
+        assertNull(result.campaigns)
     }
 
     @Test
-    fun `createRequestObjects builds correct JSON array when payPalCampaigns are provided`() {
+    fun `createRequestObjects builds correct JSON array when campaigns are provided`() {
         val customerSessionRequest = CustomerSessionRequest(
-            payPalCampaigns = listOf(
+            campaigns = listOf(
                 PayPalCampaign(id = "campaign-1"),
                 PayPalCampaign(id = "campaign-2")
             )
@@ -97,24 +97,24 @@ class CustomerSessionRequestBuilderUnitTest {
             put(JSONObject().put("id", "campaign-2"))
         }
 
-        JSONAssert.assertEquals(expectedCampaigns, result.payPalCampaigns, true)
+        JSONAssert.assertEquals(expectedCampaigns, result.campaigns, true)
     }
 
     @Test
-    fun `createRequestObjects returns null payPalCampaigns when list is empty`() {
-        val customerSessionRequest = CustomerSessionRequest(payPalCampaigns = emptyList())
+    fun `createRequestObjects returns null campaigns when list is empty`() {
+        val customerSessionRequest = CustomerSessionRequest(campaigns = emptyList())
 
         val result = requestBuilder.createRequestObjects(customerSessionRequest)
 
-        assertNull(result.payPalCampaigns)
+        assertNull(result.campaigns)
     }
 
     @Test
-    fun `createRequestObjects returns null payPalCampaigns when list is null`() {
-        val customerSessionRequest = CustomerSessionRequest(payPalCampaigns = null)
+    fun `createRequestObjects returns null campaigns when list is null`() {
+        val customerSessionRequest = CustomerSessionRequest(campaigns = null)
 
         val result = requestBuilder.createRequestObjects(customerSessionRequest)
 
-        assertNull(result.payPalCampaigns)
+        assertNull(result.campaigns)
     }
 }
