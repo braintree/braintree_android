@@ -30,6 +30,7 @@
     * Expose `createCustomerSession` as a public suspend function
     * Expose `updateCustomerSession` as a public suspend function
     * Expose `generateCustomerRecommendations` as a public suspend function
+    * Add `CustomerSessionRequest.campaigns` to associate PayPal campaigns with a customer session
 * ThreeDSecure
     * Expose `createPaymentAuthRequest` as a public suspend function
     * Expose `prepareLookup` as a public suspend function
