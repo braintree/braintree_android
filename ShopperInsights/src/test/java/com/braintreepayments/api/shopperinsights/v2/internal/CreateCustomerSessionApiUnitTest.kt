@@ -224,12 +224,12 @@ class CreateCustomerSessionApiUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when execute is called with payPalCampaigns, GraphQL variables include paypalCampaigns`() =
+    fun `when execute is called with campaigns, GraphQL variables include paypalCampaigns`() =
     runTest(testDispatcher) {
         val jsonRequestObjectsWithCampaigns = CustomerSessionRequestBuilder.JsonRequestObjects(
             customer = JSONObject(),
             purchaseUnits = null,
-            payPalCampaigns = JSONArray().apply {
+            campaigns = JSONArray().apply {
                 put(JSONObject().put("id", "campaign-1"))
                 put(JSONObject().put("id", "campaign-2"))
             }

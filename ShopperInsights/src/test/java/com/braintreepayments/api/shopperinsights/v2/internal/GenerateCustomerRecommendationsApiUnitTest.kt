@@ -244,14 +244,14 @@ class GenerateCustomerRecommendationsApiUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when execute is called with payPalCampaigns, GraphQL variables include paypalCampaigns`() =
+    fun `when execute is called with campaigns, GraphQL variables include paypalCampaigns`() =
     runTest(testDispatcher) {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
 
         val jsonRequestObjectsWithCampaigns = JsonRequestObjects(
             customer = JSONObject(),
             purchaseUnits = null,
-            payPalCampaigns = JSONArray().apply {
+            campaigns = JSONArray().apply {
                 put(JSONObject().put("id", "campaign-1"))
             }
         )

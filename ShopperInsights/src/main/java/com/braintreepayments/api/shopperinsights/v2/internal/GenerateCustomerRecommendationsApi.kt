@@ -75,7 +75,7 @@ internal class GenerateCustomerRecommendationsApi(
                 val jsonRequestObjects = customerSessionRequestBuilder.createRequestObjects(customerSessionRequest)
                 put(CUSTOMER, jsonRequestObjects.customer)
                 putOpt(PURCHASE_UNITS, jsonRequestObjects.purchaseUnits)
-                putOpt(PAYPAL_CAMPAIGNS, jsonRequestObjects.payPalCampaigns)
+                putOpt(PAYPAL_CAMPAIGNS, jsonRequestObjects.campaigns)
             }
         }
 

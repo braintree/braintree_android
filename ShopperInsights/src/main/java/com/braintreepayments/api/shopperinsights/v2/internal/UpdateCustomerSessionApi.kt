@@ -65,7 +65,7 @@ internal class UpdateCustomerSessionApi(
             put(SESSION_ID, sessionId)
             put(CUSTOMER, jsonRequestObjects.customer)
             putOpt(PURCHASE_UNITS, jsonRequestObjects.purchaseUnits)
-            putOpt(PAYPAL_CAMPAIGNS, jsonRequestObjects.payPalCampaigns)
+            putOpt(PAYPAL_CAMPAIGNS, jsonRequestObjects.campaigns)
         }
 
         return JSONObject().put(INPUT, input)
