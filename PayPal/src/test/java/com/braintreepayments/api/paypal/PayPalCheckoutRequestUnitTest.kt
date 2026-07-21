@@ -118,7 +118,7 @@ class PayPalCheckoutRequestUnitTest {
         val lineItems = ArrayList<PayPalLineItem>()
         lineItems.add(PayPalLineItem(PayPalLineItemKind.DEBIT, "An Item", "1", "1"))
         request.lineItems = lineItems
-        request.payPalCampaigns = listOf(PayPalCampaign("campaign-1"))
+        request.campaigns = listOf(PayPalCampaign("campaign-1"))
 
         val parcel = Parcel.obtain().apply {
             request.writeToParcel(this, 0)
@@ -143,8 +143,8 @@ class PayPalCheckoutRequestUnitTest {
         assertEquals("merchant_account_id", parceled.merchantAccountId)
         assertEquals(1, parceled.lineItems.size)
         assertEquals("An Item", parceled.lineItems[0].name)
-        assertEquals(1, parceled.payPalCampaigns.size)
-        assertEquals("campaign-1", parceled.payPalCampaigns[0].id)
+        assertEquals(1, parceled.campaigns.size)
+        assertEquals("campaign-1", parceled.campaigns[0].id)
         assertTrue(parceled.hasUserLocationConsent)
     }
 
@@ -190,7 +190,7 @@ class PayPalCheckoutRequestUnitTest {
     @Throws(JSONException::class)
     fun `creates requestBody with paypal_campaigns when campaigns are set`() {
         val request = PayPalCheckoutRequest("1.00", true).apply {
-            payPalCampaigns = listOf(PayPalCampaign("campaign-1"), PayPalCampaign("campaign-2"))
+            campaigns = listOf(PayPalCampaign("campaign-1"), PayPalCampaign("campaign-2"))
         }
 
         val requestBody = request.createRequestBody(

@@ -104,7 +104,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
     var amountBreakdown: AmountBreakdown? = null,
     override var shouldOfferCredit: Boolean = false,
-    override var payPalCampaigns: List<PayPalCampaign> = emptyList(),
+    override var campaigns: List<PayPalCampaign> = emptyList(),
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -119,7 +119,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     enablePayPalAppSwitch = enablePayPalAppSwitch,
     userAuthenticationEmail = userAuthenticationEmail,
     lineItems = lineItems,
-    payPalCampaigns = payPalCampaigns
+    campaigns = campaigns
 ) {
 
     @OptIn(ExperimentalBetaApi::class)
@@ -196,9 +196,9 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             parameters.put(LINE_ITEMS_KEY, jsonLineItems)
         }
 
-        if (payPalCampaigns.isNotEmpty()) {
+        if (campaigns.isNotEmpty()) {
             val jsonCampaigns = JSONArray()
-            payPalCampaigns.forEach { jsonCampaigns.put(it.toJson()) }
+            campaigns.forEach { jsonCampaigns.put(it.toJson()) }
             parameters.put(PAYPAL_CAMPAIGNS_KEY, jsonCampaigns)
         }
 

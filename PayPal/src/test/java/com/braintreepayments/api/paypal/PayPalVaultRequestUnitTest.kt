@@ -295,7 +295,7 @@ class PayPalVaultRequestUnitTest {
         val request = PayPalVaultRequest(
             hasUserLocationConsent = true
         ).apply {
-            payPalCampaigns = listOf(PayPalCampaign("campaign-1"))
+            campaigns = listOf(PayPalCampaign("campaign-1"))
         }
         val requestBody = request.createRequestBody(
             configuration = mockk<Configuration>(relaxed = true),
