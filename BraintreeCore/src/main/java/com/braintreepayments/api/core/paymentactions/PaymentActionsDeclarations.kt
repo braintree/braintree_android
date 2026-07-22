@@ -7,7 +7,7 @@ import org.json.JSONObject
  * Defines a payment method that can be used with [PaymentActionsService].
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-interface PaymentActionsPaymentMethod {
+interface PaymentActionPaymentMethod {
     /**
      * Produces the set of GraphQL variables needed to satisfy the GraphQL call in
      * [PaymentActionsService.setPaymentActionPaymentMethod].
@@ -29,7 +29,6 @@ interface PaymentActionsPaymentMethod {
         status
         nextAction {
             type
-            songbirdUrl
             cardinalAuthenticationJwt
             bin
             acsUrl
@@ -47,9 +46,9 @@ interface PaymentActionsPaymentMethod {
  * Wrapper result type for [PaymentAction].
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-sealed class PaymentActionsResult {
-    class Success(val paymentAction: PaymentAction) : PaymentActionsResult()
-    class Failure(val error: Exception) : PaymentActionsResult()
+sealed class PaymentActionResult {
+    class Success(val paymentAction: PaymentAction) : PaymentActionResult()
+    class Failure(val error: Exception) : PaymentActionResult()
 }
 
 /**
@@ -59,7 +58,7 @@ sealed class PaymentActionsResult {
 data class PaymentAction(
     val id: String,
     val status: PaymentActionStatus,
-    val nextAction: NextAction?,
+    val nextAction: PaymentActionNextAction?,
     val selectedPaymentMethod: PaymentActionSelectedPaymentMethod?,
 )
 
@@ -113,10 +112,10 @@ enum class PaymentActionStatus {
  * GraphQL.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-sealed class NextAction {
-    data object ProvideCvv : NextAction()
+sealed class PaymentActionNextAction {
+    data object ProvideCvv : PaymentActionNextAction()
 
-    data class Redirect(val redirectUrl: String) : NextAction()
+    data class Redirect(val redirectUrl: String) : PaymentActionNextAction()
 
     data class ThreeDSecure(
         val songbirdUrl: String?,
@@ -124,9 +123,9 @@ sealed class NextAction {
         val bin: String?,
         val acsUrl: String?,
         val challengePayload: String?,
-    ) : NextAction()
+    ) : PaymentActionNextAction()
 
-    data object Unknown : NextAction()
+    data object Unknown : PaymentActionNextAction()
 }
 
 /**
