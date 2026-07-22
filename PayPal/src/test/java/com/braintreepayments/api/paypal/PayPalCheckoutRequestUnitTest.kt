@@ -226,8 +226,9 @@ class PayPalCheckoutRequestUnitTest {
         val jsonObject = JSONObject(requestBody)
         assertTrue(jsonObject.getBoolean("launch_paypal_app"))
         assertEquals("Android", jsonObject.getString("os_type"))
-        assertEquals(appLink, jsonObject.getString("merchant_app_return_url"))
         assertNotNull(jsonObject.getString("os_version"))
+        assertEquals(appLink, jsonObject.getString("merchant_app_return_url"))
+        assertFalse(jsonObject.has("app_switch_context"))
     }
 
     @OptIn(ExperimentalBetaApi::class)
