@@ -29,7 +29,10 @@ interface PaymentActionPaymentMethod {
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 sealed class PaymentActionResult {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     class Success(val paymentAction: PaymentAction) : PaymentActionResult()
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     class Failure(val error: Exception) : PaymentActionResult()
 }
 
