@@ -2,7 +2,7 @@ package com.braintreepayments.api.shopperinsights.v2.internal
 
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
-import com.braintreepayments.api.shopperinsights.v2.PayPalCampaign
+import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsCampaign
 import com.braintreepayments.api.shopperinsights.v2.PurchaseUnit
 import org.json.JSONArray
 import org.json.JSONObject
@@ -64,7 +64,7 @@ class CustomerSessionRequestBuilderUnitTest {
             payPalAppInstalled = true,
             venmoAppInstalled = false,
             purchaseUnits = null,
-            campaigns = null
+            payPalCampaigns = null
         )
 
         val result = requestBuilder.createRequestObjects(customerSessionRequest)
@@ -84,9 +84,9 @@ class CustomerSessionRequestBuilderUnitTest {
     @Test
     fun `createRequestObjects builds correct JSON array when campaigns are provided`() {
         val customerSessionRequest = CustomerSessionRequest(
-            campaigns = listOf(
-                PayPalCampaign(id = "campaign-1"),
-                PayPalCampaign(id = "campaign-2")
+            payPalCampaigns = listOf(
+                ShopperInsightsCampaign(id = "campaign-1"),
+                ShopperInsightsCampaign(id = "campaign-2")
             )
         )
 
@@ -102,7 +102,7 @@ class CustomerSessionRequestBuilderUnitTest {
 
     @Test
     fun `createRequestObjects returns null campaigns when list is empty`() {
-        val customerSessionRequest = CustomerSessionRequest(campaigns = emptyList())
+        val customerSessionRequest = CustomerSessionRequest(payPalCampaigns = emptyList())
 
         val result = requestBuilder.createRequestObjects(customerSessionRequest)
 
@@ -111,7 +111,7 @@ class CustomerSessionRequestBuilderUnitTest {
 
     @Test
     fun `createRequestObjects returns null campaigns when list is null`() {
-        val customerSessionRequest = CustomerSessionRequest(campaigns = null)
+        val customerSessionRequest = CustomerSessionRequest(payPalCampaigns = null)
 
         val result = requestBuilder.createRequestObjects(customerSessionRequest)
 
