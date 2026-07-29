@@ -9,26 +9,37 @@ import org.json.JSONObject
 import java.io.IOException
 
 /**
- *
+ * This is a centralized service for handling all Payment Actions related backend requests.
+ * It acts as a thin client in order to insulate our payment method specific clients from the
+ * networking layer.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class PaymentActionsService(
     private val braintreeClient: BraintreeClient,
 ) {
 
+    /**
+     * Submits a payment method to `setPaymentActionPaymentMethod` GraphQL mutation.
+     *
+     * On success returns a [PaymentActionResult.Success] wrapping a [PaymentAction] is returned.
+     * On failure returns a [PaymentActionResult.Failure] wrapping an [Exception] is returned.
+     *
+     * @param paymentMethod the [PaymentActionPaymentMethod] to submit to GraphQL.
+     * @return a [PaymentActionResult] wrapper denoting success or failure.
+     */
     suspend fun setPaymentActionPaymentMethod(
         paymentMethod: PaymentActionPaymentMethod,
     ): PaymentActionResult {
         return try {
             braintreeClient
-                .sendGraphQLPOST(buildQuery(paymentMethod))
+                .sendGraphQLPOST(buildSetPaymentActionPaymentMethodQuery(paymentMethod))
                 .toPaymentActionsResult()
         } catch (exception: IOException) {
             PaymentActionResult.Failure(exception)
         }
     }
 
-    private fun buildQuery(paymentMethod: PaymentActionPaymentMethod): JSONObject {
+    private fun buildSetPaymentActionPaymentMethodQuery(paymentMethod: PaymentActionPaymentMethod): JSONObject {
         val input = JSONObject().put(PAYMENT_METHOD_KEY, paymentMethod.toGraphQLVariables())
         val variables = JSONObject().put(GraphQLConstants.Keys.INPUT, input)
 
