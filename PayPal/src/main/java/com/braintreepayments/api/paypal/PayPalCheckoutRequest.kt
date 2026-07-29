@@ -74,6 +74,8 @@ import org.json.JSONObject
  * @property amountBreakdown Breakdown of items associated to the total cost
  *
  * @property shouldOfferCredit Offers PayPal Credit if the customer qualifies. Defaults to false.
+ *
+ * @property campaigns List of PayPal co-marketing campaigns to associate with the order.
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
@@ -104,7 +106,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
     var amountBreakdown: AmountBreakdown? = null,
     override var shouldOfferCredit: Boolean = false,
-    override var campaigns: List<PayPalCampaign> = emptyList(),
+    var campaigns: List<PayPalCampaign> = emptyList(),
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -118,8 +120,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     riskCorrelationId = riskCorrelationId,
     enablePayPalAppSwitch = enablePayPalAppSwitch,
     userAuthenticationEmail = userAuthenticationEmail,
-    lineItems = lineItems,
-    campaigns = campaigns
+    lineItems = lineItems
 ) {
 
     @OptIn(ExperimentalBetaApi::class)
