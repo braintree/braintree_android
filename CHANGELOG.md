@@ -27,7 +27,7 @@
     * Expose `tokenize` as a public suspend function
 * PayPal
     * Expose `createPaymentAuthRequest` as a public suspend function
-    * Expose `tokenize` as a public suspend function 
+    * Expose `tokenize` as a public suspend function
 * SEPADirectDebit
     * Expose `createPaymentAuthRequest` as a public suspend function
     * Expose `tokenize` as a public suspend function
