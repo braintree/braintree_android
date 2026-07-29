@@ -50,8 +50,11 @@ data class PaymentAction(
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 enum class PaymentActionStatus {
-    SUCCEEDED,
+    CANCELED,
+    EXPIRED,
+    READY_FOR_CONFIRMATION,
     REQUIRES_CAPTURE,
     REQUIRES_PAYMENT_METHOD,
-    UNKNOWN
+    SUCCEEDED,
+    UNKNOWN,
 }
