@@ -43,7 +43,7 @@ class CustomerSessionRequestBuilder {
                 }
             }
 
-        val campaigns = customerSessionRequest.campaigns
+        val campaigns = customerSessionRequest.payPalCampaigns
             ?.takeIf { it.isNotEmpty() }
             ?.let { campaigns ->
                 JSONArray().apply {

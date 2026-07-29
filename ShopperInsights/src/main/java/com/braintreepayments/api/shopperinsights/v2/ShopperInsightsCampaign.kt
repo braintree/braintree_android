@@ -8,4 +8,4 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
  * @property id The PayPal-assigned campaign identifier.
  */
 @ExperimentalBetaApi
-data class PayPalCampaign(val id: String)
+data class ShopperInsightsCampaign(val id: String)
