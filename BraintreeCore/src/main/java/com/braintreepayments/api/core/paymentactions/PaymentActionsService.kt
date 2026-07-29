@@ -29,8 +29,6 @@ class PaymentActionsService(
     }
 
     private fun buildQuery(paymentMethod: PaymentActionPaymentMethod): JSONObject {
-        // TODO: SetPaymentActionPaymentMethodInput also requires a paymentActionId. Determine
-        //  where this should be sourced from and thread it through once available.
         val input = JSONObject().put(PAYMENT_METHOD_KEY, paymentMethod.toGraphQLVariables())
         val variables = JSONObject().put(GraphQLConstants.Keys.INPUT, input)
 

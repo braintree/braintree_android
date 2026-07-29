@@ -24,7 +24,19 @@ class PaymentActionsServiceUnitTest {
     private val testDispatcher = StandardTestDispatcher()
 
     private val paymentMethodVariables = JSONObject().apply {
-        put("paymentMethodId", "pm456")
+        put(
+            "paymentMethodDetails",
+            JSONObject().apply {
+                put(
+                    "creditCard",
+                    JSONObject().apply {
+                        put("number", "4111111111111111")
+                        put("expirationMonth", "12")
+                        put("expirationYear", "2028")
+                    },
+                )
+            },
+        )
     }
 
     private fun mockPaymentMethod(
