@@ -333,6 +333,7 @@ class PayPalCheckoutRequestTest {
         assertEquals("Android", json.getString("os_type"))
         assertNotNull(json.getString("os_version"))
         assertEquals("https://merchant.example.com/applink", json.getString("merchant_app_return_url"))
+        assertFalse(json.has("app_switch_context"))
     }
 
     @Test
@@ -355,6 +356,7 @@ class PayPalCheckoutRequestTest {
         assertFalse(json.has("launch_paypal_app"))
         assertFalse(json.has("os_type"))
         assertFalse(json.has("merchant_app_return_url"))
+        assertFalse(json.has("app_switch_context"))
     }
 
     @Suppress("LongMethod")
