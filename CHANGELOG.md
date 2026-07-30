@@ -2,6 +2,11 @@
 
 ## unreleased
 
+* PayPal
+    * Collect device information to improve PayPal app switch eligibility when it's enabled
+
+## 5.30.0 (2026-07-21)
+
 * General
     * Remove `VisaCheckout` module. Visa Checkout is no longer supported.
     * Deprecate `Configuration#isVisaCheckoutEnabled`, `Configuration#visaCheckoutApiKey`,
