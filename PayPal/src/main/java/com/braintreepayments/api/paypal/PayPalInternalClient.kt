@@ -1,7 +1,9 @@
 package com.braintreepayments.api.paypal
 
+import android.app.ActivityManager
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.AppSwitchRepository
@@ -17,6 +19,7 @@ import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import org.json.JSONException
+import org.json.JSONObject
 
 internal class PayPalInternalClient(
     private val braintreeClient: BraintreeClient,
@@ -69,13 +72,19 @@ internal class PayPalInternalClient(
             null
         }
 
-        val requestBody = payPalRequest.createRequestBody(
+        val baseRequestBody = payPalRequest.createRequestBody(
             configuration = configuration,
             authorization = merchantRepository.authorization,
             successUrl = successUrl,
             cancelUrl = cancelUrl,
             appLink = appLinkParam
         ) ?: throw JSONException("Error creating requestBody")
+
+        val requestBody = if (payPalRequest.enablePayPalAppSwitch && appLinkParam != null) {
+            appendDeviceInfo(context, baseRequestBody)
+        } else {
+            baseRequestBody
+        }
 
         return sendPost(
             url = url,
@@ -187,6 +196,21 @@ internal class PayPalInternalClient(
             .build()
     }
 
+    private fun appendDeviceInfo(context: Context, requestBody: String): String {
+        val activityManager =
+            context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return requestBody
+        val memInfo = ActivityManager.MemoryInfo().also { activityManager.getMemoryInfo(it) }
+        return JSONObject(requestBody).apply {
+            val appSwitchContext = optJSONObject(PayPalRequest.APP_SWITCH_CONTEXT_KEY)
+                ?: JSONObject().also { put(PayPalRequest.APP_SWITCH_CONTEXT_KEY, it) }
+            appSwitchContext.put(PayPalRequest.DEVICE_INFO_KEY, JSONObject().apply {
+                put(PayPalRequest.DEVICE_MODEL_KEY, Build.MODEL)
+                put(PayPalRequest.MEMORY_AVAILABLE_MB_KEY, (memInfo.availMem / BYTES_PER_MB).toInt())
+                put(PayPalRequest.MEMORY_TOTAL_MB_KEY, (memInfo.totalMem / BYTES_PER_MB).toInt())
+            })
+        }.toString()
+    }
+
     private fun extractContextId(redirectUri: Uri): String? {
         return redirectUri.getQueryParameter("ba_token")
             ?: redirectUri.getQueryParameter("token")
@@ -197,5 +221,6 @@ internal class PayPalInternalClient(
     companion object {
         private const val CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource"
         private const val SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement"
+        private const val BYTES_PER_MB = 1024L * 1024L
     }
 }
