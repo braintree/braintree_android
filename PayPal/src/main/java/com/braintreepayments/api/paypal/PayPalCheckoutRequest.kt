@@ -74,6 +74,8 @@ import org.json.JSONObject
  * @property amountBreakdown Breakdown of items associated to the total cost
  *
  * @property shouldOfferCredit Offers PayPal Credit if the customer qualifies. Defaults to false.
+ *
+ * @property campaigns List of PayPal co-marketing campaigns to associate with the order.
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
@@ -104,6 +106,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
     var amountBreakdown: AmountBreakdown? = null,
     override var shouldOfferCredit: Boolean = false,
+    var campaigns: List<PayPalCampaign> = emptyList(),
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -192,6 +195,12 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             val jsonLineItems = JSONArray()
             lineItems.forEach { jsonLineItems.put(it.toJson()) }
             parameters.put(LINE_ITEMS_KEY, jsonLineItems)
+        }
+
+        if (campaigns.isNotEmpty()) {
+            val jsonCampaigns = JSONArray()
+            campaigns.forEach { jsonCampaigns.put(it.toJson()) }
+            parameters.put(PAYPAL_CAMPAIGNS_KEY, jsonCampaigns)
         }
 
         val experienceProfile = JSONObject()
