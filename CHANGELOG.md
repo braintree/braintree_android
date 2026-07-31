@@ -4,6 +4,9 @@
 
 * PayPal
     * Collect device information to improve PayPal app switch eligibility when it's enabled
+    * Add `PayPalCheckoutRequest.campaigns` to associate campaigns with a checkout order
+* ShopperInsights
+    * Add `CustomerSessionRequest.payPalCampaigns` to associate campaigns with a customer session
 
 ## 5.30.0 (2026-07-21)
 
@@ -35,7 +38,6 @@
     * Expose `createCustomerSession` as a public suspend function
     * Expose `updateCustomerSession` as a public suspend function
     * Expose `generateCustomerRecommendations` as a public suspend function
-    * Add `CustomerSessionRequest.campaigns` to associate PayPal campaigns with a customer session
 * ThreeDSecure
     * Expose `createPaymentAuthRequest` as a public suspend function
     * Expose `prepareLookup` as a public suspend function
