@@ -220,7 +220,10 @@ public class PayPalRequestFactory {
         }
 
         if (campaignId != null && !campaignId.isEmpty()) {
-            request.setCampaigns(Collections.singletonList(new PayPalCampaign(campaignId)));
+            List<PayPalCampaign> campaigns = parseCampaigns(campaignId);
+            if (!campaigns.isEmpty()) {
+                request.setCampaigns(campaigns);
+            }
         }
 
         if (Settings.isPayPalAppSwithEnabled(context)) {
@@ -268,6 +271,17 @@ public class PayPalRequestFactory {
         }
 
         return request;
+    }
+
+    private static List<PayPalCampaign> parseCampaigns(String campaignIdText) {
+        List<PayPalCampaign> campaigns = new ArrayList<>();
+        for (String id : campaignIdText.split(",")) {
+            String trimmedId = id.trim();
+            if (!trimmedId.isEmpty()) {
+                campaigns.add(new PayPalCampaign(trimmedId));
+            }
+        }
+        return campaigns;
     }
 
     private static List<PayPalLineItem> buildLineItems(

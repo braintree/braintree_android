@@ -39,7 +39,7 @@ class ShopperInsightsV2ViewModel : ViewModel() {
         val customerSessionRequest = CustomerSessionRequest(
             hashedEmail = emailText.sha256(),
             hashedPhoneNumber = nationalNumberText.sha256(),
-            payPalCampaigns = campaignIdText.takeIf { it.isNotBlank() }?.let { listOf(ShopperInsightsCampaign(it)) }
+            payPalCampaigns = campaignIdText.toShopperInsightsCampaigns()
         )
 
         _sessionId.update { "" }
@@ -67,7 +67,7 @@ class ShopperInsightsV2ViewModel : ViewModel() {
         val customerSessionRequest = CustomerSessionRequest(
             hashedEmail = emailText.sha256(),
             hashedPhoneNumber = nationalNumberText.sha256(),
-            payPalCampaigns = campaignIdText.takeIf { it.isNotBlank() }?.let { listOf(ShopperInsightsCampaign(it)) }
+            payPalCampaigns = campaignIdText.toShopperInsightsCampaigns()
         )
 
         _sessionId.update { "" }
@@ -138,6 +138,12 @@ class ShopperInsightsV2ViewModel : ViewModel() {
 
 private fun String.sha256(): String {
     return hashString(this, "SHA-256")
+}
+
+@OptIn(ExperimentalBetaApi::class)
+private fun String.toShopperInsightsCampaigns(): List<ShopperInsightsCampaign>? {
+    val campaigns = split(",").map { it.trim() }.filter { it.isNotEmpty() }
+    return campaigns.takeIf { it.isNotEmpty() }?.map { ShopperInsightsCampaign(it) }
 }
 
 private fun hashString(input: String, algorithm: String = "SHA-256"): String {

@@ -124,7 +124,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             TextField(
                 value = campaignIdText,
                 onValueChange = { newValue -> campaignIdText = newValue },
-                label = { Text("Campaign ID") },
+                label = { Text("Campaign IDs (comma-separated)") },
                 modifier = Modifier.padding(4.dp),
             )
 
