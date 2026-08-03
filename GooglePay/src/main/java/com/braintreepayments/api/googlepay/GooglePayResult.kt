@@ -15,7 +15,7 @@ sealed class GooglePayResult {
     /**
      * There was an [error] in the Google Pay flow.
      */
-    class Failure internal constructor(val error: Exception) : GooglePayResult()
+    class Failure(val error: Exception) : GooglePayResult()
 
     /**
      * The user canceled the Google Pay flow.

@@ -2,9 +2,11 @@ package com.braintreepayments.api.googlepay
 
 import android.content.Context
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import com.braintreepayments.api.core.UserCanceledException
 import com.google.android.gms.tasks.Task
@@ -17,7 +19,7 @@ import com.google.android.gms.wallet.contract.TaskResultContracts
  */
 class GooglePayLauncher internal constructor(
     registry: ActivityResultRegistry,
-    lifecycleOwner: LifecycleOwner,
+    lifecycleOwner: LifecycleOwner?,
     context: Context,
     private val internalGooglePayClient: GooglePayInternalClient = GooglePayInternalClient(),
     callback: GooglePayLauncherCallback
@@ -25,10 +27,7 @@ class GooglePayLauncher internal constructor(
 
     private val appContext: Context = context.applicationContext
 
-    private val activityLauncher: ActivityResultLauncher<Task<PaymentData>> = registry.register(
-        GOOGLE_PAY_RESULT, lifecycleOwner,
-        TaskResultContracts.GetPaymentDataResult()
-    ) { apiTaskResult: ApiTaskResult<PaymentData> ->
+    private val activityCallback: ActivityResultCallback<ApiTaskResult<PaymentData>> = ActivityResultCallback { apiTaskResult: ApiTaskResult<PaymentData> ->
         val result = when {
             apiTaskResult.status.isSuccess ->
                 GooglePayPaymentAuthResult(apiTaskResult.result, null)
@@ -46,6 +45,13 @@ class GooglePayLauncher internal constructor(
         }
         callback.onGooglePayLauncherResult(result)
     }
+
+    private val activityLauncher: ActivityResultLauncher<Task<PaymentData>> = if (lifecycleOwner != null) registry.register(
+        GOOGLE_PAY_RESULT, lifecycleOwner,
+        TaskResultContracts.GetPaymentDataResult(), activityCallback
+    ) else registry.register(
+        GOOGLE_PAY_RESULT,TaskResultContracts.GetPaymentDataResult(), activityCallback
+    )
 
     /**
      * Used to launch the Google Pay payment sheet from within an Android Fragment. This class must be
@@ -78,6 +84,11 @@ class GooglePayLauncher internal constructor(
         callback: GooglePayLauncherCallback
     ) : this(activity.activityResultRegistry, activity, activity, callback = callback)
 
+    constructor(
+        activity: FragmentActivity,
+        callback: GooglePayLauncherCallback
+    ) : this(activity.activityResultRegistry, null, activity, callback = callback)
+
     /**
      * Launches the Google Pay payment sheet. This method cannot be called until the lifecycle of
      * the Fragment or Activity used to instantiate your [GooglePayLauncher] has reached the
@@ -92,6 +103,8 @@ class GooglePayLauncher internal constructor(
                 activityLauncher.launch(completedTask)
             }
     }
+
+    fun unregister() = activityLauncher.unregister()
 
     companion object {
         private const val GOOGLE_PAY_RESULT = "com.braintreepayments.api.GooglePay.RESULT"
