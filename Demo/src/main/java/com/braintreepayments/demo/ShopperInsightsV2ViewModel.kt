@@ -12,6 +12,7 @@ import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendationsResul
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionResult
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
+import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsCampaign
 import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsClientV2
 import java.security.MessageDigest
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,10 +35,11 @@ class ShopperInsightsV2ViewModel : ViewModel() {
         shopperInsightsClient = ShopperInsightsClientV2(context, authString)
     }
 
-    fun handleCreateCustomerSession(emailText: String, nationalNumberText: String) {
+    fun handleCreateCustomerSession(emailText: String, nationalNumberText: String, campaignIdText: String) {
         val customerSessionRequest = CustomerSessionRequest(
             hashedEmail = emailText.sha256(),
-            hashedPhoneNumber = nationalNumberText.sha256()
+            hashedPhoneNumber = nationalNumberText.sha256(),
+            payPalCampaigns = campaignIdText.takeIf { it.isNotBlank() }?.let { listOf(ShopperInsightsCampaign(it)) }
         )
 
         _sessionId.update { "" }
@@ -59,11 +61,13 @@ class ShopperInsightsV2ViewModel : ViewModel() {
     fun handleUpdateCustomerSession(
         emailText: String,
         nationalNumberText: String,
-        sessionId: String
+        sessionId: String,
+        campaignIdText: String
     ) {
         val customerSessionRequest = CustomerSessionRequest(
             hashedEmail = emailText.sha256(),
-            hashedPhoneNumber = nationalNumberText.sha256()
+            hashedPhoneNumber = nationalNumberText.sha256(),
+            payPalCampaigns = campaignIdText.takeIf { it.isNotBlank() }?.let { listOf(ShopperInsightsCampaign(it)) }
         )
 
         _sessionId.update { "" }

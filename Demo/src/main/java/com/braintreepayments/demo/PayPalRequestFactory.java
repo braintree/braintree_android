@@ -7,6 +7,7 @@ import com.braintreepayments.api.paypal.AmountBreakdown;
 import com.braintreepayments.api.paypal.PayPalBillingCycle;
 import com.braintreepayments.api.paypal.PayPalBillingInterval;
 import com.braintreepayments.api.paypal.PayPalBillingPricing;
+import com.braintreepayments.api.paypal.PayPalCampaign;
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
 import com.braintreepayments.api.paypal.PayPalContactInformation;
 import com.braintreepayments.api.paypal.PayPalContactPreference;
@@ -166,7 +167,8 @@ public class PayPalRequestFactory {
         String shopperInsightsSessionId,
         Boolean offerPayLater,
         Boolean offerCredit,
-        Boolean isAmountBreakdownEnabled
+        Boolean isAmountBreakdownEnabled,
+        String campaignId
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
         request.setShouldOfferPayLater(offerPayLater);
@@ -215,6 +217,10 @@ public class PayPalRequestFactory {
 
         if (shopperInsightsSessionId != null && !shopperInsightsSessionId.isEmpty()) {
             request.setShopperSessionId(shopperInsightsSessionId);
+        }
+
+        if (campaignId != null && !campaignId.isEmpty()) {
+            request.setCampaigns(Collections.singletonList(new PayPalCampaign(campaignId)));
         }
 
         if (Settings.isPayPalAppSwithEnabled(context)) {

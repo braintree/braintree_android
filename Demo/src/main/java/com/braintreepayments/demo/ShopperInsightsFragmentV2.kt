@@ -95,6 +95,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             var emailText by rememberSaveable { mutableStateOf("PR1_merchantname@personal.example.com") }
             var countryCodeText by rememberSaveable { mutableStateOf("1") }
             var nationalNumberText by rememberSaveable { mutableStateOf("4082321001") }
+            var campaignIdText by rememberSaveable { mutableStateOf("") }
 
             TextField(
                 value = emailText,
@@ -120,6 +121,12 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                         .weight(2f)
                 )
             }
+            TextField(
+                value = campaignIdText,
+                onValueChange = { newValue -> campaignIdText = newValue },
+                label = { Text("Campaign ID") },
+                modifier = Modifier.padding(4.dp),
+            )
 
             val currentSessionId = viewModel.sessionId.collectAsState().value
             TextField(
@@ -134,7 +141,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
                 onClick = {
                     viewModel.resetRecommendationsCompleted()
-                    handleCreateCustomerSession(emailText, nationalNumberText)
+                    handleCreateCustomerSession(emailText, nationalNumberText, campaignIdText)
                 }
             ) {
                 Text(text = "Create customer session")
@@ -143,7 +150,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
                 onClick = {
                     viewModel.resetRecommendationsCompleted()
-                    handleUpdateCustomerSession(emailText, nationalNumberText, currentSessionId)
+                    handleUpdateCustomerSession(emailText, nationalNumberText, currentSessionId, campaignIdText)
                 }
             ) {
                 Text(text = "Update customer session")
@@ -351,17 +358,19 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
 
     private fun handleCreateCustomerSession(
         emailText: String,
-        nationalNumberText: String
+        nationalNumberText: String,
+        campaignIdText: String
     ) {
-        viewModel.handleCreateCustomerSession(emailText, nationalNumberText)
+        viewModel.handleCreateCustomerSession(emailText, nationalNumberText, campaignIdText)
     }
 
     private fun handleUpdateCustomerSession(
         emailText: String,
         nationalNumberText: String,
-        sessionId: String
+        sessionId: String,
+        campaignIdText: String
     ) {
-        viewModel.handleUpdateCustomerSession(emailText, nationalNumberText, sessionId)
+        viewModel.handleUpdateCustomerSession(emailText, nationalNumberText, sessionId, campaignIdText)
     }
 
     private fun handleGetRecommendations(sessionId: String) {
