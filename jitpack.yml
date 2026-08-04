@@ -1,6 +1,0 @@
-jdk:
-  - openjdk11 # or openjdk21 depending on your AGP/Gradle version
-
-before_install:
-  - yes | sdkmanager --licenses
-  - sdkmanager "platforms;android-37" "build-tools;37.0.0"

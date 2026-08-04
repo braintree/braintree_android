@@ -1,7 +1,7 @@
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.android
-    alias libs.plugins.dokka
+//    alias libs.plugins.dokka
     alias libs.plugins.ksp
     alias libs.plugins.kotlin.parcelize
 }
@@ -36,10 +36,10 @@ android {
         }
     }
 
-    packagingOptions {
+    /*packagingOptions {
         exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
         exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
-    }
+    }*/
 
     lintOptions {
         textReport true
@@ -114,7 +114,7 @@ dependencies {
     testImplementation project(':Card')
 
     // Ref: https://kotlin.github.io/dokka/1.8.0-SNAPSHOT/user_guide/applying/gradle/#applying-plugins
-    dokkaHtmlPartialPlugin libs.dokka.android.documentation.plugin
+//    dokkaHtmlPartialPlugin libs.dokka.android.documentation.plugin
 }
 
 android.buildTypes.each { type ->

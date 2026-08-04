@@ -18,14 +18,14 @@ buildscript {
         classpath libs.gradle
         classpath libs.kotlin.gradle.plugin
         classpath libs.androidx.navigation.safe.args.gradle.plugin
-        classpath libs.dokka.gradle.plugin
-        classpath libs.dokka.android.documentation.plugin
+//        classpath libs.dokka.gradle.plugin
+//        classpath libs.dokka.android.documentation.plugin
     }
 }
 
 plugins {
-    alias libs.plugins.dokka
-    alias libs.plugins.gradle.nexus.publish
+//    alias libs.plugins.dokka
+//    alias libs.plugins.gradle.nexus.publish
     alias libs.plugins.detekt
 
     alias libs.plugins.android.application apply false
@@ -58,7 +58,7 @@ ext {
     versionName = version
 }
 
-nexusPublishing {
+/*nexusPublishing {
     packageGroup = project.hasProperty('nexusPackageGroup') ? project.getProperty('nexusPackageGroup') : 'com.braintreepayments'
 
     repositories {
@@ -76,7 +76,7 @@ nexusPublishing {
         // give nexus sonatype more time to close the staging repository
         delayBetween.set(Duration.ofSeconds(20))
     }
-}
+}*/
 
 dependencies {
     detektPlugins libs.detekt.formatting
@@ -128,10 +128,10 @@ subprojects {
     }
 }
 
-dokkaHtmlMultiModule.configure {
+/*dokkaHtmlMultiModule.configure {
     // redirect dokka output to GitHub pages root directory
     outputDirectory.set(project.file("docs"))
-}
+}*/
 
 subprojects {
     plugins.withId('org.jetbrains.dokka') {

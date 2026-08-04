@@ -42,10 +42,10 @@ android {
         textOutput 'stdout'
     }
 
-    packagingOptions {
+    /*packagingOptions {
         exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
         exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
-    }
+    }*/
 
     buildFeatures {
         compose = true
