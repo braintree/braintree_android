@@ -1,0 +1,10 @@
+jdk:
+  - openjdk11 # match your AGP version
+
+before_install:
+  - yes | sdkmanager --licenses
+  - sdkmanager "platforms;android-37" "build-tools;37.0.0"
+
+# Force Gradle to only publish the GooglePay module
+build:
+  - ./gradlew :GooglePay:assembleRelease
