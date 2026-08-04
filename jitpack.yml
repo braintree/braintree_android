@@ -1,2 +1,0 @@
-before_install:
-  - yes | sdkmanager --install "platforms;android-37"
