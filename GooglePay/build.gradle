@@ -52,9 +52,9 @@ dependencies {
     implementation libs.androidx.appcompat
     api libs.play.services.wallet
 
-//    api project(':BraintreeCore')
-    api project(':PayPal')
-    api project(':Card')
+    compileOnly project(':BraintreeCore')
+    compileOnly project(':PayPal')
+    compileOnly project(':Card')
 
     testImplementation project(':TestUtils')
     testImplementation libs.androidx.test.rules
