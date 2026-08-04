@@ -4,6 +4,7 @@
 
 * PayPal
     * Collect device information to improve PayPal app switch eligibility when it's enabled
+    * Add internal `PendingPaymentStore` for auto-link on manual return
 
 ## 5.30.0 (2026-07-21)
 
@@ -28,7 +29,6 @@
 * PayPal
     * Expose `createPaymentAuthRequest` as a public suspend function
     * Expose `tokenize` as a public suspend function
-    * Add internal `PendingPaymentStore` for auto-link on manual return (no public API changes)
 * SEPADirectDebit
     * Expose `createPaymentAuthRequest` as a public suspend function
     * Expose `tokenize` as a public suspend function
