@@ -221,4 +221,45 @@ class CreateCustomerSessionApiUnitTest {
             })
         }
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `when execute is called with campaigns, GraphQL variables include paypalCampaigns`() =
+    runTest(testDispatcher) {
+        val jsonRequestObjectsWithCampaigns = CustomerSessionRequestBuilder.JsonRequestObjects(
+            customer = JSONObject(),
+            purchaseUnits = null,
+            campaigns = JSONArray().apply {
+                put(JSONObject().put("id", "campaign-1"))
+                put(JSONObject().put("id", "campaign-2"))
+            }
+        )
+        val customerSessionRequestBuilder = mockk<CustomerSessionRequestBuilder> {
+            every { createRequestObjects(customerSessionRequest) } returns jsonRequestObjectsWithCampaigns
+        }
+
+        val expectedCampaigns = JSONArray().apply {
+            put(JSONObject().put("id", "campaign-1"))
+            put(JSONObject().put("id", "campaign-2"))
+        }
+
+        val createCustomerSessionApi = CreateCustomerSessionApi(
+            braintreeClient = braintreeClient,
+            customerSessionRequestBuilder = customerSessionRequestBuilder,
+            responseParser = mockk<ShopperInsightsResponseParser>(relaxed = true)
+        )
+
+        createCustomerSessionApi.execute(customerSessionRequest)
+        advanceUntilIdle()
+
+        coVerify {
+            braintreeClient.sendGraphQLPOST(withArg { actualRequestBody ->
+                val actualCampaigns = actualRequestBody
+                    .getJSONObject("variables")
+                    .getJSONObject("input")
+                    .getJSONArray("paypalCampaigns")
+                JSONAssert.assertEquals(expectedCampaigns, actualCampaigns, true)
+            })
+        }
+    }
 }

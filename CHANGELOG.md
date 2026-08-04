@@ -4,6 +4,9 @@
 
 * PayPal
     * Collect device information to improve PayPal app switch eligibility when it's enabled
+    * Add `PayPalCheckoutRequest.campaigns` to associate campaigns with a checkout order
+* ShopperInsights
+    * Add `CustomerSessionRequest.payPalCampaigns` to associate campaigns with a customer session
 
 ## 5.30.0 (2026-07-21)
 
