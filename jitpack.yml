@@ -6,4 +6,6 @@ before_install:
   - sdkmanager "platforms;android-37" "build-tools;37.0.0"
 
 # Fix: This must be a raw string command, not a list item
-build: ./gradlew :GooglePay:assembleRelease
+build: |
+  ./gradlew :GooglePay:assembleRelease
+  ./gradlew :GooglePay:publishToMavenLocal
