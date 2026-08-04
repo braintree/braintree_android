@@ -308,7 +308,6 @@ jobs:
           ./gradlew -PversionParam="${RELEASE_VERSION}" changeREADMEVersion
           ./gradlew -PversionParam="${RELEASE_VERSION}" changeMigrationGuideVersion
           ./gradlew -PversionParam="${RELEASE_VERSION}" updateCHANGELOGVersion
-          ./gradlew dokkaHtmlMultiModule
           git add -A
           git commit -am "Release ${RELEASE_VERSION}"
           git tag "${RELEASE_VERSION}" -a -m "Release ${RELEASE_VERSION}"
@@ -317,6 +316,14 @@ jobs:
           ./gradlew incrementVersionCode
           git commit -am 'Prepare for development'
           git push origin ${GITHUB_REF_NAME} "${RELEASE_VERSION}"
+      - name: Generate Reference Docs
+        run: ./gradlew dokkaHtmlMultiModule
+      - name: Publish Reference Docs
+        run: |
+          set -euo pipefail
+          git fetch origin reference-docs:reference-docs || true
+          ./scripts/publish-docs.sh "${RELEASE_VERSION}"
+          git -C "$(dirname "$PWD")/$(basename "$PWD")-reference-docs" push origin reference-docs
 
   create_github_release:
     needs: [ bump_version ]
