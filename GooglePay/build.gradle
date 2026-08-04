@@ -52,7 +52,7 @@ dependencies {
     implementation libs.androidx.appcompat
     api libs.play.services.wallet
 
-    api project(':BraintreeCore')
+//    api project(':BraintreeCore')
     api project(':PayPal')
     api project(':Card')
 
