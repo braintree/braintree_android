@@ -1,9 +1,11 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.31.0 (2026-08-03)
 
 * PayPal
     * Collect device information to improve PayPal app switch eligibility when it's enabled
+* BraintreeCore
+    * Update Browser Switch version to 3.6.0
 
 ## 5.30.0 (2026-07-21)
 
