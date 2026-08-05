@@ -34,6 +34,7 @@ plugins {
     alias libs.plugins.kotlin.parcelize apply false
     alias libs.plugins.ksp apply false
     alias libs.plugins.androidx.safeargs apply false
+    alias libs.plugins.shadow apply false
 }
 
 ext["signing.keyId"] = System.getenv('SIGNING_KEY_ID') ?: ''

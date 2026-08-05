@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.android
@@ -46,8 +47,23 @@ android {
     }
 }
 
+tasks.register('shadowJar',ShadowJar){
+    from zipTree(file('libs/android-magnessdk-5.6.0.jar'))
+    relocate 'a/', 'magnes/a/'
+    archiveBaseName.set('android-magnessdk-fixed-5.6.0')
+//    destinationDirectory.set(file("${project.rootDir}/DataCollector/libs"))
+}
+
+// 挂载生命周期：确保在 Android 开始合并 Dex 之前，我们的修复任务已经把 JAR 包生产好了
+tasks.configureEach {
+    if (it.name.startsWith('mergeDex') || it.name.startsWith('process') || it.name.startsWith('compile')){
+        dependsOn 'shadowJar'
+    }
+}
+
 dependencies {
-    implementation files('libs/android-magnessdk-5.6.0.jar')
+    implementation files(tasks.named('shadowJar'))
+//    implementation files('libs/android-magnessdk-5.6.0.jar')
 
     implementation libs.androidx.annotation
     api project(':BraintreeCore')

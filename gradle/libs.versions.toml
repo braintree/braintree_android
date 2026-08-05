@@ -29,6 +29,7 @@ mockk = "1.13.8"
 detekt = "1.23.6"
 dokka = "1.9.10"
 okhttp = "4.12.0"
+shadow = "9.1.0"
 
 # Demo App
 androidxFragment = "1.8.8"
@@ -137,3 +138,4 @@ androidx-safeargs = { id = "androidx.navigation.safeargs", version.ref = "naviga
 gradle-nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "gradleNexusPublish" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
