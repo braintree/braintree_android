@@ -69,7 +69,7 @@ object Settings {
     }
 
     @JvmStatic
-    fun getCustomAuthorizationToken(context: Context): String? {
+    fun getCustomAuthorizationKey(context: Context): String? {
         return getPreferences(context).getString("custom_tokenization_key_value", null)
     }
 

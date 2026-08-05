@@ -30,7 +30,7 @@ public class DemoClientTokenProvider {
                 }
             });
         } else if (authType.equals(getString(appContext, R.string.custom_tokenization_key))) {
-            String key = Settings.getCustomAuthorizationToken(appContext);
+            String key = Settings.getCustomAuthorizationKey(appContext);
             if (key != null) {
                 callback.onResult(new BraintreeAuthorizationResult.Success(key));
             } else {
