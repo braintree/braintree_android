@@ -15,6 +15,8 @@ module:LocalPayment
 com.braintreepayments.api.localpayment
 module:PayPal
 com.braintreepayments.api.paypal
+module:PayPalPaymentMethod
+com.braintreepayments.api.paypalpaymentmethod
 module:SEPADirectDebit
 com.braintreepayments.api.sepadirectdebit
 module:ShopperInsights

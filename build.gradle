@@ -96,6 +96,7 @@ detekt {
             "PayPal/src",
             "DataCollector/src",
             "PayPalMessaging/src",
+            "PayPalPaymentMethod/src",
             "SEPADirectDebit/src",
             "SharedUtils/src",
             "TestUtils/src",
