@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Shopper Insights
+    * Fix response handling bug that buried valid GQL errors
+
 ## 5.31.0 (2026-08-03)
 
 * PayPal
