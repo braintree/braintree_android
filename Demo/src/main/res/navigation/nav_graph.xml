@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_mainFragment_to_uiComponentsFragment"
             app:destination="@id/uiComponentsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_composeCardFieldsFragment"
+            app:destination="@id/composeCardFieldsFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -246,6 +249,20 @@
             app:argType="string" />
         <action
             android:id="@+id/action_uiComponentsFragment_to_displayNonceFragment"
+            app:destination="@id/displayNonceFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/composeCardFieldsFragment"
+        android:name="com.braintreepayments.demo.ComposeCardFieldsFragment"
+        >
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
+        <action
+            android:id="@+id/action_composeCardFieldsFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />
