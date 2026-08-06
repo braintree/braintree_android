@@ -143,7 +143,8 @@ class ComposeButtonsFragment : BaseFragment() {
         null,
         false,
         false,
-        false
+        false,
+        null
     )
 
     private val paypalTokenizeCallback = PayPalTokenizeCallback { payPalResult ->
