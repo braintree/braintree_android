@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Publishes Dokka reference docs for a single version to the reference-docs branch,
+# Publishes Dokka reference docs for a single version to the gh-pages branch,
 # mirroring how braintree_ios publishes Jazzy docs: one folder per version plus
 # a `current` symlink to the latest, no version-picker UI.
 #
-# This script only commits locally to the reference-docs branch checked out in a
+# This script only commits locally to the gh-pages branch checked out in a
 # worktree next to the repo. It intentionally does not push - the caller
 # (e.g. the release workflow) is responsible for pushing when ready.
 set -euo pipefail
 
 VERSION="${1:?Usage: publish-docs.sh <version>}"
-BRANCH="reference-docs"
+BRANCH="gh-pages"
 
 REPO_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 DOCS_SOURCE="${REPO_ROOT}/build/dokkaDocs"
@@ -25,7 +25,7 @@ if ! git -C "${REPO_ROOT}" worktree list --porcelain | grep -qx "worktree ${WORK
     git -C "${REPO_ROOT}" worktree add "${WORKTREE_DIR}" "${BRANCH}"
   else
     git -C "${REPO_ROOT}" worktree add --orphan -b "${BRANCH}" "${WORKTREE_DIR}"
-    git -C "${WORKTREE_DIR}" commit --allow-empty -m "Initialize reference-docs branch" --quiet
+    git -C "${WORKTREE_DIR}" commit --allow-empty -m "Initialize gh-pages branch" --quiet
   fi
 fi
 

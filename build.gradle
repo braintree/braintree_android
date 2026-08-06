@@ -130,7 +130,7 @@ subprojects {
 
 dokkaHtmlMultiModule.configure {
     // generate into a gitignored build directory; scripts/publish-docs.sh publishes
-    // this to the reference-docs branch instead of committing it into main
+    // this to the gh-pages branch instead of committing it into main
     outputDirectory.set(project.file("build/dokkaDocs"))
 }
 

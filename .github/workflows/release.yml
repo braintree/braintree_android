@@ -321,9 +321,9 @@ jobs:
       - name: Publish Reference Docs
         run: |
           set -euo pipefail
-          git fetch origin reference-docs:reference-docs || true
+          git fetch origin gh-pages:gh-pages || true
           ./scripts/publish-docs.sh "${RELEASE_VERSION}"
-          git -C "$(dirname "$PWD")/$(basename "$PWD")-reference-docs" push origin reference-docs
+          git -C "$(dirname "$PWD")/$(basename "$PWD")-gh-pages" push origin gh-pages
 
   create_github_release:
     needs: [ bump_version ]
