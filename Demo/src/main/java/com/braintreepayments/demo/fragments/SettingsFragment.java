@@ -46,9 +46,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
             preference.setSummary(preference.getSummary());
         }
         if(key.equals("authorization_type")) {
-            Preference customeTokenizationKeyPreference = findPreference("custom_tokenization_key_value");
+            Preference customTokenizationKeyPreference = findPreference("custom_tokenization_key_value");
             String selected = ((ListPreference)preference).getValue();
-            customeTokenizationKeyPreference.setVisible(getString(R.string.custom_tokenization_key).equals(selected));
+            customTokenizationKeyPreference.setVisible(getString(R.string.custom_tokenization_key).equals(selected));
         }
     }
 }
