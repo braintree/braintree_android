@@ -5,6 +5,9 @@ import android.net.Uri
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.GraphQLConstants
+import com.braintreepayments.api.paypal.PayPalClient
+import com.braintreepayments.api.paypal.PayPalPaymentAuthCallback
+import com.braintreepayments.api.paypal.PayPalRequest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,10 +16,12 @@ import org.json.JSONObject
 
 /**
  * Entry point for the saved/editable PayPal payment method feature — implements the fetch/refetch-FI
- * GraphQL calls directly against [BraintreeClient].
+ * GraphQL calls directly against [BraintreeClient], and starts the edit-FI PayPal payment auth flow
+ * via [PayPalClient].
  */
 class SavedPayPalPaymentMethodClient internal constructor(
     private val braintreeClient: BraintreeClient,
+    private val payPalClient: PayPalClient,
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 ) {
 
@@ -41,8 +46,29 @@ class SavedPayPalPaymentMethodClient internal constructor(
             authorization = authorization,
             deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme,
             appLinkReturnUri = appLinkReturnUrl
+        ),
+        payPalClient = PayPalClient(
+            context = context,
+            authorization = authorization,
+            appLinkReturnUrl = appLinkReturnUrl,
+            deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
         )
     )
+
+    /**
+     * Starts the PayPal payment auth flow for the edit-FI checkout, e.g. when [payPalRequest]
+     * carries a [PayPalRequest.paymentToken] identifying the funding instrument to edit.
+     *
+     * @param context       Android Context
+     * @param payPalRequest a [PayPalRequest] used to customize the request.
+     * @param callback      [PayPalPaymentAuthCallback]
+     */
+    @ExperimentalBetaApi
+    fun createPaymentAuthRequest(
+        context: Context,
+        payPalRequest: PayPalRequest,
+        callback: PayPalPaymentAuthCallback
+    ) = payPalClient.createPaymentAuthRequest(context, payPalRequest, callback)
 
     /**
      * Fetches the sticky (default) vaulted funding instrument for display.
