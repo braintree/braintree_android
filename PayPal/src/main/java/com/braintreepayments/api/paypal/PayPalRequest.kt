@@ -82,6 +82,8 @@ import org.json.JSONException
  * @property recurringBillingDetails Optional: Recurring billing product details.
  * @property recurringBillingPlanType Optional: Recurring billing plan type, or charge pattern.
  * @property userAction The call to action for the PayPal flow.
+ * @property paymentToken The payment token identifying the vaulted funding instrument to edit, for
+ * the Edit FI flow. Null for a standard checkout/vault request.
  */
 abstract class PayPalRequest internal constructor(
     open val hasUserLocationConsent: Boolean,
@@ -104,7 +106,8 @@ abstract class PayPalRequest internal constructor(
     open var shopperSessionId: String? = null,
     open var lineItems: List<PayPalLineItem> = emptyList(),
     open var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT,
-    open var shouldOfferCredit: Boolean = false
+    open var shouldOfferCredit: Boolean = false,
+    open val paymentToken: String? = null
 ) : Parcelable {
 
     @Throws(JSONException::class)
@@ -160,5 +163,6 @@ abstract class PayPalRequest internal constructor(
         internal const val DEVICE_MODEL_KEY: String = "model"
         internal const val MEMORY_AVAILABLE_MB_KEY: String = "memory_available_mb"
         internal const val MEMORY_TOTAL_MB_KEY: String = "memory_total_mb"
+        internal const val EDIT_BILLING_AGREEMENT_JWT_KEY: String = "edit_billing_agreement_jwt"
     }
 }
