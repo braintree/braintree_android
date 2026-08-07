@@ -56,8 +56,8 @@ class SavedPayPalPaymentMethodClient internal constructor(
     )
 
     /**
-     * Starts the PayPal payment auth flow for the edit-FI checkout, e.g. when [payPalRequest]
-     * carries a [PayPalRequest.paymentToken] identifying the funding instrument to edit.
+     * Starts the PayPal payment auth flow for the edit-FI checkout using the provided
+     * [payPalRequest].
      *
      * @param context       Android Context
      * @param payPalRequest a [PayPalRequest] used to customize the request.

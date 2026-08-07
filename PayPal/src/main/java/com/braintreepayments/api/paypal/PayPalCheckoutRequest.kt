@@ -104,7 +104,6 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
     var amountBreakdown: AmountBreakdown? = null,
     override var shouldOfferCredit: Boolean = false,
-    override val paymentToken: String? = null,
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -118,8 +117,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     riskCorrelationId = riskCorrelationId,
     enablePayPalAppSwitch = enablePayPalAppSwitch,
     userAuthenticationEmail = userAuthenticationEmail,
-    lineItems = lineItems,
-    paymentToken = paymentToken
+    lineItems = lineItems
 ) {
 
     @OptIn(ExperimentalBetaApi::class)
@@ -180,7 +178,6 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         }
 
         parameters.putOpt(SHOPPER_SESSION_ID_KEY, shopperSessionId)
-        parameters.putOpt(EDIT_BILLING_AGREEMENT_JWT_KEY, paymentToken)
 
         if (currencyCode == null) {
             currencyCode = configuration?.payPalCurrencyIsoCode

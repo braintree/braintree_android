@@ -46,8 +46,7 @@ class PayPalVaultRequest
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
     override var lineItems: List<PayPalLineItem> = emptyList(),
-    override var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT,
-    override val paymentToken: String? = null
+    override var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -63,7 +62,6 @@ class PayPalVaultRequest
     userAuthenticationEmail = userAuthenticationEmail,
     lineItems = lineItems,
     userAction = userAction,
-    paymentToken = paymentToken,
 ) {
 
     @OptIn(ExperimentalBetaApi::class)
@@ -97,7 +95,6 @@ class PayPalVaultRequest
         }
 
         parameters.putOpt(SHOPPER_SESSION_ID_KEY, shopperSessionId)
-        parameters.putOpt(EDIT_BILLING_AGREEMENT_JWT_KEY, paymentToken)
 
         userPhoneNumber?.let { parameters.put(PAYER_PHONE_KEY, it.toJson()) }
 
