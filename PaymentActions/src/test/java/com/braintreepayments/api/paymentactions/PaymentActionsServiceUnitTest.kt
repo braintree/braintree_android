@@ -1,4 +1,4 @@
-package com.braintreepayments.api.core.paymentactions
+package com.braintreepayments.api.paymentactions
 
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
