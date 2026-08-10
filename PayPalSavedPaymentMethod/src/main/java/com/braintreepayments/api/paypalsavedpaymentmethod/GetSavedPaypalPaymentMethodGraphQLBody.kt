@@ -4,8 +4,9 @@ import com.braintreepayments.api.core.GraphQLConstants
 import org.json.JSONObject
 
 /**
- * Builds the request body for the shared `getSavedPaymentMethod` GraphQL operation. One query, two
- * callers — only the `fetchPaymentMethodType` discriminator and the identity field differ.
+ * Builds the request body for the shared `paypalFundingInstrumentDetails` GraphQL operation. One
+ * query, two callers — only the `fetchPaymentMethodType` discriminator and the identity field
+ * differ.
  */
 internal object GetSavedPaypalPaymentMethodGraphQLBody {
 
@@ -46,9 +47,9 @@ internal object GetSavedPaypalPaymentMethodGraphQLBody {
     private const val BT_NATIVE_SDK = "BT_NATIVE_SDK"
 
     private const val QUERY =
-        "query GetSavedPaymentMethod(\$input: getSavedPaymentMethodInput!) { " +
-            "getSavedPaymentMethod(input: \$input) { " +
-            "payer { email isEditable } " +
+        "query PaypalFundingInstrumentDetails(\$input: PayPalFundingInstrumentDetailsInput!) { " +
+            "paypalFundingInstrumentDetails(input: \$input) { " +
+            "payer { email editable } " +
             "paymentMethods { label imageUrl lastDigits type subtype } " +
             "} }"
 }

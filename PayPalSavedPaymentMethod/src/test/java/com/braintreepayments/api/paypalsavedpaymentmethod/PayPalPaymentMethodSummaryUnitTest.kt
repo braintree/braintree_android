@@ -17,7 +17,7 @@ class PayPalPaymentMethodSummaryUnitTest {
     fun fromJson_parsesInstrumentResponse() {
         val json = JSONObject(
             """
-            {"data":{"getSavedPaymentMethod":{"payer":null,"paymentMethods":[
+            {"data":{"paypalFundingInstrumentDetails":{"payer":null,"paymentMethods":[
               {"label":"CREDIT UNION 1","imageUrl":"https://x/generic_bank.png",
                "lastDigits":"3357","type":"BANK","subtype":null}]}}}
             """.trimIndent()
@@ -38,8 +38,8 @@ class PayPalPaymentMethodSummaryUnitTest {
     fun fromJson_parsesDisplayOnlyResponse() {
         val json = JSONObject(
             """
-            {"data":{"getSavedPaymentMethod":{"payer":{"email":"buyer@example.com",
-              "isEditable":true},"paymentMethods":[]}}}
+            {"data":{"paypalFundingInstrumentDetails":{"payer":{"email":"buyer@example.com",
+              "editable":true},"paymentMethods":[]}}}
             """.trimIndent()
         )
 
@@ -53,7 +53,7 @@ class PayPalPaymentMethodSummaryUnitTest {
 
     @Test
     fun fromJson_returnsEmptyNoFi_whenDataNull() {
-        val json = JSONObject("""{"data":{"getSavedPaymentMethod":null}}""")
+        val json = JSONObject("""{"data":{"paypalFundingInstrumentDetails":null}}""")
 
         val result = PayPalPaymentMethodSummary.fromJson(json)
 
@@ -68,7 +68,7 @@ class PayPalPaymentMethodSummaryUnitTest {
             """
             {"errors":[{"message":"PayPal access token not found for merchant account.",
               "extensions":{"errorClass":"AUTHENTICATION","errorType":"developer_error"}}],
-             "data":{"getSavedPaymentMethod":null}}
+             "data":{"paypalFundingInstrumentDetails":null}}
             """.trimIndent()
         )
 
@@ -84,7 +84,7 @@ class PayPalPaymentMethodSummaryUnitTest {
             """
             {"errors":[{"message":"An internal error occurred.",
               "extensions":{"errorClass":"INTERNAL","errorType":"unknown_error"}}],
-             "data":{"getSavedPaymentMethod":null}}
+             "data":{"paypalFundingInstrumentDetails":null}}
             """.trimIndent()
         )
 

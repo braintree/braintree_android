@@ -5,9 +5,9 @@ import android.net.Uri
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.GraphQLConstants
+import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalPaymentAuthCallback
-import com.braintreepayments.api.paypal.PayPalRequest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,13 +60,13 @@ class PayPalPaymentMethodClient internal constructor(
      * [payPalRequest].
      *
      * @param context       Android Context
-     * @param payPalRequest a [PayPalRequest] used to customize the request.
+     * @param payPalRequest a [PayPalCheckoutRequest] used to customize the request.
      * @param callback      [PayPalPaymentAuthCallback]
      */
     @ExperimentalBetaApi
     fun createPaymentAuthRequest(
         context: Context,
-        payPalRequest: PayPalRequest,
+        payPalRequest: PayPalCheckoutRequest,
         callback: PayPalPaymentAuthCallback
     ) = payPalClient.createPaymentAuthRequest(context, payPalRequest, callback)
 

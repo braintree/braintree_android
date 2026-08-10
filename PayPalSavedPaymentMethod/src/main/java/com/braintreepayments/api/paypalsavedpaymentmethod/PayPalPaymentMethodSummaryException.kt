@@ -24,6 +24,8 @@ class PayPalPaymentMethodSummaryException internal constructor(
         const val MISSING_PAYMENT_METHOD_ID_JWT =
             "paymentMethodIdJwt must not be blank to fetch the vaulted funding instrument."
 
+        private const val ERROR_CLASS_KEY = "errorClass"
+
         /**
          * Builds an exception from a GraphQL response whose `errors[]` array is populated, reading
          * the first error's `message` and `extensions.errorClass`.
@@ -34,7 +36,7 @@ class PayPalPaymentMethodSummaryException internal constructor(
                 ?.optJSONObject(0)
             val errorClass = firstError
                 ?.optJSONObject(GraphQLConstants.Keys.EXTENSIONS)
-                ?.let { Json.optString(it, GraphQLConstants.Keys.ERROR_CLASS, null) }
+                ?.let { Json.optString(it, ERROR_CLASS_KEY, null) }
             val message = firstError
                 ?.let { Json.optString(it, GraphQLConstants.Keys.MESSAGE, null) }
                 ?: response.toString()

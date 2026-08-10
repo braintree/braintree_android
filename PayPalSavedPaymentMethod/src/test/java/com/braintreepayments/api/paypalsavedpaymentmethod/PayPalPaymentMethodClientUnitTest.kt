@@ -26,7 +26,7 @@ class PayPalPaymentMethodClientUnitTest {
 
     @Test
     fun fetchFI_withJwt_postsStickyFiBodyAndReturnsSuccess() = runTest(testDispatcher) {
-        val responseJson = """{"data":{"getSavedPaymentMethod":{"payer":null,"paymentMethods":[]}}}"""
+        val responseJson = """{"data":{"paypalFundingInstrumentDetails":{"payer":null,"paymentMethods":[]}}}"""
         val bodySlot = slot<JSONObject>()
         val braintreeClient = MockkBraintreeClientBuilder().build()
         coEvery { braintreeClient.sendGraphQLPOST(capture(bodySlot)) } returns responseJson
@@ -60,7 +60,7 @@ class PayPalPaymentMethodClientUnitTest {
 
     @Test
     fun refetchFI_postsApprovedCheckoutBodyAndReturnsSuccess() = runTest(testDispatcher) {
-        val responseJson = """{"data":{"getSavedPaymentMethod":{"payer":null,"paymentMethods":[]}}}"""
+        val responseJson = """{"data":{"paypalFundingInstrumentDetails":{"payer":null,"paymentMethods":[]}}}"""
         val bodySlot = slot<JSONObject>()
         val braintreeClient = MockkBraintreeClientBuilder().build()
         coEvery { braintreeClient.sendGraphQLPOST(capture(bodySlot)) } returns responseJson
@@ -80,7 +80,7 @@ class PayPalPaymentMethodClientUnitTest {
         val responseJson = """
             {"errors":[{"message":"PayPal access token not found for merchant account.",
               "extensions":{"errorClass":"AUTHENTICATION","errorType":"developer_error"}}],
-             "data":{"getSavedPaymentMethod":null}}
+             "data":{"paypalFundingInstrumentDetails":null}}
         """.trimIndent()
         val braintreeClient = MockkBraintreeClientBuilder().build()
         coEvery { braintreeClient.sendGraphQLPOST(any()) } returns responseJson

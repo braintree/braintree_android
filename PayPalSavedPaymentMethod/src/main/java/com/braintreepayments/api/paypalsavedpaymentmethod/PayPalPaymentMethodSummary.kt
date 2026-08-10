@@ -5,7 +5,7 @@ import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONObject
 
 /**
- * A single vaulted funding instrument returned by the `getSavedPaymentMethod` query.
+ * A single vaulted funding instrument returned by the `paypalFundingInstrumentDetails` query.
  *
  * @property label      Display label, e.g. "CREDIT UNION 1".
  * @property imageUrl   Icon/logo URL served by the backend (the primary icon for every FI).
@@ -35,7 +35,7 @@ data class Payer internal constructor(
 )
 
 /**
- * The parsed result of a `getSavedPaymentMethod` read.
+ * The parsed result of a `paypalFundingInstrumentDetails` read.
  *
  * The payload is mutually exclusive: an instrument response carries [paymentMethods] with a null
  * [payer]; a display-only response carries a [payer] with empty [paymentMethods]. An empty/absent
@@ -60,11 +60,11 @@ data class PayPalPaymentMethodSummary internal constructor(
     internal companion object {
 
         private const val DATA_KEY = "data"
-        private const val GET_SAVED_PAYMENT_METHOD_KEY = "getSavedPaymentMethod"
+        private const val PAYPAL_FUNDING_INSTRUMENT_DETAILS_KEY = "paypalFundingInstrumentDetails"
         private const val PAYER_KEY = "payer"
         private const val PAYMENT_METHODS_KEY = "paymentMethods"
         private const val EMAIL_KEY = "email"
-        private const val IS_EDITABLE_KEY = "isEditable"
+        private const val IS_EDITABLE_KEY = "editable"
         private const val LABEL_KEY = "label"
         private const val IMAGE_URL_KEY = "imageUrl"
         private const val LAST_DIGITS_KEY = "lastDigits"
@@ -74,7 +74,7 @@ data class PayPalPaymentMethodSummary internal constructor(
         fun fromJson(response: JSONObject): PayPalPaymentMethodSummary {
             val payload = response
                 .optJSONObject(DATA_KEY)
-                ?.optJSONObject(GET_SAVED_PAYMENT_METHOD_KEY)
+                ?.optJSONObject(PAYPAL_FUNDING_INSTRUMENT_DETAILS_KEY)
 
             val payer = payload?.optJSONObject(PAYER_KEY)?.let { payerJson ->
                 Payer(

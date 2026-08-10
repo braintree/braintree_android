@@ -15,7 +15,6 @@ object GraphQLConstants {
         const val ERRORS = "errors"
         const val MESSAGE = "message"
         const val ERROR_TYPE = "errorType"
-        const val ERROR_CLASS = "errorClass"
         const val EXTENSIONS = "extensions"
         const val INPUT_PATH = "inputPath"
         const val LEGACY_CODE = "legacyCode"
