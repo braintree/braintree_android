@@ -1,4 +1,4 @@
-package com.braintreepayments.api.core.paymentactions
+package com.braintreepayments.api.paymentactions
 
 import androidx.annotation.RestrictTo
 import org.json.JSONObject

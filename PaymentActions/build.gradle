@@ -1,0 +1,63 @@
+plugins {
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.dokka
+}
+
+android {
+    namespace "com.braintreepayments.api.paymentactions"
+    compileSdk rootProject.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            all {
+                jvmArgs '-noverify'
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility versions.javaSourceCompatibility
+        targetCompatibility versions.javaTargetCompatibility
+    }
+
+    kotlinOptions {
+        jvmTarget = versions.javaTargetCompatibility.toString()
+    }
+}
+
+dependencies {
+    api project(':BraintreeCore')
+
+    implementation libs.androidx.annotation
+    implementation libs.coroutines.core
+
+    testImplementation libs.junit
+    testImplementation libs.kotlin.test
+    testImplementation libs.json.assert
+    testImplementation libs.mockk
+    testImplementation libs.coroutines.test
+    testImplementation project(':TestUtils')
+}
+
+project.ext.name = "payment-actions"
+project.ext.pom_name = "payment-actions"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
+project.ext.pom_desc = "Payment Actions dependencies for Braintree Android."
+
+apply from: rootProject.file("gradle/gradle-publish.gradle")
