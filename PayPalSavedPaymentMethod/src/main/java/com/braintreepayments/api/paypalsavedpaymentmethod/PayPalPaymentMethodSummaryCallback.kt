@@ -3,8 +3,8 @@ package com.braintreepayments.api.paypalsavedpaymentmethod
 import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
- * Callback for receiving the result of [SavedPayPalPaymentMethodClient.fetchFI] /
- * [SavedPayPalPaymentMethodClient.refetchFI].
+ * Callback for receiving the result of [PayPalPaymentMethodClient.fetchFI] /
+ * [PayPalPaymentMethodClient.refetchFI].
  */
 @ExperimentalBetaApi
 fun interface PayPalPaymentMethodSummaryCallback {

@@ -19,14 +19,14 @@ import org.json.JSONObject
  * GraphQL calls directly against [BraintreeClient], and starts the edit-FI PayPal payment auth flow
  * via [PayPalClient].
  */
-class SavedPayPalPaymentMethodClient internal constructor(
+class PayPalPaymentMethodClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val payPalClient: PayPalClient,
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 ) {
 
     /**
-     * Initializes a new [SavedPayPalPaymentMethodClient] instance
+     * Initializes a new [PayPalPaymentMethodClient] instance
      *
      * @param context          an Android Context
      * @param authorization    a Tokenization Key or Client Token used to authenticate

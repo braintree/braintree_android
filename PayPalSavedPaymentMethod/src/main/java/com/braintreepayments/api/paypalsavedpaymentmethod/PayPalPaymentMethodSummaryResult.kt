@@ -3,7 +3,7 @@ package com.braintreepayments.api.paypalsavedpaymentmethod
 import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
- * Result of [SavedPayPalPaymentMethodClient.fetchFI] / [SavedPayPalPaymentMethodClient.refetchFI].
+ * Result of [PayPalPaymentMethodClient.fetchFI] / [PayPalPaymentMethodClient.refetchFI].
  */
 @ExperimentalBetaApi
 sealed class PayPalPaymentMethodSummaryResult {

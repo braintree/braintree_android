@@ -19,7 +19,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalBetaApi::class)
 @RunWith(RobolectricTestRunner::class)
-class SavedPayPalPaymentMethodClientUnitTest {
+class PayPalPaymentMethodClientUnitTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val payPalClient = mockk<PayPalClient>(relaxed = true)
@@ -31,7 +31,7 @@ class SavedPayPalPaymentMethodClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         coEvery { braintreeClient.sendGraphQLPOST(capture(bodySlot)) } returns responseJson
 
-        val sut = SavedPayPalPaymentMethodClient(braintreeClient, payPalClient)
+        val sut = PayPalPaymentMethodClient(braintreeClient, payPalClient)
 
         val result = sut.fetchFI("pmid-jwt")
 
@@ -45,7 +45,7 @@ class SavedPayPalPaymentMethodClientUnitTest {
     fun fetchFI_whenJwtMissing_returnsFailure() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
-        val sut = SavedPayPalPaymentMethodClient(braintreeClient, payPalClient)
+        val sut = PayPalPaymentMethodClient(braintreeClient, payPalClient)
 
         val result = sut.fetchFI("")
 
@@ -65,7 +65,7 @@ class SavedPayPalPaymentMethodClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         coEvery { braintreeClient.sendGraphQLPOST(capture(bodySlot)) } returns responseJson
 
-        val sut = SavedPayPalPaymentMethodClient(braintreeClient, payPalClient)
+        val sut = PayPalPaymentMethodClient(braintreeClient, payPalClient)
 
         val result = sut.refetchFI("order-123")
 
@@ -85,7 +85,7 @@ class SavedPayPalPaymentMethodClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         coEvery { braintreeClient.sendGraphQLPOST(any()) } returns responseJson
 
-        val sut = SavedPayPalPaymentMethodClient(braintreeClient, payPalClient)
+        val sut = PayPalPaymentMethodClient(braintreeClient, payPalClient)
 
         val result = sut.fetchFI("pmid-jwt")
 
@@ -100,7 +100,7 @@ class SavedPayPalPaymentMethodClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         coEvery { braintreeClient.sendGraphQLPOST(any()) } throws IOException("network down")
 
-        val sut = SavedPayPalPaymentMethodClient(braintreeClient, payPalClient)
+        val sut = PayPalPaymentMethodClient(braintreeClient, payPalClient)
 
         val result = sut.fetchFI("pmid-jwt")
 
