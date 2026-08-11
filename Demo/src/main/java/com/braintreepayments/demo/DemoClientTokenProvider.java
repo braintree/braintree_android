@@ -29,6 +29,15 @@ public class DemoClientTokenProvider {
                     );
                 }
             });
+        } else if (authType.equals(getString(appContext, R.string.custom_tokenization_key))) {
+            String key = Settings.getCustomAuthorizationKey(appContext);
+            if (key != null && !key.trim().isEmpty()) {
+                callback.onResult(new BraintreeAuthorizationResult.Success(key.trim()));
+            } else {
+                callback.onResult(new BraintreeAuthorizationResult.Error(
+                    new IllegalArgumentException("No custom tokenization key provided")
+                ));
+            }
         } else {
             String key;
             if (Settings.showCheckoutExperience(appContext)) {
