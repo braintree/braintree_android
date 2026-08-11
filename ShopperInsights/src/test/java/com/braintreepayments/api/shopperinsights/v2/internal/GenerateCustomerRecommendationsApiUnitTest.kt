@@ -231,7 +231,7 @@ class GenerateCustomerRecommendationsApiUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when execute is called and the GQL response contains multiple errors, callback with Error using first error is invoked`() =
+    fun `when GQL response contains multiple errors, callback with Error using first error is invoked`() =
     runTest(testDispatcher) {
         val responseBody = """
             {
