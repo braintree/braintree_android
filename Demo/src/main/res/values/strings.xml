@@ -43,6 +43,8 @@
     <string name="authorization_type">Authorization Type</string>
     <string name="client_token">Client Token</string>
     <string name="tokenization_key">Tokenization Key</string>
+    <string name="custom_tokenization_key">Custom Tokenization Key</string>
+    <string name="custom_tokenization_key_summary">Custom Tokenization Key: %s</string>
     <string name="customer">Customer</string>
     <string name="customer_summary">The customer id to use</string>
     <string name="merchant_account">Merchant Account</string>

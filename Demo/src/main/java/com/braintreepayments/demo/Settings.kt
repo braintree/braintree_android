@@ -69,6 +69,11 @@ object Settings {
     }
 
     @JvmStatic
+    fun getCustomAuthorizationKey(context: Context): String? {
+        return getPreferences(context).getString("custom_tokenization_key_value", null)
+    }
+
+    @JvmStatic
     fun getCustomerId(context: Context): String? {
         return getPreferences(context).getString("customer", null)
     }
