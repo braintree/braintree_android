@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* ShopperInsights
+    * Fix response handling bug that buries customer session create and update errors
 * UIComponents
     * Add compose support for `CardFields` to generate a premade credit card form for submitting credit card tokenize requests
 
