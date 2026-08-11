@@ -26,9 +26,6 @@ import com.braintreepayments.api.uicomponents.compose.rememberCardFieldsState
 
 class ComposeCardFieldsFragment : BaseFragment() {
 
-    @Suppress("MagicNumber")
-    private val disabledPayButtonColor = Color(0xFF9E9E9E)
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,7 +34,6 @@ class ComposeCardFieldsFragment : BaseFragment() {
         super.onCreateView(inflater, container, savedInstanceState)
         return ComposeView(requireContext()).apply {
             setContent {
-                val context = requireContext()
                 val state = rememberCardFieldsState()
                 val isFormValid by state.isFormValid.collectAsState()
 
@@ -54,8 +50,7 @@ class ComposeCardFieldsFragment : BaseFragment() {
                             .heightIn(min = 52.dp)
                             .padding(top = 20.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Black,
-                            disabledContainerColor = disabledPayButtonColor
+                            containerColor = Color.Black
                         ),
                         enabled = isFormValid,
                         onClick = {

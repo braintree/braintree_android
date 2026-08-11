@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.braintreepayments.api.card.Card
@@ -28,9 +29,9 @@ class CardFieldsState internal constructor(
     private val analyticsClient: AnalyticsClient? = null
 ) {
 
-    internal var cardNumber = mutableStateOf(TextFieldValue(""))
-    internal var expiration = mutableStateOf(TextFieldValue(""))
-    internal var cvv = mutableStateOf(TextFieldValue(""))
+    internal var cardNumber = mutableStateOf(viewModel.currentCardNumber.asTextFieldValue())
+    internal var expiration = mutableStateOf(viewModel.currentExpiration.asTextFieldValue())
+    internal var cvv = mutableStateOf(viewModel.currentCvv.asTextFieldValue())
 
     private var request: Card? = null
 
@@ -99,6 +100,8 @@ class CardFieldsState internal constructor(
         )
     }
 }
+
+private fun String.asTextFieldValue() = TextFieldValue(text = this, selection = TextRange(length))
 
 /** Remembers a [CardFieldsState] backed by a view model that survives recomposition/rotation. */
 @Composable

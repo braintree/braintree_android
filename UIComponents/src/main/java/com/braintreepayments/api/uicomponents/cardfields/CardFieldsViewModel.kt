@@ -41,9 +41,12 @@ internal class CardFieldsViewModel(
     private val _isFormValid = MutableStateFlow(false)
     val isFormValid: StateFlow<Boolean> = _isFormValid
 
-    private var currentCardNumber = ""
-    private var currentExpiration = ""
-    private var currentCvv = ""
+    var currentCardNumber = ""
+        private set
+    var currentExpiration = ""
+        private set
+    var currentCvv = ""
+        private set
 
     fun onCardNumberChanged(cardNumber: String) {
         currentCardNumber = cardNumber
