@@ -107,6 +107,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     var amountBreakdown: AmountBreakdown? = null,
     override var shouldOfferCredit: Boolean = false,
     var campaigns: List<PayPalCampaign> = emptyList(),
+    var editBillingAgreementJwt: String? = null,
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -181,6 +182,8 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         }
 
         parameters.putOpt(SHOPPER_SESSION_ID_KEY, shopperSessionId)
+
+        editBillingAgreementJwt?.let { parameters.put(EDIT_BILLING_AGREEMENT_JWT_KEY, it) }
 
         if (currencyCode == null) {
             currencyCode = configuration?.payPalCurrencyIsoCode
