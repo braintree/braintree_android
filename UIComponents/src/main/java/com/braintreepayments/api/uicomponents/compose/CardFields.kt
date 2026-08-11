@@ -37,10 +37,6 @@ fun CardFields(state: CardFieldsState, modifier: Modifier = Modifier) {
 
     val focusManager = LocalFocusManager.current
 
-    // CardFieldsViewModel.onFieldFocusChanged resolves a field's error unconditionally on blur.
-    // Compose's Modifier.onFocusChanged fires an initial "unfocused" event on first composition,
-    // which would otherwise mark an untouched field invalid before the user interacts with it.
-    // Track focus locally so a blur is only forwarded once the field has actually been focused.
     var cardNumberHasBeenFocused by remember { mutableStateOf(false) }
     var expirationHasBeenFocused by remember { mutableStateOf(false) }
     var cvvHasBeenFocused by remember { mutableStateOf(false) }

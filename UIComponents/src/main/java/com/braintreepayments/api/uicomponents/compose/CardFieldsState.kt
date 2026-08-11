@@ -37,7 +37,6 @@ class CardFieldsState internal constructor(
 
     private fun getAnalyticsClient(): AnalyticsClient = analyticsClient ?: AnalyticsClient.lazyInstance.value
 
-    /** True once all three fields pass validation. */
     val isFormValid: StateFlow<Boolean> = viewModel.isFormValid
 
     /**
