@@ -35,3 +35,22 @@ private fun digitOffsetMapping(formatted: String) = object : OffsetMapping {
     override fun transformedToOriginal(offset: Int): Int =
         CardNumberFormatter.countDigitsBeforeIndex(formatted, offset)
 }
+
+/**
+ * Masks every CVV digit except the one at [revealedIndex], which is shown in the clear.
+ * Mirrors the brief reveal-then-mask behavior the XML [com.braintreepayments.api.uicomponents.cardfields.CvvTextInputView]
+ * gets for free from `InputType.TYPE_NUMBER_VARIATION_PASSWORD`'s platform `PasswordTransformationMethod`.
+ * Length never changes, so the offset mapping is the identity mapping.
+ */
+internal class CvvVisualTransformation(private val revealedIndex: Int?) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val masked = text.text.mapIndexed { index, char ->
+            if (index == revealedIndex) char else MASK_CHAR
+        }.joinToString("")
+        return TransformedText(AnnotatedString(masked), OffsetMapping.Identity)
+    }
+
+    private companion object {
+        const val MASK_CHAR = '•'
+    }
+}

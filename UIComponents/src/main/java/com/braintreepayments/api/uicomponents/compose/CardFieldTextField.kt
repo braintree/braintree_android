@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,7 +58,6 @@ internal fun CardFieldTextField(
     errorText: String? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
     focusRequester: FocusRequester? = null,
     onFocusChanged: (Boolean) -> Unit = {},
     leadingIcon: (@Composable () -> Unit)? = null,
@@ -126,7 +124,7 @@ internal fun CardFieldTextField(
 
                 Text(
                     text = hint,
-                    fontSize = lerpSp(hintRestTextSize, hintFloatTextSize, floatFraction),
+                    fontSize = interpolateHintFontSize(hintRestTextSize, hintFloatTextSize, floatFraction),
                     color = colorResource(R.color.card_field_hint_text),
                     modifier = Modifier
                         .align(Alignment.CenterStart)
@@ -155,7 +153,6 @@ internal fun CardFieldTextField(
                     singleLine = true,
                     visualTransformation = visualTransformation,
                     keyboardOptions = keyboardOptions,
-                    keyboardActions = keyboardActions,
                     interactionSource = interactionSource
                 )
             }
@@ -174,7 +171,7 @@ internal fun CardFieldTextField(
     }
 }
 
-private fun lerpSp(start: androidx.compose.ui.unit.TextUnit, stop: androidx.compose.ui.unit.TextUnit, fraction: Float) =
-    (start.value + (stop.value - start.value) * fraction).sp
+private fun interpolateHintFontSize(restSize: TextUnit, floatedSize: TextUnit, fraction: Float) =
+    (restSize.value + (floatedSize.value - restSize.value) * fraction).sp
 
 private const val HINT_ANIMATION_DURATION_MS = 200

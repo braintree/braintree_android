@@ -34,16 +34,16 @@ class ComposeCardFieldsFragment : BaseFragment() {
         super.onCreateView(inflater, container, savedInstanceState)
         return ComposeView(requireContext()).apply {
             setContent {
-                val state = rememberCardFieldsState()
-                val isFormValid by state.isFormValid.collectAsState()
+                val cardFieldsState = rememberCardFieldsState()
+                val isFormValid by cardFieldsState.isFormValid.collectAsState()
 
                 LaunchedEffect(Unit) {
-                    state.initialize(context, authStringArg)
-                    state.setPaymentRequest(Card(cardholderName = "John Doe", postalCode = "12345"))
+                    cardFieldsState.initialize(context, authStringArg)
+                    cardFieldsState.setPaymentRequest(Card(cardholderName = "John Doe", postalCode = "12345"))
                 }
 
                 Column(modifier = Modifier.padding(16.dp)) {
-                    CardFields(state = state)
+                    CardFields(state = cardFieldsState)
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -54,7 +54,7 @@ class ComposeCardFieldsFragment : BaseFragment() {
                         ),
                         enabled = isFormValid,
                         onClick = {
-                            state.submit { result ->
+                            cardFieldsState.submit { result ->
                                 when (result) {
                                     is CardFieldsResult.Success -> {
                                         onPaymentMethodNonceCreated(result.nonce)
