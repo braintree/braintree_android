@@ -160,5 +160,6 @@ abstract class PayPalRequest internal constructor(
         internal const val DEVICE_MODEL_KEY: String = "model"
         internal const val MEMORY_AVAILABLE_MB_KEY: String = "memory_available_mb"
         internal const val MEMORY_TOTAL_MB_KEY: String = "memory_total_mb"
+        internal const val EDIT_BILLING_AGREEMENT_JWT_KEY: String = "edit_billing_agreement_jwt"
     }
 }

@@ -250,6 +250,44 @@ class PayPalCheckoutRequestUnitTest {
         assertTrue(requestBody.contains("\"shopper_session_id\":" + "\"shopper-insights-id\""))
     }
 
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody and sets editBillingAgreementJwt when not null`() {
+        val request = PayPalCheckoutRequest("1.00", true).apply {
+            editBillingAgreementJwt = "edit-jwt"
+        }
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<Authorization>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        val jsonObject = JSONObject(requestBody)
+        assertEquals("edit-jwt", jsonObject.getString("edit_billing_agreement_jwt"))
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody and does not set editBillingAgreementJwt when null`() {
+        val request = PayPalCheckoutRequest("1.00", true)
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<Authorization>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        val jsonObject = JSONObject(requestBody)
+        assertFalse(jsonObject.has("edit_billing_agreement_jwt"))
+    }
+
     @Test
     @Throws(JSONException::class)
     fun `creates requestBody and does not set shippingCallbackUri when null`() {
