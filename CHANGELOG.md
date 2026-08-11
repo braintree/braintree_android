@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* UIComponents
+    * Add compose support for `CardFields` to generate a premade credit card form for submitting credit card tokenize requests
+
 ## 5.31.0 (2026-08-03)
 
 * PayPal
