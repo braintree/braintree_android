@@ -99,4 +99,25 @@ class ShopperInsightsResponseParserUnitTest {
         }
         assertEquals("Unauthorized", exception.message)
     }
+
+    @Test
+    fun `parseSessionId throws BraintreeException with first error message when errors array has multiple errors`() {
+        val responseBody = """
+            {
+                "errors": [
+                    {
+                        "message": "Unauthorized"
+                    },
+                    {
+                        "message": "Something else went wrong"
+                    }
+                ]
+            }
+        """.trimIndent()
+
+        val exception = assertThrows(BraintreeException::class.java) {
+            responseParser.parseSessionId(responseBody, "createCustomerSession")
+        }
+        assertEquals("Unauthorized", exception.message)
+    }
 }

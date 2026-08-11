@@ -231,6 +231,41 @@ class GenerateCustomerRecommendationsApiUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
+    fun `when execute is called and the GQL response contains multiple errors, callback with Error using first error is invoked`() =
+    runTest(testDispatcher) {
+        val responseBody = """
+            {
+                "errors": [
+                    {
+                        "message": "Unauthorized"
+                    },
+                    {
+                        "message": "Something else went wrong"
+                    }
+                ]
+            }
+        """.trimIndent()
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .sendGraphQLPostSuccessfulResponse(responseBody)
+            .build()
+
+        val generateCustomerRecommendationsApi = GenerateCustomerRecommendationsApi(
+            braintreeClient = braintreeClient,
+            customerSessionRequestBuilder = customerSessionRequestBuilder
+        )
+
+        val result = generateCustomerRecommendationsApi.execute(customerSessionRequest, "test-session-id")
+        advanceUntilIdle()
+
+        assert(result is GenerateCustomerRecommendationsResult.Error)
+        val error = (result as GenerateCustomerRecommendationsResult.Error).error
+        assert(error is BraintreeException)
+        assertEquals("Unauthorized", error.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
     fun `when execute is called and a JSONException is thrown, callback with Error is invoked`() =
     runTest(testDispatcher) {
         val exception = JSONException("Test exception")
