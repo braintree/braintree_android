@@ -1,4 +1,4 @@
-package com.braintreepayments.api.paypalpaymentmethod
+package com.braintreepayments.api.paypalsavedpaymentmethod
 
 import org.junit.Test
 

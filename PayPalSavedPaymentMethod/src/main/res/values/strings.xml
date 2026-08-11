@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pspm_paypal_label">PayPal</string>
+    <string name="pspm_fi_card_masked_number">••%1$s</string>
+</resources>

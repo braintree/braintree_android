@@ -162,9 +162,9 @@ jobs:
         uses: ./.github/actions/unit_test_module
         with:
           module: PayPalMessaging
-  unit_test_paypal_payment_method:
+  unit_test_paypal_saved_payment_method:
     needs: [ validate_version ]
-    name: PayPal Payment Method Unit Tests
+    name: PayPal Saved Payment Method Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -174,7 +174,7 @@ jobs:
       - name: Run Unit Tests
         uses: ./.github/actions/unit_test_module
         with:
-          module: PayPalPaymentMethod
+          module: PayPalSavedPaymentMethod
   unit_test_shopper_insights:
     needs: [ validate_version ]
     name: Shopper Insights Unit Tests
@@ -252,7 +252,7 @@ jobs:
       unit_test_local_payment,
       unit_test_paypal,
       unit_test_paypal_messaging,
-      unit_test_paypal_payment_method,
+      unit_test_paypal_saved_payment_method,
       unit_test_shopper_insights,
       unit_test_three_d_secure,
       unit_test_ui_components,
