@@ -340,7 +340,7 @@ class ExampleFragment : Fragment() {
 ## Help
 
 * [Read the docs](https://developer.paypal.com/braintree/docs/guides/overview)
-* [Check out the reference docs](https://braintree.github.io/braintree_android/index.html)
+* [Check out the reference docs](https://braintree.github.io/braintree_android/current/)
 * Find a bug? [Open an issue](https://github.com/braintree/braintree_android/issues)
 * Want to contribute? [Check out contributing guidelines](CONTRIBUTING.md) and [submit a pull request](https://help.github.com/articles/creating-a-pull-request).
 

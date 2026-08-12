@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ShopperInsights
+    * Fix response handling bug that buries customer session create and update errors
+
 ## 5.31.0 (2026-08-03)
 
 * PayPal
