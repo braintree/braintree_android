@@ -2,10 +2,12 @@ package com.braintreepayments.api.threedsecure
 
 import android.os.TransactionTooLargeException
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.annotation.RestrictTo
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import com.braintreepayments.api.core.BraintreeException
 
@@ -14,27 +16,34 @@ import com.braintreepayments.api.core.BraintreeException
  */
 class ThreeDSecureLauncher internal constructor(
     registry: ActivityResultRegistry,
-    lifecycleOwner: LifecycleOwner,
+    lifecycleOwner: LifecycleOwner?,
     private val callback: ThreeDSecureLauncherCallback
 ) {
 
-    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    var activityLauncher: ActivityResultLauncher<ThreeDSecureParams?> = registry.register(
-        THREE_D_SECURE_RESULT,
-        lifecycleOwner,
-        ThreeDSecureActivityResultContract()
-    ) { paymentAuthResult: ThreeDSecurePaymentAuthResult? ->
+    private val activityCallback: ActivityResultCallback<ThreeDSecurePaymentAuthResult?> = ActivityResultCallback{ paymentAuthResult: ThreeDSecurePaymentAuthResult? ->
         if (paymentAuthResult != null) {
             callback.onThreeDSecurePaymentAuthResult(paymentAuthResult)
         }
     }
+
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    var activityLauncher: ActivityResultLauncher<ThreeDSecureParams?> = if (lifecycleOwner != null) registry.register(
+        THREE_D_SECURE_RESULT,
+        lifecycleOwner,
+        ThreeDSecureActivityResultContract(),
+        activityCallback
+    ) else registry.register(
+        THREE_D_SECURE_RESULT,
+        ThreeDSecureActivityResultContract(),
+        activityCallback
+    )
 
     /**
      * Used to launch the 3DS authentication flow to tokenize a 3DS card. This class must be
      * instantiated before your Fragment is created.
      *
      * @param fragment an Android Fragment from which you will launch the 3DS flow
-     * @param callback a [ThreeDSecureLauncherCallback] to received the result of the 3DS
+     * @param callback a [ThreeDSecureLauncherCallback] to receive the result of the 3DS
      * authentication flow
      */
     constructor(
@@ -51,13 +60,18 @@ class ThreeDSecureLauncher internal constructor(
      * instantiated before your Activity is created.
      *
      * @param activity an Android Activity from which you will launch the 3DS flow
-     * @param callback a [ThreeDSecureLauncherCallback] to received the result of the 3DS
+     * @param callback a [ThreeDSecureLauncherCallback] to receive the result of the 3DS
      * authentication flow
      */
     constructor(
         activity: ComponentActivity,
         callback: ThreeDSecureLauncherCallback
     ) : this(activity.activityResultRegistry, activity, callback)
+
+    constructor(
+        activity: FragmentActivity,
+        callback: ThreeDSecureLauncherCallback
+    ) : this(activity.activityResultRegistry, null, callback)
 
     /**
      * Launches the 3DS flow by switching to an authentication Activity. Call this method in the
@@ -90,6 +104,8 @@ class ThreeDSecureLauncher internal constructor(
             }
         }
     }
+
+    fun unregister() = activityLauncher.unregister()
 
     companion object {
         private const val THREE_D_SECURE_RESULT = "com.braintreepayments.api.ThreeDSecure.RESULT"
