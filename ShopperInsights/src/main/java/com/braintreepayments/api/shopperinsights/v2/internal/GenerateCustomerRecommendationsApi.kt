@@ -1,7 +1,9 @@
 package com.braintreepayments.api.shopperinsights.v2.internal
 
 import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.core.GraphQLConstants
 import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendations
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
@@ -82,9 +84,16 @@ internal class GenerateCustomerRecommendationsApi(
         return JSONObject().put(INPUT, input)
     }
 
-    @Throws(JSONException::class)
+    @Throws(JSONException::class, BraintreeException::class)
     private fun parseRecommendationsResponse(responseBody: String): CustomerRecommendations {
         val jsonObject = JSONObject(responseBody)
+
+        val errors = jsonObject.optJSONArray(GraphQLConstants.Keys.ERRORS)
+        if (errors != null && errors.length() > 0) {
+            val message = errors.getJSONObject(0).optString(GraphQLConstants.Keys.MESSAGE, responseBody)
+            throw BraintreeException(message)
+        }
+
         val data = jsonObject.getJSONObject("data")
         val recommendations = data.getJSONObject(GENERATE_CUSTOMER_RECOMMENDATIONS)
 
