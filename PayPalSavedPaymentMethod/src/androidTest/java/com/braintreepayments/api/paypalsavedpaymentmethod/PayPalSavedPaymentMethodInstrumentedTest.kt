@@ -13,8 +13,9 @@ import org.junit.Assert.*
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
+// TODO: placeholder scaffold test - replace with real instrumented tests for PayPalSavedPaymentMethod
 @RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
+class PayPalSavedPaymentMethodInstrumentedTest {
     @Test
     fun useAppContext() {
         // Context of the app under test.
