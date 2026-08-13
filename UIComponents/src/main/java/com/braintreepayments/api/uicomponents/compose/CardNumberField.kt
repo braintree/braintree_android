@@ -3,9 +3,11 @@ package com.braintreepayments.api.uicomponents.compose
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -46,6 +48,7 @@ internal fun CardNumberField(
                         width = dimensionResource(R.dimen.card_icon_width),
                         height = dimensionResource(R.dimen.card_icon_height)
                     )
+                    .clip(RoundedCornerShape(dimensionResource(R.dimen.card_icon_corner_radius)))
             )
         }
     )

@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.braintreepayments.api.uicomponents.R
 
@@ -107,6 +108,7 @@ internal fun CardFieldTextField(
 
             var containerHeightPx by remember { mutableIntStateOf(0) }
             var hintHeightPx by remember { mutableIntStateOf(0) }
+            val centerYBasisPx = remember(shouldFloat) { hintHeightPx }
             val density = LocalDensity.current
 
             Box(
@@ -115,10 +117,13 @@ internal fun CardFieldTextField(
                     .heightIn(min = minHeight)
                     .onGloballyPositioned { containerHeightPx = it.size.height }
             ) {
+
+                val verticalCompressionPx = with(density) { FLOAT_VERTICAL_COMPRESSION_DP.toPx() }
+
                 val translationYPx = with(density) {
-                    val centerY = (containerHeightPx - hintHeightPx) / 2f
+                    val centerY = (containerHeightPx - centerYBasisPx) / 2f
                     val floatTargetPx = hintFloatTopMargin.toPx() - centerY
-                    floatFraction * floatTargetPx
+                    floatFraction * (floatTargetPx + verticalCompressionPx)
                 }
 
                 Text(
@@ -138,6 +143,7 @@ internal fun CardFieldTextField(
                         .align(Alignment.BottomStart)
                         .fillMaxWidth()
                         .padding(bottom = inputMarginBottom)
+                        .graphicsLayer { translationY = -floatFraction * verticalCompressionPx }
                         .let { if (focusRequester != null) it.focusRequester(focusRequester) else it }
                         .onFocusChanged {
                             isFocused = it.isFocused
@@ -172,3 +178,4 @@ private fun interpolateHintFontSize(restSize: TextUnit, floatedSize: TextUnit, f
     (restSize.value + (floatedSize.value - restSize.value) * fraction).sp
 
 private const val HINT_ANIMATION_DURATION_MS = 200
+private val FLOAT_VERTICAL_COMPRESSION_DP = 2.dp
