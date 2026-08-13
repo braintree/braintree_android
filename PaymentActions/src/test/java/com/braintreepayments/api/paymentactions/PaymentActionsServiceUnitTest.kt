@@ -43,7 +43,7 @@ class PaymentActionsServiceUnitTest {
     private fun mockPaymentMethod(
         variables: JSONObject = paymentMethodVariables,
         selectionSet: String = "id\nstatus",
-    ) = mockk<PaymentActionPaymentMethod> {
+    ) = mockk<PaymentActionRequest> {
         every { toGraphQLVariables() } returns variables
         every { paymentActionSelectionSet() } returns selectionSet
     }
@@ -115,8 +115,8 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Success)
-            assertEquals("pa123", (result as PaymentActionResult.Success).paymentAction.id)
+            assertTrue(result is PaymentActionServiceResult.Success)
+            assertEquals("pa123", (result as PaymentActionServiceResult.Success).paymentAction.id)
             assertEquals(PaymentActionStatus.SUCCEEDED, result.paymentAction.status)
         }
 
@@ -144,7 +144,7 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            val success = result as PaymentActionResult.Success
+            val success = result as PaymentActionServiceResult.Success
             assertEquals(PaymentActionStatus.REQUIRES_CAPTURE, success.paymentAction.status)
         }
 
@@ -172,10 +172,10 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Success)
+            assertTrue(result is PaymentActionServiceResult.Success)
             assertEquals(
                 PaymentActionStatus.READY_FOR_CONFIRMATION,
-                (result as PaymentActionResult.Success).paymentAction.status
+                (result as PaymentActionServiceResult.Success).paymentAction.status
             )
         }
 
@@ -203,10 +203,10 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Success)
+            assertTrue(result is PaymentActionServiceResult.Success)
             assertEquals(
                 PaymentActionStatus.CANCELED,
-                (result as PaymentActionResult.Success).paymentAction.status
+                (result as PaymentActionServiceResult.Success).paymentAction.status
             )
         }
 
@@ -234,10 +234,10 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Success)
+            assertTrue(result is PaymentActionServiceResult.Success)
             assertEquals(
                 PaymentActionStatus.EXPIRED,
-                (result as PaymentActionResult.Success).paymentAction.status
+                (result as PaymentActionServiceResult.Success).paymentAction.status
             )
         }
 
@@ -250,7 +250,7 @@ class PaymentActionsServiceUnitTest {
                         "setPaymentActionPaymentMethod": {
                             "paymentAction": {
                                 "id": "pa123",
-                                "status": "processing"
+                                "status": "some_unrecognized_status"
                             }
                         }
                     }
@@ -265,10 +265,10 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Success)
+            assertTrue(result is PaymentActionServiceResult.Success)
             assertEquals(
                 PaymentActionStatus.UNKNOWN,
-                (result as PaymentActionResult.Success).paymentAction.status
+                (result as PaymentActionServiceResult.Success).paymentAction.status
             )
         }
 
@@ -285,8 +285,8 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Failure)
-            assertEquals(error, (result as PaymentActionResult.Failure).error)
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertEquals(error, (result as PaymentActionServiceResult.Failure).error)
         }
 
     @Test
@@ -308,8 +308,8 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Failure)
-            assertTrue((result as PaymentActionResult.Failure).error is BraintreeException)
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertTrue((result as PaymentActionServiceResult.Failure).error is BraintreeException)
         }
 
     @Test
@@ -337,8 +337,8 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Success)
-            assertEquals("pa123", (result as PaymentActionResult.Success).paymentAction.id)
+            assertTrue(result is PaymentActionServiceResult.Success)
+            assertEquals("pa123", (result as PaymentActionServiceResult.Success).paymentAction.id)
         }
 
     @Test
@@ -352,8 +352,8 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Failure)
-            assertTrue((result as PaymentActionResult.Failure).error is JSONException)
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertTrue((result as PaymentActionServiceResult.Failure).error is JSONException)
         }
 
     @Test
@@ -367,8 +367,8 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Failure)
-            assertTrue((result as PaymentActionResult.Failure).error is JSONException)
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertTrue((result as PaymentActionServiceResult.Failure).error is JSONException)
         }
 
     @Test
@@ -388,8 +388,8 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Failure)
-            assertTrue((result as PaymentActionResult.Failure).error is JSONException)
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertTrue((result as PaymentActionServiceResult.Failure).error is JSONException)
         }
 
     @Test
@@ -409,8 +409,8 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Failure)
-            assertTrue((result as PaymentActionResult.Failure).error is JSONException)
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertTrue((result as PaymentActionServiceResult.Failure).error is JSONException)
         }
 
     @Test
@@ -432,8 +432,8 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Failure)
-            assertTrue((result as PaymentActionResult.Failure).error is JSONException)
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertTrue((result as PaymentActionServiceResult.Failure).error is JSONException)
         }
 
     @Test
@@ -459,8 +459,8 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Failure)
-            assertTrue((result as PaymentActionResult.Failure).error is JSONException)
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertTrue((result as PaymentActionServiceResult.Failure).error is JSONException)
         }
 
     @Test
@@ -486,8 +486,8 @@ class PaymentActionsServiceUnitTest {
             val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
             advanceUntilIdle()
 
-            assertTrue(result is PaymentActionResult.Failure)
-            assertTrue((result as PaymentActionResult.Failure).error is JSONException)
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertTrue((result as PaymentActionServiceResult.Failure).error is JSONException)
         }
 
     private fun String.normalizeWhitespace(): String = trim().replace(Regex("\\s+"), " ")

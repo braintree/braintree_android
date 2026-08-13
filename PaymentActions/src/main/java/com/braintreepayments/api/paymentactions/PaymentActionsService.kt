@@ -1,6 +1,5 @@
 package com.braintreepayments.api.paymentactions
 
-import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.GraphQLConstants
@@ -13,33 +12,32 @@ import java.io.IOException
  * It acts as a thin client in order to insulate our payment method specific clients from the
  * networking layer.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class PaymentActionsService(
+internal class PaymentActionsService(
     private val braintreeClient: BraintreeClient,
 ) {
 
     /**
      * Submits a payment method to `setPaymentActionPaymentMethod` GraphQL mutation.
      *
-     * On success returns a [PaymentActionResult.Success] wrapping a [PaymentAction] is returned.
-     * On failure returns a [PaymentActionResult.Failure] wrapping an [Exception] is returned.
+     * On success returns a [PaymentActionServiceResult.Success] wrapping the raw [PaymentAction].
+     * On failure returns a [PaymentActionServiceResult.Failure] wrapping an [Exception].
      *
-     * @param paymentMethod the [PaymentActionPaymentMethod] to submit to GraphQL.
-     * @return a [PaymentActionResult] wrapper denoting success or failure.
+     * @param paymentMethod the [PaymentActionRequest] to submit to GraphQL.
+     * @return a [PaymentActionServiceResult] wrapper denoting success or failure.
      */
     suspend fun setPaymentActionPaymentMethod(
-        paymentMethod: PaymentActionPaymentMethod,
-    ): PaymentActionResult {
+        paymentMethod: PaymentActionRequest,
+    ): PaymentActionServiceResult {
         return try {
             braintreeClient
                 .sendGraphQLPOST(buildSetPaymentActionPaymentMethodQuery(paymentMethod))
-                .toPaymentActionsResult()
+                .toPaymentActionServiceResult()
         } catch (exception: IOException) {
-            PaymentActionResult.Failure(exception)
+            PaymentActionServiceResult.Failure(exception)
         }
     }
 
-    private fun buildSetPaymentActionPaymentMethodQuery(paymentMethod: PaymentActionPaymentMethod): JSONObject {
+    private fun buildSetPaymentActionPaymentMethodQuery(paymentMethod: PaymentActionRequest): JSONObject {
         val input = JSONObject().put(PAYMENT_METHOD_KEY, paymentMethod.toGraphQLVariables())
         val variables = JSONObject().put(GraphQLConstants.Keys.INPUT, input)
 
@@ -58,13 +56,13 @@ class PaymentActionsService(
             .put(GraphQLConstants.Keys.VARIABLES, variables)
     }
 
-    private fun String.toPaymentActionsResult(): PaymentActionResult {
+    private fun String.toPaymentActionServiceResult(): PaymentActionServiceResult {
         return try {
             val responseJson = JSONObject(this)
             if (responseJson.has(GraphQLConstants.Keys.ERRORS) &&
                 responseJson.getJSONArray(GraphQLConstants.Keys.ERRORS).length() > 0
             ) {
-                return PaymentActionResult.Failure(BraintreeException(responseJson.toString()))
+                return PaymentActionServiceResult.Failure(BraintreeException(responseJson.toString()))
             }
 
             responseJson
@@ -72,15 +70,15 @@ class PaymentActionsService(
                 .getJSONObject(SET_PAYMENT_ACTION_PAYMENT_METHOD_KEY)
                 .getJSONObject(PAYMENT_ACTION_KEY)
                 .let { paymentActionJson ->
-                    PaymentAction(
-                        id = paymentActionJson.getString(ID_KEY),
-                        status = paymentActionJson.getString(STATUS_KEY).toPaymentActionStatus()
-                    ).let { paymentAction ->
-                        PaymentActionResult.Success(paymentAction)
-                    }
+                    PaymentActionServiceResult.Success(
+                        PaymentAction(
+                            id = paymentActionJson.getString(ID_KEY),
+                            status = paymentActionJson.getString(STATUS_KEY).toPaymentActionStatus()
+                        )
+                    )
                 }
         } catch (jex: JSONException) {
-            PaymentActionResult.Failure(jex)
+            PaymentActionServiceResult.Failure(jex)
         }
     }
 
