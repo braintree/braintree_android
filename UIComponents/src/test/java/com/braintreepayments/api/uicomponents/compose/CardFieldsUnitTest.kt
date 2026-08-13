@@ -71,4 +71,74 @@ class CardFieldsUnitTest {
     }
 
     // endregion
+
+    // region sanitizeCardExpirationInput
+
+    @Test
+    fun `sanitizeCardExpirationInput strips non-digit characters`() {
+        val result = sanitizeCardExpirationInput(textFieldValue("12/25"))
+        assertEquals("1225", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCardExpirationInput allows digits under the max length`() {
+        val result = sanitizeCardExpirationInput(textFieldValue("122"))
+        assertEquals("122", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCardExpirationInput allows digits at exactly the max length`() {
+        val result = sanitizeCardExpirationInput(textFieldValue("1225"))
+        assertEquals("1225", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCardExpirationInput rejects a single extra digit appended past max length`() {
+        val result = sanitizeCardExpirationInput(textFieldValue("12255"))
+        assertNull(result)
+    }
+
+    @Test
+    fun `sanitizeCardExpirationInput rejects a large paste that exceeds max length`() {
+        val result = sanitizeCardExpirationInput(textFieldValue("1229999925"))
+        assertNull(result)
+    }
+
+    @Test
+    fun `sanitizeCardExpirationInput allows an empty value`() {
+        val result = sanitizeCardExpirationInput(textFieldValue(""))
+        assertEquals("", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCardExpirationInput prepends a leading zero for a lone month digit greater than 1`() {
+        val result = sanitizeCardExpirationInput(textFieldValue("5"))
+        assertEquals("05", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCardExpirationInput shifts the cursor forward when a leading zero is inserted`() {
+        val result = sanitizeCardExpirationInput(textFieldValue("5", cursor = 1))
+        assertEquals(TextRange(2), result?.selection)
+    }
+
+    @Test
+    fun `sanitizeCardExpirationInput does not prepend a leading zero for a lone 0 or 1`() {
+        assertEquals("0", sanitizeCardExpirationInput(textFieldValue("0"))?.text)
+        assertEquals("1", sanitizeCardExpirationInput(textFieldValue("1"))?.text)
+    }
+
+    @Test
+    fun `sanitizeCardExpirationInput does not prepend a leading zero once a second digit is present`() {
+        val result = sanitizeCardExpirationInput(textFieldValue("51"))
+        assertEquals("51", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCardExpirationInput leaves the cursor unchanged when no leading zero is inserted`() {
+        val result = sanitizeCardExpirationInput(textFieldValue("12", cursor = 1))
+        assertEquals(TextRange(1), result?.selection)
+    }
+
+    // endregion
 }

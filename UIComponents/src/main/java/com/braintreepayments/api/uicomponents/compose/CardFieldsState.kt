@@ -12,6 +12,7 @@ class CardFieldsState internal constructor(
     internal val viewModel: CardFieldsViewModel,
 ) {
     internal var cardNumber = mutableStateOf(viewModel.currentCardNumber.asTextFieldValue())
+    internal var expiration = mutableStateOf(viewModel.currentExpiration.asTextFieldValue())
 }
 
 private fun String.asTextFieldValue() = TextFieldValue(text = this, selection = TextRange(length))
