@@ -50,7 +50,7 @@ import com.braintreepayments.api.uicomponents.R
  * view uses so both variants stay visually consistent.
  */
 @Composable
-internal fun CardFieldTextField(
+internal fun CardFieldBaseTextInputField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     hint: String,

@@ -28,7 +28,7 @@ internal fun CardNumberField(
     focusRequester: FocusRequester? = null,
     onFocusChanged: (Boolean) -> Unit = {}
 ) {
-    CardFieldTextField(
+    CardFieldBaseTextInputField(
         value = value,
         onValueChange = onValueChange,
         hint = stringResource(R.string.card_number_hint),
