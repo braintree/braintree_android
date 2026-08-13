@@ -2,7 +2,10 @@
 
 ## unreleased
 
+* PayPal
+    * Add `PayPalCheckoutRequest.campaigns` to associate campaigns with a checkout order
 * ShopperInsights
+    * Add `CustomerSessionRequest.payPalCampaigns` to associate campaigns with a customer session
     * Fix response handling bug that buries customer session create and update errors
 
 ## 5.31.0 (2026-08-03)
