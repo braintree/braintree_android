@@ -123,6 +123,8 @@ device-automator = { module = "com.braintreepayments:device-automator", version.
 bt-card-form = { module = "com.braintreepayments:card-form", version.ref = "btCardForm" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview"}
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling"}
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 google-pay-button = { module = "com.google.pay.button:compose-pay-button", version.ref = "googlePayButton" }
 

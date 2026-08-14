@@ -48,7 +48,7 @@ fun CardFields(state: CardFieldsState, modifier: Modifier = Modifier) {
         CardNumberField(
             value = state.cardNumber.value,
             onValueChange = { newValue ->
-                val sanitized = sanitizeCardNumberInput(newValue) ?: return@CardNumberField
+                val sanitized = sanitizeCardNumberInput(newValue)
                 state.cardNumber.value = sanitized
                 viewModel.onCardNumberChanged(sanitized.text)
             },
@@ -70,14 +70,11 @@ private fun ValidationResult.errorText(): String? =
     (this as? ValidationResult.Invalid)?.let { stringResource(it.errorMessageRes) }
 
 /**
- * Strips non-digit characters from [newValue] and rejects the edit entirely (returns `null`)
- * if it would push the digit count past the detected brand's max length. Rejecting outright —
- * rather than truncating — avoids the field appearing to "overwrite" digits at the end when the
- * user inserts new digits in the middle of an already-full number.
+ * Strips non-digit characters from [newValue] and truncates the digit count to the detected
+ * brand's max length.
  */
-internal fun sanitizeCardNumberInput(newValue: TextFieldValue): TextFieldValue? {
+internal fun sanitizeCardNumberInput(newValue: TextFieldValue): TextFieldValue {
     val rawDigits = newValue.text.filter { it.isDigit() }
     val maxLength = CardBrand.resolveBrand(rawDigits).maxLength
-    if (rawDigits.length > maxLength) return null
-    return newValue.copy(text = rawDigits)
+    return newValue.copy(text = rawDigits.take(maxLength))
 }
