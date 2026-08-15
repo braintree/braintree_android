@@ -87,6 +87,7 @@ class GenerateCustomerRecommendationsApiUnitTest {
                             paymentOption
                             recommendedPriority
                         }
+                        expiresAt
                     }
                 }
                 """.trimIndent()
@@ -147,7 +148,8 @@ class GenerateCustomerRecommendationsApiUnitTest {
                                 "paymentOption": "PAYPAL",
                                 "recommendedPriority": 1
                             }
-                        ]
+                        ],
+                        "expiresAt": "2026-08-15T00:00:00Z"
                     }
                 }
             }
@@ -170,11 +172,53 @@ class GenerateCustomerRecommendationsApiUnitTest {
             isInPayPalNetwork = true,
             paymentRecommendations = listOf(
                 PaymentOptions(paymentOption = "PAYPAL", recommendedPriority = 1)
-            )
+            ),
+            expiresAt = "2026-08-15T00:00:00Z"
         )
 
         assert(result is GenerateCustomerRecommendationsResult.Success)
         assertEquals(expectedResult, (result as GenerateCustomerRecommendationsResult.Success).customerRecommendations)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `when execute is called and expiresAt is absent, expiresAt is null in the result`() =
+    runTest(testDispatcher) {
+        val sessionId = "test-session-id"
+        val responseBody = """
+            {
+                "data": {
+                    "generateCustomerRecommendations": {
+                        "sessionId": "$sessionId",
+                        "isInPayPalNetwork": true,
+                        "paymentRecommendations": [
+                            {
+                                "paymentOption": "PAYPAL",
+                                "recommendedPriority": 1
+                            }
+                        ]
+                    }
+                }
+            }
+        """.trimIndent()
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .sendGraphQLPostSuccessfulResponse(responseBody)
+            .build()
+
+        val generateCustomerRecommendationsApi = GenerateCustomerRecommendationsApi(
+            braintreeClient = braintreeClient,
+            customerSessionRequestBuilder = customerSessionRequestBuilder
+        )
+
+        val result = generateCustomerRecommendationsApi.execute(customerSessionRequest, "test-session-id")
+        advanceUntilIdle()
+
+        assert(result is GenerateCustomerRecommendationsResult.Success)
+        assertEquals(
+            null,
+            (result as GenerateCustomerRecommendationsResult.Success).customerRecommendations.expiresAt
+        )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
