@@ -141,4 +141,50 @@ class CardFieldsUnitTest {
     }
 
     // endregion
+
+    // region sanitizeCvvInput
+
+    @Test
+    fun `sanitizeCvvInput strips non-digit characters`() {
+        val result = sanitizeCvvInput(textFieldValue("1a2b3"))
+        assertEquals("123", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCvvInput allows digits under the max length for an unrecognized brand`() {
+        val result = sanitizeCvvInput(textFieldValue("99"))
+        assertEquals("99", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCvvInput allows digits at exactly the max length for an unrecognized brand`() {
+        val result = sanitizeCvvInput(textFieldValue("9999"))
+        assertEquals("9999", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCvvInput rejects a single extra digit past the max length for an unrecognized brand`() {
+        val result = sanitizeCvvInput(textFieldValue("99999"))
+        assertNull(result)
+    }
+
+    @Test
+    fun `sanitizeCvvInput allows an empty value`() {
+        val result = sanitizeCvvInput(textFieldValue(""))
+        assertEquals("", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCvvInput respects a shorter max length for digits matching a known brand prefix`() {
+        val result = sanitizeCvvInput(textFieldValue("411"))
+        assertEquals("411", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCvvInput rejects a digit past the max length for digits matching a known brand prefix`() {
+        val result = sanitizeCvvInput(textFieldValue("4111"))
+        assertNull(result)
+    }
+
+    // endregion
 }
