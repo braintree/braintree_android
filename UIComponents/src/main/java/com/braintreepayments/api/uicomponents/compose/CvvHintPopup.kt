@@ -60,7 +60,7 @@ internal fun CvvHintPopup(onDismissRequest: () -> Unit) {
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-                IconButton(onClick = onDismissRequest) {
+                IconButton(onClick = onDismissRequest, modifier = Modifier.size(24.dp)) {
                     Icon(
                         painter = painterResource(R.drawable.cvv_hint_close),
                         contentDescription = stringResource(R.string.cvv_overlay_close_description),
