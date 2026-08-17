@@ -71,6 +71,17 @@ fun CardFields(state: CardFieldsState, modifier: Modifier = Modifier) {
                 val sanitizedInput = sanitizeCardNumberInput(newValue) ?: return@CardNumberField
                 state.cardNumber.value = sanitizedInput
                 viewModel.onCardNumberChanged(sanitizedInput.text)
+
+                val maxCvvLength = viewModel.detectedCardBrand.value.cvvLength
+                val currentCvv = state.cvv.value
+                if (currentCvv.text.length > maxCvvLength) {
+                    val truncatedCvv = currentCvv.copy(
+                        text = currentCvv.text.take(maxCvvLength),
+                        selection = TextRange(maxCvvLength)
+                    )
+                    state.cvv.value = truncatedCvv
+                    viewModel.onCvvChanged(truncatedCvv.text)
+                }
             },
             brand = detectedBrand,
             errorText = cardNumberValidation.errorText(),
@@ -108,7 +119,7 @@ fun CardFields(state: CardFieldsState, modifier: Modifier = Modifier) {
             CardCvvField(
                 value = state.cvv.value,
                 onValueChange = { newValue ->
-                    val sanitizedInput = sanitizeCvvInput(newValue) ?: return@CardCvvField
+                    val sanitizedInput = sanitizeCvvInput(newValue, detectedBrand) ?: return@CardCvvField
                     state.cvv.value = sanitizedInput
                     viewModel.onCvvChanged(sanitizedInput.text)
                 },
@@ -149,10 +160,9 @@ internal fun sanitizeCardExpirationInput(newValue: TextFieldValue): TextFieldVal
     return newValue.copy(text = digits, selection = selection)
 }
 
-internal fun sanitizeCvvInput(newValue: TextFieldValue): TextFieldValue? {
+internal fun sanitizeCvvInput(newValue: TextFieldValue, brand: CardBrand): TextFieldValue? {
     val rawDigits = newValue.text.filter { it.isDigit() }
-    val cvvLength = CardBrand.resolveBrand(rawDigits).cvvLength
-    if (rawDigits.length > cvvLength) return null
+    if (rawDigits.length > brand.cvvLength) return null
     return newValue.copy(text = rawDigits)
 }
 
