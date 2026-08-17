@@ -29,3 +29,16 @@ private fun digitOffsetMapping(formatted: String) = object : OffsetMapping {
     override fun transformedToOriginal(offset: Int): Int =
         CardNumberFormatter.countDigitsBeforeIndex(formatted, offset)
 }
+
+internal class CvvVisualTransformation(private val revealedIndex: Int?) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val masked = text.text.mapIndexed { index, char ->
+            if (index == revealedIndex) char else MASK_CHAR
+        }.joinToString("")
+        return TransformedText(AnnotatedString(masked), OffsetMapping.Identity)
+    }
+
+    private companion object {
+        const val MASK_CHAR = '•'
+    }
+}

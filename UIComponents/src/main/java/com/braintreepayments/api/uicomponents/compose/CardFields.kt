@@ -15,6 +15,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -31,12 +33,14 @@ fun CardFields(state: CardFieldsState, modifier: Modifier = Modifier) {
     val viewModel = state.viewModel
     val cardNumberValidation by viewModel.cardNumberValidation.collectAsState()
     val expirationValidation by viewModel.expirationValidation.collectAsState()
+    val cvvValidation by viewModel.cvvValidation.collectAsState()
     val detectedBrand by viewModel.detectedCardBrand.collectAsState()
 
     val focusManager = LocalFocusManager.current
 
     var cardNumberHasBeenFocused by remember { mutableStateOf(false) }
     var expirationHasBeenFocused by remember { mutableStateOf(false) }
+    var cvvHasBeenFocused by remember { mutableStateOf(false) }
 
     fun onFieldFocusChanged(field: CardField, focused: Boolean, hasBeenFocused: Boolean): Boolean {
         if (focused || hasBeenFocused) {
@@ -54,13 +58,30 @@ fun CardFields(state: CardFieldsState, modifier: Modifier = Modifier) {
             ) {
                 focusManager.clearFocus()
             }
+            .focusProperties {
+                left = FocusRequester.Cancel
+                right = FocusRequester.Cancel
+                up = FocusRequester.Cancel
+                down = FocusRequester.Cancel
+            }
     ) {
         CardNumberField(
             value = state.cardNumber.value,
             onValueChange = { newValue ->
-                val sanitized = sanitizeCardNumberInput(newValue) ?: return@CardNumberField
-                state.cardNumber.value = sanitized
-                viewModel.onCardNumberChanged(sanitized.text)
+                val sanitizedInput = sanitizeCardNumberInput(newValue) ?: return@CardNumberField
+                state.cardNumber.value = sanitizedInput
+                viewModel.onCardNumberChanged(sanitizedInput.text)
+
+                val maxCvvLength = viewModel.detectedCardBrand.value.cvvLength
+                val currentCvv = state.cvv.value
+                if (currentCvv.text.length > maxCvvLength) {
+                    val truncatedCvv = currentCvv.copy(
+                        text = currentCvv.text.take(maxCvvLength),
+                        selection = TextRange(maxCvvLength)
+                    )
+                    state.cvv.value = truncatedCvv
+                    viewModel.onCvvChanged(truncatedCvv.text)
+                }
             },
             brand = detectedBrand,
             errorText = cardNumberValidation.errorText(),
@@ -81,9 +102,9 @@ fun CardFields(state: CardFieldsState, modifier: Modifier = Modifier) {
             CardExpirationField(
                 value = state.expiration.value,
                 onValueChange = { newValue ->
-                    val sanitized = sanitizeCardExpirationInput(newValue) ?: return@CardExpirationField
-                    state.expiration.value = sanitized
-                    viewModel.onExpiryChanged(sanitized.text)
+                    val sanitizedInput = sanitizeCardExpirationInput(newValue) ?: return@CardExpirationField
+                    state.expiration.value = sanitizedInput
+                    viewModel.onExpiryChanged(sanitizedInput.text)
                 },
                 modifier = Modifier.weight(1f),
                 errorText = expirationValidation.errorText(),
@@ -93,6 +114,19 @@ fun CardFields(state: CardFieldsState, modifier: Modifier = Modifier) {
                         focused,
                         expirationHasBeenFocused
                     )
+                }
+            )
+            CardCvvField(
+                value = state.cvv.value,
+                onValueChange = { newValue ->
+                    val sanitizedInput = sanitizeCvvInput(newValue, detectedBrand) ?: return@CardCvvField
+                    state.cvv.value = sanitizedInput
+                    viewModel.onCvvChanged(sanitizedInput.text)
+                },
+                modifier = Modifier.weight(1f),
+                errorText = cvvValidation.errorText(),
+                onFocusChanged = { focused ->
+                    cvvHasBeenFocused = onFieldFocusChanged(CardField.CVV, focused, cvvHasBeenFocused)
                 }
             )
         }
@@ -124,6 +158,12 @@ internal fun sanitizeCardExpirationInput(newValue: TextFieldValue): TextFieldVal
     val cursorShift = digits.length - rawDigits.length
     val selection = TextRange((newValue.selection.end + cursorShift).coerceIn(0, digits.length))
     return newValue.copy(text = digits, selection = selection)
+}
+
+internal fun sanitizeCvvInput(newValue: TextFieldValue, brand: CardBrand): TextFieldValue? {
+    val rawDigits = newValue.text.filter { it.isDigit() }
+    if (rawDigits.length > brand.cvvLength) return null
+    return newValue.copy(text = rawDigits)
 }
 
 private const val EXPIRATION_MAX_DIGITS = 4
