@@ -46,7 +46,6 @@ internal fun CardCvvField(
         revealedIndex = null
     }
 
-
     CardFieldBaseTextInputField(
         value = value,
         onValueChange = onValueChange,
