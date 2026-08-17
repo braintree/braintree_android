@@ -6,6 +6,7 @@ import com.braintreepayments.api.googlepay.GooglePayReadinessResult.NotReadyToPa
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.IsReadyToPayRequest
+import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.Wallet
 import com.google.android.gms.wallet.Wallet.WalletOptions
 import com.google.android.gms.wallet.WalletConstants
@@ -39,6 +40,14 @@ internal class GooglePayInternalClient {
                     }
                 }
         }
+    }
+
+    fun loadPaymentData(context: Context, params: GooglePayPaymentAuthRequestParams): Task<PaymentData> {
+        val paymentsClient = Wallet.getPaymentsClient(
+            context,
+            WalletOptions.Builder().setEnvironment(params.googlePayEnvironment).build()
+        )
+        return paymentsClient.loadPaymentData(params.paymentDataRequest)
     }
 
     private fun getGooglePayEnvironment(configuration: Configuration): Int {

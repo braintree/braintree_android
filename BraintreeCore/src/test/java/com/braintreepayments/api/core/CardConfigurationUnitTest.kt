@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
 @RunWith(RobolectricTestRunner::class)
 class CardConfigurationUnitTest {
     @Test
-    fun fromJson_parsesFullInput() {
+    fun `when input contains full card configuration data, all fields are parsed`() {
         val input = JSONObject()
             .put("collectDeviceData", true)
             .put(
@@ -32,14 +32,14 @@ class CardConfigurationUnitTest {
     }
 
     @Test
-    fun fromJson_whenInputNull_returnsConfigWithDefaultValues() {
+    fun `when input is null, CardConfiguration uses default values`() {
         val (supportedCardTypes, isFraudDataCollectionEnabled) = CardConfiguration(null)
         assertFalse(isFraudDataCollectionEnabled)
         assertEquals(0, supportedCardTypes.size)
     }
 
     @Test
-    fun fromJson_whenInputEmpty_returnsConfigWithDefaultValues() {
+    fun `when input is empty, CardConfiguration uses default values`() {
         val (supportedCardTypes, isFraudDataCollectionEnabled) = CardConfiguration(JSONObject())
         assertFalse(isFraudDataCollectionEnabled)
         assertEquals(0, supportedCardTypes.size)

@@ -214,19 +214,6 @@ jobs:
         uses: ./.github/actions/unit_test_module
         with:
           module: Venmo
-  unit_test_visa_checkout:
-    needs: [ validate_version ]
-    name: VisaCheckout Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-      - name: Setup Java
-        uses: ./.github/actions/setup
-      - name: Run Unit Tests
-        uses: ./.github/actions/unit_test_module
-        with:
-          module: VisaCheckout
   unit_test_sepa_direct_debit:
     needs: [ validate_version ]
     name: SEPA Direct Debit Unit Tests
@@ -256,7 +243,6 @@ jobs:
       unit_test_three_d_secure,
       unit_test_ui_components,
       unit_test_venmo,
-      unit_test_visa_checkout,
       unit_test_sepa_direct_debit
     ]
     name: All Unit Tests Finished
@@ -307,6 +293,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.RELEASE_PAT }}
       - name: Setup Java
         uses: ./.github/actions/setup
       - name: Set GitHub User
@@ -320,7 +308,6 @@ jobs:
           ./gradlew -PversionParam="${RELEASE_VERSION}" changeREADMEVersion
           ./gradlew -PversionParam="${RELEASE_VERSION}" changeMigrationGuideVersion
           ./gradlew -PversionParam="${RELEASE_VERSION}" updateCHANGELOGVersion
-          ./gradlew dokkaHtmlMultiModule
           git add -A
           git commit -am "Release ${RELEASE_VERSION}"
           git tag "${RELEASE_VERSION}" -a -m "Release ${RELEASE_VERSION}"
@@ -329,6 +316,14 @@ jobs:
           ./gradlew incrementVersionCode
           git commit -am 'Prepare for development'
           git push origin ${GITHUB_REF_NAME} "${RELEASE_VERSION}"
+      - name: Generate Reference Docs
+        run: ./gradlew dokkaHtmlMultiModule
+      - name: Publish Reference Docs
+        run: |
+          set -euo pipefail
+          git fetch origin gh-pages:gh-pages || true
+          ./scripts/publish-docs.sh "${RELEASE_VERSION}"
+          git -C "$(dirname "$PWD")/$(basename "$PWD")-gh-pages" push origin gh-pages
 
   create_github_release:
     needs: [ bump_version ]

@@ -10,43 +10,43 @@ import org.junit.runner.RunWith
 @RunWith(RobolectricTestRunner::class)
 class AuthorizationUnitTest {
     @Test
-    fun fromString_returnsValidClientTokenWhenBase64() {
+    fun `when given a base64 client token, fromString returns a ClientToken`() {
         val authorization = fromString(Fixtures.BASE64_CLIENT_TOKEN)
         assertTrue(authorization is ClientToken)
     }
 
     @Test
-    fun fromString_returnsValidClientTokenWhenBase64IncludesSpaces() {
+    fun `when given a base64 client token with spaces, fromString returns a ClientToken`() {
         val authorization = fromString(Fixtures.BASE64_CLIENT_TOKEN_WITH_SPACES)
         assertTrue(authorization is ClientToken)
     }
 
     @Test
-    fun fromString_returnsValidTokenizationKey() {
+    fun `when given a tokenization key, fromString returns a TokenizationKey`() {
         val authorization = fromString(Fixtures.TOKENIZATION_KEY)
         assertTrue(authorization is TokenizationKey)
     }
 
     @Test
-    fun fromString_returnsValidTokenizationKeyIncludesSpaces() {
+    fun `when given a tokenization key with spaces, fromString returns a TokenizationKey`() {
         val authorization = fromString(Fixtures.TOKENIZATION_KEY_WITH_SPACES)
         assertTrue(authorization is TokenizationKey)
     }
 
     @Test
-    fun fromString_whenPassedNull_returnsInvalidToken() {
+    fun `when passed null, fromString returns InvalidAuthorization`() {
         val result = fromString(null)
         assertTrue(result is InvalidAuthorization)
     }
 
     @Test
-    fun fromString_whenPassedAnEmptyString_returnsInvalidToken() {
+    fun `when passed an empty string, fromString returns InvalidAuthorization`() {
         val result = fromString("")
         assertTrue(result is InvalidAuthorization)
     }
 
     @Test
-    fun fromString_whenPassedJunk_returnsInvalidToken() {
+    fun `when passed a junk string, fromString returns InvalidAuthorization`() {
         val result = fromString("not authorization")
         assertTrue(result is InvalidAuthorization)
     }

@@ -68,7 +68,7 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch starts browser switch and returns pending request`() {
+    fun `when launch is called, browser switch is started and pending request is returned`() {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
 
@@ -83,7 +83,7 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch on error returns pending request failure`() {
+    fun `when browser switch start fails, launch returns pending request failure`() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         val exception = BrowserSwitchException("error")
         every { browserSwitchClient.start(eq(activity), eq(options), any()) } returns
@@ -98,7 +98,7 @@ class PayPalLauncherUnitTest {
 
     @Test
     @Throws(BrowserSwitchException::class)
-    fun `launch when device cant perform browser switch returns pending request failure`() {
+    fun `when device can't perform browser switch, launch returns pending request failure`() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         val exception = BrowserSwitchException("browser switch error")
         every {
@@ -363,7 +363,7 @@ class PayPalLauncherUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `handleReturnToApp when result exists returns result`() {
+    fun `when a browser switch result exists, handleReturnToApp returns result`() {
         val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
         every {
             browserSwitchClient.completeRequest(
@@ -520,7 +520,7 @@ class PayPalLauncherUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `handleReturnToApp when result does not exist returns null`() {
+    fun `when no browser switch result exists, handleReturnToApp returns NoResult`() {
         every {
             browserSwitchClient.completeRequest(intent, pendingRequestString)
         } returns BrowserSwitchFinalResult.NoResult

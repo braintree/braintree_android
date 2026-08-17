@@ -1,5 +1,6 @@
 package com.braintreepayments.api.shopperinsights.v2.internal
 
+import com.braintreepayments.api.core.BraintreeException
 import org.json.JSONException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
@@ -60,5 +61,63 @@ class ShopperInsightsResponseParserUnitTest {
         assertThrows(JSONException::class.java) {
             responseParser.parseSessionId(responseBody, "createCustomerSession")
         }
+    }
+
+    @Test
+    fun `parseSessionId throws BraintreeException with GQL error message when response contains errors`() {
+        val responseBody = """
+            {
+                "errors": [
+                    {
+                        "message": "Unauthorized"
+                    }
+                ]
+            }
+        """.trimIndent()
+
+        val exception = assertThrows(BraintreeException::class.java) {
+            responseParser.parseSessionId(responseBody, "createCustomerSession")
+        }
+        assertEquals("Unauthorized", exception.message)
+    }
+
+    @Test
+    fun `parseSessionId throws BraintreeException when errors array is present with no data`() {
+        val responseBody = """
+            {
+                "data": null,
+                "errors": [
+                    {
+                        "message": "Unauthorized"
+                    }
+                ]
+            }
+        """.trimIndent()
+
+        val exception = assertThrows(BraintreeException::class.java) {
+            responseParser.parseSessionId(responseBody, "createCustomerSession")
+        }
+        assertEquals("Unauthorized", exception.message)
+    }
+
+    @Test
+    fun `parseSessionId throws BraintreeException with first error message when errors array has multiple errors`() {
+        val responseBody = """
+            {
+                "errors": [
+                    {
+                        "message": "Unauthorized"
+                    },
+                    {
+                        "message": "Something else went wrong"
+                    }
+                ]
+            }
+        """.trimIndent()
+
+        val exception = assertThrows(BraintreeException::class.java) {
+            responseParser.parseSessionId(responseBody, "createCustomerSession")
+        }
+        assertEquals("Unauthorized", exception.message)
     }
 }

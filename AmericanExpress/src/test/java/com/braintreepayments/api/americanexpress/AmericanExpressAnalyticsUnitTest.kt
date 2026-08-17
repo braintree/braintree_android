@@ -6,7 +6,7 @@ import org.junit.Test
 class AmericanExpressAnalyticsUnitTest {
 
     @Test
-    fun testAnalyticsEvents_sendsExpectedEventNames() {
+    fun `analytics constants match expected amex rewards balance event names`() {
         assertEquals(
             "amex:rewards-balance:started",
             AmericanExpressAnalytics.REWARDS_BALANCE_STARTED

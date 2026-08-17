@@ -24,7 +24,7 @@ For an integration offering card payments, add the following dependency in your 
 
 ```groovy
 dependencies {
-    implementation 'com.braintreepayments.api:card:5.27.0'
+    implementation 'com.braintreepayments.api:card:5.31.0'
 }
 ```
 
@@ -138,8 +138,11 @@ class ExampleFragment : Fragment() {
                     }
                 }
             }
+            // clear the stored pending request
+            clearPendingRequest()
+            // clear intent data
+            intent.data = null
         }
-        // clear pending request
     }
 }
 ```
@@ -184,8 +187,8 @@ class ExampleFragment : Fragment() {
         super.onResume()
         val pendingRequest = fetchPendingRequest()
         if (pendingRequest != null) {
-            venmoButton.handleReturnToApp(pendingRequest, intent) { payPalResult ->
-                when (payPalResult) {
+            venmoButton.handleReturnToApp(pendingRequest, intent) { venmoResult ->
+                when (venmoResult) {
                     is VenmoResult.Success -> {
                         // handle success
                     }
@@ -197,8 +200,11 @@ class ExampleFragment : Fragment() {
                     }
                 }
             }
+            // clear the stored pending request
+            clearPendingRequest()
+            // clear intent data
+            intent.data = null
         }
-        // clear pending request
     }
 }
 ```
@@ -230,7 +236,7 @@ private val paypalTokenizeCallback = PayPalTokenizeCallback { payPalResult ->
         }
     }
     // clear intent data
-    // requireActivity().intent.data = null
+    intent.data = null
 }
 
 PayPalButton(
@@ -243,7 +249,7 @@ PayPalButton(
 )
 ```
 
-For Venmo button, you should invoke the PayPalButton composable like this:
+For Venmo button, you should invoke the VenmoButton composable like this:
 ```kotlin
 private val venmoTokenizeCallback = VenmoTokenizeCallback { venmoResult ->
     when (venmoResult) {
@@ -260,7 +266,7 @@ private val venmoTokenizeCallback = VenmoTokenizeCallback { venmoResult ->
         }
     }
     // clear intent data
-    // requireActivity().intent.data = null
+    intent.data = null
 }
 
 VenmoButton(
@@ -279,10 +285,62 @@ After you've received a result, clear out the `intent.data` by setting it to nul
 intent.data = null
 ```
 
+## Card Fields
+
+The Braintree Android SDK provides a `CardFields` view that renders a complete card entry form with fields for card number, expiration date, and CVV. It handles input validation, card brand detection, and focus advancement between fields automatically.
+
+*Note:* Ensure you include the `UIComponents` module in your project to use this feature.
+
+If you would like to integrate `CardFields` into your mobile app, you can do so like this:
+
+```xml
+<com.braintreepayments.api.uicomponents.cardfields.CardFields
+    android:id="@+id/cardFields"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+<Button
+    android:id="@+id/payButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:enabled="false"
+    android:text="Pay" />
+```
+
+```kotlin
+class ExampleFragment : Fragment() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val cardFields = view.findViewById<CardFields>(R.id.cardFields)
+        val payButton = view.findViewById<Button>(R.id.payButton)
+
+        cardFields.initialize("[TOKENIZATION_KEY or CLIENT_TOKEN]")
+        
+        cardFields.setCardFieldsResultCallback { result ->
+            when (result) {
+                is CardFieldsResult.Success -> {
+                    // send result.nonce.string to your server to complete the transaction
+                }
+                is CardFieldsResult.Failure -> {
+                    // handle card tokenization error
+                }
+            }
+        }
+
+        // CardFields reports whether the form is valid; use it to enable your submit button
+        cardFields.setOnValidationChangedListener { isFormValid ->
+            payButton.isEnabled = isFormValid
+        }
+
+        // Tokenize the entered card details when the user taps Pay
+        payButton.setOnClickListener { cardFields.submit() }
+    }
+}
+```
+
 ## Help
 
 * [Read the docs](https://developer.paypal.com/braintree/docs/guides/overview)
-* [Check out the reference docs](https://braintree.github.io/braintree_android/index.html)
+* [Check out the reference docs](https://braintree.github.io/braintree_android/current/)
 * Find a bug? [Open an issue](https://github.com/braintree/braintree_android/issues)
 * Want to contribute? [Check out contributing guidelines](CONTRIBUTING.md) and [submit a pull request](https://help.github.com/articles/creating-a-pull-request).
 

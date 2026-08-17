@@ -43,7 +43,6 @@ class VenmoButton @JvmOverloads constructor(
 
     private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
     private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
-    private val minDesiredWidth = resources.getDimension(R.dimen.pay_button_min_width).toInt()
 
     /**
      * The Venmo client used to create payment auth requests and tokenize results.
@@ -71,6 +70,7 @@ class VenmoButton @JvmOverloads constructor(
         }
         setupBackground()
         applyStyle()
+        setMinimumSize()
     }
 
     /**
@@ -242,10 +242,9 @@ class VenmoButton @JvmOverloads constructor(
         focusIndicatorDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
         val layers = arrayOf(focusIndicatorDrawable, gradientDrawable)
         val layerDrawable = LayerDrawable(layers)
-        val focusPadding = 2 * resources.getDimension(R.dimen.pay_button_focus_border).toInt()
+        val focusPadding = resources.getDimension(R.dimen.pay_button_focus_padding).toInt()
         layerDrawable.setLayerInset(1, focusPadding, focusPadding, focusPadding, focusPadding)
         background = layerDrawable
-        minWidth = minDesiredWidth
     }
 
     private fun applyStyle() {
@@ -297,8 +296,18 @@ class VenmoButton @JvmOverloads constructor(
         }
     }
 
+    private fun setMinimumSize() {
+        minimumHeight = desiredHeight
+        val logoDrawable = logo ?: return
+        val fullButtonFocusPadding = resources.getDimension(R.dimen.pay_button_focus_padding).toInt() * 2
+        val logoBufferPadding = fullButtonFocusPadding
+        minimumWidth = logoDrawable.intrinsicWidth + fullButtonFocusPadding + logoBufferPadding
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(desiredWidth, desiredHeight)
+        val width = resolveSize(desiredWidth, widthMeasureSpec).coerceAtLeast(minimumWidth)
+        val height = resolveSize(desiredHeight, heightMeasureSpec).coerceAtLeast(minimumHeight)
+        setMeasuredDimension(width, height)
     }
 
     override fun onDraw(canvas: Canvas) {

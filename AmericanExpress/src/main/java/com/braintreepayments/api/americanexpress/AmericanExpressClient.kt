@@ -51,7 +51,14 @@ class AmericanExpressClient internal constructor(
         }
     }
 
-    private suspend fun getRewardsBalance(
+    /**
+     * Gets the rewards balance associated with a Braintree nonce. Only for American Express cards.
+     *
+     * @param nonce   A nonce representing a card that will be used to look up the rewards balance
+     * @param currencyIsoCode The currencyIsoCode to use. Example: 'USD'
+     * @return result [AmericanExpressResult]
+     */
+    suspend fun getRewardsBalance(
         nonce: String,
         currencyIsoCode: String
     ): AmericanExpressResult {

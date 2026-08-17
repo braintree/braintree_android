@@ -27,6 +27,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class DataCollectorUnitTest {
 
     private val testDispatcher = StandardTestDispatcher()
@@ -83,7 +84,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun payPalInstallationGUID_returnsInstallationIdentifier() {
+    fun `when getPayPalInstallationGUID is called, the installation GUID is returned from UUIDHelper`() {
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
 
@@ -91,7 +92,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun getClientMetadataId_configuresMagnesWithDefaultRequest() {
+    fun `when getClientMetadataId is called with a boolean consent flag, a request with the installation guid and consent flag is forwarded to magnes`() {
         val hasUserLocationConsent = true
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
@@ -113,7 +114,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun getClientMetadataId_configuresMagnesWithCustomRequestAndForwardsClientMetadataIdFromMagnesResult() {
+    fun `when getClientMetadataId is called with a custom request, the custom request is forwarded to magnes`() {
 
         val customRequest =
             DataCollectorInternalRequest(true)
@@ -137,7 +138,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun getClientMetadataId_forwardsClientMetadataIdFromMagnesResult() {
+    fun `when getClientMetadataId is called, the client metadata id from magnes is returned`() {
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
         val result = sut.getClientMetadataId(context, configuration, true)
@@ -146,7 +147,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_forwardsConfigurationFetchErrors() = runTest(testDispatcher) {
+    fun `when collectDeviceData is called and configuration fetch fails, callback receives a failure result with the configuration error`() = runTest(testDispatcher) {
         val configError = IOException("configuration error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configError)
@@ -166,7 +167,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_configuresMagnesWithDefaultRequest() = runTest(testDispatcher) {
+    fun `when collectDeviceData is called, the installation guid is forwarded to magnes and user location consent defaults to false`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
@@ -191,7 +192,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_with_request_configuresMagnesWithDefaultRequest() = runTest(testDispatcher) {
+    fun `when collectDeviceData is called with a request containing a risk correlation id, the risk correlation id is forwarded to magnes as the client metadata id`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
@@ -217,34 +218,8 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_configuresMagnesWithClientId() = runTest(testDispatcher) {
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .configurationSuccess(configuration)
-            .build()
-
-        val testScope = TestScope(testDispatcher)
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
-        sut.collectDeviceData(context, dataCollectorRequest, callback)
-        advanceUntilIdle()
-
-        val captor = slot<DataCollectorInternalRequest>()
-        verify {
-            magnesInternalClient.getClientMetadataId(
-                context,
-                configuration,
-                capture(captor)
-            )
-        }
-
-        val request = captor.captured
-        Assert.assertEquals(sampleInstallationGUID, request.applicationGuid)
-        Assert.assertEquals("risk_correlation_id", request.clientMetadataId)
-        Assert.assertFalse(request.hasUserLocationConsent)
-    }
-
-    @Test
     @Throws(Exception::class)
-    fun collectDeviceData_getsDeviceDataJSONWithCorrelationIdFromPayPal() = runTest(testDispatcher) {
+    fun `when collectDeviceData succeeds, callback receives a success result containing device data json with the correlation id from magnes`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
@@ -265,7 +240,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_without_DataCollectorRequest_sets_hasUserLocationConsent_to_false() =
+    fun `when collectDeviceData is called with a request that has no user location consent, the resulting magnes request has user location consent set to false`() =
         runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
@@ -291,7 +266,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_with_DataCollectorRequest_sets_correct_values_for_getClientMetadataId() =
+    fun `when collectDeviceData is called with a request that has user location consent true, the resulting magnes request has user location consent set to true`() =
         runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
@@ -318,7 +293,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
+    fun `when collectDeviceData configuration fetch throws a CancellationException, the callback is never invoked`() =
     runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
@@ -335,7 +310,7 @@ class DataCollectorUnitTest {
     // Tests for collectDeviceDataOnSuccess
 
     @Test
-    fun collectDeviceDataOnSuccess_forwardsConfigurationFetchErrors() = runTest(testDispatcher) {
+    fun `when collectDeviceDataOnSuccess is called and configuration fetch fails, callback receives a failure result with the configuration error`() = runTest(testDispatcher) {
         val configError = IOException("configuration error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configError)
@@ -355,7 +330,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceDataOnSuccess_configuresMagnesWithDefaultRequest() = runTest(testDispatcher) {
+    fun `when collectDeviceDataOnSuccess is called, the installation guid is forwarded to magnes and user location consent defaults to false`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
@@ -381,7 +356,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceDataOnSuccess_withRequest_configuresMagnesWithRiskCorrelationId() = runTest(testDispatcher) {
+    fun `when collectDeviceDataOnSuccess is called with a request containing a risk correlation id, the risk correlation id is forwarded to magnes as the client metadata id`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
@@ -409,7 +384,7 @@ class DataCollectorUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun collectDeviceDataOnSuccess_whenMagnesReturnsSuccess_callsCallbackWithDeviceData() = runTest(testDispatcher) {
+    fun `when collectDeviceDataOnSuccess succeeds, callback receives a success result containing device data json with the correlation id from magnes`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
@@ -430,7 +405,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceDataOnSuccess_whenMagnesReturnsSubmitError_callsCallbackWithFailure() = runTest(testDispatcher) {
+    fun `when collectDeviceDataOnSuccess magnes callback returns a submit error, callback receives a failure result with the submit error`() = runTest(testDispatcher) {
         val submitError = CallbackSubmitException.SubmitError
         every {
             magnesInternalClient.getClientMetadataIdWithCallback(
@@ -462,7 +437,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceDataOnSuccess_whenMagnesReturnsSubmitTimeout_callsCallbackWithFailure() = runTest(testDispatcher) {
+    fun `when collectDeviceDataOnSuccess magnes callback returns a submit timeout, callback receives a failure result with the submit timeout error`() = runTest(testDispatcher) {
         val submitTimeout = CallbackSubmitException.SubmitTimeout
         every {
             magnesInternalClient.getClientMetadataIdWithCallback(
@@ -494,7 +469,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceDataOnSuccess_withDataCollectorRequest_setsCorrectValuesForGetClientMetadataIdWithCallback() =
+    fun `when collectDeviceDataOnSuccess is called with a request that has user location consent true, the resulting magnes request has user location consent set to true`() =
         runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
@@ -522,7 +497,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceDataOnSuccess_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
+    fun `when collectDeviceDataOnSuccess configuration fetch throws a CancellationException, the callback is never invoked`() =
     runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))

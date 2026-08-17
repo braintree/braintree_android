@@ -6,7 +6,7 @@ import org.junit.Test
 class LocalPaymentAnalyticsUnitTest {
 
     @Test
-    fun testAnalyticsEvents_sendsExpectedEventNames() {
+    fun `analytics event constants match expected event name strings`() {
         assertEquals(
             "local-payment:start-payment:started",
             LocalPaymentAnalytics.PAYMENT_STARTED

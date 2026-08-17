@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
 @RunWith(RobolectricTestRunner::class)
 class GraphQLConfigurationUnitTest {
     @Test
-    fun fromJson_parsesFullInput() {
+    fun `when json contains url and features, GraphQLConfiguration is enabled with feature and url parsed`() {
         val input = JSONObject()
             .put("url", "https://example.com/graphql")
             .put(
@@ -24,7 +24,7 @@ class GraphQLConfigurationUnitTest {
     }
 
     @Test
-    fun fromJson_whenInputNull_returnsConfigWithDefaultValues() {
+    fun `when input json is null, GraphQLConfiguration is disabled with default values`() {
         val sut = GraphQLConfiguration(null)
         assertFalse(sut.isEnabled)
         assertFalse(sut.isFeatureEnabled(GraphQLConstants.Features.TOKENIZE_CREDIT_CARDS))
@@ -32,7 +32,7 @@ class GraphQLConfigurationUnitTest {
     }
 
     @Test
-    fun fromJson_whenInputEmpty_returnsConfigWithDefaultValues() {
+    fun `when input json is empty, GraphQLConfiguration is disabled with default values`() {
         val sut = GraphQLConfiguration(JSONObject())
         assertFalse(sut.isEnabled)
         assertFalse(sut.isFeatureEnabled(GraphQLConstants.Features.TOKENIZE_CREDIT_CARDS))

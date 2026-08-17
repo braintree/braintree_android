@@ -8,7 +8,6 @@
     <string name="cvv_overlay_body">The CVV is the 3 or 4-digit number on the back of your card</string>
     <string name="expiration_hint">Expiration (MM/YY)</string>
     <string name="expiration_hint_accessibility">Expiration date, two digit month and two digit year</string>
-    <string name="expiration_invalid_month_error">Invalid month. Enter a value between 01 and 12.</string>
     <string name="card_icon_unknown">Unknown Card Brand</string>
     <string name="card_icon_visa">Visa</string>
     <string name="card_icon_mastercard">Mastercard</string>

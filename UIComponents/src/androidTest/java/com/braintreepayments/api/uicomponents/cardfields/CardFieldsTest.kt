@@ -284,6 +284,87 @@ class CardFieldsTest {
         }
     }
 
+    @Test
+    fun cardFields_showsCvvError_whenSwitchingFromAmexToVisa() {
+        launchActivity().use { scenario ->
+            // Enter an Amex card with a valid 4-digit CVV
+            scenario.onActivity { activity ->
+                activity.cardFields.cardNumberEditText().setText("378282246310005")
+                activity.cardFields.cvvEditText().also { cvv ->
+                    cvv.requestFocus()
+                    cvv.setText("1234")
+                }
+            }
+            waitForMain()
+            // Switch to Visa — brand changes, 4-digit CVV is now too long (Visa requires 3)
+            scenario.onActivity { activity ->
+                activity.cardFields.cardNumberEditText().setText("4111111111111111")
+            }
+            waitForMain()
+            // Blur CVV to trigger validation against the new brand
+            scenario.onActivity { activity ->
+                activity.cardFields.expirationEditText().requestFocus()
+            }
+            waitForMain()
+            scenario.onActivity { activity ->
+                val errorLabel = activity.cardFields.cvvErrorLabel()
+                assertTrue(errorLabel.visibility == View.VISIBLE)
+                assertTrue(errorLabel.text.isNotEmpty())
+            }
+        }
+    }
+
+    // endregion
+
+    // region Configuration change (rotation)
+
+    @Test
+    fun cardFields_payButton_remainsEnabled_afterConfigurationChange() {
+        launchActivity().use { scenario ->
+            scenario.onActivity { activity ->
+                activity.cardFields.cardNumberEditText().setText("4111111111111111")
+                activity.cardFields.expirationEditText().setText("1245")
+                activity.cardFields.cvvEditText().also { cvv ->
+                    cvv.setText("123")
+                    cvv.clearFocus()
+                }
+            }
+            waitForMain()
+            scenario.onActivity { activity ->
+                assertTrue("Pay button should be enabled before rotation", activity.payButton.isEnabled)
+            }
+
+            scenario.recreate()
+            waitForMain()
+
+            scenario.onActivity { activity ->
+                assertTrue("Pay button should remain enabled after rotation", activity.payButton.isEnabled)
+            }
+        }
+    }
+
+    @Test
+    fun cardFields_payButton_remainsDisabled_afterConfigurationChange_whenFormIsInvalid() {
+        launchActivity().use { scenario ->
+            scenario.onActivity { activity ->
+                activity.cardFields.cardNumberEditText().setText("4111111111111111")
+                activity.cardFields.expirationEditText().setText("1245")
+                // CVV intentionally left empty — form is invalid
+            }
+            waitForMain()
+            scenario.onActivity { activity ->
+                assertFalse("Pay button should be disabled before rotation", activity.payButton.isEnabled)
+            }
+
+            scenario.recreate()
+            waitForMain()
+
+            scenario.onActivity { activity ->
+                assertFalse("Pay button should remain disabled after rotation", activity.payButton.isEnabled)
+            }
+        }
+    }
+
     // endregion
 
     // region Submit before initialize

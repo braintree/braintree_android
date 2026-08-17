@@ -42,19 +42,15 @@ class CardClient internal constructor(
     )
 
     /**
-     * Create a [CardNonce].
+     * Creates a [CardNonce].
      *
      * The tokenization result is returned via a [CardTokenizeCallback] callback.
      *
-     * On success, the [CardTokenizeCallback.onCardResult] method will be
-     * invoked with a [CardResult.Success] including a nonce.
+     * On success the [CardTokenizeCallback.onCardResult] method will be
+     * invoked with a [CardResult.Success] containing a nonce.
      *
-     * If creation fails validation, the [CardTokenizeCallback.onCardResult]
-     * method will be invoked with a [CardResult.Failure] including an exception.
-     *
-     * If an error not due to validation (server error, network issue, etc.) occurs, the
-     * [CardTokenizeCallback.onCardResult] method will be invoked with a
-     * [CardResult.Failure] with an [Exception] describing the error.
+     * On failure the [CardTokenizeCallback.onCardResult] method will be
+     * invoked with a [CardResult.Failure] containing an exception.
      *
      * @param card     [Card]
      * @param callback [CardTokenizeCallback]
@@ -66,7 +62,17 @@ class CardClient internal constructor(
         }
     }
 
-    private suspend fun tokenize(card: Card): CardResult {
+    /**
+     * Creates a [CardNonce].
+     *
+     * On success [CardResult.Success] containing a [CardNonce] is returned.
+     *
+     * On failure [CardResult.Failure] containing an exception is returned.
+     *
+     * @param card [Card]
+     * @return [CardResult]
+     */
+    suspend fun tokenize(card: Card): CardResult {
         analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_STARTED)
         return try {

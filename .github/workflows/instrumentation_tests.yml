@@ -40,3 +40,61 @@ jobs:
           arch: x86_64
           profile: pixel_7_pro
           script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
+
+  test_android_17:
+    runs-on: ubuntu-latest
+    env:
+      ORG_GRADLE_PROJECT_org.gradle.jvmargs: "-Xmx4096m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
+    strategy:
+      fail-fast: false
+      matrix:
+        api-level: [ "37.0" ]  # Preview API: emulator runner/system image requires quoted "37.0" format
+        target: [ playstore_ps16k ]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: run tests
+        id: run_tests
+        uses: reactivecircus/android-emulator-runner@v2
+        continue-on-error: true
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
+          arch: x86_64
+          profile: pixel_7_pro
+          emulator-options: >
+            -no-window
+            -gpu auto
+            -dns-server 8.8.8.8
+            -noaudio
+            -no-boot-anim
+            -camera-back none
+            -memory 4096
+            -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
+          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
+
+      - name: retry tests
+        if: steps.run_tests.outcome == 'failure'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
+          arch: x86_64
+          profile: pixel_7_pro
+          emulator-options: >
+            -no-window
+            -gpu auto
+            -dns-server 8.8.8.8
+            -noaudio
+            -no-boot-anim
+            -camera-back none
+            -memory 4096
+            -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
+          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace

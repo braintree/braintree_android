@@ -14,7 +14,7 @@ import org.robolectric.RobolectricTestRunner
 class ErrorsWithResponseUnitTest {
 
     @Test
-    fun constructor_parsesErrorsCorrectly() {
+    fun `constructor parses field and message errors from credit card error response`() {
         val response = Fixtures.ERRORS_CREDIT_CARD_ERROR_RESPONSE
         val errorWithResponse = ErrorWithResponse(422, response)
         assertEquals("Credit card is invalid", errorWithResponse.message)
@@ -56,7 +56,7 @@ class ErrorsWithResponseUnitTest {
     }
 
     @Test
-    fun constructor_handlesTopLevelErrors() {
+    fun `constructor parses top level error message and single field error`() {
         val topLevelError = Fixtures.ERRORS_AUTH_FINGERPRINT_ERROR
         val errorWithResponse = ErrorWithResponse(422, topLevelError)
         assertEquals("Authorization fingerprint is invalid", errorWithResponse.message)
@@ -64,7 +64,7 @@ class ErrorsWithResponseUnitTest {
     }
 
     @Test
-    fun constructor_canHandleMultipleCategories() {
+    fun `constructor parses errors across multiple field categories`() {
         val errors = Fixtures.ERRORS_COMPLEX_ERROR_RESPONSE
         val errorWithResponse = ErrorWithResponse(422, errors)
         assertEquals(3, errorWithResponse.errorFor("creditCard")?.fieldErrors?.size)
@@ -73,7 +73,7 @@ class ErrorsWithResponseUnitTest {
     }
 
     @Test
-    fun constructor_doesNotBlowUpParsingBadJson() {
+    fun `when response is invalid json, constructor sets message to parsing error failed`() {
         val badJson = Fixtures.RANDOM_JSON
         val errorWithResponse = ErrorWithResponse(422, badJson)
         assertEquals("Parsing error response failed", errorWithResponse.message)
@@ -81,7 +81,7 @@ class ErrorsWithResponseUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun fromJson_parsesErrorsCorrectly() {
+    fun `fromJson parses field and message errors from credit card error response`() {
         val response = Fixtures.ERRORS_CREDIT_CARD_ERROR_RESPONSE
         val errorWithResponse = ErrorWithResponse.fromJson(response)
         assertEquals("Credit card is invalid", errorWithResponse.message)
@@ -102,12 +102,12 @@ class ErrorsWithResponseUnitTest {
 
     @Test(expected = JSONException::class)
     @Throws(JSONException::class)
-    fun fromJson_throwsExceptionIfJsonParsingFails() {
+    fun `when json parsing fails, fromJson throws JSONException`() {
         ErrorWithResponse.fromJson(Fixtures.RANDOM_JSON)
     }
 
     @Test
-    fun fromGraphQLJson_parsesErrorsCorrectly() {
+    fun `fromGraphQLJson parses field and message errors from credit card error response`() {
         val response = Fixtures.ERRORS_GRAPHQL_CREDIT_CARD_ERROR
         val errorWithResponse = ErrorWithResponse.fromGraphQLJson(response)
         assertEquals("Input is invalid.", errorWithResponse.message)
@@ -127,7 +127,7 @@ class ErrorsWithResponseUnitTest {
     }
 
     @Test
-    fun fromGraphQLJson_parsesGraphQLCoercionErrorsCorrectly() {
+    fun `fromGraphQLJson parses coercion error message`() {
         val response = Fixtures.ERRORS_GRAPHQL_COERCION_ERROR
         val errorWithResponse = ErrorWithResponse.fromGraphQLJson(response)
         assertEquals(
@@ -138,14 +138,14 @@ class ErrorsWithResponseUnitTest {
     }
 
     @Test
-    fun fromGraphQLJson_doesNotBlowUpParsingBadJson() {
+    fun `when response is invalid json, fromGraphQLJson sets message to parsing error failed`() {
         val badJson = Fixtures.RANDOM_JSON
         val errorWithResponse = ErrorWithResponse.fromGraphQLJson(badJson)
         assertEquals("Parsing error response failed", errorWithResponse.message)
     }
 
     @Test
-    fun REST_tokenizeCardDuplicate() {
+    fun `constructor parses duplicate card error code from REST error response`() {
         val errorWithResponse = ErrorWithResponse(422, Fixtures.ERRORS_CREDIT_CARD_DUPLICATE)
         assertEquals(
             81724, errorWithResponse.errorFor("creditCard")?.errorFor("number")?.code
@@ -153,7 +153,7 @@ class ErrorsWithResponseUnitTest {
     }
 
     @Test
-    fun GraphQL_tokenizeCardDuplicate() {
+    fun `fromGraphQLJson parses duplicate card error code from GraphQL error response`() {
         val errorWithResponse =
             ErrorWithResponse.fromGraphQLJson(Fixtures.ERRORS_GRAPHQL_CREDIT_CARD_DUPLICATE_ERROR)
         assertEquals(
@@ -163,7 +163,7 @@ class ErrorsWithResponseUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun parcelsCorrectly() {
+    fun `writeToParcel and createFromParcel preserve statusCode, message, errorResponse and fieldErrors`() {
         val error = ErrorWithResponse.fromJson(Fixtures.ERRORS_CREDIT_CARD_ERROR_RESPONSE)
         val parcel = Parcel.obtain()
         error.writeToParcel(parcel, 0)

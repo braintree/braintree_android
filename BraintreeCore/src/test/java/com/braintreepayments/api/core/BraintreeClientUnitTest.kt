@@ -33,6 +33,7 @@ import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class BraintreeClientUnitTest {
 
     private lateinit var authorization: Authorization
@@ -77,7 +78,7 @@ class BraintreeClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun configuration_onAuthorizationAndConfigurationLoadSuccess_forwardsResult() = runTest(testDispatcher) {
+    fun `when configuration load succeeds, getConfiguration returns the loaded configuration`() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -95,7 +96,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun configuration_forwardsConfigurationLoaderError() = runTest(testDispatcher) {
+    fun `when configuration load fails, getConfiguration throws the configuration loader error`() = runTest(testDispatcher) {
         val configFetchError = Exception("config fetch error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(configFetchError)
@@ -116,7 +117,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun prefetchConfiguration_whenConfigurationLoaderThrowsJSONException_doesNotCrash() = runTest(testDispatcher) {
+    fun `when configuration loader throws JSONException during prefetch, BraintreeClient does not crash`() = runTest(testDispatcher) {
         val jsonException = JSONException("malformed JSON")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(jsonException)
@@ -132,7 +133,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun configuration_whenInvalidAuth_callsBackAuthError() = runTest(testDispatcher) {
+    fun `when authorization is invalid, getConfiguration throws the auth error`() = runTest(testDispatcher) {
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(expectedAuthException)
             .build()
@@ -153,7 +154,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendGET_onGetConfigurationSuccess_forwardsRequestToHttpClient() = runTest(testDispatcher) {
+    fun `when getConfiguration succeeds, sendGET forwards the request to httpClient`() = runTest(testDispatcher) {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -179,7 +180,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendGET_onGetConfigurationFailure_forwardsErrorToCallback() = runTest(testDispatcher) {
+    fun `when getConfiguration fails, sendGET throws the configuration error`() = runTest(testDispatcher) {
         val configError = Exception("configuration error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(configError)
@@ -200,7 +201,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendGET_whenInvalidAuth_callsBackAuthError() = runTest(testDispatcher) {
+    fun `when authorization is invalid, sendGET throws the auth error`() = runTest(testDispatcher) {
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(expectedAuthException)
             .build()
@@ -221,7 +222,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() = runTest(testDispatcher) {
+    fun `when getConfiguration succeeds, sendPOST forwards the request to httpClient`() = runTest(testDispatcher) {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -259,7 +260,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendPOST_onGetConfigurationFailure_throwsException() = runTest(testDispatcher) {
+    fun `when getConfiguration fails, sendPOST throws the configuration error`() = runTest(testDispatcher) {
         val exception = Exception("configuration error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(exception)
@@ -280,7 +281,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun `sendPOST defaults additionalHeaders to an empty map`() = runTest(testDispatcher) {
+    fun `when sendPOST is called without additionalHeaders, an empty map is used`() = runTest(testDispatcher) {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -322,7 +323,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun `sendPOST sends additionalHeaders to httpClient post`() = runTest(testDispatcher) {
+    fun `when sendPOST is called with additionalHeaders, they are forwarded to httpClient post`() = runTest(testDispatcher) {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -366,7 +367,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendPOST_whenInvalidAuth_callsBackAuthError() = runTest(testDispatcher) {
+    fun `when authorization is invalid, sendPOST throws the auth error`() = runTest(testDispatcher) {
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(expectedAuthException)
             .build()
@@ -387,7 +388,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendGraphQLPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() = runTest(testDispatcher) {
+    fun `when getConfiguration succeeds, sendGraphQLPOST forwards the request to graphQLClient`() = runTest(testDispatcher) {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -422,7 +423,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendGraphQLPOST_onGetConfigurationFailure_forwardsErrorToCallback() = runTest(testDispatcher) {
+    fun `when getConfiguration fails, sendGraphQLPOST throws the configuration error`() = runTest(testDispatcher) {
         val exception = Exception("configuration error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(exception)
@@ -444,7 +445,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendGraphQLPOST_whenInvalidAuth_callsBackAuthError() = runTest(testDispatcher) {
+    fun `when authorization is invalid, sendGraphQLPOST throws the auth error`() = runTest(testDispatcher) {
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(expectedAuthException)
             .build()
@@ -466,7 +467,7 @@ class BraintreeClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun sendAnalyticsEvent_sendsEventToAnalyticsClient() {
+    fun `when sendAnalyticsEvent is called, event is sent to analyticsClient`() {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -481,7 +482,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun manifestActivityInfo_forwardsInvocationToManifestValidator() {
+    fun `when getManifestActivityInfo is called, invocation is forwarded to manifestValidator`() {
         val activityInfo = ActivityInfo()
         every {
             manifestValidator.getActivityInfo(applicationContext, FragmentActivity::class.java)
@@ -492,14 +493,14 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun returnUrlScheme_returnsUrlSchemeBasedOnApplicationIdByDefault() {
+    fun `when no returnUrlScheme is provided in constructor, getReturnUrlScheme is based on application id`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val sut = BraintreeClient(context, authorization.toString())
         assertEquals("com.braintreepayments.api.core.test.braintree", sut.getReturnUrlScheme())
     }
 
     @Test
-    fun returnUrlScheme_returnsUrlSchemeDefinedInConstructor() {
+    fun `when a returnUrlScheme is provided in constructor, getReturnUrlScheme returns it`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val returnUrlScheme = "custom-url-scheme"
         val sut = BraintreeClient(
@@ -512,7 +513,7 @@ class BraintreeClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun reportCrash_reportsCrashViaAnalyticsClient() = runTest(testDispatcher) {
+    fun `when reportCrash is called, crash is reported via analyticsClient`() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -534,7 +535,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun reportCrash_whenConfigurationLoaderThrowsCancellationException_doesNotCrash() =
+    fun `when configuration loader throws CancellationException, reportCrash does not crash`() =
     runTest(testDispatcher) {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
@@ -570,7 +571,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun `when BraintreeClient is initialized and appLinkReturnUri is null, it is not set on the MerchantRepository`() {
+    fun `when BraintreeClient is initialized and appLinkReturnUri is null, appLinkReturnUri is not set on the MerchantRepository`() {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)

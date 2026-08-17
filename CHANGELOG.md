@@ -1,5 +1,81 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ShopperInsights
+    * Fix response handling bug that buries customer session create and update errors
+
+## 5.31.0 (2026-08-03)
+
+* PayPal
+    * Collect device information to improve PayPal app switch eligibility when it's enabled
+* BraintreeCore
+    * Update Browser Switch version to 3.6.0
+
+## 5.30.0 (2026-07-21)
+
+* General
+    * Remove `VisaCheckout` module. Visa Checkout is no longer supported.
+    * Deprecate `Configuration#isVisaCheckoutEnabled`, `Configuration#visaCheckoutApiKey`,
+      `Configuration#visaCheckoutExternalClientId`, and `Configuration#visaCheckoutSupportedNetworks`.
+      These will be removed in the next major version.
+* Build
+  * Drop Gradle Toolchains usage
+* AmericanExpress
+    * Expose `getRewardsBalance` as a public suspend function
+* Card
+    * Expose `tokenize` as a public suspend function
+* GooglePay
+    * Expose `isReadyToPay` as a public suspend function
+    * Expose `getTokenizationParameters` as a public suspend function
+    * Expose `createPaymentAuthRequest` as a public suspend function
+* LocalPayment
+    * Expose `createPaymentAuthRequest` as a public suspend function
+    * Expose `tokenize` as a public suspend function
+* PayPal
+    * Expose `createPaymentAuthRequest` as a public suspend function
+    * Expose `tokenize` as a public suspend function
+* SEPADirectDebit
+    * Expose `createPaymentAuthRequest` as a public suspend function
+    * Expose `tokenize` as a public suspend function
+* ShopperInsights
+    * Expose `createCustomerSession` as a public suspend function
+    * Expose `updateCustomerSession` as a public suspend function
+    * Expose `generateCustomerRecommendations` as a public suspend function
+* ThreeDSecure
+    * Expose `createPaymentAuthRequest` as a public suspend function
+    * Expose `prepareLookup` as a public suspend function
+    * Expose `initializeChallengeWithLookupResponse` as a public suspend function
+    * Expose `tokenize` as a public suspend function
+* Venmo
+    * Expose `createPaymentAuthRequest` as a public suspend function
+    * Expose `tokenize` as a public suspend function
+* BraintreeCore
+    * Update Android Gradle Plugin version to 8.13.2
+    * Update compileSdkVersion and targetSdkVersion to 37
+* UIComponents
+    * `PayPalButton` and `VenmoButton` now honor an explicit `layout_width`/`layout_height` or `match_parent` but defaults to the standard size for `wrap_content`
+        * Note: if your layout previously set an explicit size or `match_parent` on these buttons, the button will now render at that size
+  
+## 5.29.0 (2026-06-30)
+* GooglePay
+    * Remove requirement for `GooglePayActivity` to be declared in the Android manifest (fixes #1572)
+        * Note: If upgrading from v4, any manual `GooglePayActivity` declaration in your app's manifest should be removed
+    * Deprecate unused `GooglePayClient.EXTRA_ENVIRONMENT` and `GooglePayClient.EXTRA_PAYMENT_DATA_REQUEST` constants
+    * Update Google Pay dependency (play-services-wallet) to version 19.5.0
+* UIComponents
+    * Add `CardFields` to generate a premade credit card form for submitting credit card tokenize requests
+
+## 5.28.1 (2026-06-01)
+
+* PayPal
+    * Simplify return URLs used during PayPal browser switch flows
+
+## 5.28.0 (2026-05-28)
+
+* BraintreeCore
+    * Allow fetching of `Configuration` to query supported integrations and card types (fixes #1302)
+
 ## 5.27.0 (2026-05-18)
 
 * Venmo

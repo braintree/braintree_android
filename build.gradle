@@ -47,14 +47,14 @@ allprojects {
     }
 }
 
-version '5.27.1-SNAPSHOT'
+version '5.31.1-SNAPSHOT'
 group 'com.braintreepayments'
 ext {
-    compileSdkVersion = 36
+    compileSdkVersion = 37
     minSdkVersion = 23
     minSdkVersionPayPalMessaging = 23
-    versionCode = 223
-    targetSdkVersion = 36
+    versionCode = 228
+    targetSdkVersion = 37
     versionName = version
 }
 
@@ -129,8 +129,17 @@ subprojects {
 }
 
 dokkaHtmlMultiModule.configure {
-    // redirect dokka output to GitHub pages root directory
-    outputDirectory.set(project.file("docs"))
+    // generate into a gitignored build directory; scripts/publish-docs.sh publishes
+    // this to the gh-pages branch instead of committing it into main
+    outputDirectory.set(project.file("build/dokkaDocs"))
+}
+
+subprojects {
+    plugins.withId('org.jetbrains.dokka') {
+        dependencies {
+            dokkaHtmlPartialPlugin 'com.braintreepayments.dokka:DokkaRestrictToPlugin:1.0.0'
+        }
+    }
 }
 
 task changeGradleReleaseVersion {

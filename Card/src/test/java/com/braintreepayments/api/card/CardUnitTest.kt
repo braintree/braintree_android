@@ -17,6 +17,7 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertFailsWith
 
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class CardUnitTest {
 
     private val CREDIT_CARD_KEY = "creditCard"
@@ -79,7 +80,7 @@ class CardUnitTest {
             "}"
 
     @Test
-    fun buildJSON_correctlyBuildsACardTokenizationPayload() {
+    fun `when buildJSON is called with all card and billing address fields set, builds full tokenization payload`() {
         val card = Card(
             number = VISA,
             expirationMonth = "01",
@@ -138,7 +139,7 @@ class CardUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun buildJSON_nestsAddressCorrectly() {
+    fun `when buildJSON is called with only postal code set, omits other billing address fields`() {
         val card = Card()
         card.postalCode = "60606"
 
@@ -165,7 +166,7 @@ class CardUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun buildJSON_usesDefaultInfoForMetadata() {
+    fun `when buildJSON is called with integration and source set, includes them in metadata`() {
         val card = Card(integration = IntegrationType.CUSTOM, source = "form")
 
         val metadata = card.buildJSON()
@@ -179,7 +180,7 @@ class CardUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun buildJSON_usesDefaultCardSource() {
+    fun `when buildJSON is called with source set, includes source in meta object`() {
         val card = Card(source = "form")
         val jsonObject = card.buildJSON()
 
@@ -189,18 +190,7 @@ class CardUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun buildJSON_setsCardSource() {
-        val card = Card(source = "form")
-
-        val jsonObject = card.buildJSON()
-
-        assertEquals("form",
-            jsonObject.getJSONObject("_meta").getString("source"))
-    }
-
-    @Test
-    @Throws(JSONException::class)
-    fun buildJSON_setsIntegrationMethod() {
+    fun `when buildJSON is called with integration set, sets integration field in metadata`() {
         val card = Card(integration = IntegrationType.CUSTOM)
 
         val metadata = card.buildJSON().getJSONObject(MetadataBuilder.META_KEY)
@@ -210,7 +200,7 @@ class CardUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun buildJSON_whenValidateIsNotSet_defaultsToFalse() {
+    fun `when buildJSON is called and shouldValidate is not set, validate option defaults to false`() {
         val card = Card()
         val json = card.buildJSON().getJSONObject(CREDIT_CARD_KEY)
 
@@ -219,7 +209,7 @@ class CardUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun buildJSON_includesValidateOptionWhenSetToTrue() {
+    fun `when buildJSON is called and shouldValidate is true, validate option is true`() {
         val card = Card(shouldValidate = true)
 
         val json = card.buildJSON().getJSONObject(CREDIT_CARD_KEY)
@@ -229,7 +219,7 @@ class CardUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun buildJSON_includesValidateOptionWhenSetToFalse() {
+    fun `when buildJSON is called and shouldValidate is false, validate option is false`() {
         val card = Card(shouldValidate = false)
 
         val builtCard = card.buildJSON().getJSONObject(CREDIT_CARD_KEY)
@@ -239,7 +229,7 @@ class CardUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun buildJSON_doesNotIncludeEmptyStrings() {
+    fun `when buildJSON is called with an empty card, omits empty string fields, keeps options object, and excludes billing address`() {
         val card = Card()
 
         assertEquals(1, card.buildJSON().getJSONObject(CREDIT_CARD_KEY).length())
@@ -249,7 +239,7 @@ class CardUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun buildJSON_whenAuthenticationInsightRequestedIsTrue_requestsAuthenticationInsight() {
+    fun `when buildJSON is called and isAuthenticationInsightRequested is true with merchant account id, includes authenticationInsight and merchantAccountId`() {
         val card = Card()
         card.isAuthenticationInsightRequested = true
         card.merchantAccountId = "merchant_account_id"
@@ -262,7 +252,7 @@ class CardUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun buildJSON_whenAuthenticationInsightRequestedIsFalse_doesNotRequestsAuthenticationInsight() {
+    fun `when buildJSON is called and isAuthenticationInsightRequested is false, omits authenticationInsight field`() {
         val card = Card(isAuthenticationInsightRequested = false)
 
         val json = card.buildJSON()
@@ -272,7 +262,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_correctlyBuildsACardTokenization() {
+    fun `when buildJSONForGraphQL is called with all card and billing address fields set, builds full graphQL tokenization payload`() {
         val card = Card(
             number = VISA,
             expirationMonth = "01",
@@ -330,7 +320,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_nestsAddressCorrectly() {
+    fun `when buildJSONForGraphQL is called with only postal code set, omits other billing address fields`() {
         val card = Card(postalCode = "60606")
 
         val json = card.buildJSONForGraphQL()
@@ -356,7 +346,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_usesDefaultInfoForMetadata() {
+    fun `when buildJSONForGraphQL is called with integration and source set, includes them in clientSdkMetadata`() {
         val card = Card(integration = IntegrationType.CUSTOM, source = "form")
 
         val json = card.buildJSONForGraphQL()
@@ -368,7 +358,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_usesDefaultCardSource() {
+    fun `when buildJSONForGraphQL is called with source set, includes source in clientSdkMetadata`() {
         val card = Card(source = "form")
 
         val json = card.buildJSONForGraphQL()
@@ -378,18 +368,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_setsCardSource() {
-        val card = Card(source = "test-source")
-
-        val json = card.buildJSONForGraphQL()
-
-        assertEquals("test-source",
-            json.getJSONObject("clientSdkMetadata").getString("source"))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun buildJSONForGraphQL_setsIntegrationMethod() {
+    fun `when buildJSONForGraphQL is called with integration set, sets integration field in clientSdkMetadata`() {
         val card = Card(integration = IntegrationType.CUSTOM)
 
         val json = card.buildJSONForGraphQL()
@@ -400,7 +379,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_whenValidateNotSet_defaultsToFalse() {
+    fun `when buildJSONForGraphQL is called and shouldValidate is not set, validate option defaults to false`() {
         val card = Card()
 
         val json = card.buildJSONForGraphQL()
@@ -413,7 +392,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_whenValidateSetToTrue_includesValidationOptionTrue() {
+    fun `when buildJSONForGraphQL is called and shouldValidate is true, validate option is true`() {
         val card = Card(shouldValidate = true)
 
         val json = card.buildJSONForGraphQL()
@@ -426,7 +405,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_whenValidateSetToFalse_includesValidationOptionFalse() {
+    fun `when buildJSONForGraphQL is called and shouldValidate is false, validate option is false`() {
         val card = Card(shouldValidate = false)
 
         val json = card.buildJSONForGraphQL()
@@ -439,7 +418,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_doesNotIncludeEmptyStrings() {
+    fun `when buildJSONForGraphQL is called with an empty card, produces empty credit card object`() {
         val card = Card()
 
         val json = card.buildJSONForGraphQL()
@@ -452,7 +431,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_withMerchantAccountId_andAuthInsightRequested_requestsAuthInsight() {
+    fun `when buildJSONForGraphQL is called and merchant account id is set and isAuthenticationInsightRequested is true, includes authenticationInsightInput and auth insight query`() {
         val card = Card(merchantAccountId = "merchant-account-id", isAuthenticationInsightRequested = true)
 
         val json = card.buildJSONForGraphQL()
@@ -467,7 +446,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_withMerchantAccountId_andNoAuthInsightRequested_doesNotRequestInsight() {
+    fun `when buildJSONForGraphQL is called and merchant account id is set and isAuthenticationInsightRequested is false, omits authenticationInsightInput and uses base query`() {
         val card = Card()
         card.merchantAccountId = "merchant-account-id"
         card.isAuthenticationInsightRequested = false
@@ -481,7 +460,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_whenMerchantAccountIdIsNull_andAuthInsightRequested_throwsException() {
+    fun `when buildJSONForGraphQL is called and merchant account id is null and isAuthenticationInsightRequested is true, throws BraintreeException`() {
         val card = Card()
         card.merchantAccountId = null
         card.isAuthenticationInsightRequested = true
@@ -496,7 +475,7 @@ class CardUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun buildJSONForGraphQL_withNullMerchantAccountId_andNoInsightRequested_doesNotRequestInsight() {
+    fun `when buildJSONForGraphQL is called and merchant account id is null and isAuthenticationInsightRequested is false, omits authenticationInsightInput and uses base query`() {
         val card = Card()
         card.merchantAccountId = null
         card.isAuthenticationInsightRequested = false

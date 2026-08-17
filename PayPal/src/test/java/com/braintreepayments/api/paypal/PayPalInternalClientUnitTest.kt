@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal
 
+import android.app.ActivityManager
 import android.content.Context
 import android.net.Uri
 import com.braintreepayments.api.core.AnalyticsParamRepository
@@ -50,11 +51,13 @@ import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class PayPalInternalClientUnitTest {
     private val testDispatcher = StandardTestDispatcher()
 
     private lateinit var context: Context
     private lateinit var configuration: Configuration
+    private lateinit var activityManager: ActivityManager
 
     private lateinit var clientToken: ClientToken
     private lateinit var tokenizationKey: TokenizationKey
@@ -74,6 +77,13 @@ class PayPalInternalClientUnitTest {
     @Throws(JSONException::class)
     fun beforeEach() {
         context = mockk(relaxed = true)
+        activityManager = mockk<ActivityManager>(relaxed = true)
+        every { context.getSystemService(Context.ACTIVITY_SERVICE) } returns activityManager
+        every { activityManager.getMemoryInfo(any()) } answers {
+            val memInfo = firstArg<ActivityManager.MemoryInfo>()
+            memInfo.availMem = 1024L * 1024L * 1024L
+            memInfo.totalMem = 4096L * 1024L * 1024L
+        }
 
         every { resolvePayPalUseCase() } returns false
 
@@ -160,8 +170,8 @@ class PayPalInternalClientUnitTest {
                 "currency_iso_code": "USD",
                 "intent": "authorize",
                 "authorization_fingerprint": "client-token-bearer",
-                "return_url": "https://example.com://onetouch/v1/success",
-                "cancel_url": "https://example.com://onetouch/v1/cancel",
+                "return_url": "https://example.com/success",
+                "cancel_url": "https://example.com/cancel",
                 "offer_pay_later": true,
                 "offer_paypal_credit": true,
                 "request_billing_agreement": true,
@@ -255,7 +265,7 @@ class PayPalInternalClientUnitTest {
         assertFalse(params.isVaultRequest)
         assertEquals(PayPalPaymentIntent.AUTHORIZE, params.intent)
         assertEquals("sample-merchant-account-id", params.merchantAccountId)
-        assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
+        assertEquals("https://example.com/success", params.successUrl)
         assertEquals("fake-token", params.contextId)
         assertEquals("sample-client-metadata-id", params.clientMetadataId)
         assertEquals(expectedUrl, params.approvalUrl)
@@ -271,14 +281,14 @@ class PayPalInternalClientUnitTest {
     private fun assertPayPalVaultParams(params: PayPalPaymentAuthRequestParams, expectedUrl: String) {
         assertTrue(params.isVaultRequest)
         assertEquals("sample-merchant-account-id", params.merchantAccountId)
-        assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
+        assertEquals("https://example.com/success", params.successUrl)
         assertEquals("fake-ba-token", params.contextId)
         assertEquals("sample-client-metadata-id", params.clientMetadataId)
         assertEquals(expectedUrl, params.approvalUrl)
     }
 
     @Test
-    fun sendRequest_withPayPalVaultRequest_sendsAllParameters() = runTest(testDispatcher) {
+    fun `when sendRequest is called with a vault request with shipping, request body includes all expected parameters`() = runTest(testDispatcher) {
 
         every { clientToken.bearer } returns "client-token-bearer"
         every { merchantRepository.authorization } returns clientToken
@@ -295,8 +305,8 @@ class PayPalInternalClientUnitTest {
 
         val expected = JSONObject()
             .put("authorization_fingerprint", "client-token-bearer")
-            .put("return_url", "https://example.com://onetouch/v1/success")
-            .put("cancel_url", "https://example.com://onetouch/v1/cancel")
+            .put("return_url", "https://example.com/success")
+            .put("cancel_url", "https://example.com/cancel")
             .put("offer_paypal_credit", true)
             .put("description", "Billing Agreement Description")
             .put(
@@ -323,7 +333,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_withPayPalVaultRequest_sendsAllParameters_with_deep_link() = runTest(testDispatcher) {
+    fun `when getReturnLinkUseCase returns a deep link, request body uses deep link return and cancel urls`() = runTest(testDispatcher) {
         every { getReturnLinkUseCase.invoke() } returns DeepLink("com.braintreepayments.demo")
 
         every { clientToken.bearer } returns "client-token-bearer"
@@ -369,7 +379,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_withPayPalCheckoutRequest_sendsAllParameters() = runTest(testDispatcher) {
+    fun `when sendRequest is called with a checkout request with all params, request body includes all expected parameters`() = runTest(testDispatcher) {
         every { clientToken.bearer } returns "client-token-bearer"
         every { merchantRepository.authorization } returns clientToken
 
@@ -387,7 +397,7 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun sendRequest_withTokenizationKey_sendsClientKeyParam() = runTest(testDispatcher) {
+    fun `when authorization is a tokenization key, request body includes client_key instead of authorization_fingerprint`() = runTest(testDispatcher) {
         every { tokenizationKey.bearer } returns "tokenization-key-bearer"
 
         val slot = slot<String>()
@@ -406,7 +416,7 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun sendRequest_withEmptyDisplayName_fallsBackToPayPalConfigurationDisplayName() = runTest(testDispatcher) {
+    fun `when displayName is empty, request body brand_name falls back to configuration display name`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns tokenizationKey
 
         val slot = slot<String>()
@@ -426,7 +436,7 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun sendRequest_withLocaleNotSpecified_omitsLocale() = runTest(testDispatcher) {
+    fun `when localeCode is null, request body omits locale_code`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns tokenizationKey
 
         val slot = slot<String>()
@@ -442,7 +452,7 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun sendRequest_withMerchantAccountIdNotSpecified_omitsMerchantAccountId() = runTest(testDispatcher) {
+    fun `when merchantAccountId is null, request body omits merchant_account_id`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns tokenizationKey
 
         val slot = slot<String>()
@@ -459,7 +469,7 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun sendRequest_withShippingAddressOverrideNotSpecified_sendsAddressOverrideFalse() = runTest(testDispatcher) {
+    fun `when shippingAddressOverride is null, request body address_override is false`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns tokenizationKey
 
         val slot = slot<String>()
@@ -479,7 +489,7 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun sendRequest_withShippingAddressSpecified_sendsAddressOverrideBasedOnShippingAddressEditability() =
+    fun `when shippingAddressOverride is set and not editable, request body address_override is true`() =
         runTest(testDispatcher) {
         every { clientToken.bearer } returns "client-token-bearer"
         every { merchantRepository.authorization } returns tokenizationKey
@@ -503,7 +513,7 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun sendRequest_withPayPalVaultRequest_omitsEmptyBillingAgreementDescription() = runTest(testDispatcher) {
+    fun `when billingAgreementDescription is empty, request body omits description`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns tokenizationKey
 
         val slot = slot<String>()
@@ -520,7 +530,7 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun sendRequest_withPayPalCheckoutRequest_fallsBackToPayPalConfigurationCurrencyCode() = runTest(testDispatcher) {
+    fun `when checkout request has no currencyCode, request body currency_iso_code falls back to configuration currency`() = runTest(testDispatcher) {
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL_INR)
         every { merchantRepository.authorization } returns tokenizationKey
 
@@ -537,7 +547,7 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun sendRequest_withPayPalCheckoutRequest_omitsEmptyLineItems() = runTest(testDispatcher) {
+    fun `when lineItems is empty, request body omits line_items`() = runTest(testDispatcher) {
 
         every { merchantRepository.authorization } returns tokenizationKey
 
@@ -553,7 +563,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() = runTest(testDispatcher) {
+    fun `when riskCorrelationId is set, clientMetadataId is set to riskCorrelationId`() = runTest(testDispatcher) {
         every {
             dataCollector.getClientMetadataId(
                 eq(context),
@@ -574,7 +584,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() = runTest(testDispatcher) {
+    fun `when riskCorrelationId is null, clientMetadataId is set from dataCollector`() = runTest(testDispatcher) {
         every {
             dataCollector.getClientMetadataId(
                 eq(context),
@@ -594,7 +604,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess() = runTest(testDispatcher) {
+    fun `when sendRequest succeeds for a vault request, result contains expected contextId and approvalUrl`() = runTest(testDispatcher) {
         every {
             dataCollector.getClientMetadataId(
                 eq(context),
@@ -626,7 +636,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenServerReturnsNonAppSwitchFlow_setsDidPayPalServerAttemptAppSwitchToFalse() =
+    fun `when server response does not indicate app switch, analyticsParamRepository didPayPalServerAttemptAppSwitch is set to false`() =
         runTest(testDispatcher) {
         every {
             dataCollector.getClientMetadataId(
@@ -650,7 +660,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess_returnsPayPalURL() =
+    fun `when server response contains a paypal redirect url, sendRequest returns that url as approvalUrl`() =
         runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
@@ -686,7 +696,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess_returnsApprovalURL() =
+    fun `when server response contains an approval url, sendRequest returns that url and contextId as-is`() =
         runTest(testDispatcher) {
 
         every { merchantRepository.authorization } returns clientToken
@@ -707,7 +717,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() = runTest(testDispatcher) {
+    fun `when sendRequest succeeds for a checkout request, result contains expected contextId and approvalUrl`() = runTest(testDispatcher) {
         every {
             dataCollector.getClientMetadataId(eq(context), eq(configuration), eq(true))
         } returns "sample-client-metadata-id"
@@ -734,7 +744,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_propagatesHttpErrors() = runTest(testDispatcher) {
+    fun `when braintreeClient sendPOST fails with IOException, sendRequest propagates that exception`() = runTest(testDispatcher) {
         val httpError = IOException("http error")
         every { getReturnLinkUseCase.invoke() } returns ReturnLinkResult.AppLink(Uri.parse("https://example.com"))
         every { merchantRepository.authorization } returns clientToken
@@ -748,7 +758,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_propagatesMalformedJSONResponseErrors() = runTest(testDispatcher) {
+    fun `when server response is malformed JSON, sendRequest propagates JSONException`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         val sut = createSutWithMocks(fixture = "{bad:")
 
@@ -759,7 +769,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_returnLinkResultFailure_forwardsError() = runTest(testDispatcher) {
+    fun `when getReturnLinkUseCase returns a failure, sendRequest propagates that error`() = runTest(testDispatcher) {
         val exception = BraintreeException()
         every { getReturnLinkUseCase.invoke() } returns ReturnLinkResult.Failure(exception)
         every { merchantRepository.authorization } returns clientToken
@@ -774,7 +784,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun tokenize_tokenizesWithApiClient() = runTest(testDispatcher) {
+    fun `when tokenize is called, apiClient tokenizeREST is invoked with the payPalAccount`() = runTest(testDispatcher) {
         val payPalAccount = mockk<PayPalAccount>(relaxed = true)
         val apiClient = mockk<ApiClient>(relaxed = true)
         coEvery { apiClient.tokenizeREST(any()) } returns
@@ -789,7 +799,7 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_returnsAccountNonce() = runTest(testDispatcher) {
+    fun `when apiClient tokenizeREST succeeds, tokenize returns the expected account nonce`() = runTest(testDispatcher) {
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTSuccess(
                 JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
@@ -806,7 +816,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenApiClientThrows_propagatesError() = runTest(testDispatcher) {
+    fun `when apiClient tokenizeREST throws, tokenize propagates that error`() = runTest(testDispatcher) {
         val error = IOException("error")
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTError(error)
@@ -823,7 +833,7 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun payPalDataCollector_passes_correct_arguments_to_getClientMetadataId() = runTest(testDispatcher) {
+    fun `when sendRequest is called, dataCollector getClientMetadataId is invoked with hasUserLocationConsent true`() = runTest(testDispatcher) {
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
 
         every { merchantRepository.authorization } returns clientToken
@@ -848,7 +858,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_withPayPalVaultRequestAndAppSwitchEnabled_addsAppSwitchParameters() = runTest(testDispatcher) {
+    fun `when vault request enables app switch, approvalUrl includes app switch query parameters`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { getAppSwitchUseCase.invoke() } returns true
@@ -873,7 +883,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_withPayPalCheckoutRequestAndAppSwitchEnabled_addsAppSwitchParameters() = runTest(testDispatcher) {
+    fun `when checkout request enables app switch, approvalUrl includes app switch query parameters`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { getAppSwitchUseCase.invoke() } returns true
@@ -899,7 +909,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenShouldOfferCredit_addsCreditQueryParameter() = runTest(testDispatcher) {
+    fun `when shouldOfferCredit is true, approvalUrl funding_source is credit`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { getAppSwitchUseCase.invoke() } returns true
@@ -921,7 +931,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenShouldOfferPayLater_addsPayLaterQueryParameter() = runTest(testDispatcher) {
+    fun `when shouldOfferPayLater is true, approvalUrl funding_source is pay later`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { getAppSwitchUseCase.invoke() } returns true
@@ -943,7 +953,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenPayPalAppNotInstalled_disablesAppSwitch() = runTest(testDispatcher) {
+    fun `when PayPal app is not installed, setAppSwitchUseCase is invoked with merchantEnabledAppSwitch false`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { deviceInspector.isPayPalInstalled() } returns false
@@ -964,7 +974,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenPayPalAppCannotHandleURL_disablesAppSwitch() = runTest(testDispatcher) {
+    fun `when resolvePayPalUseCase returns false, setAppSwitchUseCase is invoked with merchantEnabledAppSwitch false`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { deviceInspector.isPayPalInstalled() } returns true
@@ -985,7 +995,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenPayPalInstalledAndCanHandleURL_enablesAppSwitch() = runTest(testDispatcher) {
+    fun `when PayPal is installed and resolvePayPalUseCase returns true, setAppSwitchUseCase is invoked with merchantEnabledAppSwitch true`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { deviceInspector.isPayPalInstalled() } returns true
@@ -1006,7 +1016,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenEnablePayPalAppSwitchFalse_doesNotCheckPayPalInstallation() = runTest(testDispatcher) {
+    fun `when enablePayPalAppSwitch is false, PayPal installation is not checked`() = runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
 
@@ -1027,7 +1037,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenServerReturnsAppSwitchFlow_setsDidPayPalServerAttemptAppSwitchToTrue() =
+    fun `when server response indicates app switch, analyticsParamRepository didPayPalServerAttemptAppSwitch is set to true`() =
         runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
@@ -1052,7 +1062,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenMerchantEnablesAppSwitchButServerReturnsAppSwitchFalse_setsBothCorrectly() =
+    fun `when merchant enables app switch but server does not indicate app switch, merchantEnabledAppSwitch is true and appSwitchFlowFromPayPalResponse is false`() =
         runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
@@ -1076,4 +1086,130 @@ class PayPalInternalClientUnitTest {
             )
         }
     }
+
+    @Test
+    fun `sendRequest with app switch enabled injects device_info in app_switch_context`() =
+        runTest(testDispatcher) {
+            every { clientToken.bearer } returns "client-token-bearer"
+            every { merchantRepository.authorization } returns clientToken
+            every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+            every { deviceInspector.isPayPalInstalled() } returns true
+            every { resolvePayPalUseCase() } returns true
+            every { activityManager.getMemoryInfo(any()) } answers {
+                val memInfo = firstArg<ActivityManager.MemoryInfo>()
+                memInfo.availMem = 350L * 1024L * 1024L
+                memInfo.totalMem = 4096L * 1024L * 1024L
+            }
+
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+
+            val payPalRequest = PayPalCheckoutRequest("1.00", true).apply {
+                enablePayPalAppSwitch = true
+            }
+
+            sut.sendRequest(context, payPalRequest, configuration)
+
+            val actual = JSONObject(slot.captured)
+            val appSwitchContext = actual.getJSONObject("app_switch_context")
+            val deviceInfo = appSwitchContext.getJSONObject("device_info")
+            assertTrue(deviceInfo.has("model"))
+            assertEquals(350, deviceInfo.getInt("memory_available_mb"))
+            assertEquals(4096, deviceInfo.getInt("memory_total_mb"))
+        }
+
+    @Test
+    fun `sendRequest with app switch enabled and unavailable ActivityManager omits device_info`() =
+        runTest(testDispatcher) {
+            every { clientToken.bearer } returns "client-token-bearer"
+            every { merchantRepository.authorization } returns clientToken
+            every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+            every { deviceInspector.isPayPalInstalled() } returns true
+            every { resolvePayPalUseCase() } returns true
+            every { context.getSystemService(Context.ACTIVITY_SERVICE) } returns null
+
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+
+            val payPalRequest = PayPalCheckoutRequest("1.00", true).apply {
+                enablePayPalAppSwitch = true
+            }
+            sut.sendRequest(context, payPalRequest, configuration)
+
+            val actual = JSONObject(slot.captured)
+            assertFalse(actual.has("app_switch_context"))
+        }
+
+    @Test
+    fun `sendRequest with app switch disabled does not inject app_switch_context`() =
+        runTest(testDispatcher) {
+            every { clientToken.bearer } returns "client-token-bearer"
+            every { merchantRepository.authorization } returns clientToken
+            every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+
+            val payPalRequest = PayPalCheckoutRequest("1.00", true).apply {
+                enablePayPalAppSwitch = false
+            }
+
+            sut.sendRequest(context, payPalRequest, configuration)
+
+            val actual = JSONObject(slot.captured)
+            assertFalse(actual.has("app_switch_context"))
+        }
+
+    @Test
+    fun `sendRequest vault with app switch enabled injects device_info in app_switch_context`() =
+        runTest(testDispatcher) {
+            every { clientToken.bearer } returns "client-token-bearer"
+            every { merchantRepository.authorization } returns clientToken
+            every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+            every { deviceInspector.isPayPalInstalled() } returns true
+            every { resolvePayPalUseCase() } returns true
+            every { activityManager.getMemoryInfo(any()) } answers {
+                val memInfo = firstArg<ActivityManager.MemoryInfo>()
+                memInfo.availMem = 512L * 1024L * 1024L
+                memInfo.totalMem = 8192L * 1024L * 1024L
+            }
+
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+
+            val payPalRequest = PayPalVaultRequest(true).apply {
+                enablePayPalAppSwitch = true
+            }
+
+            sut.sendRequest(context, payPalRequest, configuration)
+
+            val actual = JSONObject(slot.captured)
+            val appSwitchContext = actual.getJSONObject("app_switch_context")
+            val deviceInfo = appSwitchContext.getJSONObject("device_info")
+            assertTrue(deviceInfo.has("model"))
+            assertEquals(512, deviceInfo.getInt("memory_available_mb"))
+            assertEquals(8192, deviceInfo.getInt("memory_total_mb"))
+        }
+
+    @Test
+    fun `sendRequest with app switch enabled but no app link does not inject app_switch_context`() =
+        runTest(testDispatcher) {
+            every { clientToken.bearer } returns "client-token-bearer"
+            every { merchantRepository.authorization } returns clientToken
+            every { deviceInspector.isPayPalInstalled() } returns true
+            every { resolvePayPalUseCase() } returns true
+            every { getReturnLinkUseCase.invoke(any()) } returns DeepLink("com.example.app")
+
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+
+            val payPalRequest = PayPalCheckoutRequest("1.00", true).apply {
+                enablePayPalAppSwitch = true
+            }
+
+            sut.sendRequest(context, payPalRequest, configuration)
+
+            val actual = JSONObject(slot.captured)
+            assertFalse(actual.has("app_switch_context"))
+        }
 }

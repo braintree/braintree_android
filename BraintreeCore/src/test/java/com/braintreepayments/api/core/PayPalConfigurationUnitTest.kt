@@ -14,7 +14,7 @@ class PayPalConfigurationUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun fromJson_parsesFullInput() {
+    fun `when json contains all fields, PayPalConfiguration parses all values`() {
         val input = JSONObject()
             .put("displayName", "sample display name")
             .put("clientId", "sample-client-id")
@@ -37,7 +37,7 @@ class PayPalConfigurationUnitTest {
     }
 
     @Test
-    fun fromJson_whenInputNull_returnsConfigWithDefaultValues() {
+    fun `when input json is null, PayPalConfiguration has null fields and touch disabled is true`() {
         val sut = PayPalConfiguration(null)
         assertNull(sut.displayName)
         assertNull(sut.clientId)
@@ -49,7 +49,7 @@ class PayPalConfigurationUnitTest {
     }
 
     @Test
-    fun fromJson_whenInputEmpty_returnsConfigWithDefaultValues() {
+    fun `when input json is empty, PayPalConfiguration has null fields and touch disabled is true`() {
         val sut = PayPalConfiguration(JSONObject())
         assertNull(sut.displayName)
         assertNull(sut.clientId)

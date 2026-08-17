@@ -21,6 +21,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class ConfigurationLoaderUnitTest {
     private val configurationCache: ConfigurationCache = mockk(relaxed = true)
     private val braintreeHttpClient: BraintreeHttpClient = mockk(relaxed = true)
@@ -36,7 +37,7 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_loadsConfigurationForTheCurrentEnvironment() = runTest {
+    fun `when httpClient get returns a valid config response, loadConfiguration returns Success`() = runTest {
         every { authorization.configUrl } returns "https://example.com/config"
         every { merchantRepository.authorization } returns authorization
 
@@ -56,7 +57,7 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_savesFetchedConfigurationToCache() = runTest {
+    fun `when loadConfiguration fetches a new configuration, the configuration is saved to the cache`() = runTest {
         every { authorization.configUrl } returns "https://example.com/config"
         every { authorization.bearer } returns "bearer"
 
@@ -83,7 +84,7 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() = runTest {
+    fun `when response body is not valid json, loadConfiguration returns a Failure with a JSONException`() = runTest {
         every { authorization.configUrl } returns "https://example.com/config"
 
         val mockResponse = HttpResponse("not json", HttpResponseTiming(0, 0))
@@ -102,7 +103,7 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_onHttpError_forwardsExceptionToErrorResponseListener() = runTest {
+    fun `when httpClient get throws an IOException, loadConfiguration returns a Failure wrapping the error message`() = runTest {
         every { authorization.configUrl } returns "https://example.com/config"
 
         val httpError = IOException("http error")
@@ -124,7 +125,7 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_whenInvalidToken_exception_is_returned() = runTest {
+    fun `when authorization is invalid, loadConfiguration returns a Failure with the auth error message`() = runTest {
         every { merchantRepository.authorization } returns InvalidAuthorization("invalid", "token invalid")
 
         sut = createConfigurationLoader()
@@ -139,7 +140,7 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() = runTest {
+    fun `when a cached configuration is available, loadConfiguration loads it from the cache`() = runTest {
         val cacheKey = Base64.encodeToString(
             "https://example.com/config?configVersion=3bearer".toByteArray(),
             0
@@ -155,7 +156,7 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun `when loadConfiguration is called and configuration is fetched from the API, analytics event is sent`() =
+    fun `when configuration is fetched from the API, loadConfiguration sends an API_REQUEST_LATENCY analytics event`() =
         runTest {
         every { authorization.configUrl } returns "https://example.com/config"
         every { merchantRepository.authorization } returns authorization
@@ -188,7 +189,7 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_onNullResponseBody_forwardsConfigurationExceptionToErrorResponseListener() = runTest {
+    fun `when response body is null, loadConfiguration returns a Failure with a ConfigurationException`() = runTest {
         every { authorization.configUrl } returns "https://example.com/config"
 
         val mockResponse = HttpResponse(null, HttpResponseTiming(0, 0))

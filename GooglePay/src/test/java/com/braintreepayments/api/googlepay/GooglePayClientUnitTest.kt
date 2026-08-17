@@ -1,6 +1,7 @@
+ @file:Suppress("MaxLineLength")
+
 package com.braintreepayments.api.googlepay
 
-import android.content.pm.ActivityInfo
 import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
@@ -53,7 +54,6 @@ class GooglePayClientUnitTest {
     private lateinit var readyToPayCallback: GooglePayIsReadyToPayCallback
     private lateinit var intentDataCallback: GooglePayPaymentAuthRequestCallback
     private lateinit var activityResultCallback: GooglePayTokenizeCallback
-    private lateinit var activityInfo: ActivityInfo
     private lateinit var analyticsParamRepository: AnalyticsParamRepository
     private lateinit var merchantRepository: MerchantRepository
     private lateinit var testScope: TestScope
@@ -64,17 +64,16 @@ class GooglePayClientUnitTest {
         readyToPayCallback = mockk(relaxed = true)
         activityResultCallback = mockk(relaxed = true)
         intentDataCallback = mockk(relaxed = true)
-        activityInfo = mockk(relaxed = true)
         analyticsParamRepository = mockk(relaxed = true)
         merchantRepository = mockk(relaxed = true)
         testScope = TestScope(testDispatcher)
 
         baseRequest = GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
-        every { activityInfo.themeResource } returns R.style.bt_transparent_activity
     }
 
     @Test
-    fun isReadyToPay_sendsReadyToPayRequest() = runTest(testDispatcher) {
+    fun `when isReadyToPay is called, internal client is invoked with expected ready to pay request`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -118,7 +117,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun isReadyToPay_whenExistingPaymentMethodRequired_sendsIsReadyToPayRequestWithExistingPaymentRequired() =
+    fun `when isReadyToPay is called with existing payment method required, request reflects that flag`() =
         runTest(testDispatcher) {
         val readyForGooglePayRequest = ReadyForGooglePayRequest().apply {
             isExistingPaymentMethodRequired = true
@@ -167,7 +166,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun isReadyToPay_returnsFalseWhenGooglePayIsNotEnabled() = runTest(testDispatcher) {
+    fun `when isReadyToPay is called and Google Pay is not enabled, callback receives not ready to pay result`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -177,7 +177,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.TOKENIZATION_KEY)
@@ -202,7 +201,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun isReadyToPay_whenInternalClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+    fun `when isReadyToPay internal client throws cancellation exception, callback is not invoked`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -235,7 +235,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_resetsSessionId() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called, analytics param repository session id is reset`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -245,7 +246,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.TOKENIZATION_KEY)
@@ -272,7 +272,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_callsBackIntentData() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called, callback receives payment data request with expected fields`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -287,7 +288,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every {
@@ -413,7 +413,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_includesATokenizationKeyWhenPresent() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called with tokenization key authorization, client key is included`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -427,7 +428,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.TOKENIZATION_KEY)
@@ -465,7 +465,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_doesNotIncludeATokenizationKeyWhenNotPresent() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called with client token authorization, client key is omitted`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -479,7 +480,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN)
@@ -517,7 +517,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_sendsAnalyticsEvent() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest succeeds, started and succeeded analytics events are sent in order`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -532,7 +533,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -559,12 +559,12 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenMerchantNotConfigured_returnsExceptionToFragment() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called and Google Pay is not configured, callback receives failure and analytics are sent`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder().build())
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN)
@@ -602,7 +602,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenSandbox_setsTestEnvironment() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called with sandbox configuration, test environment is set`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -617,7 +618,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -650,7 +650,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenProduction_setsProductionEnvironment() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called with production configuration, production environment is set`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -665,7 +666,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -698,7 +698,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_withGoogleMerchantName_sendGoogleMerchantName() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called with google merchant name override, merchant name is included in request`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -713,7 +714,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -747,7 +747,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_withMerchantInfo_sendSoftwareInfo() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called, merchant info includes software info`() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -762,7 +762,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -794,7 +793,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal() =
+    fun `when createPaymentAuthRequest is called and PayPal is enabled and configured, allowed payment methods include PayPal and card`() =
         runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
@@ -810,7 +809,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -846,7 +844,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenPayPalDisabledByRequest_tokenizationPropertiesLackPayPal() =
+    fun `when createPaymentAuthRequest is called with PayPal disabled on request, allowed payment methods only include card`() =
         runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
@@ -862,7 +860,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -898,7 +895,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenPayPalDisabledAndGooglePayHasPayPalClientId_tokenizationPropsContainPayPal() =
+    fun `when createPaymentAuthRequest is called with merchant PayPal disabled but Google Pay has a PayPal client id, allowed payment methods include PayPal and card`() =
         runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
@@ -916,7 +913,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -952,7 +948,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_usesGooglePayConfigurationClientId() = runTest(testDispatcher) {
+    fun `when createPaymentAuthRequest is called and both PayPal and Google Pay configs have client ids, Google Pay client id is used for PayPal payment method`() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -971,7 +968,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -1021,7 +1017,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenGooglePayConfigurationLacksClientId_tokenizationPropertiesLackPayPal() =
+    fun `when createPaymentAuthRequest is called and Google Pay configuration lacks a PayPal client id, allowed payment methods only include card`() =
         runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
@@ -1036,7 +1032,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -1072,7 +1067,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenConfigurationContainsElo_addsEloAndEloDebitToAllowedPaymentMethods() =
+    fun `when createPaymentAuthRequest is called with elo supported network, allowed card networks include elo and elo debit`() =
         runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
@@ -1087,7 +1082,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -1127,55 +1121,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenManifestInvalid_forwardsExceptionToListener() = runTest(testDispatcher) {
-        val configuration = Configuration.fromJson(TestConfigurationBuilder()
-            .googlePay(
-                TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
-                    .environment("sandbox")
-                    .googleAuthorizationFingerprint("google-auth-fingerprint")
-                    .paypalClientId("paypal-client-id-for-google-payment")
-                    .supportedNetworks(arrayOf("visa", "mastercard", "amex", "discover"))
-                    .enabled(true)
-            )
-            .withAnalytics()
-            .build())
-
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .configurationSuccess(configuration)
-            .build()
-
-        every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
-
-        val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
-
-        val sut = GooglePayClient(
-            braintreeClient,
-            internalGooglePayClient,
-            analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
-        )
-        sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
-        advanceUntilIdle()
-
-        val captor = slot<GooglePayPaymentAuthRequest>()
-        verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
-
-        val request = captor.captured
-        assertTrue(request is GooglePayPaymentAuthRequest.Failure)
-        val exception = request.error
-        assertTrue(exception is BraintreeException)
-        assertEquals(
-            "GooglePayActivity was not found in the Android manifest, " +
-                    "or did not have a theme of R.style.bt_transparent_activity",
-            exception.message
-        )
-        verify { braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_FAILED, any()) }
-    }
-
-    @Test
-    fun tokenize_withCardToken_returnsGooglePayNonce() {
+    fun `when tokenize is called with card payment data, callback receives a GooglePayCardNonce`() {
         val paymentDataJson = Fixtures.RESPONSE_GOOGLE_PAY_CARD
 
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
@@ -1192,7 +1138,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -1218,7 +1163,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun tokenize_withPayPalToken_returnsPayPalAccountNonce() {
+    fun `when tokenize is called with PayPal payment data, callback receives a PayPalAccountNonce`() {
         val paymentDataJson = Fixtures.REPSONSE_GOOGLE_PAY_PAYPAL_ACCOUNT
 
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
@@ -1235,7 +1180,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -1261,7 +1205,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenPaymentDataExists_returnsResultToListener_andSendsAnalytics() {
+    fun `when tokenize is called with GooglePayPaymentAuthResult containing payment data, callback receives success and analytics are sent`() {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
@@ -1291,7 +1235,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenErrorExists_returnsErrorToListener_andSendsAnalytics() {
+    fun `when tokenize is called with GooglePayPaymentAuthResult containing an error, callback receives failure and analytics are sent`() {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
@@ -1323,7 +1267,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenUserCanceledErrorExists_returnsErrorToListener_andSendsAnalytics() {
+    fun `when tokenize is called with GooglePayPaymentAuthResult containing a user canceled error, callback receives cancel and analytics are sent`() {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
@@ -1348,7 +1292,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun getAllowedCardNetworks_returnsSupportedNetworks() {
+    fun `when getAllowedCardNetworks is called, wallet constants for each supported network are returned`() {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -1359,7 +1303,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
@@ -1383,7 +1326,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun getTokenizationParameters_returnsCorrectParameters() {
+    fun `when getTokenizationParameters is called with configuration and authorization, expected parameters are returned`() {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -1395,7 +1338,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         val authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
@@ -1425,7 +1367,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun getTokenizationParameters_doesNotIncludeATokenizationKeyWhenNotPresent() {
+    fun `when getTokenizationParameters is called with client token authorization, client key parameter is not included`() {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -1437,7 +1379,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         val authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN)
@@ -1456,7 +1397,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun getTokenizationParameters_includesATokenizationKeyWhenPresent() {
+    fun `when getTokenizationParameters is called with tokenization key authorization, client key parameter is included`() {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -1468,7 +1409,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         val authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
@@ -1487,7 +1427,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun getTokenizationParameters_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
+    fun `when getTokenizationParameters configuration lookup throws cancellation exception, callback is not invoked`() =
     runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
@@ -1511,7 +1451,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun getTokenizationParameters_forwardsParametersAndAllowedCardsToCallback() {
+    fun `when getTokenizationParameters callback overload is called, callback receives parameters and allowed card networks`() {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -1523,7 +1463,6 @@ class GooglePayClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
-            .activityInfo(activityInfo)
             .build()
 
         every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.TOKENIZATION_KEY)

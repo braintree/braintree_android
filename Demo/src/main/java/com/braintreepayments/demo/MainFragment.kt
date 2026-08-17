@@ -76,10 +76,12 @@ class MainFragment : BaseFragment() {
                                 PaymentModuleButton(R.string.payment_buttons_compose_button) {
                                     launchComposePaymentButtons()
                                 }
+                                PaymentModuleButton(R.string.card_fields_compose_button) {
+                                    launchComposeCardFields()
+                                }
                                 PaymentModuleButton(R.string.venmo) { launchVenmo() }
                                 PaymentModuleButton(R.string.cards) { launchCards() }
                                 PaymentModuleButton(R.string.google_pay) { launchGooglePay() }
-                                PaymentModuleButton(R.string.visa_checkout_button) { launchVisaCheckout() }
                                 PaymentModuleButton(R.string.local_payment_button) { launchLocalPayment() }
                                 PaymentModuleButton(R.string.sepa_direct_debit_button) { launchSEPADirectDebit() }
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -164,14 +166,6 @@ class MainFragment : BaseFragment() {
         }
     }
 
-    private fun launchVisaCheckout() {
-        fetchAuthorizationAndHandleError { authString ->
-            val action = MainFragmentDirections.actionMainFragmentToVisaCheckoutFragment()
-                .setAuthString(authString)
-            findNavController().navigate(action)
-        }
-    }
-
     private fun launchLocalPayment() {
         fetchAuthorizationAndHandleError { _ ->
             // Local Payment uses a different tokenization key than the rest of the demo app.
@@ -230,6 +224,14 @@ class MainFragment : BaseFragment() {
     private fun launchComposePaymentButtons() {
         fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToComposePaymentButtonsFragment()
+            action.setAuthString(authString)
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun launchComposeCardFields() {
+        fetchAuthorizationAndHandleError { authString ->
+            val action = MainFragmentDirections.actionMainFragmentToComposeCardFieldsFragment()
             action.setAuthString(authString)
             findNavController().navigate(action)
         }

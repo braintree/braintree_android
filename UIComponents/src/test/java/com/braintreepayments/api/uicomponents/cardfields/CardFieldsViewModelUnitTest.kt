@@ -175,6 +175,13 @@ class CardFieldsViewModelUnitTest {
         assertEquals(ValidationResult.Validating, vm.expirationValidation.value)
     }
 
+    @Test
+    fun `invalid month does not show error during typing`() {
+        val vm = createViewModel()
+        vm.onExpiryChanged("1328")
+        assertEquals(ValidationResult.Validating, vm.expirationValidation.value)
+    }
+
     // endregion
 
     // region Expiration — blur
@@ -213,6 +220,17 @@ class CardFieldsViewModelUnitTest {
     }
 
     @Test
+    fun `invalid month shows invalid error on blur`() {
+        val vm = createViewModel()
+        vm.onExpiryChanged("1328")
+        vm.onFieldFocusChanged(CardField.EXPIRY, hasFocus = false)
+        assertEquals(
+            ValidationResult.Invalid(R.string.expiration_error),
+            vm.expirationValidation.value
+        )
+    }
+
+    @Test
     fun `valid expiration stays Valid on blur`() {
         val vm = createViewModel()
         vm.onExpiryChanged("1228")
@@ -234,6 +252,7 @@ class CardFieldsViewModelUnitTest {
     @Test
     fun `over-length CVV does not show error during typing`() {
         val vm = createViewModel()
+        vm.onCardNumberChanged("4111111111111111") // Visa — 3-digit CVV
         vm.onCvvChanged("1234")
         assertEquals(ValidationResult.Validating, vm.cvvValidation.value)
     }
@@ -284,7 +303,7 @@ class CardFieldsViewModelUnitTest {
         assertEquals(ValidationResult.Valid, vm.cvvValidation.value)
 
         vm.onCardNumberChanged("378282246310005")
-        assertEquals(ValidationResult.Validating, vm.cvvValidation.value)
+        assertEquals(ValidationResult.Invalid(R.string.cvv_error), vm.cvvValidation.value)
     }
 
     @Test
@@ -318,6 +337,31 @@ class CardFieldsViewModelUnitTest {
         vm.onExpiryChanged("1228")
         vm.onCvvChanged("123")
         assertFalse(vm.isFormValid.value)
+    }
+
+    // endregion
+
+    // region Current value getters
+
+    @Test
+    fun `currentCardNumber reflects the last value passed to onCardNumberChanged`() {
+        val vm = createViewModel()
+        vm.onCardNumberChanged("4111111111111111")
+        assertEquals("4111111111111111", vm.currentCardNumber)
+    }
+
+    @Test
+    fun `currentExpiration reflects the last value passed to onExpiryChanged`() {
+        val vm = createViewModel()
+        vm.onExpiryChanged("1228")
+        assertEquals("1228", vm.currentExpiration)
+    }
+
+    @Test
+    fun `currentCvv reflects the last value passed to onCvvChanged`() {
+        val vm = createViewModel()
+        vm.onCvvChanged("123")
+        assertEquals("123", vm.currentCvv)
     }
 
     // endregion

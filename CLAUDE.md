@@ -27,7 +27,6 @@ SEPADirectDebit/        # SEPA Direct Debit payments
 ShopperInsights/        # Shopper enrichment data
 PayPalMessaging/        # Pay Later messaging UI
 UIComponents/           # Branded PayPal/Venmo buttons with full flows
-VisaCheckout/           # Visa Checkout integration
 SharedUtils/            # Internal HTTP, validation, URL utilities
 TestUtils/              # Shared mock builders and test fixtures
 Demo/                   # Reference implementation app

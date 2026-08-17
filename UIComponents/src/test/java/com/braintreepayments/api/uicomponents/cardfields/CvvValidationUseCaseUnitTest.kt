@@ -44,8 +44,13 @@ class CvvValidationUseCaseUnitTest {
     }
 
     @Test
-    fun `4-digit CVV with UNKNOWN brand returns Invalid`() {
-        assertEquals(ValidationResult.Invalid(R.string.cvv_error), sut("1234", CardBrand.UNKNOWN))
+    fun `4-digit CVV with UNKNOWN brand returns Valid`() {
+        assertEquals(ValidationResult.Valid, sut("1234", CardBrand.UNKNOWN))
+    }
+
+    @Test
+    fun `2-digit CVV with UNKNOWN brand returns Validating`() {
+        assertEquals(ValidationResult.Validating, sut("12", CardBrand.UNKNOWN))
     }
 
     @Test

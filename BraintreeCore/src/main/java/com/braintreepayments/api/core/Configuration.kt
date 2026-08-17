@@ -1,12 +1,20 @@
 package com.braintreepayments.api.core
 
+import android.content.Context
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Json
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Contains the remote configuration for the Braintree Android SDK.
+ *
+ * This class is exposed for internal Braintree use only. Do not use. It is not covered by
+ * Semantic Versioning and may change or be removed at any time.
  *
  * @property assetsUrl The assets URL of the current environment.
  * @property cardinalAuthenticationJwt the JWT for Cardinal
@@ -23,10 +31,9 @@ import org.json.JSONObject
  * @property isPostalCodeChallengePresent `true` if postal code is required for card transactions,
  * `false` otherwise.
  * @property isThreeDSecureEnabled `true` if 3D Secure is enabled and supported for the current
- * merchant account, * `false` otherwise.
+ * merchant account, `false` otherwise.
  * @property isVenmoEnabled `true` if Venmo is enabled for the merchant account; `false` otherwise.
- * @property isVisaCheckoutEnabled `true` if Visa Checkout is enabled for the merchant account;
- * `false` otherwise.
+ * @property isVisaCheckoutEnabled Deprecated. Visa Checkout is no longer supported; this always returns `false`.
  * @property merchantAccountId the current Braintree merchant account id.
  * @property merchantId the current Braintree merchant id.
  * @property payPalDirectBaseUrl the url for custom PayPal environments.
@@ -34,6 +41,7 @@ import org.json.JSONObject
  * @property payPalUserAgreementUrl the PayPal app user agreement url.
  * @property supportedCardTypes a list of card types supported by the merchant.
  */
+@Suppress("DEPRECATION")
 class Configuration internal constructor(configurationString: String) {
 
     /**
@@ -63,6 +71,59 @@ class Configuration internal constructor(configurationString: String) {
         fun fromJson(configurationString: String): Configuration {
             return Configuration(configurationString)
         }
+
+        /**
+         * Fetches the Braintree [Configuration] for the given authorization.
+         *
+         * This method initializes [SdkComponent] as a side effect, which is required
+         * by [ConfigurationLoader] for configuration caching. If a [BraintreeClient]
+         * is already initialized, this is a no-op.
+         *
+         * Note: The [callback] may be invoked after the calling Activity or Fragment
+         * has been destroyed. Callers should guard against this if needed.
+         *
+         * @param context Android Context
+         * @param authorization A tokenization key or client token
+         * @param callback [ConfigurationCallback]
+         */
+        @JvmStatic
+        fun fetch(
+            context: Context,
+            authorization: String,
+            callback: ConfigurationCallback
+        ) {
+            SdkComponent.create(context.applicationContext)
+            fetch(
+                ConfigurationLoader(),
+                Authorization.fromString(authorization),
+                CoroutineScope(Dispatchers.Main),
+                callback
+            )
+        }
+
+        @Suppress("TooGenericExceptionCaught")
+        @JvmStatic
+        internal fun fetch(
+            configurationLoader: ConfigurationLoader,
+            authorization: Authorization,
+            coroutineScope: CoroutineScope,
+            callback: ConfigurationCallback
+        ) {
+            coroutineScope.launch {
+                try {
+                    val result = configurationLoader.loadConfiguration(authorization)
+                    when (result) {
+                        is ConfigurationLoaderResult.Success ->
+                            callback.onResult(result.configuration, null)
+                        is ConfigurationLoaderResult.Failure ->
+                            callback.onResult(null, result.error)
+                    }
+                } catch (e: Exception) {
+                    if (e is CancellationException) throw e
+                    callback.onResult(null, e)
+                }
+            }
+        }
     }
 
     // region Public Properties
@@ -77,6 +138,7 @@ class Configuration internal constructor(configurationString: String) {
     val isPostalCodeChallengePresent: Boolean
     val isThreeDSecureEnabled: Boolean
     val isVenmoEnabled: Boolean
+    @Deprecated("Visa Checkout is no longer supported and this will be removed in the next major version.")
     val isVisaCheckoutEnabled: Boolean
     val merchantAccountId: String?
     val merchantId: String
@@ -213,18 +275,21 @@ class Configuration internal constructor(configurationString: String) {
      * @return the Visa Checkout API key configured in the Braintree Control Panel.
      * @suppress
      */
+    @Deprecated("Visa Checkout is no longer supported and this will be removed in the next major version.")
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val visaCheckoutApiKey: String
 
     /**
      * @return the Visa Checkout External Client ID configured in the Braintree Control Panel.
      * @suppress
      */
+    @Deprecated("Visa Checkout is no longer supported and this will be removed in the next major version.")
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val visaCheckoutExternalClientId: String
 
     /**
      * @return the Visa Checkout supported networks enabled for the merchant account.
      * @suppress
      */
+    @Deprecated("Visa Checkout is no longer supported and this will be removed in the next major version.")
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val visaCheckoutSupportedNetworks: List<String>
 
     private val braintreeApiConfiguration: BraintreeApiConfiguration

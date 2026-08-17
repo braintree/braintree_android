@@ -23,6 +23,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class MagnesInternalClientUnitTest {
 
     @MockK
@@ -74,7 +75,7 @@ class MagnesInternalClientUnitTest {
     }
 
     @Test
-    fun getClientMetaDataId_returnsEmptyStringWhenContextIsNull() {
+    fun `when getClientMetadataId is called with a null context, an empty string is returned`() {
         val sut = MagnesInternalClient(magnesSDK)
         val result = sut.getClientMetadataId(
             null, sandboxConfiguration,
@@ -86,7 +87,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetaDataId_configuresMagnesSourceAsBraintree() {
+    fun `when getClientMetadataId is called, magnes is set up with magnes source set to braintree`() {
 
         val sut = MagnesInternalClient(magnesSDK)
         sut.getClientMetadataId(context, sandboxConfiguration, dataCollectorInternalRequest)
@@ -103,7 +104,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetaDataId_whenBraintreeEnvironmentIsSandbox_configuresMagnesEnvironmentToSandbox() {
+    fun `when getClientMetadataId is called with a sandbox configuration, magnes is set up with the sandbox environment`() {
 
         val sut = MagnesInternalClient(magnesSDK)
         sut.getClientMetadataId(context, sandboxConfiguration, dataCollectorInternalRequest)
@@ -117,7 +118,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetaDataId_whenBraintreeEnvironmentIsProd_configuresMagnesEnvironmentToLive() {
+    fun `when getClientMetadataId is called with a production configuration, magnes is set up with the live environment`() {
 
         val sut = MagnesInternalClient(magnesSDK)
         sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest)
@@ -131,7 +132,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetaDataId_forwardsDisableBeaconOptionToMagnes() {
+    fun `when getClientMetadataId is called with disable beacon set to true on the request, magnes is set up with disable beacon true`() {
 
         val sut = MagnesInternalClient(magnesSDK)
         sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest)
@@ -145,7 +146,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetaDataId_forwardsApplicationGUIDOptionToMagnes() {
+    fun `when getClientMetadataId is called with an application guid on the request, magnes is set up with that app guid`() {
 
         val sut = MagnesInternalClient(magnesSDK)
         sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest)
@@ -159,7 +160,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetaDataId_setsHasUserLocationConsent() {
+    fun `when getClientMetadataId is called with user location consent on the request, magnes is set up with matching user location consent`() {
 
         val sut = MagnesInternalClient(magnesSDK)
         sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest)
@@ -172,7 +173,7 @@ class MagnesInternalClientUnitTest {
     }
 
     @Test
-    fun getClientMetaDataId_returnsAnEmptyStringWhenApplicationGUIDIsInvalid() {
+    fun `when getClientMetadataId is called with an invalid application guid, an empty string is returned`() {
 
         val requestWithInvalidGUID =
             DataCollectorInternalRequest(hasUserLocationConsent, null, null, false)
@@ -186,7 +187,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetaDataId_forwardsClientMetadataIdFromMagnesStart() {
+    fun `when getClientMetadataId is called, the client metadata id produced by magnes collectAndSubmit is returned`() {
 
         val sut = MagnesInternalClient(magnesSDK)
         val result = sut.getClientMetadataId(
@@ -199,7 +200,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetaDataId_returnsAnEmptyStringWhenCollectAndSubmitThrows() {
+    fun `when magnes collectAndSubmit throws InvalidInputException, getClientMetadataId returns an empty string`() {
 
         every {
             magnesSDK.collectAndSubmit(
@@ -220,7 +221,7 @@ class MagnesInternalClientUnitTest {
     // Tests for getClientMetadataIdWithCallback
 
     @Test
-    fun getClientMetadataIdWithCallback_returnsEmptyStringWhenContextIsNull() {
+    fun `when getClientMetadataIdWithCallback is called with a null context, the callback receives an empty client metadata id`() {
         val sut = MagnesInternalClient(magnesSDK)
         var receivedClientMetadataId = "non-empty"
 
@@ -235,7 +236,7 @@ class MagnesInternalClientUnitTest {
     }
 
     @Test
-    fun getClientMetadataIdWithCallback_returnsEmptyStringWhenConfigurationIsNull() {
+    fun `when getClientMetadataIdWithCallback is called with a null configuration, the callback receives an empty client metadata id`() {
         val sut = MagnesInternalClient(magnesSDK)
         var receivedClientMetadataId = "non-empty"
 
@@ -250,7 +251,7 @@ class MagnesInternalClientUnitTest {
     }
 
     @Test
-    fun getClientMetadataIdWithCallback_returnEmptyStringWhenRequestIsNull() {
+    fun `when getClientMetadataIdWithCallback is called with a null request, the callback receives an empty client metadata id`() {
         val sut = MagnesInternalClient(magnesSDK)
         var receivedClientMetadataId = "non-empty"
 
@@ -266,7 +267,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetadataIdWithCallback_configuresMagnesSourceAsBraintree() {
+    fun `when getClientMetadataIdWithCallback is called, magnes is set up with magnes source set to braintree`() {
         val sut = MagnesInternalClient(magnesSDK)
         sut.getClientMetadataIdWithCallback(context, sandboxConfiguration, dataCollectorInternalRequest) { _, _ -> }
 
@@ -282,7 +283,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetadataIdWithCallback_whenBraintreeEnvironmentIsSandbox_configuresMagnesEnvironmentToSandbox() {
+    fun `when getClientMetadataIdWithCallback is called with a sandbox configuration, magnes is set up with the sandbox environment`() {
         val sut = MagnesInternalClient(magnesSDK)
         sut.getClientMetadataIdWithCallback(context, sandboxConfiguration, dataCollectorInternalRequest) { _, _ -> }
 
@@ -295,7 +296,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetadataIdWithCallback_whenBraintreeEnvironmentIsProd_configuresMagnesEnvironmentToLive() {
+    fun `when getClientMetadataIdWithCallback is called with a production configuration, magnes is set up with the live environment`() {
         val sut = MagnesInternalClient(magnesSDK)
         sut.getClientMetadataIdWithCallback(context, prodConfiguration, dataCollectorInternalRequest) { _, _ -> }
 
@@ -308,7 +309,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetadataIdWithCallback_forwardsDisableBeaconOptionToMagnes() {
+    fun `when getClientMetadataIdWithCallback is called with disable beacon set to true on the request, magnes is set up with disable beacon true`() {
         val sut = MagnesInternalClient(magnesSDK)
         sut.getClientMetadataIdWithCallback(context, prodConfiguration, dataCollectorInternalRequest) { _, _ -> }
 
@@ -321,7 +322,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetadataIdWithCallback_forwardsApplicationGUIDOptionToMagnes() {
+    fun `when getClientMetadataIdWithCallback is called with an application guid on the request, magnes is set up with that app guid`() {
 
         val sut = MagnesInternalClient(magnesSDK)
         sut.getClientMetadataIdWithCallback(context, prodConfiguration, dataCollectorInternalRequest) { _, _ -> }
@@ -335,7 +336,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetadataIdWithCallback_setsHasUserLocationConsent() {
+    fun `when getClientMetadataIdWithCallback is called with user location consent on the request, magnes is set up with matching user location consent`() {
 
         val sut = MagnesInternalClient(magnesSDK)
         sut.getClientMetadataIdWithCallback(context, prodConfiguration, dataCollectorInternalRequest) { _, _ -> }
@@ -349,7 +350,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetadataIdWithCallback_whenMagnesCallbackReturnsSuccess_forwardsCMIDToCallback() {
+    fun `when the magnes submit listener reports success, the callback receives the client metadata id and no error`() {
         var storedListener: MagnesSubmitListener? = null
 
         every {
@@ -385,7 +386,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetadataIdWithCallback_whenMagnesCallbackReturnsError_returnsSubmitErrorException() {
+    fun `when the magnes submit listener reports an error, the callback receives a null client metadata id and a SubmitError exception`() {
         every {
             magnesSDK.collectAndSubmit(
                 context,
@@ -418,7 +419,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetadataIdWithCallback_whenMagnesCallbackReturnsTimeout_returnsSubmitTimeoutException() {
+    fun `when the magnes submit listener reports a timeout, the callback receives a null client metadata id and a SubmitTimeout exception`() {
         every {
             magnesSDK.collectAndSubmit(
                 context,
@@ -451,7 +452,7 @@ class MagnesInternalClientUnitTest {
 
     @Throws(InvalidInputException::class)
     @Test
-    fun getClientMetadataIdWithCallback_whenCollectAndSubmitThrows_callsCallbackWithException() {
+    fun `when magnes collectAndSubmit throws InvalidInputException, the callback receives a null client metadata id and the thrown exception`() {
         every {
             magnesSDK.collectAndSubmit(
                 context,

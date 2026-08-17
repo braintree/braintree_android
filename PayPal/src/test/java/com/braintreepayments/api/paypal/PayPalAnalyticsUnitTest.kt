@@ -6,7 +6,7 @@ import org.junit.Test
 class PayPalAnalyticsUnitTest {
 
     @Test
-    fun testAnalyticsEvents_sendsExpectedEventNames() {
+    fun `PayPalAnalytics constants match expected event names`() {
         assertEquals("paypal:tokenize:started", PayPalAnalytics.TOKENIZATION_STARTED)
         assertEquals("paypal:tokenize:failed", PayPalAnalytics.TOKENIZATION_FAILED)
         assertEquals("paypal:tokenize:succeeded", PayPalAnalytics.TOKENIZATION_SUCCEEDED)

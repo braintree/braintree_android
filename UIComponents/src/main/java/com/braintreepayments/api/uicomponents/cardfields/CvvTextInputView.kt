@@ -4,12 +4,9 @@ import android.content.Context
 import android.text.InputFilter
 import android.text.InputType
 import android.util.AttributeSet
-import androidx.annotation.RestrictTo
 import com.braintreepayments.api.uicomponents.R
 
-// TODO change class to internal before releasing
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class CvvTextInputView @JvmOverloads constructor(
+internal class CvvTextInputView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -37,13 +34,8 @@ class CvvTextInputView @JvmOverloads constructor(
 
     internal fun updateCardBrand(brand: CardBrand) {
         formatter.updateCvvLength(brand.cvvLength)
-        val currentCvv = getRawCvv()
-        if (currentCvv.length > brand.cvvLength) {
-            setText(currentCvv.take(brand.cvvLength))
-        } else {
-            editText.filters = (editText.filters.filterNot { it is InputFilter.LengthFilter } +
-                InputFilter.LengthFilter(brand.cvvLength)).toTypedArray()
-        }
+        editText.filters = (editText.filters.filterNot { it is InputFilter.LengthFilter } +
+            InputFilter.LengthFilter(brand.cvvLength)).toTypedArray()
     }
 
     internal fun getRawCvv(): String {

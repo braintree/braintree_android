@@ -15,31 +15,31 @@ class TokenizationKeyUnitTest {
     }
 
     @Test
-    fun fromString_acceptsATokenizationKey() {
+    fun `fromString parses a valid tokenization key`() {
         val tokenizationKey = fromString(TOKENIZATION_KEY)
         assertEquals(TOKENIZATION_KEY, tokenizationKey.bearer)
     }
 
     @Test
-    fun fromString_returnsInvalidTokenForNonTokenizationKeys() {
+    fun `when input is not a tokenization key, fromString returns InvalidAuthorization`() {
         val result = fromString("{}")
         assertTrue(result is InvalidAuthorization)
     }
 
     @Test
-    fun fromString_parsesEnvironment() {
+    fun `fromString parses environment from tokenization key`() {
         val tokenizationKey = fromString(TOKENIZATION_KEY) as TokenizationKey
         assertEquals("development", tokenizationKey.environment)
     }
 
     @Test
-    fun fromString_parsesMerchantId() {
+    fun `fromString parses merchantId from tokenization key`() {
         val tokenizationKey = fromString(TOKENIZATION_KEY) as TokenizationKey
         assertEquals("integration_merchant_id", tokenizationKey.merchantId)
     }
 
     @Test
-    fun fromString_setsUrlForDevelopment() {
+    fun `when environment is development, fromString sets url and configUrl to development endpoints`() {
         val tokenizationKey = fromString(TOKENIZATION_KEY) as TokenizationKey
         assertEquals(
             BuildConfig.DEVELOPMENT_URL + "merchants/integration_merchant_id/client_api/",
@@ -52,7 +52,7 @@ class TokenizationKeyUnitTest {
     }
 
     @Test
-    fun fromString_setsUrlForSandbox() {
+    fun `when environment is sandbox, fromString sets url and configUrl to sandbox endpoints`() {
         val tokenizationKey = fromString(
             "sandbox_fjajdkd_integration_merchant_id"
         ) as TokenizationKey
@@ -67,7 +67,7 @@ class TokenizationKeyUnitTest {
     }
 
     @Test
-    fun fromString_setsUrlForProduction() {
+    fun `when environment is production, fromString sets url and configUrl to production endpoints`() {
         val tokenizationKey = fromString(
             "production_fjajdkd_integration_merchant_id"
         ) as TokenizationKey
@@ -82,13 +82,13 @@ class TokenizationKeyUnitTest {
     }
 
     @Test
-    fun fromString_returnsInvalidTokenForInvalidEnvironments() {
+    fun `when environment is invalid, fromString returns InvalidAuthorization`() {
         val result = fromString("test_fjajdkd_integration_merchant_id")
         assertTrue(result is InvalidAuthorization)
     }
 
     @Test
-    fun getBearer_returnsTokenizationKey() {
+    fun `bearer returns the original tokenization key string`() {
         assertEquals(TOKENIZATION_KEY, fromString(TOKENIZATION_KEY).bearer)
     }
 }

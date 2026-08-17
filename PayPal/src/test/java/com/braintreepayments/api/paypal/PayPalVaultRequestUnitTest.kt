@@ -263,10 +263,12 @@ class PayPalVaultRequestUnitTest {
             appLink = "universal_url"
         )
 
-        assertTrue(requestBody.contains("\"launch_paypal_app\":true"))
-        assertTrue(requestBody.contains("\"os_type\":" + "\"Android\""))
-        assertTrue(requestBody.contains("\"os_version\":\"$versionSDK\""))
-        assertTrue(requestBody.contains("\"merchant_app_return_url\":" + "\"universal_url\""))
+        val jsonObject = JSONObject(requestBody)
+        assertTrue(jsonObject.getBoolean("launch_paypal_app"))
+        assertEquals("Android", jsonObject.getString("os_type"))
+        assertEquals(versionSDK.toString(), jsonObject.getString("os_version"))
+        assertEquals("universal_url", jsonObject.getString("merchant_app_return_url"))
+        assertFalse(jsonObject.has("app_switch_context"))
     }
 
     @OptIn(ExperimentalBetaApi::class)
@@ -376,8 +378,9 @@ class PayPalVaultRequestUnitTest {
         val jsonObject = JSONObject(requestBody)
         assertTrue(jsonObject.getBoolean("launch_paypal_app"))
         assertEquals("Android", jsonObject.getString("os_type"))
-        assertEquals(appLink, jsonObject.getString("merchant_app_return_url"))
         assertNotNull(jsonObject.getString("os_version"))
+        assertEquals(appLink, jsonObject.getString("merchant_app_return_url"))
+        assertFalse(jsonObject.has("app_switch_context"))
     }
 
     @Test

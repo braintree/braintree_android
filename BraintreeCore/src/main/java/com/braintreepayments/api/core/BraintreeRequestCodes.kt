@@ -11,6 +11,8 @@ enum class BraintreeRequestCodes(val code: Int) {
     THREE_D_SECURE(13487),
     VENMO(13488),
     PAYPAL(13591),
+
+    @Deprecated("Visa Checkout is no longer supported and this will be removed in the next major version.")
     VISA_CHECKOUT(13592),
     GOOGLE_PAY(13593),
     LOCAL_PAYMENT(13596),

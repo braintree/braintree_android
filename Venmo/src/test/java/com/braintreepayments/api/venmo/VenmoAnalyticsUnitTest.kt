@@ -6,7 +6,7 @@ import org.junit.Test
 class VenmoAnalyticsUnitTest {
 
     @Test
-    fun testAnalyticsEvents_sendsExpectedEventNames() {
+    fun `analytics event constants match the expected braintree event names`() {
         assertEquals(
             "venmo:tokenize:app-switch:canceled",
             VenmoAnalytics.APP_SWITCH_CANCELED

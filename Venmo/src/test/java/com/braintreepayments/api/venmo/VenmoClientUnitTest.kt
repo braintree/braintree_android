@@ -46,6 +46,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("MaxLineLength")
 class VenmoClientUnitTest {
 
     private lateinit var sut: VenmoClient
@@ -121,7 +122,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun initialization_sets_app_link_in_analyticsParamRepository() {
+    fun `when return link type is app link, initialization sets app link on analyticsParamRepository`() {
         every { getReturnLinkTypeUseCase.invoke() } returns GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
@@ -145,7 +146,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun initialization_sets_deep_link_in_analyticsParamRepository() {
+    fun `when return link type is deep link, initialization sets deep link on analyticsParamRepository`() {
         every { getReturnLinkTypeUseCase.invoke() } returns GetReturnLinkTypeUseCase.ReturnLinkTypeResult.DEEP_LINK
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
@@ -169,7 +170,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenCreatePaymentContextFails_collectAddressWithEcdDisabled() =
+    fun `when createPaymentContext fails because ECD is disabled, createPaymentAuthRequest returns a failure with the ECD error message`() =
         runTest(testDispatcher) {
         val errorDesc = "Cannot collect customer data when ECD is disabled. Enable this feature " +
                 "in the Control Panel to collect this data."
@@ -237,7 +238,7 @@ class VenmoClientUnitTest {
 
     @Suppress("LongMethod")
     @Test
-    fun createPaymentAuthRequest_withDeepLink_whenCreatePaymentContextSucceeds_createsVenmoAuthChallenge() =
+    fun `when deep link is used and createPaymentContext succeeds, createPaymentAuthRequest builds a ready-to-launch Venmo auth challenge`() =
         runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
@@ -314,7 +315,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenConfigurationException_forwardsExceptionToListener() = runTest(testDispatcher) {
+    fun `when configuration fetch fails, createPaymentAuthRequest forwards the exception to the callback`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(IOException("Configuration fetching error"))
             .build()
@@ -363,7 +364,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenVenmoNotEnabled_forwardsExceptionToListener() = runTest(testDispatcher) {
+    fun `when venmo is not enabled in configuration, createPaymentAuthRequest forwards the exception to the callback`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoDisabledConfiguration)
             .build()
@@ -414,7 +415,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenProfileIdIsNull_appSwitchesWithMerchantId() = runTest(testDispatcher) {
+    fun `when profileId is null, createPaymentAuthRequest app switches using the merchant id`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -459,7 +460,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenAppLinkUriSet_appSwitchesWithAppLink() = runTest(testDispatcher) {
+    fun `when an app link uri is set, createPaymentAuthRequest app switches using the app link`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -504,7 +505,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_throws_error_when_getReturnLinkUseCase_returnsFailure() = runTest(testDispatcher) {
+    fun `when getReturnLinkUseCase returns a failure, createPaymentAuthRequest forwards the exception as failure`() = runTest(testDispatcher) {
         val exception = BraintreeException()
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
@@ -549,7 +550,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenProfileIdIsSpecified_appSwitchesWithProfileIdAndAccessToken() =
+    fun `when profileId is specified, createPaymentAuthRequest app switches using the profile id and payment context id`() =
         runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
@@ -596,7 +597,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_sendsAnalyticsEvent() {
+    fun `createPaymentAuthRequest sends a tokenize started analytics event`() {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoDisabledConfiguration)
             .build()
@@ -632,7 +633,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenShouldVaultIsTrue_persistsVenmoVaultTrue() = runTest(testDispatcher) {
+    fun `when shouldVault is true, createPaymentAuthRequest persists the vault option as true`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -671,7 +672,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenShouldVaultIsFalse_persistsVenmoVaultFalse() = runTest(testDispatcher) {
+    fun `when shouldVault is false, createPaymentAuthRequest persists the vault option as false`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -710,7 +711,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenVenmoApiError_forwardsErrorToListener_andSendsAnalytics() =
+    fun `when the Venmo API errors creating the payment context, createPaymentAuthRequest forwards the error and sends failure analytics`() =
         runTest(testDispatcher) {
         val graphQLError = BraintreeException("GraphQL error")
         val braintreeClient = MockkBraintreeClientBuilder()
@@ -774,7 +775,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_withPaymentContextId_requestFromVenmoApi() = runTest(testDispatcher) {
+    fun `tokenize with a payment context resource id in the return url requests the nonce from venmoApi`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -816,7 +817,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_withPaymentAuthResult_whenUserCanceled_returnsCancelAndSendsAnalytics() = runTest(testDispatcher) {
+    fun `when return url indicates the user canceled, tokenize returns Cancel and sends app switch canceled analytics`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -856,7 +857,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_onGraphQLPostSuccess_returnsNonceToListener_andSendsAnalytics() = runTest(testDispatcher) {
+    fun `when graphQL post succeeds, tokenize returns the nonce to the listener and sends tokenize succeeded analytics`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -920,7 +921,7 @@ class VenmoClientUnitTest {
 
     @Suppress("LongMethod")
     @Test
-    fun tokenize_onGraphQLPostFailure_forwardsExceptionToListener_andSendsAnalytics() = runTest(testDispatcher) {
+    fun `when graphQL post fails, tokenize forwards the exception to the listener and sends tokenize failed analytics`() = runTest(testDispatcher) {
         val graphQLError = BraintreeException("GraphQL error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
@@ -986,7 +987,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_withPaymentContext_performsVaultRequestIfRequestPersisted() = runTest(testDispatcher) {
+    fun `when a payment context is used and vault option is persisted, tokenize performs a vault request`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -1024,7 +1025,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_postsPaymentMethodNonceOnSuccess() = runTest(testDispatcher) {
+    fun `tokenize requests the nonce from the payment context on success`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
@@ -1051,7 +1052,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_performsVaultRequestIfRequestPersisted() = runTest(testDispatcher) {
+    fun `when vault option is persisted, tokenize performs a vault request with the resulting nonce`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -1087,7 +1088,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_doesNotPerformRequestIfTokenizationKeyUsed() = runTest(testDispatcher) {
+    fun `when a tokenization key is used, tokenize does not perform a vault request`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
@@ -1115,7 +1116,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_withRiskCorrelationId_passesRiskCorrelationIdToCreatePaymentContext() =
+    fun `createPaymentAuthRequest passes the risk correlation id to createPaymentContext`() =
         runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
@@ -1160,7 +1161,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_withSuccessfulVaultCall_forwardsResultToActivityResultListener_andSendsAnalytics() =
+    fun `when the vault call succeeds without a resource id in the return url, tokenize forwards the nonce and sends tokenize succeeded analytics`() =
         runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
@@ -1206,7 +1207,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_withPaymentContext_withSuccessfulVaultCall_forwardsNonceToCallback_andSendsAnalytics() =
+    fun `when a payment context is used and the vault call succeeds, tokenize forwards the nonce to the callback and sends tokenize succeeded analytics`() =
         runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPostSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
@@ -1257,7 +1258,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_withFailedVaultCall_forwardsErrorToActivityResultListener_andSendsAnalytics() =
+    fun `when the vault call fails without a resource id in the return url, tokenize forwards the error and sends tokenize failed analytics`() =
         runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
@@ -1306,7 +1307,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
+    fun `when braintreeClient throws a CancellationException fetching configuration, createPaymentAuthRequest does not invoke the callback`() =
     runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
@@ -1338,7 +1339,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_whenVenmoApiThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+    fun `when venmoApi throws a CancellationException, tokenize does not invoke the callback`() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPostSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
             .build()
@@ -1371,7 +1372,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_withPaymentContext_withFailedVaultCall_forwardsErrorToCallback_andSendsAnalytics() =
+    fun `when a payment context is used and the vault call fails, tokenize forwards the error to the callback and sends tokenize failed analytics`() =
         runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPostSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
