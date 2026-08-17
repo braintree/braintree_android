@@ -76,6 +76,9 @@ import org.json.JSONObject
  * @property shouldOfferCredit Offers PayPal Credit if the customer qualifies. Defaults to false.
  *
  * @property campaigns List of PayPal co-marketing campaigns to associate with the order.
+ * @property editBillingAgreement Opts into the View/Edit Funding Instrument (FI) flow. When set to
+ * true and the SDK is initialized with a client token carrying a payment method ID JWT, that JWT
+ * is included in the request to seed the edit order. Defaults to null (opted out).
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
@@ -107,7 +110,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     var amountBreakdown: AmountBreakdown? = null,
     override var shouldOfferCredit: Boolean = false,
     var campaigns: List<PayPalCampaign> = emptyList(),
-    var editBillingAgreementJwt: String? = null,
+    var editBillingAgreement: Boolean? = null,
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -146,6 +149,11 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
 
         if (authorization is ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
+            if (editBillingAgreement == true) {
+                authorization.paymentMethodIdJwt?.let {
+                    parameters.put(EDIT_BILLING_AGREEMENT_JWT_KEY, it)
+                }
+            }
         } else {
             parameters.put(TOKENIZATION_KEY, authorization?.bearer)
         }
@@ -182,8 +190,6 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         }
 
         parameters.putOpt(SHOPPER_SESSION_ID_KEY, shopperSessionId)
-
-        editBillingAgreementJwt?.let { parameters.put(EDIT_BILLING_AGREEMENT_JWT_KEY, it) }
 
         if (currencyCode == null) {
             currencyCode = configuration?.payPalCurrencyIsoCode

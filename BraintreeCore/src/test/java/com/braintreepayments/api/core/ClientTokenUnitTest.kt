@@ -59,4 +59,20 @@ class ClientTokenUnitTest {
             ) as ClientToken
         assertEquals("fake-customer-123", clientToken.customerId)
     }
+
+    @Test
+    fun `when paymentMethodIdJwt is present in the client token, paymentMethodIdJwt returns it`() {
+        val clientToken =
+            fromString(
+                FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN_WITH_PAYMENT_METHOD_ID_JWT)
+            ) as ClientToken
+        assertEquals("payment_method_id_jwt", clientToken.paymentMethodIdJwt)
+    }
+
+    @Test
+    fun `when paymentMethodIdJwt is not present in the client token, paymentMethodIdJwt returns null`() {
+        val clientToken =
+            fromString(FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)) as ClientToken
+        assertNull(clientToken.paymentMethodIdJwt)
+    }
 }

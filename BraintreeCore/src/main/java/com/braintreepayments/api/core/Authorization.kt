@@ -17,6 +17,12 @@ abstract class Authorization internal constructor(private val rawValue: String) 
     abstract val bearer: String?
 
     /**
+     * The payment method ID JWT extracted from the client token, if present.
+     * @suppress
+     */
+    open val paymentMethodIdJwt: String? get() = null
+
+    /**
      * @return The original Client token or Tokenization Key string, which can be used for serialization
      */
     override fun toString(): String {
