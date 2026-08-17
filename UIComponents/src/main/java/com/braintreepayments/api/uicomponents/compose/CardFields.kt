@@ -71,6 +71,17 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
                 val sanitizedInput = sanitizeCardNumberInput(newValue) ?: return@CardNumberField
                 controller.cardNumber.value = sanitizedInput
                 viewModel.onCardNumberChanged(sanitizedInput.text)
+
+                val maxCvvLength = viewModel.detectedCardBrand.value.cvvLength
+                val currentCvv = controller.cvv.value
+                if (currentCvv.text.length > maxCvvLength) {
+                    val truncatedCvv = currentCvv.copy(
+                        text = currentCvv.text.take(maxCvvLength),
+                        selection = TextRange(maxCvvLength)
+                    )
+                    controller.cvv.value = truncatedCvv
+                    viewModel.onCvvChanged(truncatedCvv.text)
+                }
             },
             brand = detectedBrand,
             errorText = cardNumberValidation.errorText(),
@@ -149,10 +160,9 @@ internal fun sanitizeCardExpirationInput(newValue: TextFieldValue): TextFieldVal
     return newValue.copy(text = digits, selection = selection)
 }
 
-internal fun sanitizeCvvInput(newValue: TextFieldValue): TextFieldValue? {
+internal fun sanitizeCvvInput(newValue: TextFieldValue, brand: CardBrand): TextFieldValue? {
     val rawDigits = newValue.text.filter { it.isDigit() }
-    val cvvLength = CardBrand.resolveBrand(rawDigits).cvvLength
-    if (rawDigits.length > cvvLength) return null
+    if (rawDigits.length > brand.cvvLength) return null
     return newValue.copy(text = rawDigits)
 }
 
