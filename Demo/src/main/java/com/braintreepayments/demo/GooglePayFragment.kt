@@ -51,7 +51,11 @@ class GooglePayFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         googlePayClient = GooglePayClient(requireContext(), args.authString)
-        googlePayLauncher = GooglePayLauncher(this) { paymentAuthResult ->
+        googlePayLauncher = GooglePayLauncher(
+            registry = requireActivity().activityResultRegistry,
+            lifecycleOwner = viewLifecycleOwner,
+            context = requireContext()
+        ) { paymentAuthResult ->
             googlePayClient.tokenize(paymentAuthResult) { googlePayResult ->
                 when (googlePayResult) {
                     is GooglePayResult.Failure -> handleError(googlePayResult.error)
