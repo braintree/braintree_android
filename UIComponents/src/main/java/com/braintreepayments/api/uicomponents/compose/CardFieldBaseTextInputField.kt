@@ -64,6 +64,7 @@ internal fun CardFieldBaseTextInputField(
     focusRequester: FocusRequester? = null,
     onFocusChanged: (Boolean) -> Unit = {},
     leadingIcon: (@Composable () -> Unit)? = null,
+    trailingIcon: (@Composable () -> Unit)? = null,
     contentDescription: String
     ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -169,6 +170,8 @@ internal fun CardFieldBaseTextInputField(
                     interactionSource = interactionSource
                 )
             }
+
+            trailingIcon?.invoke()
         }
 
         if (errorText != null) {
