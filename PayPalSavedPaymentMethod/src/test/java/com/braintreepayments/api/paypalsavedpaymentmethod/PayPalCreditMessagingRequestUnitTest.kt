@@ -24,6 +24,7 @@ class PayPalCreditMessagingRequestUnitTest {
         assertEquals("EARLY_PRESENTMENT", flowContext.getString("flow_specifier"))
         assertTrue(flowContext.getJSONArray("attributes").toString().contains("BRAND_BRAINTREE"))
         assertTrue(flowContext.getJSONArray("attributes").toString().contains("EXPERIENCE_ANDROID_SDK"))
+        assertTrue(flowContext.getJSONArray("attributes").toString().contains("EXPERIENCE_VIEW_EDIT_FI"))
 
         val placement = json.getJSONArray("message_placements").getJSONObject(0)
         val amount = placement.getJSONObject("amount")
