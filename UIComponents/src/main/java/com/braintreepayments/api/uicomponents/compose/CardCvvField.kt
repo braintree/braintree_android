@@ -53,7 +53,7 @@ internal fun CardCvvField(
         modifier = modifier,
         errorText = errorText,
         visualTransformation = CvvVisualTransformation(revealedIndex),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         focusRequester = focusRequester,
         onFocusChanged = onFocusChanged,
         trailingIcon = {
