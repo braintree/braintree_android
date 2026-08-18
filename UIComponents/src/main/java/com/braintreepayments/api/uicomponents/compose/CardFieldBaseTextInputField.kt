@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,6 +33,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -60,7 +63,8 @@ internal fun CardFieldBaseTextInputField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     focusRequester: FocusRequester? = null,
     onFocusChanged: (Boolean) -> Unit = {},
-    leadingIcon: (@Composable () -> Unit)? = null
+    leadingIcon: (@Composable () -> Unit)? = null,
+    contentDescription: String
     ) {
     val interactionSource = remember { MutableInteractionSource() }
     var isFocused by remember { mutableStateOf(false) }
@@ -73,6 +77,7 @@ internal fun CardFieldBaseTextInputField(
     val paddingHorizontal = dimensionResource(R.dimen.card_field_padding_horizontal)
     val inputMarginBottom = dimensionResource(R.dimen.card_field_input_margin_bottom)
     val hintFloatTopMargin = dimensionResource(R.dimen.card_field_hint_float_top_margin)
+    val inputFontSize = dimensionResource(R.dimen.card_field_input_text_size).value.sp
     val hintRestTextSize = dimensionResource(R.dimen.card_field_hint_text_size).value.sp
     val hintFloatTextSize = dimensionResource(R.dimen.card_field_hint_float_text_size).value.sp
 
@@ -149,10 +154,13 @@ internal fun CardFieldBaseTextInputField(
                             isFocused = it.isFocused
                             onFocusChanged(it.isFocused)
                         }
-                        .semantics { if (errorText != null) error(errorText) },
+                        .semantics {
+                            this.contentDescription = contentDescription
+                            if (errorText != null) error(errorText)
+                        },
                     textStyle = TextStyle(
                         color = colorResource(R.color.card_field_text),
-                        fontSize = 16.sp,
+                        fontSize = inputFontSize,
                         textAlign = TextAlign.Start
                     ),
                     singleLine = true,
@@ -164,12 +172,27 @@ internal fun CardFieldBaseTextInputField(
         }
 
         if (errorText != null) {
-            Text(
-                text = errorText,
-                color = colorResource(R.color.card_field_text),
-                fontSize = 12.sp,
-                modifier = Modifier.padding(top = dimensionResource(R.dimen.card_field_error_margin_top))
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_card_field_error),
+                    contentDescription = null,
+                    tint = colorResource(R.color.card_field_error),
+                    modifier = Modifier
+                        .padding(
+                            top = dimensionResource(R.dimen.card_field_error_margin_top),
+                            end = dimensionResource(R.dimen.card_field_error_icon_margin_end)
+                        )
+                )
+                Text(
+                    text = errorText,
+                    color = colorResource(R.color.card_field_text),
+                    fontSize = dimensionResource(R.dimen.card_field_error_text_size).value.sp,
+                    modifier = Modifier.padding(top = dimensionResource(R.dimen.card_field_error_margin_top))
+                )
+            }
         }
     }
 }
