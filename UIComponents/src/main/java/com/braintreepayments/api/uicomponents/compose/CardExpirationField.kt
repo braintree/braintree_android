@@ -20,16 +20,16 @@ internal fun CardExpirationField(
     focusRequester: FocusRequester? = null,
     onFocusChanged: (Boolean) -> Unit = {}
 ) {
-    val accessibilityLabel = stringResource(R.string.expiration_hint_accessibility)
     CardFieldBaseTextInputField(
         value = value,
         onValueChange = onValueChange,
         hint = stringResource(R.string.expiration_hint),
-        modifier = modifier.semantics { contentDescription = accessibilityLabel },
+        modifier = modifier,
         errorText = errorText,
         visualTransformation = ExpirationDateVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         focusRequester = focusRequester,
-        onFocusChanged = onFocusChanged
+        onFocusChanged = onFocusChanged,
+        contentDescription = stringResource(R.string.expiration_hint_accessibility)
     )
 }
