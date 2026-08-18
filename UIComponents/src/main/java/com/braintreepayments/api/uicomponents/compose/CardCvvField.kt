@@ -56,6 +56,7 @@ internal fun CardCvvField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         focusRequester = focusRequester,
         onFocusChanged = onFocusChanged,
+        contentDescription = stringResource(R.string.cvv_accessibility),
         trailingIcon = {
             Box {
                 IconButton(onClick = { showHint = true }) {
