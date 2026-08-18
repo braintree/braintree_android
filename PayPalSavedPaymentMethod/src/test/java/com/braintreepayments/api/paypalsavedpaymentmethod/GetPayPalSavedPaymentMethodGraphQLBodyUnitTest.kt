@@ -15,7 +15,7 @@ class GetPayPalSavedPaymentMethodGraphQLBodyUnitTest {
             .getJSONObject(GraphQLConstants.Keys.INPUT)
 
         assertTrue(body.getString(GraphQLConstants.Keys.QUERY).contains("PaypalFundingInstrumentDetails"))
-        assertEquals("STICKY_FI", input.getString("fetchPaymentMethodType"))
+        assertEquals("STICKY_FI", input.getString("fundingInstrumentType"))
         assertEquals("pmid-jwt", input.getString("paymentMethodIdJwt"))
         assertEquals("BT_NATIVE_SDK", input.getString("integrationChannel"))
         assertFalse(input.has("orderId"))
@@ -37,7 +37,7 @@ class GetPayPalSavedPaymentMethodGraphQLBodyUnitTest {
         val input = body.getJSONObject(GraphQLConstants.Keys.VARIABLES)
             .getJSONObject(GraphQLConstants.Keys.INPUT)
 
-        assertEquals("FI_FROM_APPROVED_CHECKOUT", input.getString("fetchPaymentMethodType"))
+        assertEquals("FI_FROM_APPROVED_CHECKOUT", input.getString("fundingInstrumentType"))
         assertEquals("order-123", input.getString("orderId"))
         assertEquals("BT_NATIVE_SDK", input.getString("integrationChannel"))
         assertFalse(input.has("paymentMethodIdJwt"))
