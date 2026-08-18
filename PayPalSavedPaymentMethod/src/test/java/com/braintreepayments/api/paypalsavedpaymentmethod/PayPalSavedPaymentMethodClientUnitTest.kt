@@ -44,9 +44,10 @@ class PayPalSavedPaymentMethodClientUnitTest {
 
         val result = sut.fetchFI("pmid-jwt")
 
-        val input = bodySlot.captured.getJSONObject("variables").getJSONObject("input")
-        assertEquals("STICKY_FI", input.getString("fetchPaymentMethodType"))
-        assertEquals("pmid-jwt", input.getString("paymentMethodIdJwt"))
+        assertEquals(
+            GetPayPalSavedPaymentMethodGraphQLBody.stickyFi("pmid-jwt").toString(),
+            bodySlot.captured.toString()
+        )
         assertTrue(result is PayPalSavedPaymentMethodSummaryResult.Success)
     }
 
@@ -78,9 +79,10 @@ class PayPalSavedPaymentMethodClientUnitTest {
 
         val result = sut.refetchFI("order-123")
 
-        val input = bodySlot.captured.getJSONObject("variables").getJSONObject("input")
-        assertEquals("FI_FROM_APPROVED_CHECKOUT", input.getString("fetchPaymentMethodType"))
-        assertEquals("order-123", input.getString("orderId"))
+        assertEquals(
+            GetPayPalSavedPaymentMethodGraphQLBody.fromApprovedCheckout("order-123").toString(),
+            bodySlot.captured.toString()
+        )
         assertTrue(result is PayPalSavedPaymentMethodSummaryResult.Success)
     }
 

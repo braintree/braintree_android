@@ -19,6 +19,16 @@ class GetPayPalSavedPaymentMethodGraphQLBodyUnitTest {
         assertEquals("pmid-jwt", input.getString("paymentMethodIdJwt"))
         assertEquals("BT_NATIVE_SDK", input.getString("integrationChannel"))
         assertFalse(input.has("orderId"))
+        assertFalse(input.has("merchantAccountId"))
+    }
+
+    @Test
+    fun stickyFi_withMerchantAccountId_includesIt() {
+        val body = GetPayPalSavedPaymentMethodGraphQLBody.stickyFi("pmid-jwt", "merchant-account-1")
+        val input = body.getJSONObject(GraphQLConstants.Keys.VARIABLES)
+            .getJSONObject(GraphQLConstants.Keys.INPUT)
+
+        assertEquals("merchant-account-1", input.getString("merchantAccountId"))
     }
 
     @Test
@@ -31,5 +41,15 @@ class GetPayPalSavedPaymentMethodGraphQLBodyUnitTest {
         assertEquals("order-123", input.getString("orderId"))
         assertEquals("BT_NATIVE_SDK", input.getString("integrationChannel"))
         assertFalse(input.has("paymentMethodIdJwt"))
+        assertFalse(input.has("merchantAccountId"))
+    }
+
+    @Test
+    fun fromApprovedCheckout_withMerchantAccountId_includesIt() {
+        val body = GetPayPalSavedPaymentMethodGraphQLBody.fromApprovedCheckout("order-123", "merchant-account-1")
+        val input = body.getJSONObject(GraphQLConstants.Keys.VARIABLES)
+            .getJSONObject(GraphQLConstants.Keys.INPUT)
+
+        assertEquals("merchant-account-1", input.getString("merchantAccountId"))
     }
 }

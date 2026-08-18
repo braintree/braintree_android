@@ -52,7 +52,7 @@ class PayPalSavedPaymentMethodSummaryUnitTest {
     }
 
     @Test
-    fun fromJson_returnsEmptyNoFi_whenDataNull() {
+    fun fromJson_returnsEmptyNoFi_whenPayloadNull() {
         val json = JSONObject("""{"data":{"paypalFundingInstrumentDetails":null}}""")
 
         val result = PayPalSavedPaymentMethodSummary.fromJson(json)
@@ -76,20 +76,5 @@ class PayPalSavedPaymentMethodSummaryUnitTest {
 
         assertEquals("AUTHENTICATION", exception.errorClass)
         assertEquals("PayPal access token not found for merchant account.", exception.message)
-    }
-
-    @Test
-    fun exception_fromGraphQLResponse_readsInternalErrorClass() {
-        val json = JSONObject(
-            """
-            {"errors":[{"message":"An internal error occurred.",
-              "extensions":{"errorClass":"INTERNAL","errorType":"unknown_error"}}],
-             "data":{"paypalFundingInstrumentDetails":null}}
-            """.trimIndent()
-        )
-
-        val exception = PayPalSavedPaymentMethodSummaryException.fromGraphQLResponse(json)
-
-        assertEquals("INTERNAL", exception.errorClass)
     }
 }

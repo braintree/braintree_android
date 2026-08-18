@@ -80,12 +80,18 @@ class PayPalSavedPaymentMethodClient internal constructor(
      * [PayPalSavedPaymentMethodSummaryResult.Failure] with a [PayPalSavedPaymentMethodSummaryException].
      *
      * @param paymentMethodIdJwt the `paymentMethodIdJwt` identifying the vaulted funding instrument
+     * @param merchantAccountId the merchant account to fetch the funding instrument for; when
+     * null, Atmosphere defaults to the merchant's default account.
      * @param callback [PayPalSavedPaymentMethodSummaryCallback] invoked with the result
      */
     @ExperimentalBetaApi
-    fun fetchFI(paymentMethodIdJwt: String, callback: PayPalSavedPaymentMethodSummaryCallback) {
+    fun fetchFI(
+        paymentMethodIdJwt: String,
+        merchantAccountId: String? = null,
+        callback: PayPalSavedPaymentMethodSummaryCallback
+    ) {
         coroutineScope.launch {
-            callback.onPayPalSavedPaymentMethodSummaryResult(fetchFI(paymentMethodIdJwt))
+            callback.onPayPalSavedPaymentMethodSummaryResult(fetchFI(paymentMethodIdJwt, merchantAccountId))
         }
     }
 
@@ -100,10 +106,15 @@ class PayPalSavedPaymentMethodClient internal constructor(
      * [PayPalSavedPaymentMethodSummaryException] is returned.
      *
      * @param paymentMethodIdJwt the `paymentMethodIdJwt` identifying the vaulted funding instrument
+     * @param merchantAccountId the merchant account to fetch the funding instrument for; when
+     * null, Atmosphere defaults to the merchant's default account.
      * @return [PayPalSavedPaymentMethodSummaryResult]
      */
     @ExperimentalBetaApi
-    suspend fun fetchFI(paymentMethodIdJwt: String): PayPalSavedPaymentMethodSummaryResult {
+    suspend fun fetchFI(
+        paymentMethodIdJwt: String,
+        merchantAccountId: String? = null
+    ): PayPalSavedPaymentMethodSummaryResult {
         if (paymentMethodIdJwt.isBlank()) {
             return PayPalSavedPaymentMethodSummaryResult.Failure(
                 PayPalSavedPaymentMethodSummaryException(
@@ -112,8 +123,8 @@ class PayPalSavedPaymentMethodClient internal constructor(
                 )
             )
         }
-        return getSavedPaypalPaymentMethod(
-            GetPayPalSavedPaymentMethodGraphQLBody.stickyFi(paymentMethodIdJwt)
+        return getPaymentMethod(
+            GetPayPalSavedPaymentMethodGraphQLBody.stickyFi(paymentMethodIdJwt, merchantAccountId)
         )
     }
 
@@ -125,12 +136,18 @@ class PayPalSavedPaymentMethodClient internal constructor(
      * `suspend` [refetchFI] overload when calling from a coroutine.
      *
      * @param orderId  the approved-checkout order id
+     * @param merchantAccountId the merchant account to fetch the funding instrument for; when
+     * null, Atmosphere defaults to the merchant's default account.
      * @param callback [PayPalSavedPaymentMethodSummaryCallback] invoked with the result
      */
     @ExperimentalBetaApi
-    fun refetchFI(orderId: String, callback: PayPalSavedPaymentMethodSummaryCallback) {
+    fun refetchFI(
+        orderId: String,
+        merchantAccountId: String? = null,
+        callback: PayPalSavedPaymentMethodSummaryCallback
+    ) {
         coroutineScope.launch {
-            callback.onPayPalSavedPaymentMethodSummaryResult(refetchFI(orderId))
+            callback.onPayPalSavedPaymentMethodSummaryResult(refetchFI(orderId, merchantAccountId))
         }
     }
 
@@ -143,17 +160,22 @@ class PayPalSavedPaymentMethodClient internal constructor(
      * coroutine.
      *
      * @param orderId the approved-checkout order id
+     * @param merchantAccountId the merchant account to fetch the funding instrument for; when
+     * null, Atmosphere defaults to the merchant's default account.
      * @return [PayPalSavedPaymentMethodSummaryResult]
      */
     @ExperimentalBetaApi
-    suspend fun refetchFI(orderId: String): PayPalSavedPaymentMethodSummaryResult =
-        getSavedPaypalPaymentMethod(
-            GetPayPalSavedPaymentMethodGraphQLBody.fromApprovedCheckout(orderId)
+    suspend fun refetchFI(
+        orderId: String,
+        merchantAccountId: String? = null
+    ): PayPalSavedPaymentMethodSummaryResult =
+        getPaymentMethod(
+            GetPayPalSavedPaymentMethodGraphQLBody.fromApprovedCheckout(orderId, merchantAccountId)
         )
 
     @OptIn(ExperimentalBetaApi::class)
     @Suppress("TooGenericExceptionCaught")
-    private suspend fun getSavedPaypalPaymentMethod(body: JSONObject): PayPalSavedPaymentMethodSummaryResult =
+    private suspend fun getPaymentMethod(body: JSONObject): PayPalSavedPaymentMethodSummaryResult =
         try {
             val response = JSONObject(braintreeClient.sendGraphQLPOST(body))
             val errors = response.optJSONArray(GraphQLConstants.Keys.ERRORS)
@@ -207,7 +229,7 @@ class PayPalSavedPaymentMethodClient internal constructor(
             else -> SANDBOX_BASE_URL
         }
         val responseBody = braintreeClient.sendPOST(
-            url = "$baseUrl/v2/credit/fetch-presentment-messages",
+            url = "$baseUrl$CREDIT_PRESENTMENT_MESSAGES_PATH",
             data = request.build().toString()
         )
         JSONObject(responseBody)
@@ -223,6 +245,7 @@ class PayPalSavedPaymentMethodClient internal constructor(
     companion object {
         private const val PRODUCTION_BASE_URL = "https://api.paypal.com"
         private const val SANDBOX_BASE_URL = "https://api.sandbox.paypal.com"
+        private const val CREDIT_PRESENTMENT_MESSAGES_PATH = "/v2/credit/fetch-presentment-messages"
         private const val MESSAGES_KEY = "messages"
         private const val PREFERRED_MESSAGE_KEY = "preferred_message"
     }
