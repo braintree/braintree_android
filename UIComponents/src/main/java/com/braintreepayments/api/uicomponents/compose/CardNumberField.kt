@@ -38,6 +38,7 @@ internal fun CardNumberField(
         visualTransformation = CardNumberVisualTransformation(brand.formatGaps),
         focusRequester = focusRequester,
         onFocusChanged = onFocusChanged,
+        contentDescription = stringResource(R.string.card_number_hint),
         leadingIcon = {
             Image(
                 painter = painterResource(brand.iconRes),

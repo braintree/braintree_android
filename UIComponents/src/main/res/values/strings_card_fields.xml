@@ -2,6 +2,7 @@
 <resources>
     <string name="card_number_hint">Card number</string>
     <string name="cvv_hint">CVV</string>
+    <string name="cvv_hint_accessibility">Card security code</string>
     <string name="cvv_hint_icon_description">CVV security code hint</string>
     <string name="cvv_overlay_close_description">Close CVV hint</string>
     <string name="cvv_overlay_header">CVV</string>

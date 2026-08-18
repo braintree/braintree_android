@@ -5,8 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import com.braintreepayments.api.uicomponents.R
@@ -25,11 +23,12 @@ internal fun CardExpirationField(
         value = value,
         onValueChange = onValueChange,
         hint = stringResource(R.string.expiration_hint),
-        modifier = modifier.semantics { contentDescription = accessibilityLabel },
+        modifier = modifier,
         errorText = errorText,
         visualTransformation = ExpirationDateVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         focusRequester = focusRequester,
-        onFocusChanged = onFocusChanged
+        onFocusChanged = onFocusChanged,
+        contentDescription = accessibilityLabel
     )
 }

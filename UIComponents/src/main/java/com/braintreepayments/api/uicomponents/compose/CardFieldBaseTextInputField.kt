@@ -32,6 +32,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -61,7 +62,8 @@ internal fun CardFieldBaseTextInputField(
     focusRequester: FocusRequester? = null,
     onFocusChanged: (Boolean) -> Unit = {},
     leadingIcon: (@Composable () -> Unit)? = null,
-    trailingIcon: (@Composable () -> Unit)? = null
+    trailingIcon: (@Composable () -> Unit)? = null,
+    contentDescription: String
     ) {
     val interactionSource = remember { MutableInteractionSource() }
     var isFocused by remember { mutableStateOf(false) }
@@ -150,7 +152,10 @@ internal fun CardFieldBaseTextInputField(
                             isFocused = it.isFocused
                             onFocusChanged(it.isFocused)
                         }
-                        .semantics { if (errorText != null) error(errorText) },
+                        .semantics {
+                            this.contentDescription = contentDescription
+                            if (errorText != null) error(errorText)
+                        },
                     textStyle = TextStyle(
                         color = colorResource(R.color.card_field_text),
                         fontSize = 16.sp,
