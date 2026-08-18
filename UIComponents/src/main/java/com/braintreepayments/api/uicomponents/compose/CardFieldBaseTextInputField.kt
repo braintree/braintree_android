@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -113,6 +114,7 @@ internal fun CardFieldBaseTextInputField(
             leadingIcon?.invoke()
 
             var containerHeightPx by remember { mutableIntStateOf(0) }
+            var containerWidthPx by remember { mutableIntStateOf(0) }
             var hintHeightPx by remember { mutableIntStateOf(0) }
             val centerYBasisPx = remember(shouldFloat) { hintHeightPx }
             val density = LocalDensity.current
@@ -121,7 +123,10 @@ internal fun CardFieldBaseTextInputField(
                 modifier = Modifier
                     .weight(1f)
                     .heightIn(min = minHeight)
-                    .onGloballyPositioned { containerHeightPx = it.size.height }
+                    .onGloballyPositioned {
+                        containerHeightPx = it.size.height
+                        containerWidthPx = it.size.width
+                    }
             ) {
 
                 val verticalCompressionPx = with(density) { FLOAT_VERTICAL_COMPRESSION_DP.toPx() }
@@ -132,10 +137,22 @@ internal fun CardFieldBaseTextInputField(
                     floatFraction * (floatTargetPx + verticalCompressionPx)
                 }
 
+                val baseHintFontSize = interpolateHintFontSize(hintRestTextSize, hintFloatTextSize, floatFraction)
+                var hintFontScale by remember(hint, containerWidthPx) { mutableFloatStateOf(1f) }
+
+                val hintDisplayedFont = baseHintFontSize * hintFontScale
+
                 Text(
                     text = hint,
-                    fontSize = interpolateHintFontSize(hintRestTextSize, hintFloatTextSize, floatFraction),
+                    fontSize = hintDisplayedFont,
                     color = colorResource(R.color.card_field_hint_text),
+                    maxLines = 1,
+                    softWrap = false,
+                    onTextLayout = { result ->
+                        if (result.didOverflowWidth && hintDisplayedFont > hintFloatTextSize) {
+                            hintFontScale -= HINT_FONT_SCALE_STEP
+                        }
+                    },
                     modifier = Modifier
                         .align(Alignment.CenterStart)
                         .onGloballyPositioned { hintHeightPx = it.size.height }
@@ -205,3 +222,4 @@ private fun interpolateHintFontSize(restSize: TextUnit, floatedSize: TextUnit, f
 
 private const val HINT_ANIMATION_DURATION_MS = 200
 private val FLOAT_VERTICAL_COMPRESSION_DP = 2.dp
+private const val HINT_FONT_SCALE_STEP = 0.05f
