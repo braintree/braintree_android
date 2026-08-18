@@ -22,7 +22,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
@@ -50,29 +49,33 @@ internal fun CvvHintPopup(onDismissRequest: () -> Unit) {
                 .clip(RoundedCornerShape(cornerRadius))
                 .background(colorResource(R.color.card_field_background))
                 .border(borderWidth, Color.White, RoundedCornerShape(cornerRadius))
-                .padding(12.dp)
+                .padding(dimensionResource(R.dimen.cvv_overlay_padding))
         ) {
+            val closeIconSize = dimensionResource(R.dimen.cvv_overlay_close_icon_size)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = stringResource(R.string.cvv_overlay_header),
                     modifier = Modifier.weight(1f),
                     color = colorResource(R.color.card_field_text),
-                    fontSize = 18.sp,
+                    fontSize = dimensionResource(R.dimen.cvv_overlay_header_text_size).value.sp,
                     fontWeight = FontWeight.Bold
                 )
-                IconButton(onClick = onDismissRequest, modifier = Modifier.size(24.dp)) {
+                IconButton(onClick = onDismissRequest, modifier = Modifier.size(closeIconSize)) {
                     Icon(
                         painter = painterResource(R.drawable.cvv_hint_close),
                         contentDescription = stringResource(R.string.cvv_overlay_close_description),
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(closeIconSize)
                     )
                 }
             }
             Text(
                 text = stringResource(R.string.cvv_overlay_body),
-                modifier = Modifier.padding(top = 2.dp, end = 34.dp),
+                modifier = Modifier.padding(
+                    top = dimensionResource(R.dimen.cvv_overlay_body_padding_top),
+                    end = dimensionResource(R.dimen.cvv_overlay_body_padding_end)
+                ),
                 color = colorResource(R.color.card_field_text),
-                fontSize = 14.sp
+                fontSize = dimensionResource(R.dimen.cvv_overlay_body_text_size).value.sp
             )
         }
     }
