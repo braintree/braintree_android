@@ -64,6 +64,24 @@ class GooglePayLauncherUnitTest {
     }
 
     @Test
+    fun `when GooglePayLauncher is constructed via the Compose constructor, activity result launcher is registered`() {
+        val expectedKey = "com.braintreepayments.api.GooglePay.RESULT"
+        val lifecycleOwner = FragmentActivity()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+
+        val registry = mockk<ActivityResultRegistry>(relaxed = true)
+        GooglePayLauncher(registry, lifecycleOwner, context, callback)
+
+        verify {
+            registry.register(
+                eq(expectedKey), eq(lifecycleOwner),
+                any<TaskResultContracts.GetPaymentDataResult>(),
+                any()
+            )
+        }
+    }
+
+    @Test
     fun `when launch is called with ready to launch request, activity result launcher launches task`() {
         val lifecycleOwner = FragmentActivity()
         val context = ApplicationProvider.getApplicationContext<Context>()
