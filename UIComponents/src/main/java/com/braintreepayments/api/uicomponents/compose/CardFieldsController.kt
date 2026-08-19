@@ -13,6 +13,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.braintreepayments.api.card.Card
 import com.braintreepayments.api.card.CardClient
 import com.braintreepayments.api.card.CardResult
+import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import com.braintreepayments.api.uicomponents.cardfields.CardFieldsResult
 import com.braintreepayments.api.uicomponents.cardfields.CardFieldsResultCallback
 import com.braintreepayments.api.uicomponents.cardfields.CardFieldsViewModel
@@ -25,14 +28,31 @@ class CardFieldsController internal constructor(
     internal val cvv: MutableState<TextFieldValue>,
     private val cardClient: CardClient,
     private val request: Card = Card(),
+    private val analyticsClient: AnalyticsClient = AnalyticsClient.lazyInstance.value,
+    private val shouldSendPresentedEvent: MutableState<Boolean> = mutableStateOf(true),
 ) {
     val isFormValid: StateFlow<Boolean> = viewModel.isFormValid
+
+    init {
+        if (shouldSendPresentedEvent.value) {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.CARD_FIELDS_PRESENTED,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
+            )
+            shouldSendPresentedEvent.value = false
+        }
+    }
 
     /**
      * Tokenizes the card details entered by the user, merged with any additional data provided via
      * [request]. The result is delivered to [callback].
      */
     fun submit(callback: CardFieldsResultCallback) {
+        analyticsClient.sendEvent(
+            UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
+            AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
+        )
+
         cardClient.tokenize(buildCard()) { cardResult ->
             val result = when (cardResult) {
                 is CardResult.Success -> CardFieldsResult.Success(cardResult.nonce)
@@ -68,6 +88,7 @@ fun rememberCardFieldsController(authorization: String, request: Card = Card()):
     val cvv = rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(viewModel.currentCvv.asTextFieldValue())
     }
+    val shouldSendPresentedEvent = rememberSaveable { mutableStateOf(true) }
 
     LaunchedEffect(viewModel) {
         if (cardNumber.value.text != viewModel.currentCardNumber) {
@@ -82,6 +103,14 @@ fun rememberCardFieldsController(authorization: String, request: Card = Card()):
     }
 
     return remember(viewModel, authorization, request) {
-        CardFieldsController(viewModel, cardNumber, expiration, cvv, CardClient(context, authorization), request)
+        CardFieldsController(
+            viewModel,
+            cardNumber,
+            expiration,
+            cvv,
+            CardClient(context, authorization),
+            request,
+            shouldSendPresentedEvent = shouldSendPresentedEvent,
+        )
     }
 }
