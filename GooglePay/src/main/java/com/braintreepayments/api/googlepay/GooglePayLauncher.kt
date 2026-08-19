@@ -79,6 +79,24 @@ class GooglePayLauncher internal constructor(
     ) : this(activity.activityResultRegistry, activity, activity, callback = callback)
 
     /**
+     * Used to launch the Google Pay payment sheet from a composable, or anywhere else a Fragment
+     * or ComponentActivity reference is not available. This class must be instantiated before the
+     * [lifecycleOwner] reaches the CREATED state.
+     *
+     * @param registry the [ActivityResultRegistry] to use for launching the Google Pay payment sheet
+     * @param lifecycleOwner the [LifecycleOwner] used to control when the launcher is registered
+     * @param context an Android Context
+     * @param callback a [GooglePayLauncherCallback] to receive the result of the Google Pay
+     * payment flow
+     */
+    constructor(
+        registry: ActivityResultRegistry,
+        lifecycleOwner: LifecycleOwner,
+        context: Context,
+        callback: GooglePayLauncherCallback
+    ) : this(registry, lifecycleOwner, context, GooglePayInternalClient(), callback)
+
+    /**
      * Launches the Google Pay payment sheet. This method cannot be called until the lifecycle of
      * the Fragment or Activity used to instantiate your [GooglePayLauncher] has reached the
      * CREATED state.
