@@ -83,14 +83,7 @@ internal fun CardFieldBaseTextInputField(
     val hintRestTextSize = dimensionResource(R.dimen.card_field_hint_text_size).value.sp
     val hintFloatTextSize = dimensionResource(R.dimen.card_field_hint_float_text_size).value.sp
 
-    val borderColor = colorResource(
-        when {
-            hasError -> R.color.card_field_error
-            isFocused -> R.color.card_field_border_focused
-            else -> R.color.card_field_border_default
-        }
-    )
-
+    val borderColor = colorResource(resolveBorderColor(hasError, isFocused))
     val currentBorderWidth = if (hasError || isFocused) borderFocusedWidth else borderWidth
 
     val shouldFloat = isFocused || value.text.isNotEmpty()
@@ -138,21 +131,12 @@ internal fun CardFieldBaseTextInputField(
                 }
 
                 val baseHintFontSize = interpolateHintFontSize(hintRestTextSize, hintFloatTextSize, floatFraction)
-                var hintFontScale by remember(hint, containerWidthPx) { mutableFloatStateOf(1f) }
 
-                val hintDisplayedFont = baseHintFontSize * hintFontScale
-
-                Text(
-                    text = hint,
-                    fontSize = hintDisplayedFont,
-                    color = colorResource(R.color.card_field_hint_text),
-                    maxLines = 1,
-                    softWrap = false,
-                    onTextLayout = { result ->
-                        if (result.didOverflowWidth && hintDisplayedFont > hintFloatTextSize) {
-                            hintFontScale -= HINT_FONT_SCALE_STEP
-                        }
-                    },
+                ShrinkToFitHintText(
+                    hint = hint,
+                    fontSize = baseHintFontSize,
+                    minFontSize = hintFloatTextSize,
+                    resetKey = containerWidthPx,
                     modifier = Modifier
                         .align(Alignment.CenterStart)
                         .onGloballyPositioned { hintHeightPx = it.size.height }
@@ -192,33 +176,70 @@ internal fun CardFieldBaseTextInputField(
         }
 
         if (errorText != null) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Bottom
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_card_field_error),
-                    contentDescription = null,
-                    tint = colorResource(R.color.card_field_error),
-                    modifier = Modifier
-                        .padding(
-                            top = dimensionResource(R.dimen.card_field_error_margin_top),
-                            end = dimensionResource(R.dimen.card_field_error_icon_margin_end)
-                        )
-                )
-                Text(
-                    text = errorText,
-                    color = colorResource(R.color.card_field_text),
-                    fontSize = dimensionResource(R.dimen.card_field_error_text_size).value.sp,
-                    modifier = Modifier.padding(top = dimensionResource(R.dimen.card_field_error_margin_top))
-                )
-            }
+            CardFieldErrorMessage(errorText)
         }
+    }
+}
+
+@Composable
+private fun ShrinkToFitHintText(
+    hint: String,
+    fontSize: TextUnit,
+    minFontSize: TextUnit,
+    resetKey: Any?,
+    modifier: Modifier = Modifier
+) {
+    var hintFontScale by remember(resetKey) { mutableFloatStateOf(1f) }
+    val displayedFontSize = fontSize * hintFontScale
+
+    Text(
+        text = hint,
+        fontSize = displayedFontSize,
+        color = colorResource(R.color.card_field_hint_text),
+        maxLines = 1,
+        softWrap = false,
+        onTextLayout = { result ->
+            if (result.didOverflowWidth && displayedFontSize > minFontSize) {
+                hintFontScale -= HINT_FONT_SCALE_STEP
+            }
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun CardFieldErrorMessage(errorText: String, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_card_field_error),
+            contentDescription = null,
+            tint = colorResource(R.color.card_field_error),
+            modifier = Modifier
+                .padding(
+                    top = dimensionResource(R.dimen.card_field_error_margin_top),
+                    end = dimensionResource(R.dimen.card_field_error_icon_margin_end)
+                )
+        )
+        Text(
+            text = errorText,
+            color = colorResource(R.color.card_field_text),
+            fontSize = dimensionResource(R.dimen.card_field_error_text_size).value.sp,
+            modifier = Modifier.padding(top = dimensionResource(R.dimen.card_field_error_margin_top))
+        )
     }
 }
 
 private fun interpolateHintFontSize(restSize: TextUnit, floatedSize: TextUnit, fraction: Float) =
     (restSize.value + (floatedSize.value - restSize.value) * fraction).sp
+
+private fun resolveBorderColor(hasError: Boolean, isFocused: Boolean) = when {
+    hasError -> R.color.card_field_error
+    isFocused -> R.color.card_field_border_focused
+    else -> R.color.card_field_border_default
+}
 
 private const val HINT_ANIMATION_DURATION_MS = 200
 private val FLOAT_VERTICAL_COMPRESSION_DP = 2.dp
