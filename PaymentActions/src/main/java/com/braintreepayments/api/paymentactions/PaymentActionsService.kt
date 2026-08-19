@@ -37,6 +37,15 @@ internal class PaymentActionsService(
         }
     }
 
+    /**
+     * Fetches the current state of a payment action.
+     *
+     * Stubbed for now — the GraphQL query for fetching a payment action by id is not yet defined.
+     */
+    suspend fun getPaymentAction(): PaymentActionServiceResult {
+        throw NotImplementedError("getPaymentAction is not yet implemented")
+    }
+
     private fun buildSetPaymentActionPaymentMethodQuery(paymentMethod: PaymentActionRequest): JSONObject {
         val input = JSONObject().put(PAYMENT_METHOD_KEY, paymentMethod.toGraphQLVariables())
         val variables = JSONObject().put(GraphQLConstants.Keys.INPUT, input)
