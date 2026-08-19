@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,15 +38,37 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
 
     val focusManager = LocalFocusManager.current
 
+    val expirationFocusRequester = remember { FocusRequester() }
+    val cvvFocusRequester = remember { FocusRequester() }
+
     var cardNumberHasBeenFocused by remember { mutableStateOf(false) }
     var expirationHasBeenFocused by remember { mutableStateOf(false) }
     var cvvHasBeenFocused by remember { mutableStateOf(false) }
+
+    var cardNumberFocused by remember { mutableStateOf(false) }
+    var expirationFocused by remember { mutableStateOf(false) }
 
     fun onFieldFocusChanged(field: CardField, focused: Boolean, hasBeenFocused: Boolean): Boolean {
         if (focused || hasBeenFocused) {
             viewModel.onFieldFocusChanged(field, focused)
         }
         return focused || hasBeenFocused
+    }
+
+    // Restart the effect when cardNumberValidation changes
+    LaunchedEffect(cardNumberValidation) {
+        if (cardNumberValidation is ValidationResult.Valid && cardNumberFocused) {
+            // Autoadvance focus to the expirationDate field
+            expirationFocusRequester.requestFocus()
+        }
+    }
+
+    // Restart the effect when expirationValidation changes
+    LaunchedEffect(expirationValidation) {
+        if (expirationValidation is ValidationResult.Valid && expirationFocused) {
+            // Autoadvance focus to the CVV field
+            cvvFocusRequester.requestFocus()
+        }
     }
 
     Column(
@@ -85,6 +108,7 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
             brand = detectedBrand,
             errorText = cardNumberValidation.errorText(),
             onFocusChanged = { focused ->
+                cardNumberFocused = focused
                 cardNumberHasBeenFocused = onFieldFocusChanged(
                     CardField.CARD_NUMBER,
                     focused,
@@ -107,7 +131,9 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
                 },
                 modifier = Modifier.weight(1f),
                 errorText = expirationValidation.errorText(),
+                focusRequester = expirationFocusRequester,
                 onFocusChanged = { focused ->
+                    expirationFocused = focused
                     expirationHasBeenFocused = onFieldFocusChanged(
                         CardField.EXPIRY,
                         focused,
@@ -124,6 +150,7 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
                 },
                 modifier = Modifier.weight(1f),
                 errorText = cvvValidation.errorText(),
+                focusRequester = cvvFocusRequester,
                 onFocusChanged = { focused ->
                     cvvHasBeenFocused = onFieldFocusChanged(CardField.CVV, focused, cvvHasBeenFocused)
                 }
