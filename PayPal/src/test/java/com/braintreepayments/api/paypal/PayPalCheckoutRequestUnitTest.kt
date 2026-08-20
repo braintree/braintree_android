@@ -44,6 +44,7 @@ class PayPalCheckoutRequestUnitTest {
         assertFalse(request.enablePayPalAppSwitch)
         assertNull(request.userAuthenticationEmail)
         assertFalse(request.hasUserLocationConsent)
+        assertNull(request.editBillingAgreement)
     }
 
     @OptIn(ExperimentalBetaApi::class)

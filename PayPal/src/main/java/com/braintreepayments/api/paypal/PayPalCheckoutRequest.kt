@@ -9,6 +9,7 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.PostalAddress
 import com.braintreepayments.api.core.PostalAddressParser
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONException
@@ -76,9 +77,6 @@ import org.json.JSONObject
  * @property shouldOfferCredit Offers PayPal Credit if the customer qualifies. Defaults to false.
  *
  * @property campaigns List of PayPal co-marketing campaigns to associate with the order.
- * @property editBillingAgreement Opts into the View/Edit Funding Instrument (FI) flow. When set to
- * true and the SDK is initialized with a client token carrying a payment method ID JWT, that JWT
- * is included in the request to seed the edit order. Defaults to null (opted out).
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
@@ -110,7 +108,6 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     var amountBreakdown: AmountBreakdown? = null,
     override var shouldOfferCredit: Boolean = false,
     var campaigns: List<PayPalCampaign> = emptyList(),
-    var editBillingAgreement: Boolean? = null,
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -126,6 +123,16 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     userAuthenticationEmail = userAuthenticationEmail,
     lineItems = lineItems
 ) {
+
+    /**
+     * Opts into the View/Edit Funding Instrument (FI) flow. When set to true and the SDK is
+     * initialized with a client token carrying a payment method ID JWT, that JWT is included in
+     * the request to seed the edit order. Defaults to null (opted out). Can only be set
+     * internally via [PayPalClient.createPaymentAuthRequestForEditFi].
+     */
+    @IgnoredOnParcel
+    var editBillingAgreement: Boolean? = null
+        internal set
 
     @OptIn(ExperimentalBetaApi::class)
     @Throws(JSONException::class)
