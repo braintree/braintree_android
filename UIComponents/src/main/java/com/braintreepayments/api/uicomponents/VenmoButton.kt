@@ -83,6 +83,18 @@ class VenmoButton @JvmOverloads constructor(
      * merchant's application to be used to return to merchant's app from the Venmo payment flows.
      * @param deepLinkFallbackUrlScheme a return url scheme that will be used as a deep link fallback when returning to
      * merchant's app via App Link is not available (buyer unchecks the "Open supported links" setting).
+     *
+     * The value must be a bare URL scheme, not a full URL. It must:
+     * - Contain only alphanumeric characters, hyphens (`-`), and periods (`.`)
+     * - Not include `://`
+     * - Not include a path, query string, or fragment (no `/`, `?`, or `#`)
+     * - Match the scheme declared in your `AndroidManifest.xml`
+     *
+     * Valid examples: `"com.merchant.app.payments"`, `"merchantapp"`, `"merchant-app.payments"`.
+     *
+     * Invalid examples: `"com.merchant.app.payments://"` (contains `://`),
+     * `"com.merchant.app.payments/callback"` (contains a path),
+     * `"com.merchant_app"` (underscore not allowed).
      * @param activityResultCaller      an [ActivityResultCaller] (typically a Fragment or Activity) that will be used
      * to register the ActivityResultLauncher for the Venmo browser switch flow.
      */
