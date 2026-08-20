@@ -42,6 +42,7 @@ class ComposeCardFieldsFragment : BaseFragment() {
                 LaunchedEffect(Unit) {
                     cardFieldsController.initialize(context, authStringArg)
                     cardFieldsController.setPaymentRequest(
+                        // optional customer data
                         Card(
                             cardholderName = "John Doe",
                             postalCode = "12345"

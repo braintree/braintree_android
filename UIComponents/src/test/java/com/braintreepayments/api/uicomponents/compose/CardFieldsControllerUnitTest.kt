@@ -1,6 +1,8 @@
 package com.braintreepayments.api.uicomponents.compose
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import com.braintreepayments.api.card.Card
 import com.braintreepayments.api.card.CardClient
 import com.braintreepayments.api.card.CardNonce
@@ -24,15 +26,28 @@ class CardFieldsControllerUnitTest {
 
     private val cardClient: CardClient = mockk(relaxed = true)
 
+    private fun String.asTextFieldValue() = TextFieldValue(text = this, selection = TextRange(length))
+
     private fun createCardFieldsController(viewModel: CardFieldsViewModel = CardFieldsViewModel()) =
-        CardFieldsController(viewModel)
+        CardFieldsController(
+            viewModel,
+            mutableStateOf(viewModel.currentCardNumber.asTextFieldValue()),
+            mutableStateOf(viewModel.currentExpiration.asTextFieldValue()),
+            mutableStateOf(viewModel.currentCvv.asTextFieldValue())
+        )
 
     private fun createCardFieldsControllerWithClient(viewModel: CardFieldsViewModel = CardFieldsViewModel()) =
-        CardFieldsController(viewModel, cardClient)
+        CardFieldsController(
+            viewModel,
+            mutableStateOf(viewModel.currentCardNumber.asTextFieldValue()),
+            mutableStateOf(viewModel.currentExpiration.asTextFieldValue()),
+            mutableStateOf(viewModel.currentCvv.asTextFieldValue()),
+            cardClient
+        )
 
     @Test
     fun `cardNumber initializes empty with cursor at the start when the view model has no value`() {
-        val controller = CardFieldsController(CardFieldsViewModel())
+        val controller = createCardFieldsController()
         assertEquals("", controller.cardNumber.value.text)
         assertEquals(TextRange(0), controller.cardNumber.value.selection)
     }
@@ -42,7 +57,7 @@ class CardFieldsControllerUnitTest {
         val viewModel = CardFieldsViewModel()
         viewModel.onCardNumberChanged("4111")
 
-        val controller = CardFieldsController(viewModel)
+        val controller = createCardFieldsController(viewModel)
 
         assertEquals("4111", controller.cardNumber.value.text)
         assertEquals(TextRange(4), controller.cardNumber.value.selection)
@@ -50,7 +65,7 @@ class CardFieldsControllerUnitTest {
 
     @Test
     fun `expiration initializes empty with cursor at the start when the view model has no value`() {
-        val controller = CardFieldsController(CardFieldsViewModel())
+        val controller = createCardFieldsController()
         assertEquals("", controller.expiration.value.text)
         assertEquals(TextRange(0), controller.expiration.value.selection)
     }
@@ -60,7 +75,7 @@ class CardFieldsControllerUnitTest {
         val viewModel = CardFieldsViewModel()
         viewModel.onExpiryChanged("1225")
 
-        val controller = CardFieldsController(viewModel)
+        val controller = createCardFieldsController(viewModel)
 
         assertEquals("1225", controller.expiration.value.text)
         assertEquals(TextRange(4), controller.expiration.value.selection)
@@ -68,7 +83,7 @@ class CardFieldsControllerUnitTest {
 
     @Test
     fun `cvv initializes empty with cursor at the start when the view model has no value`() {
-        val controller = CardFieldsController(CardFieldsViewModel())
+        val controller = createCardFieldsController()
         assertEquals("", controller.cvv.value.text)
         assertEquals(TextRange(0), controller.cvv.value.selection)
     }
@@ -78,7 +93,7 @@ class CardFieldsControllerUnitTest {
         val viewModel = CardFieldsViewModel()
         viewModel.onCvvChanged("123")
 
-        val controller = CardFieldsController(viewModel)
+        val controller = createCardFieldsController(viewModel)
 
         assertEquals("123", controller.cvv.value.text)
         assertEquals(TextRange(3), controller.cvv.value.selection)
@@ -89,9 +104,9 @@ class CardFieldsControllerUnitTest {
     @Test
     fun `isFormValid reflects the view model's isFormValid flow`() {
         val viewModel = CardFieldsViewModel()
-        val state = createCardFieldsController(viewModel)
+        val controller = createCardFieldsController(viewModel)
 
-        assertEquals(viewModel.isFormValid, state.isFormValid)
+        assertEquals(viewModel.isFormValid, controller.isFormValid)
     }
 
     // endregion
@@ -99,24 +114,15 @@ class CardFieldsControllerUnitTest {
     // region Tokenization
 
     @Test
-    fun `submit before initialize delivers a Failure to the callback`() {
+    fun `submit before initialize delivers a Failure to the callback and does not tokenize`() {
         // No client injected and initialize() never called, so cardClient is null.
-        val state = createCardFieldsController()
+        val controller = createCardFieldsController()
         var result: CardFieldsResult? = null
 
-        state.submit { result = it }
+        controller.submit { result = it }
 
         assertTrue(result is CardFieldsResult.Failure)
         assertTrue((result as CardFieldsResult.Failure).error is BraintreeException)
-    }
-
-    @Test
-    fun `submit before initialize does not tokenize`() {
-        // No client is injected (null cardClient), so submit() hits the pre-init guard and
-        // skips tokenization entirely — cardClient.tokenize is never reached.
-        val state = createCardFieldsController()
-
-        state.submit { }
 
         verify(exactly = 0) { cardClient.tokenize(any(), any()) }
     }
@@ -129,10 +135,10 @@ class CardFieldsControllerUnitTest {
         every { cardClient.tokenize(any(), any()) } answers {
             secondArg<CardTokenizeCallback>().onCardResult(successResult)
         }
-        val state = createCardFieldsControllerWithClient()
+        val controller = createCardFieldsControllerWithClient()
         var result: CardFieldsResult? = null
 
-        state.submit { result = it }
+        controller.submit { result = it }
 
         assertTrue(result is CardFieldsResult.Success)
         assertEquals(nonce, (result as CardFieldsResult.Success).nonce)
@@ -146,10 +152,10 @@ class CardFieldsControllerUnitTest {
         every { cardClient.tokenize(any(), any()) } answers {
             secondArg<CardTokenizeCallback>().onCardResult(failureResult)
         }
-        val state = createCardFieldsControllerWithClient()
+        val controller = createCardFieldsControllerWithClient()
         var result: CardFieldsResult? = null
 
-        state.submit { result = it }
+        controller.submit { result = it }
 
         assertTrue(result is CardFieldsResult.Failure)
         assertEquals(error, (result as CardFieldsResult.Failure).error)
@@ -159,12 +165,12 @@ class CardFieldsControllerUnitTest {
     fun `submit tokenizes the user-entered card fields`() {
         val cardSlot = slot<Card>()
         every { cardClient.tokenize(capture(cardSlot), any()) } just Runs
-        val state = createCardFieldsControllerWithClient()
-        state.cardNumber.value = state.cardNumber.value.copy(text = "4111111111111111")
-        state.expiration.value = state.expiration.value.copy(text = "1226")
-        state.cvv.value = state.cvv.value.copy(text = "123")
+        val controller = createCardFieldsControllerWithClient()
+        controller.cardNumber.value = controller.cardNumber.value.copy(text = "4111111111111111")
+        controller.expiration.value = controller.expiration.value.copy(text = "1226")
+        controller.cvv.value = controller.cvv.value.copy(text = "123")
 
-        state.submit { }
+        controller.submit { }
 
         val captured = cardSlot.captured
         assertEquals("4111111111111111", captured.number)
@@ -177,16 +183,16 @@ class CardFieldsControllerUnitTest {
     fun `submit merges UI fields over the payment request, with all fields correctly preserved`() {
         val cardSlot = slot<Card>()
         every { cardClient.tokenize(capture(cardSlot), any()) } just Runs
-        val state = createCardFieldsControllerWithClient()
-        state.cardNumber.value = state.cardNumber.value.copy(text = "4111111111111111")
-        state.expiration.value = state.expiration.value.copy(text = "1226")
-        state.cvv.value = state.cvv.value.copy(text = "123")
+        val controller = createCardFieldsControllerWithClient()
+        controller.cardNumber.value = controller.cardNumber.value.copy(text = "4111111111111111")
+        controller.expiration.value = controller.expiration.value.copy(text = "1226")
+        controller.cvv.value = controller.cvv.value.copy(text = "123")
         // The merchant card carries metadata AND a number the user did not type.
-        state.setPaymentRequest(
+        controller.setPaymentRequest(
             Card(cardholderName = "Jane Doe", postalCode = "94107", number = "0000")
         )
 
-        state.submit { }
+        controller.submit { }
 
         val captured = cardSlot.captured
         // UI-entered number overrides the merchant-supplied "0000".
@@ -200,12 +206,12 @@ class CardFieldsControllerUnitTest {
     fun `submit without a payment request still tokenizes the UI fields`() {
         val cardSlot = slot<Card>()
         every { cardClient.tokenize(capture(cardSlot), any()) } just Runs
-        val state = createCardFieldsControllerWithClient()
-        state.cardNumber.value = state.cardNumber.value.copy(text = "4111111111111111")
-        state.expiration.value = state.expiration.value.copy(text = "1226")
-        state.cvv.value = state.cvv.value.copy(text = "123")
+        val controller = createCardFieldsControllerWithClient()
+        controller.cardNumber.value = controller.cardNumber.value.copy(text = "4111111111111111")
+        controller.expiration.value = controller.expiration.value.copy(text = "1226")
+        controller.cvv.value = controller.cvv.value.copy(text = "123")
 
-        state.submit { }
+        controller.submit { }
 
         val captured = cardSlot.captured
         assertEquals("4111111111111111", captured.number)

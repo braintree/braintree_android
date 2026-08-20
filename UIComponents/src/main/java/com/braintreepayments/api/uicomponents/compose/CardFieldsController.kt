@@ -2,8 +2,11 @@ package com.braintreepayments.api.uicomponents.compose
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -18,12 +21,11 @@ import kotlinx.coroutines.flow.StateFlow
 
 class CardFieldsController internal constructor(
     internal val viewModel: CardFieldsViewModel,
+    internal val cardNumber: MutableState<TextFieldValue>,
+    internal val expiration: MutableState<TextFieldValue>,
+    internal val cvv: MutableState<TextFieldValue>,
     private var cardClient: CardClient? = null,
 ) {
-    internal var cardNumber = mutableStateOf(viewModel.currentCardNumber.asTextFieldValue())
-    internal var expiration = mutableStateOf(viewModel.currentExpiration.asTextFieldValue())
-    internal var cvv = mutableStateOf(viewModel.currentCvv.asTextFieldValue())
-
     private var request: Card? = null
 
     val isFormValid: StateFlow<Boolean> = viewModel.isFormValid
@@ -87,5 +89,27 @@ private fun String.asTextFieldValue() = TextFieldValue(text = this, selection = 
 @Composable
 fun rememberCardFieldsController(): CardFieldsController {
     val viewModel = viewModel<CardFieldsViewModel>()
-    return remember(viewModel) { CardFieldsController(viewModel) }
+    val cardNumber = rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(viewModel.currentCardNumber.asTextFieldValue())
+    }
+    val expiration = rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(viewModel.currentExpiration.asTextFieldValue())
+    }
+    val cvv = rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(viewModel.currentCvv.asTextFieldValue())
+    }
+
+    LaunchedEffect(viewModel) {
+        if (cardNumber.value.text != viewModel.currentCardNumber) {
+            viewModel.onCardNumberChanged(cardNumber.value.text)
+        }
+        if (expiration.value.text != viewModel.currentExpiration) {
+            viewModel.onExpiryChanged(expiration.value.text)
+        }
+        if (cvv.value.text != viewModel.currentCvv) {
+            viewModel.onCvvChanged(cvv.value.text)
+        }
+    }
+
+    return remember(viewModel) { CardFieldsController(viewModel, cardNumber, expiration, cvv) }
 }
