@@ -2,6 +2,7 @@ package com.braintreepayments.api.uicomponents.compose
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
@@ -24,7 +25,7 @@ internal fun CardExpirationField(
         hint = stringResource(R.string.expiration_hint),
         modifier = modifier,
         errorText = errorText,
-        visualTransformation = ExpirationDateVisualTransformation(),
+        visualTransformation = remember { ExpirationDateVisualTransformation() },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         focusRequester = focusRequester,
         onFocusChanged = onFocusChanged,

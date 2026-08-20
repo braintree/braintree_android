@@ -109,7 +109,14 @@ internal fun CardFieldBaseTextInputField(
             var containerHeightPx by remember { mutableIntStateOf(0) }
             var containerWidthPx by remember { mutableIntStateOf(0) }
             var hintHeightPx by remember { mutableIntStateOf(0) }
-            val centerYBasisPx = remember(shouldFloat) { hintHeightPx }
+            var restHintHeightPx by remember { mutableIntStateOf(0) }
+            // Keep tracking the resting (non-floated) hint height until it's actually been
+            // measured at least once, so a config change that restores non-empty text (and
+            // therefore starts already floated) doesn't freeze this basis at its initial 0.
+            if (!shouldFloat || restHintHeightPx == 0) {
+                restHintHeightPx = hintHeightPx
+            }
+            val centerYBasisPx = restHintHeightPx
             val density = LocalDensity.current
 
             Box(

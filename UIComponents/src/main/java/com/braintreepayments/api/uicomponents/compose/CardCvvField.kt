@@ -37,10 +37,11 @@ internal fun CardCvvField(
     var revealedIndex by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(value.text) {
-        val grew = value.text.length > previousLength
+        val hasNewDigit = value.text.length > previousLength
         previousLength = value.text.length
-        if (grew) {
-            revealedIndex = value.text.lastIndex
+        val typedIndex = value.selection.end - 1
+        if (hasNewDigit && typedIndex in value.text.indices) {
+            revealedIndex = typedIndex
             delay(CVV_DIGIT_REVEAL_DURATION.milliseconds)
         }
         revealedIndex = null
@@ -52,7 +53,7 @@ internal fun CardCvvField(
         hint = stringResource(R.string.cvv_hint),
         modifier = modifier,
         errorText = errorText,
-        visualTransformation = CvvVisualTransformation(revealedIndex),
+        visualTransformation = remember(revealedIndex) { CvvVisualTransformation(revealedIndex) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         focusRequester = focusRequester,
         onFocusChanged = onFocusChanged,
