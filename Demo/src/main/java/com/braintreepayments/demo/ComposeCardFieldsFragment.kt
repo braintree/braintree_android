@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -36,18 +35,15 @@ class ComposeCardFieldsFragment : BaseFragment() {
         super.onCreateView(inflater, container, savedInstanceState)
         return ComposeView(requireContext()).apply {
             setContent {
-                val cardFieldsController = rememberCardFieldsController()
-                val isFormValid by cardFieldsController.isFormValid.collectAsState()
-
-                LaunchedEffect(Unit) {
-                    cardFieldsController.initialize(context, authStringArg)
-                    cardFieldsController.setPaymentRequest(
-                        Card(
-                            cardholderName = "John Doe",
-                            postalCode = "12345"
-                        )
+                val cardFieldsController = rememberCardFieldsController(
+                    authorization = authStringArg,
+                    // optional customer data
+                    request = Card(
+                        cardholderName = "John Doe",
+                        postalCode = "12345"
                     )
-                }
+                )
+                val isFormValid by cardFieldsController.isFormValid.collectAsState()
 
                 Column(modifier = Modifier.padding(16.dp)) {
                     CardFields(controller = cardFieldsController)
