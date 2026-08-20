@@ -119,7 +119,7 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
             CardCvvField(
                 value = controller.cvv.value,
                 onValueChange = { newValue ->
-                    val sanitizedInput = sanitizeCvvInput(newValue) ?: return@CardCvvField
+                    val sanitizedInput = sanitizeCvvInput(newValue, detectedBrand) ?: return@CardCvvField
                     controller.cvv.value = sanitizedInput
                     viewModel.onCvvChanged(sanitizedInput.text )
                 },
