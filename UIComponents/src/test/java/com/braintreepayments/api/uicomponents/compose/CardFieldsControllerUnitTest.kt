@@ -5,13 +5,13 @@ import com.braintreepayments.api.uicomponents.cardfields.CardFieldsViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class CardFieldsStateUnitTest {
+class CardFieldsControllerUnitTest {
 
     @Test
     fun `cardNumber initializes empty with cursor at the start when the view model has no value`() {
-        val state = CardFieldsState(CardFieldsViewModel())
-        assertEquals("", state.cardNumber.value.text)
-        assertEquals(TextRange(0), state.cardNumber.value.selection)
+        val controller = CardFieldsController(CardFieldsViewModel())
+        assertEquals("", controller.cardNumber.value.text)
+        assertEquals(TextRange(0), controller.cardNumber.value.selection)
     }
 
     @Test
@@ -19,9 +19,9 @@ class CardFieldsStateUnitTest {
         val viewModel = CardFieldsViewModel()
         viewModel.onCardNumberChanged("4111")
 
-        val state = CardFieldsState(viewModel)
+        val controller = CardFieldsController(viewModel)
 
-        assertEquals("4111", state.cardNumber.value.text)
-        assertEquals(TextRange(4), state.cardNumber.value.selection)
+        assertEquals("4111", controller.cardNumber.value.text)
+        assertEquals(TextRange(4), controller.cardNumber.value.selection)
     }
 }

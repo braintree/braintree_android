@@ -19,8 +19,8 @@ import com.braintreepayments.api.uicomponents.cardfields.CardField
 import com.braintreepayments.api.uicomponents.cardfields.ValidationResult
 
 @Composable
-fun CardFields(state: CardFieldsState, modifier: Modifier = Modifier) {
-    val viewModel = state.viewModel
+fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) {
+    val viewModel = controller.viewModel
     val cardNumberValidation by viewModel.cardNumberValidation.collectAsState()
     val detectedBrand by viewModel.detectedCardBrand.collectAsState()
 
@@ -46,10 +46,10 @@ fun CardFields(state: CardFieldsState, modifier: Modifier = Modifier) {
             }
     ) {
         CardNumberField(
-            value = state.cardNumber.value,
+            value = controller.cardNumber.value,
             onValueChange = { newValue ->
                 val sanitized = sanitizeCardNumberInput(newValue) ?: return@CardNumberField
-                state.cardNumber.value = sanitized
+                controller.cardNumber.value = sanitized
                 viewModel.onCardNumberChanged(sanitized.text)
             },
             brand = detectedBrand,

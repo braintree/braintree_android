@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import com.braintreepayments.api.uicomponents.compose.CardFields
-import com.braintreepayments.api.uicomponents.compose.rememberCardFieldsState
+import com.braintreepayments.api.uicomponents.compose.rememberCardFieldsController
 
 class ComposeCardFieldsFragment : BaseFragment() {
 
@@ -23,10 +23,10 @@ class ComposeCardFieldsFragment : BaseFragment() {
         super.onCreateView(inflater, container, savedInstanceState)
         return ComposeView(requireContext()).apply {
             setContent {
-                val cardFieldsState = rememberCardFieldsState()
+                val cardFieldsController = rememberCardFieldsController()
 
                 Column(modifier = Modifier.padding(16.dp)) {
-                    CardFields(state = cardFieldsState)
+                    CardFields(controller = cardFieldsController)
                 }
             }
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
