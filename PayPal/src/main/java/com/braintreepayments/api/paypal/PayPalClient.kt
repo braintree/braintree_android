@@ -121,6 +121,35 @@ class PayPalClient internal constructor(
     }
 
     /**
+     * Starts the PayPal payment flow for the View/Edit Funding Instrument (FI) flow by creating a
+     * [PayPalPaymentAuthRequestParams] to be used to launch the PayPal web authentication flow in
+     * [PayPalLauncher.launch].
+     *
+     * This is invoked when the customer taps Edit in the PayPal saved payment method view. It
+     * opts the given [payPalCheckoutRequest] into the edit flow by setting
+     * [PayPalCheckoutRequest.editBillingAgreement] to true, so that when the SDK is initialized
+     * with a client token carrying a payment method ID JWT, that JWT is included in the request
+     * to seed the edit order.
+     *
+     * On success [callback] is called with a [PayPalPaymentAuthRequest.ReadyToLaunch] wrapping a
+     * [PayPalPaymentAuthRequestParams].
+     * On failures [callback] is called with a [PayPalPaymentAuthRequest.Failure] with an exception.
+     *
+     * @param context               Android Context
+     * @param payPalCheckoutRequest a [PayPalCheckoutRequest] used to customize the request.
+     * @param callback              [PayPalPaymentAuthCallback]
+     */
+    @OptIn(ExperimentalBetaApi::class)
+    fun createPaymentAuthRequestForEditFi(
+        context: Context,
+        payPalCheckoutRequest: PayPalCheckoutRequest,
+        callback: PayPalPaymentAuthCallback,
+    ) {
+        payPalCheckoutRequest.editBillingAgreement = true
+        createPaymentAuthRequest(context, payPalCheckoutRequest, callback)
+    }
+
+    /**
      * Starts the PayPal payment flow by creating a [PayPalPaymentAuthRequestParams] to be
      * used to launch the PayPal web authentication flow in
      * [PayPalLauncher.launch].
