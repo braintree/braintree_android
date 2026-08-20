@@ -27,9 +27,9 @@ class CardFieldsControllerUnitTest {
 
     @Test
     fun `expiration initializes empty with cursor at the start when the view model has no value`() {
-        val state = CardFieldsState(CardFieldsViewModel())
-        assertEquals("", state.expiration.value.text)
-        assertEquals(TextRange(0), state.expiration.value.selection)
+        val controller = CardFieldsController(CardFieldsViewModel())
+        assertEquals("", controller.expiration.value.text)
+        assertEquals(TextRange(0), controller.expiration.value.selection)
     }
 
     @Test
@@ -37,9 +37,9 @@ class CardFieldsControllerUnitTest {
         val viewModel = CardFieldsViewModel()
         viewModel.onExpiryChanged("1225")
 
-        val state = CardFieldsState(viewModel)
+        val controller = CardFieldsController(viewModel)
 
-        assertEquals("1225", state.expiration.value.text)
-        assertEquals(TextRange(4), state.expiration.value.selection)
+        assertEquals("1225", controller.expiration.value.text)
+        assertEquals(TextRange(4), controller.expiration.value.selection)
     }
 }
