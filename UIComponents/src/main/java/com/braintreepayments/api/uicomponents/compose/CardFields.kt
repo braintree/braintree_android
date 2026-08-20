@@ -79,10 +79,10 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.card_field_field_spacing))
         ) {
             CardExpirationField(
-                value = state.expiration.value,
+                value = controller.expiration.value,
                 onValueChange = { newValue ->
                     val sanitized = sanitizeCardExpirationInput(newValue) ?: return@CardExpirationField
-                    state.expiration.value = sanitized
+                    controller.expiration.value = sanitized
                     viewModel.onExpiryChanged(sanitized.text)
                 },
                 modifier = Modifier.weight(1f),
