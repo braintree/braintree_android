@@ -3,8 +3,10 @@ package com.braintreepayments.api.paypalsavedpaymentmethod
 import android.content.Context
 import android.net.Uri
 import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.GraphQLConstants
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalPaymentAuthCallback
@@ -22,7 +24,8 @@ import org.json.JSONObject
 class PayPalSavedPaymentMethodClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val payPalClient: PayPalClient,
-    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main),
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
 
     /**
@@ -76,22 +79,22 @@ class PayPalSavedPaymentMethodClient internal constructor(
      * Callback-based variant: the result is delivered asynchronously to [callback]. Use the
      * `suspend` [fetchFI] overload when calling from a coroutine.
      *
-     * If [paymentMethodIdJwt] is blank the [callback] receives a
-     * [PayPalSavedPaymentMethodSummaryResult.Failure] with a [PayPalSavedPaymentMethodSummaryException].
+     * The `paymentMethodIdJwt` identifying the vaulted funding instrument is read from the
+     * client token the SDK was initialized with. If it is missing or blank the [callback]
+     * receives a [PayPalSavedPaymentMethodSummaryResult.Failure] with a
+     * [PayPalSavedPaymentMethodSummaryException].
      *
-     * @param paymentMethodIdJwt the `paymentMethodIdJwt` identifying the vaulted funding instrument
      * @param merchantAccountId the merchant account to fetch the funding instrument for; when
      * null, Atmosphere defaults to the merchant's default account.
      * @param callback [PayPalSavedPaymentMethodSummaryCallback] invoked with the result
      */
     @ExperimentalBetaApi
     fun fetchFI(
-        paymentMethodIdJwt: String,
         merchantAccountId: String? = null,
         callback: PayPalSavedPaymentMethodSummaryCallback
     ) {
         coroutineScope.launch {
-            callback.onPayPalSavedPaymentMethodSummaryResult(fetchFI(paymentMethodIdJwt, merchantAccountId))
+            callback.onPayPalSavedPaymentMethodSummaryResult(fetchFI(merchantAccountId))
         }
     }
 
@@ -102,20 +105,21 @@ class PayPalSavedPaymentMethodClient internal constructor(
      * Use the [fetchFI] overload that takes a [PayPalSavedPaymentMethodSummaryCallback] outside a
      * coroutine.
      *
-     * If [paymentMethodIdJwt] is blank a [PayPalSavedPaymentMethodSummaryResult.Failure] with a
+     * The `paymentMethodIdJwt` identifying the vaulted funding instrument is read from the
+     * client token the SDK was initialized with. If it is missing or blank a
+     * [PayPalSavedPaymentMethodSummaryResult.Failure] with a
      * [PayPalSavedPaymentMethodSummaryException] is returned.
      *
-     * @param paymentMethodIdJwt the `paymentMethodIdJwt` identifying the vaulted funding instrument
      * @param merchantAccountId the merchant account to fetch the funding instrument for; when
      * null, Atmosphere defaults to the merchant's default account.
      * @return [PayPalSavedPaymentMethodSummaryResult]
      */
     @ExperimentalBetaApi
     suspend fun fetchFI(
-        paymentMethodIdJwt: String,
         merchantAccountId: String? = null
     ): PayPalSavedPaymentMethodSummaryResult {
-        if (paymentMethodIdJwt.isBlank()) {
+        val paymentMethodIdJwt = (merchantRepository.authorization as? ClientToken)?.paymentMethodIdJwt
+        if (paymentMethodIdJwt.isNullOrBlank()) {
             return PayPalSavedPaymentMethodSummaryResult.Failure(
                 PayPalSavedPaymentMethodSummaryException(
                     errorClass = null,
@@ -215,38 +219,35 @@ class PayPalSavedPaymentMethodClient internal constructor(
      * [PayPalCreditMessagingCallback] outside a coroutine.
      *
      * @param request [PayPalCreditMessagingRequest]
-     * @return [PayPalCreditMessagingResult], or null if the fetch fails or returns no
+     * @return [PayPalCreditMessagingContent], or null if the fetch fails or returns no
      * `preferred_message` - callers should hide the messaging row; the FI card still renders.
      */
     @ExperimentalBetaApi
     @Suppress("TooGenericExceptionCaught")
     suspend fun fetchCreditPresentmentMessages(
         request: PayPalCreditMessagingRequest
-    ): PayPalCreditMessagingResult? = try {
+    ): PayPalCreditMessagingContent? = try {
         val configuration = braintreeClient.getConfiguration()
-        val baseUrl = when (configuration.environment) {
-            "production" -> PRODUCTION_BASE_URL
-            else -> SANDBOX_BASE_URL
-        }
         val responseBody = braintreeClient.sendPOST(
-            url = "$baseUrl$CREDIT_PRESENTMENT_MESSAGES_PATH",
+            url = PayPalCreditMessagingUrlAssembler.assembleURL(configuration.environment),
             data = request.build().toString()
         )
+        // Every request sends exactly one MessagePlacement, so `messages` holds at most one entry -
+        // the message for that placement.
         JSONObject(responseBody)
             .optJSONArray(MESSAGES_KEY)
             ?.optJSONObject(0)
-            ?.takeIf { it.has(PREFERRED_MESSAGE_KEY) }
-            ?.let { PayPalCreditMessagingResult.fromJson(it) }
+            ?.optJSONObject(PREFERRED_MESSAGE_KEY)
+            ?.optJSONObject(CONTENT_KEY)
+            ?.let { PayPalCreditMessagingUtils.buildContent(it) }
     } catch (e: Exception) {
         if (e is CancellationException) throw e
         null
     }
 
     companion object {
-        private const val PRODUCTION_BASE_URL = "https://api.paypal.com"
-        private const val SANDBOX_BASE_URL = "https://api.sandbox.paypal.com"
-        private const val CREDIT_PRESENTMENT_MESSAGES_PATH = "/v2/credit/fetch-presentment-messages"
         private const val MESSAGES_KEY = "messages"
         private const val PREFERRED_MESSAGE_KEY = "preferred_message"
+        private const val CONTENT_KEY = "content"
     }
 }

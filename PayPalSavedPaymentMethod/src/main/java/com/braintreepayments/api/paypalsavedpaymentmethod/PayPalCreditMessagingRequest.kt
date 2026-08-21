@@ -29,9 +29,21 @@ data class PayPalCreditMessagingRequest(
         .put(FLOW_CONTEXT_KEY, flowContext.toJson())
         .put(MESSAGE_PLACEMENTS_KEY, JSONArray(messagePlacements.map { it.toJson() }))
 
-    private companion object {
-        const val FLOW_CONTEXT_KEY = "flow_context"
-        const val MESSAGE_PLACEMENTS_KEY = "message_placements"
+    companion object {
+        private const val FLOW_CONTEXT_KEY = "flow_context"
+        private const val MESSAGE_PLACEMENTS_KEY = "message_placements"
+
+        /**
+         * Convenience factory for the common case of a single order amount.
+         *
+         * @param currencyCode ISO currency code, e.g. "USD".
+         * @param value The amount, e.g. "55.00".
+         */
+        fun forAmount(currencyCode: String, value: String): PayPalCreditMessagingRequest =
+            PayPalCreditMessagingRequest(
+                flowContext = FlowContext(),
+                messagePlacements = listOf(MessagePlacement(amount = Amount(currencyCode, value)))
+            )
     }
 }
 

@@ -36,6 +36,15 @@ class PayPalCreditMessagingRequestUnitTest {
     }
 
     @Test
+    fun forAmount_buildsRequestWithSingleMessagePlacement() {
+        val request = PayPalCreditMessagingRequest.forAmount(currencyCode = "USD", value = "55.00")
+
+        assertEquals(1, request.messagePlacements.size)
+        assertEquals("USD", request.messagePlacements[0].amount.currencyCode)
+        assertEquals("55.00", request.messagePlacements[0].amount.value)
+    }
+
+    @Test
     fun build_withCustomFlowContextAndContentAttributes_overridesDefaults() {
         val request = PayPalCreditMessagingRequest(
             flowContext = FlowContext(attributes = listOf("BRAND_BRAINTREE", "EXPERIENCE_IOS_SDK")),
