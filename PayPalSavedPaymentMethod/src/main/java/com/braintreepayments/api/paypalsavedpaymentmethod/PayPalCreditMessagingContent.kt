@@ -4,8 +4,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
  * Pay Later / Credit presentment messaging for the edit-FI row, flattened and ready to render.
- * Built by [PayPalCreditMessagingUtils] so both the classic View and Compose UI consume
- * the same shape.
+ * Assembled by the client from [PayPalCreditMessagingUtils] so both the classic View and Compose
+ * UI consume the same shape.
  *
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
  *

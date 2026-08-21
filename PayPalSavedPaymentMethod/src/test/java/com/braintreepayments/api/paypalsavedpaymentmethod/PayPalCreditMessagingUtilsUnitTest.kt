@@ -1,7 +1,6 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod
 
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -9,92 +8,78 @@ import org.junit.Test
 class PayPalCreditMessagingUtilsUnitTest {
 
     @Test
-    fun buildContent_withTextAndImageMainItems_substitutesAlternativeTextForImages() {
-        val content = JSONObject(
-            """
-            {"main_items":[
-              {"type":"TEXT","text":"Or pay in 4 interest-free payments with "},
-              {"type":"IMAGE","alternative_text":"PayPal","name":"paypal_logo"},
-              {"type":"TEXT","text":"."}
-            ]}
-            """.trimIndent()
+    fun message_withTextAndImageMainItems_substitutesAlternativeTextForImages() {
+        val mainItems = listOf(
+            ContentItem(type = "TEXT", text = "Or pay in 4 interest-free payments with ", alternativeText = ""),
+            ContentItem(type = "IMAGE", text = "", alternativeText = "PayPal"),
+            ContentItem(type = "TEXT", text = ".", alternativeText = "")
         )
 
-        val result = PayPalCreditMessagingUtils.buildContent(content)
+        val result = PayPalCreditMessagingUtils.message(mainItems, disclaimerItems = emptyList())
 
-        assertEquals("Or pay in 4 interest-free payments with PayPal.", result.message)
-        assertEquals("", result.learnMoreText)
-        assertEquals("", result.learnMoreUrl)
+        assertEquals("Or pay in 4 interest-free payments with PayPal.", result)
     }
 
     @Test
-    fun buildContent_withDisclaimerItems_appendsAfterMainItemsWithSpace() {
-        val content = JSONObject(
-            """
-            {"main_items":[{"type":"TEXT","text":"As low as ${'$'}10/mo"}],
-             "disclaimer_items":[{"type":"TEXT","text":"Available to US residents only."}]}
-            """.trimIndent()
+    fun message_withDisclaimerItems_appendsAfterMainItemsWithSpace() {
+        val mainItems = listOf(ContentItem(type = "TEXT", text = "As low as \$10/mo", alternativeText = ""))
+        val disclaimerItems = listOf(
+            ContentItem(type = "TEXT", text = "Available to US residents only.", alternativeText = "")
         )
 
-        val result = PayPalCreditMessagingUtils.buildContent(content)
+        val result = PayPalCreditMessagingUtils.message(mainItems, disclaimerItems)
 
-        assertEquals("As low as \$10/mo Available to US residents only.", result.message)
+        assertEquals("As low as \$10/mo Available to US residents only.", result)
     }
 
     @Test
-    fun buildContent_withoutDisclaimerItems_returnsMainItemsOnly() {
-        val content = JSONObject(
-            """{"main_items":[{"type":"TEXT","text":"As low as ${'$'}10/mo"}]}"""
+    fun message_withoutDisclaimerItems_returnsMainItemsOnly() {
+        val mainItems = listOf(ContentItem(type = "TEXT", text = "As low as \$10/mo", alternativeText = ""))
+
+        val result = PayPalCreditMessagingUtils.message(mainItems, disclaimerItems = emptyList())
+
+        assertEquals("As low as \$10/mo", result)
+    }
+
+    @Test
+    fun message_withoutMainOrDisclaimerItems_returnsEmptyMessage() {
+        val result = PayPalCreditMessagingUtils.message(mainItems = emptyList(), disclaimerItems = emptyList())
+
+        assertEquals("", result)
+    }
+
+    @Test
+    fun learnMoreText_withLinkActionItem_extractsText() {
+        val actionItems = listOf(ActionItem(type = "LINK", text = "Learn more", url = "https://paypal.com/learn"))
+
+        assertEquals("Learn more", PayPalCreditMessagingUtils.learnMoreText(actionItems))
+    }
+
+    @Test
+    fun learnMoreUrl_withLinkActionItem_extractsUrl() {
+        val actionItems = listOf(ActionItem(type = "LINK", text = "Learn more", url = "https://paypal.com/learn"))
+
+        assertEquals("https://paypal.com/learn", PayPalCreditMessagingUtils.learnMoreUrl(actionItems))
+    }
+
+    @Test
+    fun learnMoreText_withMultipleActionItems_picksFirstLinkType() {
+        val actionItems = listOf(
+            ActionItem(type = "OTHER", text = "Ignore me", url = "https://paypal.com/ignore"),
+            ActionItem(type = "LINK", text = "Learn more", url = "https://paypal.com/learn")
         )
 
-        val result = PayPalCreditMessagingUtils.buildContent(content)
-
-        assertEquals("As low as \$10/mo", result.message)
+        assertEquals("Learn more", PayPalCreditMessagingUtils.learnMoreText(actionItems))
+        assertEquals("https://paypal.com/learn", PayPalCreditMessagingUtils.learnMoreUrl(actionItems))
     }
 
     @Test
-    fun buildContent_withoutMainItems_returnsEmptyMessage() {
-        val result = PayPalCreditMessagingUtils.buildContent(JSONObject())
-
-        assertEquals("", result.message)
+    fun learnMoreText_withoutActionItems_returnsEmpty() {
+        assertEquals("", PayPalCreditMessagingUtils.learnMoreText(emptyList()))
     }
 
     @Test
-    fun buildContent_withLinkActionItem_extractsLearnMoreTextAndUrl() {
-        val content = JSONObject(
-            """
-            {"action_items":[{"type":"LINK","text":"Learn more","click_url":"https://paypal.com/learn"}]}
-            """.trimIndent()
-        )
-
-        val result = PayPalCreditMessagingUtils.buildContent(content)
-
-        assertEquals("Learn more", result.learnMoreText)
-        assertEquals("https://paypal.com/learn", result.learnMoreUrl)
-    }
-
-    @Test
-    fun buildContent_withMultipleActionItems_picksFirstLinkType() {
-        val content = JSONObject(
-            """
-            {"action_items":[
-              {"type":"OTHER","text":"Ignore me","click_url":"https://paypal.com/ignore"},
-              {"type":"LINK","text":"Learn more","click_url":"https://paypal.com/learn"}
-            ]}
-            """.trimIndent()
-        )
-
-        val result = PayPalCreditMessagingUtils.buildContent(content)
-
-        assertEquals("Learn more", result.learnMoreText)
-        assertEquals("https://paypal.com/learn", result.learnMoreUrl)
-    }
-
-    @Test
-    fun buildContent_withoutActionItems_returnsEmptyLearnMoreFields() {
-        val result = PayPalCreditMessagingUtils.buildContent(JSONObject())
-
-        assertEquals("", result.learnMoreText)
-        assertEquals("", result.learnMoreUrl)
+    fun learnMoreUrl_withoutActionItems_returnsEmpty() {
+        assertEquals("", PayPalCreditMessagingUtils.learnMoreUrl(emptyList()))
     }
 }

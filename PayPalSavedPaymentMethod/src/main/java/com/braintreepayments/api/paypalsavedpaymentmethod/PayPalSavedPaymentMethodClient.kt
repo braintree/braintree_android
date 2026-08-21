@@ -14,6 +14,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import org.json.JSONObject
 
 /**
@@ -239,7 +240,16 @@ class PayPalSavedPaymentMethodClient internal constructor(
             ?.optJSONObject(0)
             ?.optJSONObject(PREFERRED_MESSAGE_KEY)
             ?.optJSONObject(CONTENT_KEY)
-            ?.let { PayPalCreditMessagingUtils.buildContent(it) }
+            ?.let { content ->
+                val mainItems = content.optJSONArray(MAIN_ITEMS_KEY).toContentItems()
+                val disclaimerItems = content.optJSONArray(DISCLAIMER_ITEMS_KEY).toContentItems()
+                val actionItems = content.optJSONArray(ACTION_ITEMS_KEY).toActionItems()
+                PayPalCreditMessagingContent(
+                    message = PayPalCreditMessagingUtils.message(mainItems, disclaimerItems),
+                    learnMoreText = PayPalCreditMessagingUtils.learnMoreText(actionItems),
+                    learnMoreUrl = PayPalCreditMessagingUtils.learnMoreUrl(actionItems)
+                )
+            }
     } catch (e: Exception) {
         if (e is CancellationException) throw e
         null
@@ -249,5 +259,39 @@ class PayPalSavedPaymentMethodClient internal constructor(
         private const val MESSAGES_KEY = "messages"
         private const val PREFERRED_MESSAGE_KEY = "preferred_message"
         private const val CONTENT_KEY = "content"
+        private const val MAIN_ITEMS_KEY = "main_items"
+        private const val DISCLAIMER_ITEMS_KEY = "disclaimer_items"
+        private const val ACTION_ITEMS_KEY = "action_items"
+    }
+}
+
+private const val TYPE_KEY = "type"
+private const val TEXT_KEY = "text"
+private const val ALTERNATIVE_TEXT_KEY = "alternative_text"
+private const val CLICK_URL_KEY = "click_url"
+
+// Pure extraction - every field is copied as-is with no decisions made; PayPalCreditMessagingUtils
+// decides how each item is used.
+private fun JSONArray?.toContentItems(): List<ContentItem> {
+    if (this == null) return emptyList()
+    return (0 until length()).map { index ->
+        val item = getJSONObject(index)
+        ContentItem(
+            type = item.optString(TYPE_KEY),
+            text = item.optString(TEXT_KEY),
+            alternativeText = item.optString(ALTERNATIVE_TEXT_KEY)
+        )
+    }
+}
+
+private fun JSONArray?.toActionItems(): List<ActionItem> {
+    if (this == null) return emptyList()
+    return (0 until length()).map { index ->
+        val item = getJSONObject(index)
+        ActionItem(
+            type = item.optString(TYPE_KEY),
+            text = item.optString(TEXT_KEY),
+            url = item.optString(CLICK_URL_KEY)
+        )
     }
 }
