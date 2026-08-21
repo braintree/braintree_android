@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* GooglePay
+  * Add Compose constructor for GooglePay
 * PayPal
     * Add `PayPalCheckoutRequest.campaigns` to associate campaigns with a checkout order
 * ShopperInsights
