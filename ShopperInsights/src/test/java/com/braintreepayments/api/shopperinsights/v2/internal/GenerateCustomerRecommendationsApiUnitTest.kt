@@ -177,7 +177,9 @@ class GenerateCustomerRecommendationsApiUnitTest {
         )
 
         assert(result is GenerateCustomerRecommendationsResult.Success)
-        assertEquals(expectedResult, (result as GenerateCustomerRecommendationsResult.Success).customerRecommendations)
+        val customerRecommendations = (result as GenerateCustomerRecommendationsResult.Success).customerRecommendations
+        assertEquals(expectedResult, customerRecommendations)
+        assertEquals("2026-08-15T00:00:00Z", customerRecommendations.expiresAt)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
