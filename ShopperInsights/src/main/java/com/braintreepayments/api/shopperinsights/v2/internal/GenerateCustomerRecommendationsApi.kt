@@ -45,6 +45,7 @@ internal class GenerateCustomerRecommendationsApi(
                             paymentOption
                             recommendedPriority
                         }
+                        expiresAt
                     }
                 }
                 """.trimIndent()
@@ -100,6 +101,7 @@ internal class GenerateCustomerRecommendationsApi(
         val sessionId = recommendations.getString(SESSION_ID)
         val isInPayPalNetwork = recommendations.getBoolean("isInPayPalNetwork")
         val paymentRecommendations = recommendations.getJSONArray("paymentRecommendations")
+        val expiresAt = recommendations.opt(EXPIRES_AT) as? String
 
         val paymentOptions = mutableListOf<PaymentOptions>()
         for (i in 0 until paymentRecommendations.length()) {
@@ -115,7 +117,8 @@ internal class GenerateCustomerRecommendationsApi(
         return CustomerRecommendations(
             sessionId = sessionId,
             isInPayPalNetwork = isInPayPalNetwork,
-            paymentRecommendations = paymentOptions
+            paymentRecommendations = paymentOptions,
+            expiresAt = expiresAt
         )
     }
 
@@ -128,5 +131,6 @@ internal class GenerateCustomerRecommendationsApi(
         private const val PURCHASE_UNITS = "purchaseUnits"
         private const val PAYPAL_CAMPAIGNS = "paypalCampaigns"
         private const val GENERATE_CUSTOMER_RECOMMENDATIONS = "generateCustomerRecommendations"
+        private const val EXPIRES_AT = "expiresAt"
     }
 }
