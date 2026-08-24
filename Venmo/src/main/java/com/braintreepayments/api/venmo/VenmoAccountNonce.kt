@@ -46,6 +46,7 @@ data class VenmoAccountNonce internal constructor(
 
         private const val VENMO_DETAILS_KEY = "details"
         private const val VENMO_USERNAME_KEY = "username"
+        private const val VENMO_COMMON_ID_KEY = "commonId"
 
         private const val VENMO_PAYMENT_METHOD_ID_KEY = "paymentMethodId"
         private const val VENMO_PAYER_INFO_KEY = "payerInfo"
@@ -71,6 +72,7 @@ data class VenmoAccountNonce internal constructor(
             val nonce: String
             val isDefault: Boolean
             val username: String
+            var externalId: String? = null
 
             if (json.has(VENMO_PAYMENT_METHOD_ID_KEY)) {
                 isDefault = false
@@ -82,11 +84,13 @@ data class VenmoAccountNonce internal constructor(
 
                 val details = json.getJSONObject(VENMO_DETAILS_KEY)
                 username = details.getString(VENMO_USERNAME_KEY)
+                // The vault response does not include a `payerInfo.externalId` field, but
+                // `details.commonId` contains the same underlying Venmo account identifier.
+                externalId = details.optString(VENMO_COMMON_ID_KEY)
             }
 
             val payerInfo = json.optJSONObject(VENMO_PAYER_INFO_KEY)
             var email: String? = null
-            var externalId: String? = null
             var firstName: String? = null
             var lastName: String? = null
             var phoneNumber: String? = null
