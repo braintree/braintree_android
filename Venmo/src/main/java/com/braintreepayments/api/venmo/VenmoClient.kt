@@ -86,6 +86,18 @@ class VenmoClient internal constructor(
      * your application to be used to return to your app from the PayPal
      * @param deepLinkFallbackUrlScheme A return url scheme that will be used as a deep link fallback when returning to
      * your app via App Link is not available (buyer unchecks the "Open supported links" setting).
+     *
+     * The value must be a bare URL scheme, not a full URL. It must:
+     * - Contain only alphanumeric characters, hyphens (`-`), and periods (`.`)
+     * - Not include `://`
+     * - Not include a path, query string, or fragment (no `/`, `?`, or `#`)
+     * - Match the scheme declared in your `AndroidManifest.xml`
+     *
+     * Valid examples: `"com.merchant.app.payments"`, `"merchantapp"`, `"merchant-app.payments"`.
+     *
+     * Invalid examples: `"com.merchant.app.payments://"` (contains `://`),
+     * `"com.merchant.app.payments/callback"` (contains a path),
+     * `"com.merchant_app"` (underscore not allowed).
      */
     @JvmOverloads
     constructor(
