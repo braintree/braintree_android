@@ -45,6 +45,33 @@ class VenmoAccountNonceUnitTest {
 
     @Test
     @Throws(JSONException::class)
+    fun `maps details commonId to externalId when parsing vault response JSON`() {
+        val json = JSONObject(
+            """
+            {
+              "venmoAccounts": [{
+                "type": "VenmoAccount",
+                "nonce": "fake-venmo-nonce",
+                "description": "VenmoAccount",
+                "consumed": false,
+                "default": true,
+                "details": {
+                  "cardType": "Discover",
+                  "username": "venmojoe",
+                  "commonId": "9999999999999999999"
+                }
+              }]
+            }
+            """.trimIndent()
+        )
+
+        val venmoAccountNonce = VenmoAccountNonce.fromJSON(json)
+
+        assertEquals("9999999999999999999", venmoAccountNonce.externalId)
+    }
+
+    @Test
+    @Throws(JSONException::class)
     fun `creates VenmoAccountNonce with paymentMethodId from JSON and parses response correctly`() {
         val venmoAccountNonce = VenmoAccountNonce.fromJSON(
             JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_JSON)
