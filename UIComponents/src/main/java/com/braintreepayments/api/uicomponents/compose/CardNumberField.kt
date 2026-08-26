@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
@@ -35,7 +36,9 @@ internal fun CardNumberField(
         modifier = modifier,
         errorText = errorText,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        visualTransformation = CardNumberVisualTransformation(brand.formatGaps),
+        visualTransformation = remember(brand.formatGaps) {
+            CardNumberVisualTransformation(brand.formatGaps)
+        },
         focusRequester = focusRequester,
         onFocusChanged = onFocusChanged,
         contentDescription = stringResource(R.string.card_number_accessibility),

@@ -42,4 +42,22 @@ class CardFieldsControllerUnitTest {
         assertEquals("1225", controller.expiration.value.text)
         assertEquals(TextRange(4), controller.expiration.value.selection)
     }
+
+    @Test
+    fun `cvv initializes empty with cursor at the start when the view model has no value`() {
+        val controller = CardFieldsController(CardFieldsViewModel())
+        assertEquals("", controller.cvv.value.text)
+        assertEquals(TextRange(0), controller.cvv.value.selection)
+    }
+
+    @Test
+    fun `cvv initializes from the view model's current cvv with cursor at the end`() {
+        val viewModel = CardFieldsViewModel()
+        viewModel.onCvvChanged("123")
+
+        val controller = CardFieldsController(viewModel)
+
+        assertEquals("123", controller.cvv.value.text)
+        assertEquals(TextRange(3), controller.cvv.value.selection)
+    }
 }

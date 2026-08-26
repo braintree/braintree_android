@@ -2,6 +2,7 @@ package com.braintreepayments.api.uicomponents.compose
 
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import com.braintreepayments.api.uicomponents.cardfields.CardBrand
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -138,6 +139,52 @@ class CardFieldsUnitTest {
     fun `sanitizeCardExpirationInput leaves the cursor unchanged when no leading zero is inserted`() {
         val result = sanitizeCardExpirationInput(textFieldValue("12", cursor = 1))
         assertEquals(TextRange(1), result?.selection)
+    }
+
+    // endregion
+
+    // region sanitizeCvvInput
+
+    @Test
+    fun `sanitizeCvvInput strips non-digit characters`() {
+        val result = sanitizeCvvInput(textFieldValue("1a2b3"), CardBrand.UNKNOWN)
+        assertEquals("123", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCvvInput allows digits under the max length for an unrecognized brand`() {
+        val result = sanitizeCvvInput(textFieldValue("99"), CardBrand.UNKNOWN)
+        assertEquals("99", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCvvInput allows digits at exactly the max length for an unrecognized brand`() {
+        val result = sanitizeCvvInput(textFieldValue("9999"), CardBrand.UNKNOWN)
+        assertEquals("9999", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCvvInput rejects a single extra digit past the max length for an unrecognized brand`() {
+        val result = sanitizeCvvInput(textFieldValue("99999"), CardBrand.UNKNOWN)
+        assertNull(result)
+    }
+
+    @Test
+    fun `sanitizeCvvInput allows an empty value`() {
+        val result = sanitizeCvvInput(textFieldValue(""), CardBrand.UNKNOWN)
+        assertEquals("", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCvvInput respects the detected brand's shorter max length`() {
+        val result = sanitizeCvvInput(textFieldValue("411"), CardBrand.VISA)
+        assertEquals("411", result?.text)
+    }
+
+    @Test
+    fun `sanitizeCvvInput rejects a digit past the detected brand's max length`() {
+        val result = sanitizeCvvInput(textFieldValue("4111"), CardBrand.VISA)
+        assertNull(result)
     }
 
     // endregion
