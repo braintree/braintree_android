@@ -2,13 +2,17 @@ package com.braintreepayments.api.uicomponents.compose
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.TextRange
+import androidx.test.core.app.ApplicationProvider
 import androidx.compose.ui.text.input.TextFieldValue
 import com.braintreepayments.api.card.Card
 import com.braintreepayments.api.card.CardClient
 import com.braintreepayments.api.card.CardNonce
 import com.braintreepayments.api.card.CardResult
 import com.braintreepayments.api.card.CardTokenizeCallback
+import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import com.braintreepayments.api.uicomponents.cardfields.CardFieldsResult
 import com.braintreepayments.api.uicomponents.cardfields.CardFieldsViewModel
 import io.mockk.Runs
@@ -21,10 +25,14 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class CardFieldsControllerUnitTest {
 
     private val cardClient: CardClient = mockk(relaxed = true)
+    private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
 
     private fun String.asTextFieldValue() = TextFieldValue(text = this, selection = TextRange(length))
 
@@ -33,7 +41,8 @@ class CardFieldsControllerUnitTest {
             viewModel,
             mutableStateOf(viewModel.currentCardNumber.asTextFieldValue()),
             mutableStateOf(viewModel.currentExpiration.asTextFieldValue()),
-            mutableStateOf(viewModel.currentCvv.asTextFieldValue())
+            mutableStateOf(viewModel.currentCvv.asTextFieldValue()),
+            analyticsClient = analyticsClient
         )
 
     private fun createCardFieldsControllerWithClient(viewModel: CardFieldsViewModel = CardFieldsViewModel()) =
@@ -42,7 +51,8 @@ class CardFieldsControllerUnitTest {
             mutableStateOf(viewModel.currentCardNumber.asTextFieldValue()),
             mutableStateOf(viewModel.currentExpiration.asTextFieldValue()),
             mutableStateOf(viewModel.currentCvv.asTextFieldValue()),
-            cardClient
+            cardClient,
+            analyticsClient
         )
 
     @Test
@@ -218,6 +228,83 @@ class CardFieldsControllerUnitTest {
         // No payment request was set, so metadata fields fall back to the empty Card() defaults.
         assertNull(captured.cardholderName)
         assertNull(captured.postalCode)
+    }
+
+    // endregion
+
+    // region Analytics
+
+    @Test
+    fun `initialize sends the card fields presented event`() {
+        val controller = createCardFieldsController()
+
+        controller.initialize(ApplicationProvider.getApplicationContext(), "fake-authorization")
+
+        verify {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.CARD_FIELDS_PRESENTED,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
+            )
+        }
+    }
+
+    @Test
+    fun `initialize does not resend the presented event on a subsequent controller sharing the same flag`() {
+        val viewModel = CardFieldsViewModel()
+        val shouldSendPresentedEvent = mutableStateOf(true)
+        val firstController = CardFieldsController(
+            viewModel,
+            mutableStateOf(viewModel.currentCardNumber.asTextFieldValue()),
+            mutableStateOf(viewModel.currentExpiration.asTextFieldValue()),
+            mutableStateOf(viewModel.currentCvv.asTextFieldValue()),
+            analyticsClient = analyticsClient,
+            shouldSendPresentedEvent = shouldSendPresentedEvent
+        )
+        firstController.initialize(ApplicationProvider.getApplicationContext(), "fake-authorization")
+
+        // Simulates a rotation: a new CardFieldsController is created (as rememberCardFieldsController
+        // would do), but the rememberSaveable-backed flag survives and is passed in again.
+        val secondController = CardFieldsController(
+            viewModel,
+            mutableStateOf(viewModel.currentCardNumber.asTextFieldValue()),
+            mutableStateOf(viewModel.currentExpiration.asTextFieldValue()),
+            mutableStateOf(viewModel.currentCvv.asTextFieldValue()),
+            analyticsClient = analyticsClient,
+            shouldSendPresentedEvent = shouldSendPresentedEvent
+        )
+        secondController.initialize(ApplicationProvider.getApplicationContext(), "fake-authorization")
+
+        verify(exactly = 1) {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.CARD_FIELDS_PRESENTED,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
+            )
+        }
+    }
+
+    @Test
+    fun `submit sends the card fields validated event`() {
+        val controller = createCardFieldsControllerWithClient()
+
+        controller.submit { }
+
+        verify {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
+            )
+        }
+    }
+
+    @Test
+    fun `submit before initialize does not send the validated event`() {
+        val controller = createCardFieldsController()
+
+        controller.submit { }
+
+        verify(exactly = 0) {
+            analyticsClient.sendEvent(UIComponentsAnalytics.CARD_FIELDS_VALIDATED, any())
+        }
     }
 
     // endregion
