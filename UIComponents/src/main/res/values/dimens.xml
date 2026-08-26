@@ -32,4 +32,10 @@
 
     <dimen name="cvv_overlay_elevation">8dp</dimen>
     <dimen name="cvv_overlay_max_width">261dp</dimen>
+    <dimen name="cvv_overlay_padding">12dp</dimen>
+    <dimen name="cvv_overlay_header_text_size">18sp</dimen>
+    <dimen name="cvv_overlay_close_icon_size">24dp</dimen>
+    <dimen name="cvv_overlay_body_padding_top">2dp</dimen>
+    <dimen name="cvv_overlay_body_padding_end">34dp</dimen>
+    <dimen name="cvv_overlay_body_text_size">14sp</dimen>
 </resources>
