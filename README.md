@@ -339,9 +339,10 @@ class ExampleFragment : Fragment() {
 
 ### Compose support for Card Fields
 
-We now offer support for a Jetpack Compose `CardFields` composable. Similar to the XML view, it renders a
-complete card entry form with fields for card number, expiration date, and CVV, and handles input validation,
-card brand detection, and focus advancement between fields automatically.
+The Braintree Android SDK now offers support for a Jetpack Compose `CardFields` composable. Similar to the XML view, it renders a
+complete card entry form with fields for card number, expiration date, and CVV. Additionally, it handles input validation,
+card brand detection, and focus advancement between fields automatically. On input validation, the controller will update `isFormValid` which
+can be used to enable and disable a button of your design to submit the payment.
 
 You should invoke the `CardFields` composable like this:
 
@@ -352,7 +353,7 @@ fun ExampleCardFieldsScreen(authorization: String) {
     val isFormValid by cardFieldsController.isFormValid.collectAsState()
 
     LaunchedEffect(Unit) {
-        cardFieldsController.initialize(context, authorization)
+        cardFieldsController.initialize(context, "[TOKENIZATION_KEY or CLIENT_TOKEN]")
         // optionally attach additional data, such as cardholder name or billing address
         cardFieldsController.setPaymentRequest(
             Card(
