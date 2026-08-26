@@ -86,7 +86,11 @@ data class VenmoAccountNonce internal constructor(
                 username = details.getString(VENMO_USERNAME_KEY)
                 // The vault response does not include a `payerInfo.externalId` field, but
                 // `details.commonId` contains the same underlying Venmo account identifier.
-                externalId = details.optString(VENMO_COMMON_ID_KEY)
+                externalId = if (details.has(VENMO_COMMON_ID_KEY)) {
+                    details.getString(VENMO_COMMON_ID_KEY)
+                } else {
+                    null
+                }
             }
 
             val payerInfo = json.optJSONObject(VENMO_PAYER_INFO_KEY)
