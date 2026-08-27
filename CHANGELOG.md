@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.32.0 (2026-08-27)
 
 * GooglePay
   * Add Compose constructor for GooglePay
