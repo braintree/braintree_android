@@ -30,7 +30,7 @@ import com.braintreepayments.api.uicomponents.R
 /**
  * Compose equivalent of [com.braintreepayments.api.uicomponents.cardfields.CvvHintOverlay]. Must be
  * called from within the same [Box][androidx.compose.foundation.layout.Box] as the CVV field's
- * trailing icon so it anchors below it.
+ * trailing icon so it anchors above it.
  */
 @Composable
 internal fun CvvHintPopup(onDismissRequest: () -> Unit) {
