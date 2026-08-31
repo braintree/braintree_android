@@ -85,7 +85,6 @@ class CardExpirationFieldTest {
         expirationInput.performTextInput("8")
         expirationInput.performTextInput("8")
 
-
         composeTestRule.onNodeWithContentDescription(str(R.string.expiration_hint_accessibility))
             .assert(hasText("1228"))
     }
