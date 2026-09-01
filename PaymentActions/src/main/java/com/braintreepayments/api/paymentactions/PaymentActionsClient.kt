@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 /**
  * Callback for receiving a [PaymentActionResult] from a [PaymentActionsClient] operation.
@@ -115,7 +114,7 @@ class PaymentActionsClient internal constructor(
                 PaymentActionStatus.REQUIRES_CAPTURE ->
                     PaymentActionResult.ServerActionRequired(paymentAction.id, ServerAction.CAPTURE)
                 PaymentActionStatus.SUCCEEDED -> PaymentActionResult.Completed(paymentAction.id)
-                PaymentActionStatus.CANCELED, PaymentActionStatus.EXPIRED ->
+                PaymentActionStatus.CANCELLED, PaymentActionStatus.EXPIRED ->
                     PaymentActionResult.Canceled(paymentAction.id)
                 PaymentActionStatus.PROCESSING -> PaymentActionResult.Processing(paymentAction.id)
                 PaymentActionStatus.UNKNOWN ->
