@@ -180,7 +180,7 @@ class PaymentActionsServiceUnitTest {
         }
 
     @Test
-    fun `when responseBody status is canceled, Success is returned with CANCELED status`() =
+    fun `when responseBody status is cancelled, Success is returned with CANCELLED status`() =
         runTest(testDispatcher) {
             val responseBody = """
                 {
@@ -188,7 +188,7 @@ class PaymentActionsServiceUnitTest {
                         "setPaymentActionPaymentMethod": {
                             "paymentAction": {
                                 "id": "pa123",
-                                "status": "canceled"
+                                "status": "cancelled"
                             }
                         }
                     }
@@ -205,7 +205,7 @@ class PaymentActionsServiceUnitTest {
 
             assertTrue(result is PaymentActionServiceResult.Success)
             assertEquals(
-                PaymentActionStatus.CANCELED,
+                PaymentActionStatus.CANCELLED,
                 (result as PaymentActionServiceResult.Success).paymentAction.status
             )
         }
