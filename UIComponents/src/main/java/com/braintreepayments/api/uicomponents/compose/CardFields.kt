@@ -55,21 +55,16 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
         return focused || hasBeenFocused
     }
 
-    // Restart the effect when cardNumberValidation changes
-    LaunchedEffect(cardNumberValidation) {
-        if (cardNumberValidation is ValidationResult.Valid && cardNumberFocused) {
-            // Autoadvance focus to the expirationDate field
-            expirationFocusRequester.requestFocus()
-        }
-    }
-
-    // Restart the effect when expirationValidation changes
-    LaunchedEffect(expirationValidation) {
-        if (expirationValidation is ValidationResult.Valid && expirationFocused) {
-            // Autoadvance focus to the CVV field
-            cvvFocusRequester.requestFocus()
-        }
-    }
+    AdvanceFocusIfFieldIsValid(
+        validation = cardNumberValidation,
+        isSourceFieldFocused = cardNumberFocused,
+        nextFieldFocusRequester = expirationFocusRequester
+    )
+    AdvanceFocusIfFieldIsValid(
+        validation = expirationValidation,
+        isSourceFieldFocused = expirationFocused,
+        nextFieldFocusRequester = cvvFocusRequester
+    )
 
     Column(
         modifier = modifier
@@ -162,6 +157,27 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
 @Composable
 private fun ValidationResult.errorText(): String? =
     (this as? ValidationResult.Invalid)?.let { stringResource(it.errorMessageRes) }
+
+/**
+ * Auto-advances focus to the next field once [validation] becomes [ValidationResult.Valid].
+ *
+ * Focus only advances while [isSourceFieldFocused] is true, so the user can tap back into an
+ * already-valid field and edit it without being forced forward again. This mirrors the XML flow's
+ * `advanceFocusIfFieldIsValid`.
+ */
+@Composable
+private fun AdvanceFocusIfFieldIsValid(
+    validation: ValidationResult,
+    isSourceFieldFocused: Boolean,
+    nextFieldFocusRequester: FocusRequester
+) {
+    // Restart the effect when the ValidationResult changes
+    LaunchedEffect(validation) {
+        if (validation is ValidationResult.Valid && isSourceFieldFocused) {
+            nextFieldFocusRequester.requestFocus()
+        }
+    }
+}
 
 /**
  * Strips non-digit characters from [newValue] and rejects the edit entirely (returns `null`)
