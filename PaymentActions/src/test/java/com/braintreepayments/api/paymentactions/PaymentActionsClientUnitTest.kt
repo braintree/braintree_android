@@ -89,9 +89,9 @@ class PaymentActionsClientUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `handleNextAction with CANCELED returns Canceled`() = runTest(testDispatcher) {
+    fun `handleNextAction with CANCELLED returns Canceled`() = runTest(testDispatcher) {
         coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
-            paymentAction(PaymentActionStatus.CANCELED)
+            paymentAction(PaymentActionStatus.CANCELLED)
         )
 
         val result = buildClient().handleNextAction()

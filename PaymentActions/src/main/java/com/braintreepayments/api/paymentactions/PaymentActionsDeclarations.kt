@@ -119,7 +119,7 @@ internal data class PaymentAction(
  * Enum of possible payment action status values.
  */
 internal enum class PaymentActionStatus {
-    CANCELED,
+    CANCELLED,
     EXPIRED,
     PROCESSING,
     READY_FOR_CONFIRMATION,
