@@ -115,4 +115,121 @@ class CardNumberFieldTest {
     @Test
     fun typingVervePrefix_detectsVerve() =
         assertBrandDetected("506099", R.string.card_icon_verve)
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_Visa() {
+        setCardFields()
+
+        cardNumberField().performTextInput("4111111111111111")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("4111111111111111"))
+    }
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_Mastercard() {
+        setCardFields()
+
+        cardNumberField().performTextInput("5555555555554444")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("5555555555554444"))
+    }
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_Amex() {
+        setCardFields()
+
+        cardNumberField().performTextInput("378282246310005")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("378282246310005"))
+    }
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_DinersClub() {
+        setCardFields()
+
+        cardNumberField().performTextInput("36259600000004")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("36259600000004"))
+    }
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_Discover() {
+        setCardFields()
+
+        cardNumberField().performTextInput("6011000000000000000")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("6011000000000000000"))
+    }
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_JCB() {
+        setCardFields()
+
+        cardNumberField().performTextInput("3530111333300000")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("3530111333300000"))
+    }
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_UnionPay() {
+        setCardFields()
+
+        cardNumberField().performTextInput("6243030000000000001")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("6243030000000000001"))
+    }
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_Maestro() {
+        setCardFields()
+
+        cardNumberField().performTextInput("5018000000000000000")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("5018000000000000000"))
+    }
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_Mir() {
+        setCardFields()
+
+        cardNumberField().performTextInput("2200000000000000000")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("2200000000000000000"))
+    }
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_Verve() {
+        setCardFields()
+
+        cardNumberField().performTextInput("5060990000000000000")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("5060990000000000000"))
+    }
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_Hiper() {
+        setCardFields()
+
+        cardNumberField().performTextInput("6370950000000000")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("6370950000000000"))
+    }
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_Hipercard() {
+        setCardFields()
+
+        cardNumberField().performTextInput("6062820000000000")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("6062820000000000"))
+    }
+
+    @Test
+    fun typingMoreThanMaxLengthDigits_rejectsExtraDigits_Elo() {
+        setCardFields()
+
+        cardNumberField().performTextInput("6362970000000000")
+        cardNumberField().performTextInput("9")
+        cardNumberField().assert(hasText("6362970000000000"))
+    }
 }

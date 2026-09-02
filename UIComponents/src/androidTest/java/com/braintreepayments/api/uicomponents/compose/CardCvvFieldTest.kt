@@ -14,6 +14,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import com.braintreepayments.api.uicomponents.R
 import org.junit.Rule
 import org.junit.Test
@@ -75,6 +76,21 @@ class CardCvvFieldTest {
         composeTestRule.onNodeWithContentDescription(str(R.string.cvv_overlay_close_description))
             .performClick()
 
+        composeTestRule.onNodeWithText(str(R.string.cvv_overlay_body)).assertDoesNotExist()
+    }
+
+    @Test
+    fun tappingOutsideHintPopup_dismissesHintPopup() {
+        setCvvField()
+        composeTestRule.onNodeWithContentDescription(str(R.string.cvv_hint_icon_description))
+            .performClick()
+        composeTestRule.onNodeWithText(str(R.string.cvv_overlay_body)).assertIsDisplayed()
+
+        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        // Tap anywhere on the screen outside the popup to dismiss it
+        device.click(device.displayWidth / 2, device.displayHeight - 100)
+
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText(str(R.string.cvv_overlay_body)).assertDoesNotExist()
     }
 }
