@@ -86,6 +86,7 @@ dependencies {
     androidTestImplementation composeBom
     androidTestImplementation libs.androidx.compose.ui.test.junit4
     androidTestImplementation libs.androidx.test.espresso.core
+    androidTestImplementation libs.androidx.test.uiautomator
 }
 
 // region signing and publishing
