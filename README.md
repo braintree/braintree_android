@@ -349,19 +349,15 @@ You should invoke the `CardFields` composable like this:
 ```kotlin
 @Composable
 fun ExampleCardFieldsScreen(authorization: String) {
-    val cardFieldsController = rememberCardFieldsController()
-    val isFormValid by cardFieldsController.isFormValid.collectAsState()
-
-    LaunchedEffect(Unit) {
-        cardFieldsController.initialize(context, "[TOKENIZATION_KEY or CLIENT_TOKEN]")
+    val cardFieldsController = rememberCardFieldsController(
+        authorization = "[TOKENIZATION_KEY or CLIENT_TOKEN]",
         // optionally attach additional data, such as cardholder name or billing address
-        cardFieldsController.setPaymentRequest(
-            Card(
-                cardholderName = "John Doe",
-                postalCode = "12345"
-            )
+        request = Card(
+            cardholderName = "John Doe",
+            postalCode = "12345"
         )
-    }
+    )
+    val isFormValid by cardFieldsController.isFormValid.collectAsState()
 
     Column {
         CardFields(controller = cardFieldsController)
