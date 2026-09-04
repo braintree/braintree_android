@@ -131,24 +131,6 @@ internal enum class PaymentActionStatus {
 }
 
 /**
- * Merchant gateway configuration for whether a payment action is confirmed automatically by the
- * server or requires an explicit confirmation step.
- */
-internal enum class ConfirmationMethod {
-    AUTOMATIC,
-    MANUAL,
-}
-
-/**
- * Merchant gateway configuration for whether a payment action is captured automatically by the
- * server or requires an explicit capture step.
- */
-internal enum class CaptureMethod {
-    AUTOMATIC,
-    MANUAL,
-}
-
-/**
  * Wrapper result type for [PaymentActionsService], carrying the raw [PaymentAction]
  * returned by GraphQL.
  */
