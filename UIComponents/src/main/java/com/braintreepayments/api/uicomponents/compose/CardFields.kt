@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,9 +38,15 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
 
     val focusManager = LocalFocusManager.current
 
+    val expirationFocusRequester = remember { FocusRequester() }
+    val cvvFocusRequester = remember { FocusRequester() }
+
     var cardNumberHasBeenFocused by remember { mutableStateOf(false) }
     var expirationHasBeenFocused by remember { mutableStateOf(false) }
     var cvvHasBeenFocused by remember { mutableStateOf(false) }
+
+    var cardNumberFocused by remember { mutableStateOf(false) }
+    var expirationFocused by remember { mutableStateOf(false) }
 
     fun onFieldFocusChanged(field: CardField, focused: Boolean, hasBeenFocused: Boolean): Boolean {
         if (focused || hasBeenFocused) {
@@ -47,6 +54,17 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
         }
         return focused || hasBeenFocused
     }
+
+    AdvanceFocusIfFieldIsValid(
+        validation = cardNumberValidation,
+        isSourceFieldFocused = cardNumberFocused,
+        nextFieldFocusRequester = expirationFocusRequester
+    )
+    AdvanceFocusIfFieldIsValid(
+        validation = expirationValidation,
+        isSourceFieldFocused = expirationFocused,
+        nextFieldFocusRequester = cvvFocusRequester
+    )
 
     Column(
         modifier = modifier
@@ -85,6 +103,7 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
             brand = detectedBrand,
             errorText = cardNumberValidation.errorText(),
             onFocusChanged = { focused ->
+                cardNumberFocused = focused
                 cardNumberHasBeenFocused = onFieldFocusChanged(
                     CardField.CARD_NUMBER,
                     focused,
@@ -107,7 +126,9 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
                 },
                 modifier = Modifier.weight(1f),
                 errorText = expirationValidation.errorText(),
+                focusRequester = expirationFocusRequester,
                 onFocusChanged = { focused ->
+                    expirationFocused = focused
                     expirationHasBeenFocused = onFieldFocusChanged(
                         CardField.EXPIRY,
                         focused,
@@ -124,6 +145,7 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
                 },
                 modifier = Modifier.weight(1f),
                 errorText = cvvValidation.errorText(),
+                focusRequester = cvvFocusRequester,
                 onFocusChanged = { focused ->
                     cvvHasBeenFocused = onFieldFocusChanged(CardField.CVV, focused, cvvHasBeenFocused)
                 }
@@ -135,6 +157,27 @@ fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) 
 @Composable
 private fun ValidationResult.errorText(): String? =
     (this as? ValidationResult.Invalid)?.let { stringResource(it.errorMessageRes) }
+
+/**
+ * Auto-advances focus to the next field once [validation] becomes [ValidationResult.Valid].
+ *
+ * Focus only advances while [isSourceFieldFocused] is true, so the user can tap back into an
+ * already-valid field and edit it without being forced forward again. This mirrors the XML flow's
+ * `advanceFocusIfFieldIsValid`.
+ */
+@Composable
+private fun AdvanceFocusIfFieldIsValid(
+    validation: ValidationResult,
+    isSourceFieldFocused: Boolean,
+    nextFieldFocusRequester: FocusRequester
+) {
+    // Restart the effect when the ValidationResult changes
+    LaunchedEffect(validation) {
+        if (validation is ValidationResult.Valid && isSourceFieldFocused) {
+            nextFieldFocusRequester.requestFocus()
+        }
+    }
+}
 
 /**
  * Strips non-digit characters from [newValue] and rejects the edit entirely (returns `null`)
