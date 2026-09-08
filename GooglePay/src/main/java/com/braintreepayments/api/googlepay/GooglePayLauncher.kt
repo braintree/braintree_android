@@ -20,13 +20,14 @@ class GooglePayLauncher internal constructor(
     lifecycleOwner: LifecycleOwner,
     context: Context,
     private val internalGooglePayClient: GooglePayInternalClient = GooglePayInternalClient(),
+    resultKey: String = GOOGLE_PAY_RESULT,
     callback: GooglePayLauncherCallback
 ) {
 
     private val appContext: Context = context.applicationContext
 
     private val activityLauncher: ActivityResultLauncher<Task<PaymentData>> = registry.register(
-        GOOGLE_PAY_RESULT, lifecycleOwner,
+        resultKey, lifecycleOwner,
         TaskResultContracts.GetPaymentDataResult()
     ) { apiTaskResult: ApiTaskResult<PaymentData> ->
         val result = when {
@@ -94,7 +95,66 @@ class GooglePayLauncher internal constructor(
         lifecycleOwner: LifecycleOwner,
         context: Context,
         callback: GooglePayLauncherCallback
-    ) : this(registry, lifecycleOwner, context, GooglePayInternalClient(), callback)
+    ) : this(registry, lifecycleOwner, context, GooglePayInternalClient(), callback = callback)
+
+    /**
+     * Used to launch the Google Pay payment sheet from within an Android Fragment, using a custom
+     * result key. This class must be instantiated before the Fragment is created.
+     *
+     * @param fragment the Android Fragment from which you will launch the Google Pay payment sheet
+     * @param resultKey a unique key identifying this launcher's Activity result. Must be unique per
+     * live launcher instance in the same Activity, and stable across process death.
+     * @param callback a [GooglePayLauncherCallback] to receive the result of the Google Pay
+     * payment flow
+     */
+    constructor(
+        fragment: Fragment,
+        resultKey: String,
+        callback: GooglePayLauncherCallback
+    ) : this(
+        fragment.requireActivity().activityResultRegistry,
+        fragment.viewLifecycleOwner,
+        fragment.requireContext(),
+        resultKey = resultKey,
+        callback = callback
+    )
+
+    /**
+     * Used to launch the Google Pay payment sheet from within an Android Activity, using a custom
+     * result key. This class must be instantiated before the Activity is created.
+     *
+     * @param activity the Android Activity from which you will launch the Google Pay payment sheet
+     * @param resultKey a unique key identifying this launcher's Activity result. Must be unique per
+     * live launcher instance in the same Activity, and stable across process death.
+     * @param callback a [GooglePayLauncherCallback] to receive the result of the Google Pay
+     * payment flow
+     */
+    constructor(
+        activity: ComponentActivity,
+        resultKey: String,
+        callback: GooglePayLauncherCallback
+    ) : this(activity.activityResultRegistry, activity, activity, resultKey = resultKey, callback = callback)
+
+    /**
+     * Used to launch the Google Pay payment sheet from a composable, or anywhere else a Fragment
+     * or ComponentActivity reference is not available, using a custom result key. This class must be
+     * instantiated before the [lifecycleOwner] reaches the CREATED state.
+     *
+     * @param registry the [ActivityResultRegistry] to use for launching the Google Pay payment sheet
+     * @param lifecycleOwner the [LifecycleOwner] used to control when the launcher is registered
+     * @param context an Android Context
+     * @param resultKey a unique key identifying this launcher's Activity result. Must be unique per
+     * live launcher instance in the same Activity, and stable across process death.
+     * @param callback a [GooglePayLauncherCallback] to receive the result of the Google Pay
+     * payment flow
+     */
+    constructor(
+        registry: ActivityResultRegistry,
+        lifecycleOwner: LifecycleOwner,
+        context: Context,
+        resultKey: String,
+        callback: GooglePayLauncherCallback
+    ) : this(registry, lifecycleOwner, context, GooglePayInternalClient(), resultKey = resultKey, callback = callback)
 
     /**
      * Launches the Google Pay payment sheet. This method cannot be called until the lifecycle of

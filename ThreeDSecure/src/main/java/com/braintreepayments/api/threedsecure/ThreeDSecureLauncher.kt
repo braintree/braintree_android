@@ -15,12 +15,13 @@ import com.braintreepayments.api.core.BraintreeException
 class ThreeDSecureLauncher internal constructor(
     registry: ActivityResultRegistry,
     lifecycleOwner: LifecycleOwner,
+    resultKey: String = THREE_D_SECURE_RESULT,
     private val callback: ThreeDSecureLauncherCallback
 ) {
 
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     var activityLauncher: ActivityResultLauncher<ThreeDSecureParams?> = registry.register(
-        THREE_D_SECURE_RESULT,
+        resultKey,
         lifecycleOwner,
         ThreeDSecureActivityResultContract()
     ) { paymentAuthResult: ThreeDSecurePaymentAuthResult? ->
@@ -57,7 +58,44 @@ class ThreeDSecureLauncher internal constructor(
     constructor(
         activity: ComponentActivity,
         callback: ThreeDSecureLauncherCallback
-    ) : this(activity.activityResultRegistry, activity, callback)
+    ) : this(activity.activityResultRegistry, activity, callback = callback)
+
+    /**
+     * Used to launch the 3DS authentication flow to tokenize a 3DS card, using a custom result key.
+     * This class must be instantiated before your Fragment is created.
+     *
+     * @param fragment an Android Fragment from which you will launch the 3DS flow
+     * @param resultKey a unique key identifying this launcher's Activity result. Must be unique per
+     * live launcher instance in the same Activity, and stable across process death.
+     * @param callback a [ThreeDSecureLauncherCallback] to receive the result of the 3DS
+     * authentication flow
+     */
+    constructor(
+        fragment: Fragment,
+        resultKey: String,
+        callback: ThreeDSecureLauncherCallback
+    ) : this(
+        registry = fragment.requireActivity().activityResultRegistry,
+        lifecycleOwner = fragment.viewLifecycleOwner,
+        resultKey = resultKey,
+        callback = callback
+    )
+
+    /**
+     * Used to launch the 3DS authentication flow to tokenize a 3DS card, using a custom result key.
+     * This class must be instantiated before your Activity is created.
+     *
+     * @param activity an Android Activity from which you will launch the 3DS flow
+     * @param resultKey a unique key identifying this launcher's Activity result. Must be unique per
+     * live launcher instance in the same Activity, and stable across process death.
+     * @param callback a [ThreeDSecureLauncherCallback] to receive the result of the 3DS
+     * authentication flow
+     */
+    constructor(
+        activity: ComponentActivity,
+        resultKey: String,
+        callback: ThreeDSecureLauncherCallback
+    ) : this(activity.activityResultRegistry, activity, resultKey = resultKey, callback = callback)
 
     /**
      * Launches the 3DS flow by switching to an authentication Activity. Call this method in the

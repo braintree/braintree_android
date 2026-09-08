@@ -82,6 +82,24 @@ class GooglePayLauncherUnitTest {
     }
 
     @Test
+    fun `when GooglePayLauncher is constructed with a custom result key, that key is used to register`() {
+        val customKey = "com.checkout.GOOGLE_PAY"
+        val lifecycleOwner = FragmentActivity()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+
+        val registry = mockk<ActivityResultRegistry>(relaxed = true)
+        GooglePayLauncher(registry, lifecycleOwner, context, customKey, callback)
+
+        verify {
+            registry.register(
+                eq(customKey), eq(lifecycleOwner),
+                any<TaskResultContracts.GetPaymentDataResult>(),
+                any()
+            )
+        }
+    }
+
+    @Test
     fun `when launch is called with ready to launch request, activity result launcher launches task`() {
         val lifecycleOwner = FragmentActivity()
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -91,7 +109,7 @@ class GooglePayLauncherUnitTest {
             .build()
 
         val sut = GooglePayLauncher(
-            activityResultRegistry, lifecycleOwner, context, internalGooglePayClient, callback
+            activityResultRegistry, lifecycleOwner, context, internalGooglePayClient, callback = callback
         )
 
         val googlePayRequest = GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)

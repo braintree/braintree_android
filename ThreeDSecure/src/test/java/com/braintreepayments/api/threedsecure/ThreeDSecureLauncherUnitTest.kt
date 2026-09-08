@@ -47,7 +47,7 @@ class ThreeDSecureLauncherUnitTest {
         val lifecycleOwner = FragmentActivity()
 
         val registry = mockk<ActivityResultRegistry>(relaxed = true)
-        ThreeDSecureLauncher(registry, lifecycleOwner, callback!!)
+        ThreeDSecureLauncher(registry, lifecycleOwner, callback = callback!!)
 
         verify {
             registry.register(
@@ -59,11 +59,28 @@ class ThreeDSecureLauncherUnitTest {
     }
 
     @Test
+    fun `when constructed with a custom result key, registers an activity result launcher with that key`() {
+        val customKey = "com.checkout.THREE_D_SECURE"
+        val lifecycleOwner = FragmentActivity()
+
+        val registry = mockk<ActivityResultRegistry>(relaxed = true)
+        ThreeDSecureLauncher(registry, lifecycleOwner, customKey, callback!!)
+
+        verify {
+            registry.register(
+                eq(customKey), eq(lifecycleOwner),
+                any<ActivityResultContract<ThreeDSecureParams, ThreeDSecurePaymentAuthResult>>(),
+                any()
+            )
+        }
+    }
+
+    @Test
     fun `when launch is called with a ready to launch request, launches the auth challenge with the three d secure params`() {
         val lifecycleOwner = FragmentActivity()
         val sut = ThreeDSecureLauncher(
             activityResultRegistry!!, lifecycleOwner,
-            callback!!
+            callback = callback!!
         )
         sut.activityLauncher = activityResultLauncher
 
@@ -82,7 +99,7 @@ class ThreeDSecureLauncherUnitTest {
         val lifecycleOwner = FragmentActivity()
         val sut = ThreeDSecureLauncher(
             activityResultRegistry!!, lifecycleOwner,
-            callback!!
+            callback = callback!!
         )
         sut.activityLauncher = activityResultLauncher
 
