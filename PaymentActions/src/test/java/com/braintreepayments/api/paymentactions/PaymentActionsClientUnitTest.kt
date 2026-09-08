@@ -1,7 +1,10 @@
 package com.braintreepayments.api.paymentactions
 
+import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.BraintreeClient
 import io.mockk.coEvery
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -15,10 +18,16 @@ class PaymentActionsClientUnitTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val service = mockk<PaymentActionsService>()
+    private val braintreeClient = mockk<BraintreeClient>(relaxed = true)
 
     private fun paymentAction(status: PaymentActionStatus) = PaymentAction(id = "pa123", status = status)
 
-    private fun buildClient() = PaymentActionsClient(service, testDispatcher, CoroutineScope(testDispatcher))
+    private fun buildClient() = PaymentActionsClient(
+        braintreeClient,
+        service,
+        testDispatcher,
+        CoroutineScope(testDispatcher),
+    )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
@@ -163,6 +172,10 @@ class PaymentActionsClientUnitTest {
 
         val outcome = assertIs<PaymentActionResult.Completed>(result)
         assertEquals("pa123", outcome.id)
+        verify { braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_STARTED) }
+        verify {
+            braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_SUCCEEDED)
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -176,5 +189,13 @@ class PaymentActionsClientUnitTest {
 
         val failure = assertIs<PaymentActionResult.Failure>(result)
         assertEquals(error, failure.error)
+        verify { braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_STARTED) }
+        verify {
+            braintreeClient.sendAnalyticsEvent(
+                PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_FAILED,
+                AnalyticsEventParams(errorDescription = error.message),
+                any(),
+            )
+        }
     }
 }

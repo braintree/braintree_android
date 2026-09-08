@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paymentactions
 
 import android.content.Context
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +27,8 @@ fun interface PaymentActionCallback {
  *
  */
 class PaymentActionsClient internal constructor(
-    private val service: PaymentActionsService,
+    private val braintreeClient: BraintreeClient,
+    private val service: PaymentActionsService = PaymentActionsService(braintreeClient),
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
     private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
 ) {
@@ -38,7 +40,7 @@ class PaymentActionsClient internal constructor(
      * @param authorization a Client Token used to authenticate
      */
     constructor(context: Context, authorization: String) : this(
-        PaymentActionsService(BraintreeClient(context, authorization))
+        BraintreeClient(context, authorization)
     )
 
     /**
@@ -67,7 +69,17 @@ class PaymentActionsClient internal constructor(
      * @return [PaymentActionResult]
      */
     suspend fun submitForPaymentAction(request: PaymentActionRequest): PaymentActionResult {
-        return service.setPaymentActionPaymentMethod(request).handleNextAction()
+        braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_STARTED)
+        return service.setPaymentActionPaymentMethod(request).handleNextAction().also { result ->
+            if (result is PaymentActionResult.Failure) {
+                braintreeClient.sendAnalyticsEvent(
+                    PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_FAILED,
+                    AnalyticsEventParams(errorDescription = result.error.message),
+                )
+            } else {
+                braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_SUCCEEDED)
+            }
+        }
     }
 
     /**
