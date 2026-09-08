@@ -147,7 +147,6 @@ private fun ValidationResult.errorText(): String? =
  * if it would push the digit count past the detected brand's max length. Rejecting outright —
  * rather than truncating — avoids the field appearing to "overwrite" digits at the end when the
  * user inserts new digits in the middle of an already-full number.
- * @param newValue: The proposed new [TextFieldValue] for the card number field.
  */
 internal fun sanitizeCardNumberInput(newValue: TextFieldValue): TextFieldValue? {
     val rawDigits = newValue.text.filter { it.isDigit() }
@@ -160,7 +159,6 @@ internal fun sanitizeCardNumberInput(newValue: TextFieldValue): TextFieldValue? 
  * Strips non-digit characters from [newValue], rejects the edit (returns `null`) if it would
  * push the digit count past [EXPIRATION_MAX_DIGITS], and applies a leading zero so a
  * single-digit month is unambiguous while typing.
- * @param newValue: The proposed new [TextFieldValue] for the expiration field.
  */
 internal fun sanitizeCardExpirationInput(newValue: TextFieldValue): TextFieldValue? {
     val rawDigits = newValue.text.filter { it.isDigit() }
@@ -175,8 +173,6 @@ internal fun sanitizeCardExpirationInput(newValue: TextFieldValue): TextFieldVal
 /**
  * Strips non-digit characters from [newValue] and rejects the edit (returns `null`) if it would
  * push the digit count past [brand]'s expected CVV length.
- * @param newValue: The proposed new [TextFieldValue] for the CVV field.
- * @param brand: The currently detected [CardBrand], used to resolve the expected CVV length.
  */
 internal fun sanitizeCvvInput(newValue: TextFieldValue, brand: CardBrand): TextFieldValue? {
     val rawDigits = newValue.text.filter { it.isDigit() }

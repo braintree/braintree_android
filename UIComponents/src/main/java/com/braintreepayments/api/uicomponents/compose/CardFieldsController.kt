@@ -21,12 +21,6 @@ import kotlinx.coroutines.flow.StateFlow
 /**
  * Holds the UI state and tokenization logic for the [CardFields] composable. Create an instance
  * via [rememberCardFieldsController] rather than calling this constructor directly.
- * @param viewModel: The [CardFieldsViewModel] backing the card number, expiration, and CVV validation state.
- * @param cardNumber: The current card number field value.
- * @param expiration: The current expiration date field value.
- * @param cvv: The current CVV field value.
- * @param cardClient: The [CardClient] used to tokenize the card on [submit].
- * @param request: Additional card data to merge with the user-entered fields on [submit].
  */
 class CardFieldsController internal constructor(
     internal val viewModel: CardFieldsViewModel,
