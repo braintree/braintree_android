@@ -18,7 +18,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.braintreepayments.api.uicomponents.R
 import com.braintreepayments.api.uicomponents.cardfields.CardBrand
 
-/** Compose equivalent of [com.braintreepayments.api.uicomponents.cardfields.CardNumberTextInputView]. */
+/**
+ * Compose equivalent of [com.braintreepayments.api.uicomponents.cardfields.CardNumberTextInputView].
+ */
 @Composable
 internal fun CardNumberField(
     value: TextFieldValue,

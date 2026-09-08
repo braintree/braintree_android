@@ -18,6 +18,16 @@ import com.braintreepayments.api.uicomponents.cardfields.CardFieldsResultCallbac
 import com.braintreepayments.api.uicomponents.cardfields.CardFieldsViewModel
 import kotlinx.coroutines.flow.StateFlow
 
+/**
+ * Holds the UI state and tokenization logic for the [CardFields] composable. Create an instance
+ * via [rememberCardFieldsController] rather than calling this constructor directly.
+ * @param viewModel: The [CardFieldsViewModel] backing the card number, expiration, and CVV validation state.
+ * @param cardNumber: The current card number field value.
+ * @param expiration: The current expiration date field value.
+ * @param cvv: The current CVV field value.
+ * @param cardClient: The [CardClient] used to tokenize the card on [submit].
+ * @param request: Additional card data to merge with the user-entered fields on [submit].
+ */
 class CardFieldsController internal constructor(
     internal val viewModel: CardFieldsViewModel,
     internal val cardNumber: MutableState<TextFieldValue>,
@@ -31,6 +41,7 @@ class CardFieldsController internal constructor(
     /**
      * Tokenizes the card details entered by the user, merged with any additional data provided via
      * [request]. The result is delivered to [callback].
+     * @param callback: A [CardFieldsResultCallback] that handles the result of the tokenization.
      */
     fun submit(callback: CardFieldsResultCallback) {
         cardClient.tokenize(buildCard()) { cardResult ->
@@ -55,6 +66,13 @@ class CardFieldsController internal constructor(
 
 private fun String.asTextFieldValue() = TextFieldValue(text = this, selection = TextRange(length))
 
+/**
+ * Creates and remembers a [CardFieldsController] for use with the [CardFields] composable,
+ * surviving recomposition, configuration changes, and process death.
+ * @param authorization: A Braintree tokenization key or client token.
+ * @param request: Additional card data (e.g. cardholder name, postal code) to merge with the
+ * user-entered card number, expiration, and CVV when [CardFieldsController.submit] is called.
+ */
 @Composable
 fun rememberCardFieldsController(authorization: String, request: Card = Card()): CardFieldsController {
     val context = LocalContext.current

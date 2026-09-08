@@ -27,6 +27,12 @@ import com.braintreepayments.api.uicomponents.cardfields.CardField
 import com.braintreepayments.api.uicomponents.cardfields.ExpirationDateFormatter
 import com.braintreepayments.api.uicomponents.cardfields.ValidationResult
 
+/**
+ * Renders the card number, expiration, and CVV fields for card tokenization. Pair with a
+ * [CardFieldsController] created via [rememberCardFieldsController].
+ * @param controller: The [CardFieldsController] that owns this composable's field state and submission logic.
+ * @param modifier: The [Modifier] to be applied to this composable.
+ */
 @Composable
 fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) {
     val viewModel = controller.viewModel
@@ -141,6 +147,7 @@ private fun ValidationResult.errorText(): String? =
  * if it would push the digit count past the detected brand's max length. Rejecting outright —
  * rather than truncating — avoids the field appearing to "overwrite" digits at the end when the
  * user inserts new digits in the middle of an already-full number.
+ * @param newValue: The proposed new [TextFieldValue] for the card number field.
  */
 internal fun sanitizeCardNumberInput(newValue: TextFieldValue): TextFieldValue? {
     val rawDigits = newValue.text.filter { it.isDigit() }
@@ -149,6 +156,12 @@ internal fun sanitizeCardNumberInput(newValue: TextFieldValue): TextFieldValue? 
     return newValue.copy(text = rawDigits)
 }
 
+/**
+ * Strips non-digit characters from [newValue], rejects the edit (returns `null`) if it would
+ * push the digit count past [EXPIRATION_MAX_DIGITS], and applies a leading zero so a
+ * single-digit month is unambiguous while typing.
+ * @param newValue: The proposed new [TextFieldValue] for the expiration field.
+ */
 internal fun sanitizeCardExpirationInput(newValue: TextFieldValue): TextFieldValue? {
     val rawDigits = newValue.text.filter { it.isDigit() }
     if (rawDigits.length > EXPIRATION_MAX_DIGITS) return null
@@ -159,6 +172,12 @@ internal fun sanitizeCardExpirationInput(newValue: TextFieldValue): TextFieldVal
     return newValue.copy(text = digits, selection = selection)
 }
 
+/**
+ * Strips non-digit characters from [newValue] and rejects the edit (returns `null`) if it would
+ * push the digit count past [brand]'s expected CVV length.
+ * @param newValue: The proposed new [TextFieldValue] for the CVV field.
+ * @param brand: The currently detected [CardBrand], used to resolve the expected CVV length.
+ */
 internal fun sanitizeCvvInput(newValue: TextFieldValue, brand: CardBrand): TextFieldValue? {
     val rawDigits = newValue.text.filter { it.isDigit() }
     if (rawDigits.length > brand.cvvLength) return null
