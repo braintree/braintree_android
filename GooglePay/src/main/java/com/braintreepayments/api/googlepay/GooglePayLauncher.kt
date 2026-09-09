@@ -61,7 +61,7 @@ class GooglePayLauncher internal constructor(
         callback: GooglePayLauncherCallback
     ) : this(
         fragment.requireActivity().activityResultRegistry,
-        fragment.viewLifecycleOwner,
+        fragment,
         fragment.requireContext(),
         callback = callback
     )
@@ -113,7 +113,7 @@ class GooglePayLauncher internal constructor(
         callback: GooglePayLauncherCallback
     ) : this(
         fragment.requireActivity().activityResultRegistry,
-        fragment.viewLifecycleOwner,
+        fragment,
         fragment.requireContext(),
         resultKey = resultKey,
         callback = callback
