@@ -28,6 +28,12 @@ import com.braintreepayments.api.uicomponents.cardfields.CardField
 import com.braintreepayments.api.uicomponents.cardfields.ExpirationDateFormatter
 import com.braintreepayments.api.uicomponents.cardfields.ValidationResult
 
+/**
+ * Renders the card number, expiration, and CVV fields for card tokenization. Pair with a
+ * [CardFieldsController] created via [rememberCardFieldsController].
+ * @param controller: The [CardFieldsController] that owns this composable's field state and submission logic.
+ * @param modifier: The [Modifier] to be applied to this composable.
+ */
 @Composable
 fun CardFields(controller: CardFieldsController, modifier: Modifier = Modifier) {
     val viewModel = controller.viewModel
@@ -192,6 +198,11 @@ internal fun sanitizeCardNumberInput(newValue: TextFieldValue): TextFieldValue? 
     return newValue.copy(text = rawDigits)
 }
 
+/**
+ * Strips non-digit characters from [newValue], rejects the edit (returns `null`) if it would
+ * push the digit count past [EXPIRATION_MAX_DIGITS], and applies a leading zero so a
+ * single-digit month is unambiguous while typing.
+ */
 internal fun sanitizeCardExpirationInput(newValue: TextFieldValue): TextFieldValue? {
     val rawDigits = newValue.text.filter { it.isDigit() }
     if (rawDigits.length > EXPIRATION_MAX_DIGITS) return null
@@ -202,6 +213,10 @@ internal fun sanitizeCardExpirationInput(newValue: TextFieldValue): TextFieldVal
     return newValue.copy(text = digits, selection = selection)
 }
 
+/**
+ * Strips non-digit characters from [newValue] and rejects the edit (returns `null`) if it would
+ * push the digit count past [brand]'s expected CVV length.
+ */
 internal fun sanitizeCvvInput(newValue: TextFieldValue, brand: CardBrand): TextFieldValue? {
     val rawDigits = newValue.text.filter { it.isDigit() }
     if (rawDigits.length > brand.cvvLength) return null

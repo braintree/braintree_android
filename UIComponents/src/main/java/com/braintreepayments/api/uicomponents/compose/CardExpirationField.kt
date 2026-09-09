@@ -10,6 +10,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import com.braintreepayments.api.uicomponents.R
 
+/**
+ * Compose equivalent of [com.braintreepayments.api.uicomponents.cardfields.ExpirationTextInputView].
+ */
 @Composable
 internal fun CardExpirationField(
     value: TextFieldValue,

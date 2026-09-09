@@ -7,6 +7,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import com.braintreepayments.api.uicomponents.cardfields.CardNumberFormatter
 import com.braintreepayments.api.uicomponents.cardfields.ExpirationDateFormatter
 
+/**
+ * Inserts spacing gaps into the displayed card number without altering the underlying digits.
+ */
 internal class CardNumberVisualTransformation(private val formatGaps: IntArray) :
     VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
@@ -15,6 +18,7 @@ internal class CardNumberVisualTransformation(private val formatGaps: IntArray) 
     }
 }
 
+/** Inserts a `/` separator into the displayed expiration date without altering the underlying digits. */
 internal class ExpirationDateVisualTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val formatted = ExpirationDateFormatter.formatExpiration(text.text)
@@ -30,6 +34,10 @@ private fun digitOffsetMapping(formatted: String) = object : OffsetMapping {
         CardNumberFormatter.countDigitsBeforeIndex(formatted, offset)
 }
 
+/**
+ * Masks all CVV digits except the one at [revealedIndex], if any, so a freshly typed digit is
+ * briefly visible before being masked.
+ */
 internal class CvvVisualTransformation(private val revealedIndex: Int?) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val masked = text.text.mapIndexed { index, char ->

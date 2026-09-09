@@ -23,6 +23,11 @@ import com.braintreepayments.api.uicomponents.R
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * Compose equivalent of [com.braintreepayments.api.uicomponents.cardfields.CvvTextInputView].
+ * Briefly reveals each newly typed digit (masking the rest) before masking it too, matching the
+ * XML view's momentary-reveal behavior for CVV entry.
+ */
 @Composable
 internal fun CardCvvField(
     value: TextFieldValue,
