@@ -5,7 +5,7 @@
 * GooglePay
   * Add optional `resultKey` parameter to `GooglePayLauncher` constructors, allowing a unique registration key per launcher instance
 * ThreeDSecure
-  * Add optional `resultKey` parameter to `ThreeDSecureLauncher` constructors, allowing a unique registration key per launcher instance 
+  * Add optional `resultKey` parameter to `ThreeDSecureLauncher` constructors, allowing a unique registration key per launcher instance
   
 ## 5.32.0 (2026-08-27)
 

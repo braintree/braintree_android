@@ -43,7 +43,7 @@ class ThreeDSecureLauncher internal constructor(
         callback: ThreeDSecureLauncherCallback
     ) : this(
         registry = fragment.requireActivity().activityResultRegistry,
-        lifecycleOwner = fragment.viewLifecycleOwner,
+        lifecycleOwner = fragment,
         callback = callback
     )
 
