@@ -37,13 +37,14 @@ class VenmoClientTest {
     @Test(timeout = 10000)
     @Throws(InterruptedException::class)
     fun createPaymentAuthRequest_whenVenmoDisabled_returnsFailure() {
-        val authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
+        val testTokenizationKey = "sandbox_tmxhyf7d_venmoDisabledTest"
+        val authorization = Authorization.fromString(testTokenizationKey)
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         SharedPreferencesHelper.overrideConfigurationCache(context, authorization, configuration)
 
         val sut = VenmoClient(
             context = context,
-            authorization = Fixtures.TOKENIZATION_KEY,
+            authorization = testTokenizationKey,
             appLinkReturnUrl = appLinkReturnUrl
         )
 
@@ -81,13 +82,14 @@ class VenmoClientTest {
     @Test(timeout = 10000)
     @Throws(InterruptedException::class)
     fun createPaymentAuthRequest_whenCollectingShippingAddress_andECDDisabled_returnsFailure() {
-        val authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
+        val testTokenizationKey = "sandbox_tmxhyf7d_ecdShippingTest"
+        val authorization = Authorization.fromString(testTokenizationKey)
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO)
         SharedPreferencesHelper.overrideConfigurationCache(context, authorization, configuration)
 
         val sut = VenmoClient(
             context = context,
-            authorization = Fixtures.TOKENIZATION_KEY,
+            authorization = testTokenizationKey,
             appLinkReturnUrl = appLinkReturnUrl
         )
 
@@ -109,13 +111,14 @@ class VenmoClientTest {
     @Test(timeout = 10000)
     @Throws(InterruptedException::class)
     fun createPaymentAuthRequest_whenCollectingBillingAddress_andECDDisabled_returnsFailure() {
-        val authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
+        val testTokenizationKey = "sandbox_tmxhyf7d_ecdBillingTest"
+        val authorization = Authorization.fromString(testTokenizationKey)
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO)
         SharedPreferencesHelper.overrideConfigurationCache(context, authorization, configuration)
 
         val sut = VenmoClient(
             context = context,
-            authorization = Fixtures.TOKENIZATION_KEY,
+            authorization = testTokenizationKey,
             appLinkReturnUrl = appLinkReturnUrl
         )
 
@@ -137,13 +140,14 @@ class VenmoClientTest {
     @Test(timeout = 30000)
     @Throws(InterruptedException::class)
     fun createPaymentAuthRequest_whenVenmoEnabled_andNetworkFails_returnsFailure() {
-        val authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
+        val testTokenizationKey = "sandbox_tmxhyf7d_networkFailsTest"
+        val authorization = Authorization.fromString(testTokenizationKey)
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO)
         SharedPreferencesHelper.overrideConfigurationCache(context, authorization, configuration)
 
         val sut = VenmoClient(
             context = context,
-            authorization = Fixtures.TOKENIZATION_KEY,
+            authorization = testTokenizationKey,
             appLinkReturnUrl = appLinkReturnUrl
         )
 
