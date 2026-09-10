@@ -42,7 +42,7 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
-          emulator-options: -no-window -gpu swiftshader_indirect -dns-server 8.8.8.8 -noaudio -no-boot-anim -camera-back none -memory 4096 -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
+          emulator-options: -no-window -gpu swiftshader_indirect -dns-server 8.8.8.8 -noaudio -no-boot-anim -camera-back none -memory 4096
           disk-size: 8G
           script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
 
@@ -54,6 +54,6 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
-          emulator-options: -no-window -gpu swiftshader_indirect -dns-server 8.8.8.8 -noaudio -no-boot-anim -camera-back none -memory 4096 -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
+          emulator-options: -no-window -gpu swiftshader_indirect -dns-server 8.8.8.8 -noaudio -no-boot-anim -camera-back none -memory 4096
           disk-size: 8G
           script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
