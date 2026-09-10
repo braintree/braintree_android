@@ -15,14 +15,24 @@ jobs:
             target: google_apis
           - api-level: 31
             target: default
+            emulator-options: -no-window -gpu swiftshader_indirect -dns-server 8.8.8.8 -noaudio -no-boot-anim -camera-back none -memory 4096 -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
+            disk-size: 8G
           - api-level: 31
             target: google_apis
+            emulator-options: -no-window -gpu swiftshader_indirect -dns-server 8.8.8.8 -noaudio -no-boot-anim -camera-back none -memory 4096 -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
+            disk-size: 8G
           - api-level: 35
             target: default
+            emulator-options: -no-window -gpu swiftshader_indirect -dns-server 8.8.8.8 -noaudio -no-boot-anim -camera-back none -memory 4096 -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
+            disk-size: 8G
           - api-level: 35
             target: google_apis
+            emulator-options: -no-window -gpu swiftshader_indirect -dns-server 8.8.8.8 -noaudio -no-boot-anim -camera-back none -memory 4096 -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
+            disk-size: 8G
           - api-level: "37.0"
             target: google_apis_ps16k
+            emulator-options: -no-window -gpu swiftshader_indirect -dns-server 8.8.8.8 -noaudio -no-boot-anim -camera-back none -memory 4096 -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
+            disk-size: 8G
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -42,8 +52,8 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
-          emulator-options: -no-window -gpu swiftshader_indirect -dns-server 8.8.8.8 -noaudio -no-boot-anim -camera-back none -memory 4096
-          disk-size: 8G
+          emulator-options: ${{ matrix.emulator-options }}
+          disk-size: ${{ matrix.disk-size }}
           script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
 
       - name: retry tests
@@ -54,6 +64,6 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
-          emulator-options: -no-window -gpu swiftshader_indirect -dns-server 8.8.8.8 -noaudio -no-boot-anim -camera-back none -memory 4096
-          disk-size: 8G
+          emulator-options: ${{ matrix.emulator-options }}
+          disk-size: ${{ matrix.disk-size }}
           script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
