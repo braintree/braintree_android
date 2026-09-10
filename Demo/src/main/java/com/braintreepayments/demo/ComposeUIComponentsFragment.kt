@@ -59,7 +59,7 @@ private const val APP_LINK_RETURN_URL =
     "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"
 private const val DEEP_LINK_FALLBACK_SCHEME = "com.braintreepayments.demo.braintree"
 
-
+@Suppress("LongMethod")
 class ComposeUIComponentsFragment : BaseFragment() {
 
     override fun onCreateView(
@@ -181,7 +181,7 @@ class ComposeUIComponentsFragment : BaseFragment() {
                             }
                         }
                     ) {
-                        Text("Pay")
+                        Text(stringResource(R.string.card_fields_pay))
                     }
                 }
             }
