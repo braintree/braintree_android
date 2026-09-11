@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* SEPADirectDebit
+  * Add Compose constructor for `SEPADirectDebitLauncher`
+
 ## 5.32.0 (2026-08-27)
 
 * GooglePay
