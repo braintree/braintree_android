@@ -22,10 +22,31 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.braintreepayments.api.uicomponents.R
+
+/**
+ * Positions the popup so its bottom-end corner sits just above the anchor's top-end corner,
+ * using the anchor's actual measured bounds rather than an externally tracked height.
+ */
+private object AboveAnchorEndPopupPositionProvider : PopupPositionProvider {
+    override fun calculatePosition(
+        anchorBounds: IntRect,
+        windowSize: IntSize,
+        layoutDirection: LayoutDirection,
+        popupContentSize: IntSize
+    ): IntOffset {
+        val x = anchorBounds.right - popupContentSize.width
+        val y = anchorBounds.top - popupContentSize.height
+        return IntOffset(x, y)
+    }
+}
 
 /**
  * Compose equivalent of [com.braintreepayments.api.uicomponents.cardfields.CvvHintOverlay]. Must be
@@ -35,7 +56,7 @@ import com.braintreepayments.api.uicomponents.R
 @Composable
 internal fun CvvHintPopup(onDismissRequest: () -> Unit) {
     Popup(
-        alignment = Alignment.BottomEnd,
+        popupPositionProvider = AboveAnchorEndPopupPositionProvider,
         onDismissRequest = onDismissRequest,
         properties = PopupProperties(focusable = true)
     ) {
@@ -52,12 +73,14 @@ internal fun CvvHintPopup(onDismissRequest: () -> Unit) {
                 .padding(dimensionResource(R.dimen.cvv_overlay_padding))
         ) {
             val closeIconSize = dimensionResource(R.dimen.cvv_overlay_close_icon_size)
+            val headerTextSize = spDimensionResource(R.dimen.cvv_overlay_header_text_size)
+            val bodyTextSize = spDimensionResource(R.dimen.cvv_overlay_body_text_size)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = stringResource(R.string.cvv_overlay_header),
                     modifier = Modifier.weight(1f),
                     color = colorResource(R.color.card_field_text),
-                    fontSize = dimensionResource(R.dimen.cvv_overlay_header_text_size).value.sp,
+                    fontSize = headerTextSize,
                     fontWeight = FontWeight.Bold
                 )
                 IconButton(onClick = onDismissRequest, modifier = Modifier.size(closeIconSize)) {
@@ -75,7 +98,7 @@ internal fun CvvHintPopup(onDismissRequest: () -> Unit) {
                     end = dimensionResource(R.dimen.cvv_overlay_body_padding_end)
                 ),
                 color = colorResource(R.color.card_field_text),
-                fontSize = dimensionResource(R.dimen.cvv_overlay_body_text_size).value.sp
+                fontSize = bodyTextSize
             )
         }
     }

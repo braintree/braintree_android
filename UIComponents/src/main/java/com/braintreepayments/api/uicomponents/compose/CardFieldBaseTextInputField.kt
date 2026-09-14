@@ -1,5 +1,6 @@
 package com.braintreepayments.api.uicomponents.compose
 
+import androidx.annotation.DimenRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -79,9 +80,9 @@ internal fun CardFieldBaseTextInputField(
     val paddingHorizontal = dimensionResource(R.dimen.card_field_padding_horizontal)
     val inputMarginBottom = dimensionResource(R.dimen.card_field_input_margin_bottom)
     val hintFloatTopMargin = dimensionResource(R.dimen.card_field_hint_float_top_margin)
-    val inputFontSize = dimensionResource(R.dimen.card_field_input_text_size).value.sp
-    val hintRestTextSize = dimensionResource(R.dimen.card_field_hint_text_size).value.sp
-    val hintFloatTextSize = dimensionResource(R.dimen.card_field_hint_float_text_size).value.sp
+    val inputFontSize = spDimensionResource(R.dimen.card_field_input_text_size)
+    val hintRestTextSize = spDimensionResource(R.dimen.card_field_hint_text_size)
+    val hintFloatTextSize = spDimensionResource(R.dimen.card_field_hint_float_text_size)
 
     val borderColor = colorResource(resolveBorderColor(hasError, isFocused))
     val currentBorderWidth = if (hasError || isFocused) borderFocusedWidth else borderWidth
@@ -233,7 +234,7 @@ private fun CardFieldErrorMessage(errorText: String, modifier: Modifier = Modifi
         Text(
             text = errorText,
             color = colorResource(R.color.card_field_text),
-            fontSize = dimensionResource(R.dimen.card_field_error_text_size).value.sp,
+            fontSize = spDimensionResource(R.dimen.card_field_error_text_size),
             modifier = Modifier.padding(top = dimensionResource(R.dimen.card_field_error_margin_top))
         )
     }
@@ -241,6 +242,15 @@ private fun CardFieldErrorMessage(errorText: String, modifier: Modifier = Modifi
 
 private fun interpolateHintFontSize(restSize: TextUnit, floatedSize: TextUnit, fraction: Float) =
     (restSize.value + (floatedSize.value - restSize.value) * fraction).sp
+
+/**
+ * Reads a dimen resource declared in `sp` as a [TextUnit], converting through [LocalDensity]
+ * so the font scale baked into [dimensionResource]'s px-to-dp conversion isn't applied a second
+ * time by a downstream `.sp` reinterpretation.
+ */
+@Composable
+internal fun spDimensionResource(@DimenRes id: Int): TextUnit =
+    with(LocalDensity.current) { dimensionResource(id).toSp() }
 
 private fun resolveBorderColor(hasError: Boolean, isFocused: Boolean) = when {
     hasError -> R.color.card_field_error
