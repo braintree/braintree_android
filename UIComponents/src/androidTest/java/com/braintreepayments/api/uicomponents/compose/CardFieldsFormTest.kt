@@ -18,6 +18,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.test.platform.app.InstrumentationRegistry
+import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.uicomponents.R
 import org.junit.Rule
 import org.junit.Test
@@ -46,13 +47,13 @@ class CardFieldsFormTest {
 
     private fun setCardFields() {
         composeTestRule.setContent {
-            CardFields(controller = rememberCardFieldsController())
+            CardFields(controller = rememberCardFieldsController(authorization = Fixtures.TOKENIZATION_KEY))
         }
     }
 
     private fun setCardFieldsWithPayButton() {
         composeTestRule.setContent {
-            val controller = rememberCardFieldsController()
+            val controller = rememberCardFieldsController(authorization = Fixtures.TOKENIZATION_KEY)
             val isFormValid by controller.isFormValid.collectAsState()
             Column {
                 CardFields(controller = controller)
