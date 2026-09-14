@@ -12,6 +12,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.test.platform.app.InstrumentationRegistry
+import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.uicomponents.R
 import com.braintreepayments.api.uicomponents.cardfields.CardBrand
 import org.junit.Rule
@@ -42,7 +43,7 @@ class CardNumberFieldTest {
 
     private fun setCardFields() {
         composeTestRule.setContent {
-            CardFields(controller = rememberCardFieldsController())
+            CardFields(controller = rememberCardFieldsController(authorization = Fixtures.TOKENIZATION_KEY))
         }
     }
 
