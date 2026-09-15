@@ -18,13 +18,14 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class GooglePayLauncherUnitTest {
@@ -47,7 +48,7 @@ class GooglePayLauncherUnitTest {
 
     @Test
     fun `when GooglePayLauncher is constructed, activity result launcher is registered`() {
-        val expectedKey = "com.braintreepayments.api.GooglePay.RESULT"
+        val expectedKeyPrefix = "com.braintreepayments.api.GooglePay.RESULT"
         val lifecycleOwner = FragmentActivity()
         val context = ApplicationProvider.getApplicationContext<Context>()
 
@@ -56,7 +57,7 @@ class GooglePayLauncherUnitTest {
 
         verify {
             registry.register(
-                eq(expectedKey), eq(lifecycleOwner),
+                match<String> { it.startsWith(expectedKeyPrefix) }, eq(lifecycleOwner),
                 any<TaskResultContracts.GetPaymentDataResult>(),
                 any()
             )
@@ -65,7 +66,7 @@ class GooglePayLauncherUnitTest {
 
     @Test
     fun `when GooglePayLauncher is constructed via the Compose constructor, activity result launcher is registered`() {
-        val expectedKey = "com.braintreepayments.api.GooglePay.RESULT"
+        val expectedKeyPrefix = "com.braintreepayments.api.GooglePay.RESULT"
         val lifecycleOwner = FragmentActivity()
         val context = ApplicationProvider.getApplicationContext<Context>()
 
@@ -74,11 +75,34 @@ class GooglePayLauncherUnitTest {
 
         verify {
             registry.register(
-                eq(expectedKey), eq(lifecycleOwner),
+                match<String> { it.startsWith(expectedKeyPrefix) }, eq(lifecycleOwner),
                 any<TaskResultContracts.GetPaymentDataResult>(),
                 any()
             )
         }
+    }
+
+    @Test
+    fun `when two GooglePayLaunchers are constructed, their registry keys do not match`() {
+        val lifecycleOwner = FragmentActivity()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val registry = mockk<ActivityResultRegistry>(relaxed = true)
+        val capturedKeys = mutableListOf<String>()
+
+        every {
+            registry.register(
+                capture(capturedKeys),
+                any(),
+                any<ActivityResultContract<Task<PaymentData>, Any>>(),
+                any()
+            )
+        } returns activityResultLauncher
+
+        GooglePayLauncher(registry, lifecycleOwner, context, callback = callback)
+        GooglePayLauncher(registry, lifecycleOwner, context, callback = callback)
+
+        assertEquals(2, capturedKeys.size)
+        assertNotEquals(capturedKeys[0], capturedKeys[1])
     }
 
     @Test

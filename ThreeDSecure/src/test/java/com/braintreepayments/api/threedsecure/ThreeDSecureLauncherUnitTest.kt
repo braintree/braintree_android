@@ -17,6 +17,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @RunWith(RobolectricTestRunner::class)
 @Suppress("MaxLineLength")
@@ -43,7 +45,7 @@ class ThreeDSecureLauncherUnitTest {
 
     @Test
     fun `when constructed, registers an activity result launcher with the expected key`() {
-        val expectedKey = "com.braintreepayments.api.ThreeDSecure.RESULT"
+        val expectedKeyPrefix = "com.braintreepayments.api.ThreeDSecure.RESULT"
         val lifecycleOwner = FragmentActivity()
 
         val registry = mockk<ActivityResultRegistry>(relaxed = true)
@@ -51,11 +53,33 @@ class ThreeDSecureLauncherUnitTest {
 
         verify {
             registry.register(
-                eq(expectedKey), eq(lifecycleOwner),
+                match { it.startsWith(expectedKeyPrefix) }, eq(lifecycleOwner),
                 any<ActivityResultContract<ThreeDSecureParams, ThreeDSecurePaymentAuthResult>>(),
                 any()
             )
         }
+    }
+
+    @Test
+    fun `when two ThreeDSecureLaunchers are constructed, their registry keys do not match`() {
+        val lifecycleOwner = FragmentActivity()
+        val registry = mockk<ActivityResultRegistry>(relaxed = true)
+        val capturedKeys = mutableListOf<String>()
+
+        every {
+            registry.register(
+                capture(capturedKeys),
+                any(),
+                any<ActivityResultContract<ThreeDSecureParams?, ThreeDSecurePaymentAuthResult>>(),
+                any()
+            )
+        } returns activityResultLauncher
+
+        ThreeDSecureLauncher(registry, lifecycleOwner, callback!!)
+        ThreeDSecureLauncher(registry, lifecycleOwner, callback!!)
+
+        assertEquals(2, capturedKeys.size)
+        assertNotEquals(capturedKeys[0], capturedKeys[1])
     }
 
     @Test

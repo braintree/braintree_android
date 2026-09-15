@@ -8,6 +8,7 @@ import androidx.annotation.RestrictTo
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import com.braintreepayments.api.core.BraintreeException
+import java.util.UUID
 
 /**
  * Launcher for the app-based authentication challenge for 3D secure tokenization.
@@ -18,9 +19,11 @@ class ThreeDSecureLauncher internal constructor(
     private val callback: ThreeDSecureLauncherCallback
 ) {
 
+    private val threeDSecureRegistryKey = "com.braintreepayments.api.ThreeDSecure.RESULT" + UUID.randomUUID()
+
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     var activityLauncher: ActivityResultLauncher<ThreeDSecureParams?> = registry.register(
-        THREE_D_SECURE_RESULT,
+        threeDSecureRegistryKey,
         lifecycleOwner,
         ThreeDSecureActivityResultContract()
     ) { paymentAuthResult: ThreeDSecurePaymentAuthResult? ->
@@ -89,9 +92,5 @@ class ThreeDSecureLauncher internal constructor(
                 throw runtimeException
             }
         }
-    }
-
-    companion object {
-        private const val THREE_D_SECURE_RESULT = "com.braintreepayments.api.ThreeDSecure.RESULT"
     }
 }
