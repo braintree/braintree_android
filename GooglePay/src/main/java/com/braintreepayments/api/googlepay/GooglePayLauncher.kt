@@ -11,6 +11,7 @@ import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.contract.ApiTaskResult
 import com.google.android.gms.wallet.contract.TaskResultContracts
+import java.util.UUID
 
 /**
  * Responsible for launching the Google Pay payment sheet
@@ -23,10 +24,11 @@ class GooglePayLauncher internal constructor(
     callback: GooglePayLauncherCallback
 ) {
 
+    private val googlePayRegistryKey: String = "com.braintreepayments.api.GooglePay.RESULT" + UUID.randomUUID()
     private val appContext: Context = context.applicationContext
 
     private val activityLauncher: ActivityResultLauncher<Task<PaymentData>> = registry.register(
-        GOOGLE_PAY_RESULT, lifecycleOwner,
+        googlePayRegistryKey, lifecycleOwner,
         TaskResultContracts.GetPaymentDataResult()
     ) { apiTaskResult: ApiTaskResult<PaymentData> ->
         val result = when {
@@ -109,9 +111,5 @@ class GooglePayLauncher internal constructor(
             .addOnCompleteListener { completedTask ->
                 activityLauncher.launch(completedTask)
             }
-    }
-
-    companion object {
-        private const val GOOGLE_PAY_RESULT = "com.braintreepayments.api.GooglePay.RESULT"
     }
 }
