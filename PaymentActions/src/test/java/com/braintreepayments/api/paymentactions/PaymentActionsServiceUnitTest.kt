@@ -3,6 +3,7 @@ package com.braintreepayments.api.paymentactions
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -287,6 +288,41 @@ class PaymentActionsServiceUnitTest {
 
             assertTrue(result is PaymentActionServiceResult.Failure)
             assertEquals(error, (result as PaymentActionServiceResult.Failure).error)
+        }
+
+    @Test
+    fun `when BraintreeClient throws a non-IOException, Failure is returned with the same exception`() =
+        runTest(testDispatcher) {
+            val error = JSONException("parse error")
+
+            val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+            coEvery { braintreeClient.sendGraphQLPOST(any()) } throws error
+
+            val service = PaymentActionsService(braintreeClient)
+            val result = service.setPaymentActionPaymentMethod(mockPaymentMethod())
+            advanceUntilIdle()
+
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertEquals(error, (result as PaymentActionServiceResult.Failure).error)
+        }
+
+    @Test
+    fun `when BraintreeClient throws CancellationException, it is rethrown and not wrapped in Failure`() =
+        runTest(testDispatcher) {
+            val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+            coEvery { braintreeClient.sendGraphQLPOST(any()) } throws
+                kotlin.coroutines.cancellation.CancellationException("cancelled")
+
+            val service = PaymentActionsService(braintreeClient)
+            var threwCancellation = false
+            try {
+                service.setPaymentActionPaymentMethod(mockPaymentMethod())
+                advanceUntilIdle()
+            } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+                threwCancellation = true
+            }
+
+            assertTrue(threwCancellation)
         }
 
     @Test
