@@ -59,7 +59,7 @@ internal fun CardCvvField(
         modifier = modifier,
         errorText = errorText,
         visualTransformation = remember(revealedIndex) { CvvVisualTransformation(revealedIndex) },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
         focusRequester = focusRequester,
         onFocusChanged = onFocusChanged,
         contentDescription = stringResource(R.string.cvv_accessibility),

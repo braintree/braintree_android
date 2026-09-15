@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.navigation.fragment.NavHostFragment
@@ -58,6 +60,8 @@ import com.braintreepayments.api.venmo.VenmoTokenizeCallback
 private const val APP_LINK_RETURN_URL =
     "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"
 private const val DEEP_LINK_FALLBACK_SCHEME = "com.braintreepayments.demo.braintree"
+private const val FONT_SCALE_STEP = 0.05f
+private const val MIN_FONT_SCALE = 0.5f
 
 class ComposeUIComponentsFragment : BaseFragment() {
 
@@ -221,15 +225,35 @@ class ComposeUIComponentsFragment : BaseFragment() {
                     selected = index == selectedIndex,
                     icon = {},
                     label = {
-                        Text(
+                        ShrinkToFitText(
                             text = label,
-                            style = MaterialTheme.typography.labelMedium,
-                            maxLines = 1
+                            style = MaterialTheme.typography.labelMedium
                         )
                     }
                 )
             }
         }
+    }
+
+    @Composable
+    private fun ShrinkToFitText(text: String, style: TextStyle, modifier: Modifier = Modifier) {
+        var fontScale by remember(text) { mutableFloatStateOf(1f) }
+        val scaledStyle = style.copy(
+            fontSize = style.fontSize * fontScale
+        )
+
+        Text(
+            text = text,
+            style = scaledStyle,
+            maxLines = 1,
+            softWrap = false,
+            onTextLayout = { result ->
+                if (result.didOverflowWidth && fontScale > MIN_FONT_SCALE) {
+                    fontScale -= FONT_SCALE_STEP
+                }
+            },
+            modifier = modifier
+        )
     }
 
     private fun handleNonce(nonce: PaymentMethodNonce) {
