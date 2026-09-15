@@ -102,14 +102,14 @@ class PaymentActionsClientUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `handleNextAction with EXPIRED returns Canceled`() = runTest(testDispatcher) {
+    fun `handleNextAction with EXPIRED returns Expired`() = runTest(testDispatcher) {
         coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
             paymentAction(PaymentActionStatus.EXPIRED)
         )
 
         val result = buildClient().handleNextAction()
 
-        val outcome = assertIs<PaymentActionResult.Canceled>(result)
+        val outcome = assertIs<PaymentActionResult.Expired>(result)
         assertEquals("pa123", outcome.id)
     }
 
