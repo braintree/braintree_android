@@ -5,7 +5,7 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.GraphQLConstants
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * This is a centralized service for handling all Payment Actions related backend requests.
@@ -32,7 +32,8 @@ internal class PaymentActionsService(
             braintreeClient
                 .sendGraphQLPOST(buildSetPaymentActionPaymentMethodQuery(paymentMethod))
                 .toPaymentActionServiceResult()
-        } catch (exception: IOException) {
+        } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
             PaymentActionServiceResult.Failure(exception)
         }
     }
