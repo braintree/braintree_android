@@ -128,15 +128,15 @@ class PaymentActionsClientUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `handleNextAction with UNKNOWN returns Failure since no outcome mapping exists yet`() = runTest(testDispatcher) {
+    fun `handleNextAction with UNKNOWN returns Unknown carrying the id`() = runTest(testDispatcher) {
         coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
             paymentAction(PaymentActionStatus.UNKNOWN)
         )
 
         val result = buildClient().handleNextAction()
 
-        val failure = assertIs<PaymentActionResult.Failure>(result)
-        assertIs<NotImplementedError>(failure.error)
+        val outcome = assertIs<PaymentActionResult.Unknown>(result)
+        assertEquals("pa123", outcome.id)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

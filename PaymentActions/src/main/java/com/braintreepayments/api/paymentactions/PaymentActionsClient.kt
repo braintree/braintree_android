@@ -118,7 +118,7 @@ class PaymentActionsClient internal constructor(
                     PaymentActionResult.Canceled(paymentAction.id)
                 PaymentActionStatus.PROCESSING -> PaymentActionResult.Processing(paymentAction.id)
                 PaymentActionStatus.UNKNOWN ->
-                    PaymentActionResult.Failure(NotImplementedError("Received unrecognized status: ${paymentAction.status}"))
+                    PaymentActionResult.Unknown(paymentAction.id)
             }
             is PaymentActionServiceResult.Failure -> PaymentActionResult.Failure(error)
         }
