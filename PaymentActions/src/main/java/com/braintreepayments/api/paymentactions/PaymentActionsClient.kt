@@ -114,8 +114,8 @@ class PaymentActionsClient internal constructor(
                 PaymentActionStatus.REQUIRES_CAPTURE ->
                     PaymentActionResult.ServerActionRequired(paymentAction.id, ServerAction.CAPTURE)
                 PaymentActionStatus.SUCCEEDED -> PaymentActionResult.Completed(paymentAction.id)
-                PaymentActionStatus.CANCELLED, PaymentActionStatus.EXPIRED ->
-                    PaymentActionResult.Canceled(paymentAction.id)
+                PaymentActionStatus.CANCELLED -> PaymentActionResult.Canceled(paymentAction.id)
+                PaymentActionStatus.EXPIRED -> PaymentActionResult.Expired(paymentAction.id)
                 PaymentActionStatus.PROCESSING -> PaymentActionResult.Processing(paymentAction.id)
                 PaymentActionStatus.UNKNOWN ->
                     PaymentActionResult.Unknown(paymentAction.id)

@@ -145,6 +145,7 @@ internal sealed class PaymentActionServiceResult {
 sealed class PaymentActionResult {
     class Completed(val id: String) : PaymentActionResult()
     class Canceled(val id: String) : PaymentActionResult()
+    class Expired(val id: String) : PaymentActionResult()
     class ServerActionRequired(
         val id: String,
         val serverAction: ServerAction,
