@@ -78,6 +78,7 @@ dependencies {
     implementation project(':GooglePay')
     implementation project(':LocalPayment')
     implementation project(':PayPal')
+    implementation project(':PaymentActions')
     implementation project(':DataCollector')
     implementation project(':PayPalMessaging')
     implementation project(':ShopperInsights')
@@ -98,6 +99,7 @@ dependencies {
     implementation libs.androidx.legacy.support.v4
     implementation libs.androidx.lifecycle.extensions
     implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.androidx.lifecycle.runtime.ktx
     implementation libs.bt.card.form
 
     def composeBom = platform(libs.androidx.compose.bom)

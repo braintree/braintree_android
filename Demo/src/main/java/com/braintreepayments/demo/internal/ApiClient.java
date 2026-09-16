@@ -1,6 +1,7 @@
 package com.braintreepayments.demo.internal;
 
 import com.braintreepayments.demo.models.ClientToken;
+import com.braintreepayments.demo.models.CreatePaymentActionResponse;
 import com.braintreepayments.demo.models.Nonce;
 import com.braintreepayments.demo.models.PaymentMethodToken;
 import com.braintreepayments.demo.models.Transaction;
@@ -30,6 +31,14 @@ public interface ApiClient {
     @FormUrlEncoded
     @POST("/nonce/transaction")
     Call<Transaction> createTransaction(@Field("nonce") String nonce, @Field("amount") String amount, @Field("merchant_account_id") String merchantAccountId, @Field("three_d_secure_required") boolean requireThreeDSecure);
+
+    @FormUrlEncoded
+    @POST("/create_payment_action")
+    Call<CreatePaymentActionResponse> createPaymentAction(
+            @Field("amount") String amount,
+            @Field("merchant_account_id") String merchantAccountId,
+            @Field("confirmation_method") String confirmationMethod,
+            @Field("capture_method") String captureMethod);
 
     @FormUrlEncoded
     @POST("/customers/{id}/vault")
