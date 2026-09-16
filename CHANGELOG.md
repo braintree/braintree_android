@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.33.0 (2026-09-16)
 
 * UIComponents
     * Add Compose `CardFields` support to generate a premade credit card form for submitting credit card tokenize requests
