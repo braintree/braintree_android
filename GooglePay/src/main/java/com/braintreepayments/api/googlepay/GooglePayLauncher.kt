@@ -49,8 +49,9 @@ class GooglePayLauncher internal constructor(
     }
 
     /**
-     * Used to launch the Google Pay payment sheet from within an Android Fragment. This class must be
-     * instantiated before the Fragment is created.
+     * Used to launch the Google Pay payment sheet from within an Android Fragment. This class must
+     * be instantiated after the Fragment's view has been created (i.e., in onCreateView or
+     * onViewCreated) and before the Fragment reaches the STARTED state.
      *
      * @param fragment the Android Fragment from which you will launch the Google Pay payment sheet
      * @param callback a [GooglePayLauncherCallback] to receive the result of the Google Pay
@@ -61,7 +62,7 @@ class GooglePayLauncher internal constructor(
         callback: GooglePayLauncherCallback
     ) : this(
         fragment.requireActivity().activityResultRegistry,
-        fragment,
+        fragment.viewLifecycleOwner,
         fragment.requireContext(),
         callback = callback
     )
@@ -99,7 +100,8 @@ class GooglePayLauncher internal constructor(
 
     /**
      * Used to launch the Google Pay payment sheet from within an Android Fragment, using a custom
-     * result key. This class must be instantiated before the Fragment is created.
+     * result key. This class must be instantiated after the Fragment's view has been created
+     * (i.e., in onCreateView or onViewCreated) and before the Fragment reaches the STARTED state.
      *
      * @param fragment the Android Fragment from which you will launch the Google Pay payment sheet
      * @param resultKey a unique key identifying this launcher's Activity result. Must be unique per
@@ -113,7 +115,7 @@ class GooglePayLauncher internal constructor(
         callback: GooglePayLauncherCallback
     ) : this(
         fragment.requireActivity().activityResultRegistry,
-        fragment,
+        fragment.viewLifecycleOwner,
         fragment.requireContext(),
         resultKey = resultKey,
         callback = callback

@@ -31,8 +31,9 @@ class ThreeDSecureLauncher internal constructor(
     }
 
     /**
-     * Used to launch the 3DS authentication flow to tokenize a 3DS card. This class must be
-     * instantiated before your Fragment is created.
+     * Used to launch the 3DS authentication flow to tokenize a 3DS card. This class must
+     * be instantiated after the Fragment's view has been created (i.e., in onCreateView or
+     * onViewCreated) and before the Fragment reaches the STARTED state.
      *
      * @param fragment an Android Fragment from which you will launch the 3DS flow
      * @param callback a [ThreeDSecureLauncherCallback] to received the result of the 3DS
@@ -43,7 +44,7 @@ class ThreeDSecureLauncher internal constructor(
         callback: ThreeDSecureLauncherCallback
     ) : this(
         registry = fragment.requireActivity().activityResultRegistry,
-        lifecycleOwner = fragment,
+        lifecycleOwner = fragment.viewLifecycleOwner,
         callback = callback
     )
 
@@ -62,7 +63,8 @@ class ThreeDSecureLauncher internal constructor(
 
     /**
      * Used to launch the 3DS authentication flow to tokenize a 3DS card, using a custom result key.
-     * This class must be instantiated before your Fragment is created.
+     * This class must be instantiated after the Fragment's view has been created (i.e., in onCreateView or
+     * onViewCreated) and before the Fragment reaches the STARTED state.
      *
      * @param fragment an Android Fragment from which you will launch the 3DS flow
      * @param resultKey a unique key identifying this launcher's Activity result. Must be unique per
@@ -76,7 +78,7 @@ class ThreeDSecureLauncher internal constructor(
         callback: ThreeDSecureLauncherCallback
     ) : this(
         registry = fragment.requireActivity().activityResultRegistry,
-        lifecycleOwner = fragment,
+        lifecycleOwner = fragment.viewLifecycleOwner,
         resultKey = resultKey,
         callback = callback
     )
