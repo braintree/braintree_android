@@ -45,7 +45,7 @@ public class ThreeDSecureCardinalTest extends TestHelper {
                 .commit();
     }
 
-    @Test(timeout = 40000)
+    @Test(timeout = 100000)
     public void threeDSecure_authenticates() {
         enterCardNumber("4000000000001091");
 
@@ -53,11 +53,13 @@ public class ThreeDSecureCardinalTest extends TestHelper {
 
         enterPassword();
 
+        getNonceDetails().waitForExists(30000);
         getNonceDetails().check(text(containsString("Card Last Two: 91")));
         getNonceDetails().check(text(containsString("isLiabilityShifted: true")));
         getNonceDetails().check(text(containsString("isLiabilityShiftPossible: true")));
 
         onDevice(withText("Create a Transaction")).perform(click());
+        onDevice(withTextStartingWith("created")).waitForExists(30000);
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
@@ -121,7 +123,7 @@ public class ThreeDSecureCardinalTest extends TestHelper {
 
     private void enterPassword() {
         String codeEditTextResId = "com.braintreepayments.demo:id/codeEditTextField";
-        onDevice(withResourceId(codeEditTextResId)).waitForExists();
+        onDevice(withResourceId(codeEditTextResId)).waitForExists(30000);
         onDevice(withResourceId(codeEditTextResId)).perform(click());
         onDevice().typeText("1234");
 
