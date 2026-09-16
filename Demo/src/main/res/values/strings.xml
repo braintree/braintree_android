@@ -25,6 +25,22 @@
     <string name="loading">Loading…</string>
     <string name="ui_components_compose_button">UI Components Compose</string>
 
+    <!-- PaymentActions -->
+    <string name="payment_actions_button">Payment Actions</string>
+    <string name="payment_actions_client_token_placeholder">Client Token: %s…</string>
+    <string name="payment_actions_create">Create Payment Action</string>
+    <string name="payment_actions_creating">Creating payment action…</string>
+    <string name="payment_actions_credit_card">Credit Card</string>
+    <string name="payment_actions_detail_placeholder">Detail: %s</string>
+    <string name="payment_actions_done">Done</string>
+    <string name="payment_actions_handle_next_action">Handle Next Action</string>
+    <string name="payment_actions_id_placeholder">Payment Action ID: %s</string>
+    <string name="payment_actions_select_method">Submit a payment method</string>
+    <string name="payment_actions_server_action_note">Merchant server CONFIRM/CAPTURE wiring is not implemented (Milestone 4)</string>
+    <string name="payment_actions_state_placeholder">Status: %s</string>
+    <string name="payment_actions_status_placeholder">Status: %s</string>
+    <string name="payment_actions_submit">Submit</string>
+
     <!-- CardActivity -->
     <string name="purchase">Purchase</string>
 

@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_mainFragment_to_composeUiComponentsFragment"
             app:destination="@id/composeUiComponentsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_paymentActionsFragment"
+            app:destination="@id/paymentActionsFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -248,4 +251,43 @@
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />
     </fragment>
+    <fragment
+        android:id="@+id/paymentActionsFragment"
+        android:name="com.braintreepayments.demo.PaymentActionsFragment">
+        <action
+            android:id="@+id/action_paymentActionsFragment_to_paymentActionsCardFragment"
+            app:destination="@id/paymentActionsCardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/paymentActionsCardFragment"
+        android:name="com.braintreepayments.demo.PaymentActionsCardFragment">
+        <argument
+            android:name="clientToken"
+            app:argType="string" />
+        <argument
+            android:name="paymentActionId"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/paymentActionResultFragment"
+        android:name="com.braintreepayments.demo.PaymentActionResultFragment">
+        <argument
+            android:name="status"
+            app:argType="string" />
+        <argument
+            android:name="paymentActionId"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="detail"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
+
+    <action
+        android:id="@+id/action_global_paymentActionResultFragment"
+        app:destination="@id/paymentActionResultFragment"
+        app:popUpTo="@id/mainFragment"
+        app:popUpToInclusive="false" />
 </navigation>
