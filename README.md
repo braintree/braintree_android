@@ -337,6 +337,52 @@ class ExampleFragment : Fragment() {
 }
 ```
 
+### Compose support for Card Fields
+
+The Braintree Android SDK now offers support for a Jetpack Compose `CardFields` composable. Similar to the XML view, it renders a
+complete card entry form with fields for card number, expiration date, and CVV. Additionally, it handles input validation,
+card brand detection, and focus advancement between fields automatically. On input validation, the controller will update `isFormValid` which
+can be used to enable and disable a button of your design to submit the payment.
+
+You should invoke the `CardFields` composable like this:
+
+```kotlin
+@Composable
+fun ExampleCardFieldsScreen(authorization: String) {
+    val cardFieldsController = rememberCardFieldsController(
+        authorization = "[TOKENIZATION_KEY or CLIENT_TOKEN]",
+        // optionally attach additional data, such as cardholder name or billing address
+        request = Card(
+            cardholderName = "John Doe",
+            postalCode = "12345"
+        )
+    )
+    val isFormValid by cardFieldsController.isFormValid.collectAsState()
+
+    Column {
+        CardFields(controller = cardFieldsController)
+
+        Button(
+            enabled = isFormValid,
+            onClick = {
+                cardFieldsController.submit { result ->
+                    when (result) {
+                        is CardFieldsResult.Success -> {
+                            // send result.nonce.string to your server to complete the transaction
+                        }
+                        is CardFieldsResult.Failure -> {
+                            // handle card tokenization error
+                        }
+                    }
+                }
+            }
+        ) {
+            Text("Pay")
+        }
+    }
+}
+```
+
 ## Help
 
 * [Read the docs](https://developer.paypal.com/braintree/docs/guides/overview)
