@@ -47,7 +47,7 @@ class ThreeDSecureLauncherUnitTest {
         val lifecycleOwner = FragmentActivity()
 
         val registry = mockk<ActivityResultRegistry>(relaxed = true)
-        ThreeDSecureLauncher(registry, lifecycleOwner, callback!!)
+        ThreeDSecureLauncher(registry, lifecycleOwner, callback = callback!!)
 
         verify {
             registry.register(
@@ -59,11 +59,92 @@ class ThreeDSecureLauncherUnitTest {
     }
 
     @Test
+    fun `when constructed with a custom result key, registers an activity result launcher with that key`() {
+        val customKey = "com.checkout.THREE_D_SECURE"
+        val lifecycleOwner = FragmentActivity()
+
+        val registry = mockk<ActivityResultRegistry>(relaxed = true)
+        ThreeDSecureLauncher(registry, lifecycleOwner, customKey, callback!!)
+
+        verify {
+            registry.register(
+                eq(customKey), eq(lifecycleOwner),
+                any<ActivityResultContract<ThreeDSecureParams, ThreeDSecurePaymentAuthResult>>(),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `when a default-key launcher and a custom-key launcher share a registry, they do not collide`() {
+        val defaultKey = "com.braintreepayments.api.ThreeDSecure.RESULT"
+        val customKey = "com.checkout.THREE_D_SECURE"
+        val lifecycleOwner = FragmentActivity()
+        val registry = mockk<ActivityResultRegistry>(relaxed = true)
+        val registeredKeys = mutableListOf<String>()
+
+        every {
+            registry.register(
+                capture(registeredKeys),
+                any(),
+                any<ActivityResultContract<ThreeDSecureParams?, Any>>(),
+                any()
+            )
+        } returns activityResultLauncher
+
+        // launcher with a default key
+        ThreeDSecureLauncher(registry, lifecycleOwner, callback = callback!!)
+
+        // launcher with the custom key
+        ThreeDSecureLauncher(registry, lifecycleOwner, customKey, callback!!)
+
+        assert(registeredKeys.size == 2)
+        assert(registeredKeys[0] == defaultKey)
+        assert(registeredKeys[1] == customKey)
+        assert(registeredKeys[0] != registeredKeys[1])
+
+        verify(exactly = 2) {
+            registry.register(
+                any(), eq(lifecycleOwner),
+                any<ActivityResultContract<ThreeDSecureParams?, Any>>(),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `when two launchers are constructed with the same custom key, construction does not throw`() {
+        val sameKey = "com.checkout.THREE_D_SECURE"
+        val lifecycleOwner = FragmentActivity()
+        val registry = mockk<ActivityResultRegistry>(relaxed = true)
+
+        every {
+            registry.register(
+                eq(sameKey),
+                any(),
+                any<ActivityResultContract<ThreeDSecureParams?, Any>>(),
+                any()
+            )
+        } returns activityResultLauncher
+
+        ThreeDSecureLauncher(registry, lifecycleOwner, sameKey, callback!!)
+        ThreeDSecureLauncher(registry, lifecycleOwner, sameKey, callback!!)
+
+        verify(exactly = 2) {
+            registry.register(
+                eq(sameKey), eq(lifecycleOwner),
+                any<ActivityResultContract<ThreeDSecureParams?, Any>>(),
+                any()
+            )
+        }
+    }
+
+    @Test
     fun `when launch is called with a ready to launch request, launches the auth challenge with the three d secure params`() {
         val lifecycleOwner = FragmentActivity()
         val sut = ThreeDSecureLauncher(
             activityResultRegistry!!, lifecycleOwner,
-            callback!!
+            callback = callback!!
         )
         sut.activityLauncher = activityResultLauncher
 
@@ -82,7 +163,7 @@ class ThreeDSecureLauncherUnitTest {
         val lifecycleOwner = FragmentActivity()
         val sut = ThreeDSecureLauncher(
             activityResultRegistry!!, lifecycleOwner,
-            callback!!
+            callback = callback!!
         )
         sut.activityLauncher = activityResultLauncher
 
