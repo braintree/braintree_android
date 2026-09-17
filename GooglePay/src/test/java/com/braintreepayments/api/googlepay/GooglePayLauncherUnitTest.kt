@@ -18,13 +18,13 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class GooglePayLauncherUnitTest {
@@ -93,6 +93,72 @@ class GooglePayLauncherUnitTest {
         verify {
             registry.register(
                 eq(customKey), eq(lifecycleOwner),
+                any<TaskResultContracts.GetPaymentDataResult>(),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `when a default-key launcher and a custom-key launcher share a registry, they do not collide`() {
+        val defaultKey = "com.braintreepayments.api.GooglePay.RESULT"
+        val customKey = "com.checkout.GOOGLE_PAY"
+        val lifecycleOwner = FragmentActivity()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val registry = mockk<ActivityResultRegistry>(relaxed = true)
+        val registeredKeys = mutableListOf<String>()
+
+        every {
+            registry.register(
+                capture(registeredKeys),
+                any(),
+                any<TaskResultContracts.GetPaymentDataResult>(),
+                any()
+            )
+        } returns activityResultLauncher
+
+        // launcher with a default key
+        GooglePayLauncher(registry, lifecycleOwner, context, callback = callback)
+
+        // launcher with the custom key
+        GooglePayLauncher(registry, lifecycleOwner, context, customKey, callback)
+
+        assertEquals(2, registeredKeys.size)
+        assertEquals(defaultKey, registeredKeys[0])
+        assertEquals(customKey, registeredKeys[1])
+        assertTrue(registeredKeys[0] != registeredKeys[1])
+
+        verify(exactly = 2) {
+            registry.register(
+                any(), eq(lifecycleOwner),
+                any<TaskResultContracts.GetPaymentDataResult>(),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `when two launchers are constructed with the same custom key, construction does not throw`() {
+        val sameKey = "com.checkout.GOOGLE_PAY"
+        val lifecycleOwner = FragmentActivity()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val registry = mockk<ActivityResultRegistry>(relaxed = true)
+
+        every {
+            registry.register(
+                eq(sameKey),
+                any(),
+                any<TaskResultContracts.GetPaymentDataResult>(),
+                any()
+            )
+        } returns activityResultLauncher
+
+        GooglePayLauncher(registry, lifecycleOwner, context, sameKey, callback)
+        GooglePayLauncher(registry, lifecycleOwner, context, sameKey, callback)
+
+        verify(exactly = 2) {
+            registry.register(
+                eq(sameKey), eq(lifecycleOwner),
                 any<TaskResultContracts.GetPaymentDataResult>(),
                 any()
             )
