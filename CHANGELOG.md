@@ -5,6 +5,11 @@
 * SEPADirectDebit
   * Add Compose constructor for `SEPADirectDebitLauncher`
 
+## 5.33.0 (2026-09-16)
+
+* UIComponents
+    * Add Compose `CardFields` support to generate a premade credit card form for submitting credit card tokenize requests
+
 ## 5.32.0 (2026-08-27)
 
 * GooglePay
