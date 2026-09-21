@@ -17,6 +17,7 @@ class SEPADirectDebitLauncher internal constructor(private val browserSwitchClie
      * Used to launch the SEPA mandate in a web browser and deliver results to your Activity
      * @param caller Optional ActivityResultCaller parameter. If provided, it will be passed to BrowserSwitchClient
      */
+    @JvmOverloads
     constructor(caller: ActivityResultCaller? = null) : this(
         browserSwitchClient = if (caller != null) BrowserSwitchClient(caller) else BrowserSwitchClient()
     )
