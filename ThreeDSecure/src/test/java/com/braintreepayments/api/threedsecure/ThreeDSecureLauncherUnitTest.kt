@@ -1,9 +1,15 @@
 package com.braintreepayments.api.threedsecure
 
+import android.os.Bundle
 import android.os.TransactionTooLargeException
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.core.app.ActivityOptionsCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.testutils.Fixtures
@@ -16,7 +22,10 @@ import org.json.JSONException
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Suppress("MaxLineLength")
@@ -113,30 +122,47 @@ class ThreeDSecureLauncherUnitTest {
     }
 
     @Test
-    fun `when two launchers are constructed with the same custom key, construction does not throw`() {
-        val sameKey = "com.checkout.THREE_D_SECURE"
-        val lifecycleOwner = FragmentActivity()
-        val registry = mockk<ActivityResultRegistry>(relaxed = true)
+    fun `when two ThreeDSecureLaunchers register with distinct fragment view lifecycle owners and distinct keys on a real registry, results route to the correct callback without collision`() {
+        val activityController = Robolectric.buildActivity(FragmentActivity::class.java).setup()
+        val activity = activityController.get()
 
-        every {
-            registry.register(
-                eq(sameKey),
-                any(),
-                any<ActivityResultContract<ThreeDSecureParams?, Any>>(),
-                any()
-            )
-        } returns activityResultLauncher
-
-        ThreeDSecureLauncher(registry, lifecycleOwner, sameKey, callback!!)
-        ThreeDSecureLauncher(registry, lifecycleOwner, sameKey, callback!!)
-
-        verify(exactly = 2) {
-            registry.register(
-                eq(sameKey), eq(lifecycleOwner),
-                any<ActivityResultContract<ThreeDSecureParams?, Any>>(),
-                any()
-            )
+        val requestCodes = mutableListOf<Int>()
+        val registry = object : ActivityResultRegistry() {
+            override fun <I, O> onLaunch(
+                requestCode: Int,
+                contract: ActivityResultContract<I, O>,
+                input: I,
+                options: ActivityOptionsCompat?
+            ) {
+                requestCodes.add(requestCode)
+            }
         }
+
+        val callback1 = mockk<ThreeDSecureLauncherCallback>(relaxed = true)
+        val callback2 = mockk<ThreeDSecureLauncherCallback>(relaxed = true)
+
+        val fragment1 = ThreeDSecureLauncherRegisteringFragment(registry, "com.checkout.THREE_D_SECURE_1", callback1)
+        val fragment2 = ThreeDSecureLauncherRegisteringFragment(registry, "com.checkout.THREE_D_SECURE_2", callback2)
+        activity.supportFragmentManager.beginTransaction().add(fragment1, "fragment1").commitNow()
+        activity.supportFragmentManager.beginTransaction().add(fragment2, "fragment2").commitNow()
+
+        val threeDSecureParams = ThreeDSecureParams(null, null, null)
+        val paymentAuthRequest = ThreeDSecurePaymentAuthRequest.ReadyToLaunch(threeDSecureParams)
+
+        fragment1.threeDSecureLauncher.launch(paymentAuthRequest)
+        fragment2.threeDSecureLauncher.launch(paymentAuthRequest)
+
+        assertEquals(2, requestCodes.size)
+        assertTrue(requestCodes[0] != requestCodes[1])
+
+        val result1 = ThreeDSecurePaymentAuthResult(error = BraintreeException("result 1"))
+        val result2 = ThreeDSecurePaymentAuthResult(error = BraintreeException("result 2"))
+
+        registry.dispatchResult(requestCodes[0], result1)
+        registry.dispatchResult(requestCodes[1], result2)
+
+        verify { callback1.onThreeDSecurePaymentAuthResult(result1) }
+        verify { callback2.onThreeDSecurePaymentAuthResult(result2) }
     }
 
     @Test
@@ -191,5 +217,29 @@ class ThreeDSecureLauncherUnitTest {
         val expectedMessage = ("The 3D Secure response returned is too large to continue. " +
                 "Please contact Braintree Support for assistance.")
         assert(expectedMessage == exception!!.message)
+    }
+}
+
+/**
+ * Registers a [ThreeDSecureLauncher] against its own [viewLifecycleOwner] as soon as the view is
+ * created (before the Fragment reaches STARTED).
+ */
+internal class ThreeDSecureLauncherRegisteringFragment(
+    private val registry: ActivityResultRegistry,
+    private val resultKey: String,
+    private val resultCallback: ThreeDSecureLauncherCallback
+) : Fragment() {
+
+    lateinit var threeDSecureLauncher: ThreeDSecureLauncher
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = View(requireContext())
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        threeDSecureLauncher = ThreeDSecureLauncher(registry, viewLifecycleOwner, resultKey, resultCallback)
     }
 }
