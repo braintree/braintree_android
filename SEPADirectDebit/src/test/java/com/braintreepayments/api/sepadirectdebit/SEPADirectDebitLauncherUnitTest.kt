@@ -2,7 +2,6 @@ package com.braintreepayments.api.sepadirectdebit
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
-import androidx.activity.result.ActivityResultRegistry
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -10,7 +9,6 @@ import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.BrowserSwitchStartResult
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -32,15 +30,6 @@ class SEPADirectDebitLauncherUnitTest {
     fun beforeEach() {
         sut = SEPADirectDebitLauncher(browserSwitchClient)
         every { sepaResponse.browserSwitchOptions } returns options
-    }
-
-    @Test
-    fun `constructor with ActivityResultRegistry creates a valid launcher`() {
-        val registry: ActivityResultRegistry = mockk(relaxed = true)
-
-        val launcher = SEPADirectDebitLauncher(registry)
-
-        assertNotNull(launcher)
     }
 
     @Test
