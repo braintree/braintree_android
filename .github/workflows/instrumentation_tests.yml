@@ -29,7 +29,7 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
-          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
+          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PaymentActions:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
 
       - name: retry tests
         if: steps.run_tests.outcome == 'failure'
@@ -39,7 +39,7 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
-          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
+          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PaymentActions:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
 
   test_android_17:
     runs-on: ubuntu-latest
@@ -78,7 +78,7 @@ jobs:
             -camera-back none
             -memory 4096
             -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
-          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
+          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PaymentActions:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
 
       - name: retry tests
         if: steps.run_tests.outcome == 'failure'
@@ -97,4 +97,4 @@ jobs:
             -camera-back none
             -memory 4096
             -feature GLDirectMem,HasSharedSlotsHostMemoryAllocator
-          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
+          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PaymentActions:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ShopperInsights:connectedCheck :ThreeDSecure:connectedCheck :UIComponents:connectedCheck :Venmo:connectedCheck --stacktrace
