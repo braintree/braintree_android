@@ -15,6 +15,7 @@ public class AutofillHelper {
     void fillCardNumber(String cardNumber) {
         cardForm.getCardEditText().requestFocus();
         Editable editable = cardForm.getCardEditText().getText();
+        editable.clear();
         for (char c : cardNumber.toCharArray()) {
             if (c != ' ') {
                 editable.append(c);
@@ -28,6 +29,7 @@ public class AutofillHelper {
         }
         cardForm.getExpirationDateEditText().requestFocus();
         Editable editable = cardForm.getExpirationDateEditText().getText();
+        editable.clear();
         for (char c : expirationDate.toCharArray()) {
             if (c != ' ') {
                 editable.append(c);
@@ -41,6 +43,7 @@ public class AutofillHelper {
         }
         cardForm.getCvvEditText().requestFocus();
         Editable editable = cardForm.getCvvEditText().getText();
+        editable.clear();
         for (char c : cvv.toCharArray()) {
             if (c != ' ') {
                 editable.append(c);
@@ -54,6 +57,7 @@ public class AutofillHelper {
         }
         cardForm.getPostalCodeEditText().requestFocus();
         Editable editable = cardForm.getPostalCodeEditText().getText();
+        editable.clear();
         for (char c : postalCode.toCharArray()) {
             if (c != ' ') {
                 editable.append(c);
