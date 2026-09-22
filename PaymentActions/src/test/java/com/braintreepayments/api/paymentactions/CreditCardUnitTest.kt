@@ -33,12 +33,12 @@ class CreditCardUnitTest {
                         "cvv": "123",
                         "cardholderName": "Jane Doe",
                         "billingAddress": {
-                            "streetAddress": "123 Main St",
-                            "extendedAddress": "Apt 4",
-                            "locality": "Chicago",
-                            "region": "IL",
+                            "addressLine1": "123 Main St",
+                            "addressLine2": "Apt 4",
+                            "adminArea2": "Chicago",
+                            "adminArea1": "IL",
                             "postalCode": "60601",
-                            "countryCodeAlpha2": "US"
+                            "countryCode": "US"
                         }
                     }
                 }
@@ -94,7 +94,7 @@ class CreditCardUnitTest {
                         "expirationYear": "2028",
                         "billingAddress": {
                             "postalCode": "60601",
-                            "countryCodeAlpha2": "US"
+                            "countryCode": "US"
                         }
                     }
                 }

@@ -52,6 +52,11 @@ dependencies {
     testImplementation libs.mockk
     testImplementation libs.coroutines.test
     testImplementation project(':TestUtils')
+
+    androidTestImplementation project(':TestUtils')
+    androidTestImplementation libs.androidx.test.rules
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.junit
 }
 
 project.ext.name = "payment-actions"
