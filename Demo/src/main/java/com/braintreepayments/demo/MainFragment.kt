@@ -81,6 +81,7 @@ class MainFragment : BaseFragment() {
                                 PaymentModuleButton(R.string.google_pay) { launchGooglePay() }
                                 PaymentModuleButton(R.string.local_payment_button) { launchLocalPayment() }
                                 PaymentModuleButton(R.string.sepa_direct_debit_button) { launchSEPADirectDebit() }
+                                PaymentModuleButton(R.string.payment_actions_button) { launchPaymentActions() }
                                 Spacer(modifier = Modifier.height(4.dp))
                             }
                         }
@@ -224,6 +225,12 @@ class MainFragment : BaseFragment() {
             action.setAuthString(authString)
             findNavController().navigate(action)
         }
+    }
+
+    private fun launchPaymentActions() {
+        // Payment Actions does not use the demo app authString; the flow creates its own
+        // payment action scoped client token via the merchant server.
+        findNavController().navigate(MainFragmentDirections.actionMainFragmentToPaymentActionsFragment())
     }
 
     companion object {
