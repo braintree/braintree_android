@@ -9,6 +9,7 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.PostalAddress
 import com.braintreepayments.api.core.PostalAddressParser
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONException
@@ -120,6 +121,16 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     lineItems = lineItems
 ) {
 
+    /**
+     * Opts into the View/Edit Funding Instrument (FI) flow. When set to true and the SDK is
+     * initialized with a client token carrying a payment method ID JWT, that JWT is included in
+     * the request to seed the edit order. Defaults to null (opted out). Can only be set
+     * internally via [PayPalClient.createPaymentAuthRequestForEditFi].
+     */
+    @IgnoredOnParcel
+    var editBillingAgreement: Boolean? = null
+        internal set
+
     @OptIn(ExperimentalBetaApi::class)
     @Throws(JSONException::class)
     @Suppress("LongMethod", "CyclomaticComplexMethod")
@@ -142,6 +153,11 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
 
         if (authorization is ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
+            if (editBillingAgreement == true) {
+                authorization.paymentMethodIdJwt?.let {
+                    parameters.put(EDIT_BILLING_AGREEMENT_JWT_KEY, it)
+                }
+            }
         } else {
             parameters.put(TOKENIZATION_KEY, authorization?.bearer)
         }

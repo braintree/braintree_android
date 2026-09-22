@@ -3,10 +3,12 @@ package com.braintreepayments.api.paypal
 import android.net.Uri
 import android.os.Parcel
 import com.braintreepayments.api.core.Authorization
+import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.PostalAddress
 import com.google.testing.junit.testparameterinjector.TestParameter
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.parcelize.parcelableCreator
 import org.json.JSONException
@@ -42,6 +44,7 @@ class PayPalCheckoutRequestUnitTest {
         assertFalse(request.enablePayPalAppSwitch)
         assertNull(request.userAuthenticationEmail)
         assertFalse(request.hasUserLocationConsent)
+        assertNull(request.editBillingAgreement)
     }
 
     @OptIn(ExperimentalBetaApi::class)
@@ -248,6 +251,93 @@ class PayPalCheckoutRequestUnitTest {
         )
 
         assertTrue(requestBody.contains("\"shopper_session_id\":" + "\"shopper-insights-id\""))
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody and sets editBillingAgreementJwt when opted in with a paymentMethodIdJwt`() {
+        val request = PayPalCheckoutRequest("1.00", true).apply {
+            editBillingAgreement = true
+        }
+        val clientToken = mockk<ClientToken>(relaxed = true) {
+            every { paymentMethodIdJwt } returns "edit-jwt"
+        }
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = clientToken,
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        val jsonObject = JSONObject(requestBody)
+        assertEquals("edit-jwt", jsonObject.getString("edit_billing_agreement_jwt"))
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody and does not set editBillingAgreementJwt when editBillingAgreement is null`() {
+        val request = PayPalCheckoutRequest("1.00", true)
+        val clientToken = mockk<ClientToken>(relaxed = true) {
+            every { paymentMethodIdJwt } returns "edit-jwt"
+        }
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = clientToken,
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        val jsonObject = JSONObject(requestBody)
+        assertFalse(jsonObject.has("edit_billing_agreement_jwt"))
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody and does not set editBillingAgreementJwt when authorization has no paymentMethodIdJwt`() {
+        val request = PayPalCheckoutRequest("1.00", true).apply {
+            editBillingAgreement = true
+        }
+        val clientToken = mockk<ClientToken>(relaxed = true) {
+            every { paymentMethodIdJwt } returns null
+        }
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = clientToken,
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        val jsonObject = JSONObject(requestBody)
+        assertFalse(jsonObject.has("edit_billing_agreement_jwt"))
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody and does not set editBillingAgreementJwt when authorization is not a ClientToken`() {
+        val request = PayPalCheckoutRequest("1.00", true).apply {
+            editBillingAgreement = true
+        }
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<Authorization>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        val jsonObject = JSONObject(requestBody)
+        assertFalse(jsonObject.has("edit_billing_agreement_jwt"))
     }
 
     @Test
