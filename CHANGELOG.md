@@ -6,6 +6,8 @@
   * Add optional `resultKey` parameter to `GooglePayLauncher` constructors, allowing a unique registration key per launcher instance
 * ThreeDSecure
   * Add optional `resultKey` parameter to `ThreeDSecureLauncher` constructors, allowing a unique registration key per launcher instance
+* UIComponents
+  * Add `rememberPayPalButtonColorState`/`rememberVenmoButtonColorState` to persist button color selection across configuration changes
 
 ## 5.33.0 (2026-09-16)
 

@@ -239,6 +239,8 @@ private val paypalTokenizeCallback = PayPalTokenizeCallback { payPalResult ->
     intent.data = null
 }
 
+var paypalStyle by rememberPayPalButtonColorState()
+
 PayPalButton(
     style = paypalStyle,
     payPalRequest = paypalRequest,
@@ -268,6 +270,8 @@ private val venmoTokenizeCallback = VenmoTokenizeCallback { venmoResult ->
     // clear intent data
     intent.data = null
 }
+
+var venmoStyle by rememberVenmoButtonColorState()
 
 VenmoButton(
     style = venmoStyle,

@@ -28,8 +28,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +52,8 @@ import com.braintreepayments.api.uicomponents.compose.CardFields
 import com.braintreepayments.api.uicomponents.compose.PayPalButton
 import com.braintreepayments.api.uicomponents.compose.VenmoButton
 import com.braintreepayments.api.uicomponents.compose.rememberCardFieldsController
+import com.braintreepayments.api.uicomponents.compose.rememberPayPalButtonColorState
+import com.braintreepayments.api.uicomponents.compose.rememberVenmoButtonColorState
 import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage
 import com.braintreepayments.api.venmo.VenmoRequest
 import com.braintreepayments.api.venmo.VenmoResult
@@ -75,8 +77,8 @@ class ComposeUIComponentsFragment : BaseFragment() {
         val payPalRequest = payPalRequest(requireContext())
         return ComposeView(requireContext()).apply {
             setContent {
-                var venmoStyle: VenmoButtonColor by remember { mutableStateOf(VenmoButtonColor.Blue) }
-                var paypalStyle: PayPalButtonColor by remember { mutableStateOf(PayPalButtonColor.Blue) }
+                var venmoStyle: VenmoButtonColor by rememberVenmoButtonColorState()
+                var paypalStyle: PayPalButtonColor by rememberPayPalButtonColorState()
 
                 val cardFieldsController = rememberCardFieldsController(
                     authorization = authStringArg,
@@ -207,7 +209,7 @@ class ComposeUIComponentsFragment : BaseFragment() {
         modifier: Modifier = Modifier,
         onClick: (Int) -> Unit = {}
     ) {
-        var selectedIndex by remember { mutableIntStateOf(0) }
+        var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
         val options = listOf(
             stringResource(R.string.blue_button_color_option),
             stringResource(R.string.black_button_color_option),
