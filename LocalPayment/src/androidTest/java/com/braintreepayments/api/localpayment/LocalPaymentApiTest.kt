@@ -12,7 +12,6 @@ import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@Ignore("This test are failing intermittently, LocalPayment team is investigating")
 @RunWith(AndroidJUnit4ClassRunner::class)
 class LocalPaymentApiTest {
 
