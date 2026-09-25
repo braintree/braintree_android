@@ -47,7 +47,7 @@ abstract class PaymentActionMethodFragment : BaseFragment() {
             is PaymentActionMethodEvent.ServerActionRequired -> navigateToResult(
                 PaymentActionMethodViewModel.STATE_SERVER_ACTION_REQUIRED,
                 event.id,
-                event.serverAction.name
+                serverAction = event.serverAction.name
             )
             is PaymentActionMethodEvent.Terminal -> navigateToResult(event.state, event.id, event.detail)
         }
@@ -57,10 +57,16 @@ abstract class PaymentActionMethodFragment : BaseFragment() {
 
     protected open fun onCustomerActionRequired(id: String) = Unit
 
-    private fun navigateToResult(state: String, paymentActionId: String, detail: String = "") {
+    private fun navigateToResult(
+        state: String,
+        paymentActionId: String,
+        detail: String = "",
+        serverAction: String = ""
+    ) {
         val args = PaymentActionResultFragmentArgs.Builder(state)
             .setPaymentActionId(paymentActionId)
             .setDetail(detail)
+            .setServerAction(serverAction)
             .build()
             .toBundle()
         findNavController().navigate(R.id.action_global_paymentActionResultFragment, args)
