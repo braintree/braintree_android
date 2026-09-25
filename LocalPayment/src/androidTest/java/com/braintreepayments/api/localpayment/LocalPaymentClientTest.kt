@@ -17,12 +17,10 @@ import org.json.JSONObject
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.CountDownLatch
 
-@Ignore("This test are failing intermittently, LocalPayment team is investigating")
 @RunWith(AndroidJUnit4ClassRunner::class)
 class LocalPaymentClientTest {
     private lateinit var context: Context
