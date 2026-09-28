@@ -28,8 +28,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,8 +75,19 @@ class ComposeUIComponentsFragment : BaseFragment() {
         val payPalRequest = payPalRequest(requireContext())
         return ComposeView(requireContext()).apply {
             setContent {
-                var venmoStyle: VenmoButtonColor by remember { mutableStateOf(VenmoButtonColor.Blue) }
-                var paypalStyle: PayPalButtonColor by remember { mutableStateOf(PayPalButtonColor.Blue) }
+                var venmoStyleId by rememberSaveable { mutableIntStateOf(VenmoButtonColor.Blue.key) }
+                val venmoStyle: VenmoButtonColor = when (venmoStyleId) {
+                    1 -> VenmoButtonColor.Black
+                    2 -> VenmoButtonColor.White
+                    else -> VenmoButtonColor.Blue
+                }
+
+                var paypalStyleId by rememberSaveable { mutableIntStateOf(PayPalButtonColor.Blue.key) }
+                val paypalStyle: PayPalButtonColor = when (paypalStyleId) {
+                    1 -> PayPalButtonColor.Black
+                    2 -> PayPalButtonColor.White
+                    else -> PayPalButtonColor.Blue
+                }
 
                 val cardFieldsController = rememberCardFieldsController(
                     authorization = authStringArg,
@@ -99,14 +110,8 @@ class ComposeUIComponentsFragment : BaseFragment() {
                             SectionLabel(stringResource(R.string.venmo))
                             SingleChoiceSegmentedButton(
                                 modifier = Modifier.fillMaxWidth(),
-                                onClick = { index ->
-                                    venmoStyle = when (index) {
-                                        0 -> VenmoButtonColor.Blue
-                                        1 -> VenmoButtonColor.Black
-                                        2 -> VenmoButtonColor.White
-                                        else -> VenmoButtonColor.Blue
-                                    }
-                                }
+                                selectedIndex = venmoStyleId,
+                                onClick = { index -> venmoStyleId = index }
                             )
                             Box(
                                 modifier = Modifier.fillMaxWidth(),
@@ -129,14 +134,8 @@ class ComposeUIComponentsFragment : BaseFragment() {
                             SectionLabel(stringResource(R.string.paypal))
                             SingleChoiceSegmentedButton(
                                 modifier = Modifier.fillMaxWidth(),
-                                onClick = { index ->
-                                    paypalStyle = when (index) {
-                                        0 -> PayPalButtonColor.Blue
-                                        1 -> PayPalButtonColor.Black
-                                        2 -> PayPalButtonColor.White
-                                        else -> PayPalButtonColor.Blue
-                                    }
-                                }
+                                selectedIndex = paypalStyleId,
+                                onClick = { index -> paypalStyleId = index }
                             )
                             Box(
                                 modifier = Modifier.fillMaxWidth(),
@@ -204,10 +203,10 @@ class ComposeUIComponentsFragment : BaseFragment() {
 
     @Composable
     private fun SingleChoiceSegmentedButton(
+        selectedIndex: Int,
         modifier: Modifier = Modifier,
         onClick: (Int) -> Unit = {}
     ) {
-        var selectedIndex by remember { mutableIntStateOf(0) }
         val options = listOf(
             stringResource(R.string.blue_button_color_option),
             stringResource(R.string.black_button_color_option),
@@ -218,10 +217,7 @@ class ComposeUIComponentsFragment : BaseFragment() {
             options.forEachIndexed { index, label ->
                 SegmentedButton(
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                    onClick = {
-                        selectedIndex = index
-                        onClick(index)
-                    },
+                    onClick = { onClick(index) },
                     selected = index == selectedIndex,
                     icon = {},
                     label = {
