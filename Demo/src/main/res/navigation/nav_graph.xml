@@ -283,6 +283,10 @@
             android:name="detail"
             android:defaultValue=""
             app:argType="string" />
+        <argument
+            android:name="serverAction"
+            android:defaultValue=""
+            app:argType="string" />
     </fragment>
 
     <action
