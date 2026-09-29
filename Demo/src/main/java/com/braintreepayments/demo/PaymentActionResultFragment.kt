@@ -43,7 +43,17 @@ class PaymentActionResultFragment : Fragment() {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(text = stringResource(R.string.payment_actions_status_placeholder, args.status))
+            if (args.serverAction.isNotEmpty()) {
+                stringResource(
+                    R.string.payment_actions_status_with_server_action_placeholder,
+                    args.status,
+                    args.serverAction
+                )
+            } else {
+                stringResource(R.string.payment_actions_status_placeholder, args.status)
+            }.let { statusText ->
+                Text(text = statusText)
+            }
 
             if (args.paymentActionId.isNotEmpty()) {
                 Text(text = stringResource(R.string.payment_actions_id_placeholder, args.paymentActionId))

@@ -39,6 +39,7 @@
     <string name="payment_actions_id_placeholder">Payment Action ID: %s</string>
     <string name="payment_actions_select_method">Submit a payment method</string>
     <string name="payment_actions_status_placeholder">Status: %s</string>
+    <string name="payment_actions_status_with_server_action_placeholder">Status: %1$s - %2$s</string>
     <string name="payment_actions_submit">Submit</string>
 
     <!-- CardActivity -->
