@@ -156,15 +156,18 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             if (it.toString().isNotEmpty()) parameters.put(SHIPPING_CALLBACK_URL_KEY, it)
         }
 
+        // Consume the one-shot edit-FI opt-in up front so it is cleared on every path (including
+        // tokenization-key calls) and reusing this request for a later normal checkout cannot
+        // resend edit_billing_agreement_jwt.
+        val optedIntoEditFi = editBillingAgreement
+        editBillingAgreement = false
+
         if (authorization is ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
-            if (editBillingAgreement) {
+            if (optedIntoEditFi) {
                 authorization.paymentMethodIdJwt?.let {
                     parameters.put(EDIT_BILLING_AGREEMENT_JWT_KEY, it)
                 }
-                // Consume the one-shot edit-FI opt-in so reusing this request for a later normal
-                // checkout does not resend edit_billing_agreement_jwt.
-                editBillingAgreement = false
             }
         } else {
             parameters.put(TOKENIZATION_KEY, authorization?.bearer)

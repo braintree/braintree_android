@@ -411,6 +411,38 @@ class PayPalCheckoutRequestUnitTest {
         assertFalse(jsonObject.has("edit_billing_agreement_jwt"))
     }
 
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `createRequestBody consumes editBillingAgreement on a tokenization-key call so a later ClientToken reuse omits the jwt`() {
+        val request = PayPalCheckoutRequest("1.00", true).apply {
+            editBillingAgreement = true
+        }
+
+        // First build uses a tokenization key (not a ClientToken) - no jwt is sent, but the opt-in
+        // must still be consumed.
+        request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<Authorization>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        // Reusing the same request with a ClientToken carrying a jwt must not resend the edit jwt.
+        val clientToken = mockk<ClientToken>(relaxed = true) {
+            every { paymentMethodIdJwt } returns "edit-jwt"
+        }
+        val reusedRequestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = clientToken,
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+        assertFalse(JSONObject(reusedRequestBody).has("edit_billing_agreement_jwt"))
+    }
+
     @Test
     @Throws(JSONException::class)
     fun `creates requestBody and does not set shippingCallbackUri when null`() {
