@@ -3,6 +3,7 @@ package com.braintreepayments.api.paypal
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
+import androidx.annotation.RestrictTo
 import androidx.core.net.toUri
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.LaunchType
@@ -151,6 +152,7 @@ class PayPalClient internal constructor(
      * @param payPalCheckoutRequest a [PayPalCheckoutRequest] used to customize the request.
      * @param callback              [PayPalPaymentAuthCallback]
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @OptIn(ExperimentalBetaApi::class)
     fun createPaymentAuthRequestForEditFi(
         context: Context,

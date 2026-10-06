@@ -44,7 +44,7 @@ class PayPalCheckoutRequestUnitTest {
         assertFalse(request.enablePayPalAppSwitch)
         assertNull(request.userAuthenticationEmail)
         assertFalse(request.hasUserLocationConsent)
-        assertNull(request.editBillingAgreement)
+        assertFalse(request.editBillingAgreement)
     }
 
     @OptIn(ExperimentalBetaApi::class)
@@ -319,7 +319,38 @@ class PayPalCheckoutRequestUnitTest {
     @OptIn(ExperimentalBetaApi::class)
     @Test
     @Throws(JSONException::class)
-    fun `creates requestBody and does not set editBillingAgreementJwt when editBillingAgreement is null`() {
+    fun `createRequestBody resets editBillingAgreement so reusing the request for a normal checkout omits the jwt`() {
+        val request = PayPalCheckoutRequest("1.00", true).apply {
+            editBillingAgreement = true
+        }
+        val clientToken = mockk<ClientToken>(relaxed = true) {
+            every { paymentMethodIdJwt } returns "edit-jwt"
+        }
+
+        val editRequestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = clientToken,
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+        assertEquals("edit-jwt", JSONObject(editRequestBody).getString("edit_billing_agreement_jwt"))
+
+        // Reusing the same request instance for a normal checkout must not resend the edit JWT.
+        val reusedRequestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = clientToken,
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+        assertFalse(JSONObject(reusedRequestBody).has("edit_billing_agreement_jwt"))
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody and does not set editBillingAgreementJwt when editBillingAgreement is false`() {
         val request = PayPalCheckoutRequest("1.00", true)
         val clientToken = mockk<ClientToken>(relaxed = true) {
             every { paymentMethodIdJwt } returns "edit-jwt"

@@ -3,6 +3,7 @@ package com.braintreepayments.api.paypal
 import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.Configuration
@@ -131,7 +132,8 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
      * internally via [PayPalClient.createPaymentAuthRequestForEditFi].
      */
     @IgnoredOnParcel
-    var editBillingAgreement: Boolean? = null
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    var editBillingAgreement: Boolean = false
         internal set
 
     @OptIn(ExperimentalBetaApi::class)
@@ -156,10 +158,13 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
 
         if (authorization is ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
-            if (editBillingAgreement == true) {
+            if (editBillingAgreement) {
                 authorization.paymentMethodIdJwt?.let {
                     parameters.put(EDIT_BILLING_AGREEMENT_JWT_KEY, it)
                 }
+                // Consume the one-shot edit-FI opt-in so reusing this request for a later normal
+                // checkout does not resend edit_billing_agreement_jwt.
+                editBillingAgreement = false
             }
         } else {
             parameters.put(TOKENIZATION_KEY, authorization?.bearer)
