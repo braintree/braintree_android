@@ -42,6 +42,7 @@ import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import org.junit.Before
@@ -570,7 +571,7 @@ class PayPalClientUnitTest {
             MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
 
         val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true)
-        assertNull(payPalCheckoutRequest.editBillingAgreement)
+        assertFalse(payPalCheckoutRequest.editBillingAgreement)
 
         val sut = testPaypalClient(
             braintreeClient,
