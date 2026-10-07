@@ -128,7 +128,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     /**
      * Opts into the View/Edit Funding Instrument (FI) flow. When set to true and the SDK is
      * initialized with a client token carrying a payment method ID JWT, that JWT is included in
-     * the request to seed the edit order. Defaults to null (opted out). Can only be set
+     * the request to seed the edit order. Defaults to false (opted out). Can only be set
      * internally via [PayPalClient.createPaymentAuthRequestForEditFi].
      */
     @IgnoredOnParcel
