@@ -75,4 +75,35 @@ class ClientTokenUnitTest {
             fromString(FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)) as ClientToken
         assertNull(clientToken.paymentMethodIdJwt)
     }
+
+    @Test
+    fun `when paymentMethodIdJwt is null in the client token, the token still parses and paymentMethodIdJwt is null`() {
+        val json = """
+            {
+                "configUrl": "client_api_configuration_url",
+                "authorizationFingerprint": "authorization_fingerprint",
+                "paymentMethodIdJwt": null
+            }
+        """
+
+        val authorization = fromString(FixturesHelper.base64Encode(json))
+
+        assertTrue(authorization is ClientToken)
+        assertNull((authorization as ClientToken).paymentMethodIdJwt)
+    }
+
+    @Test
+    fun `when paymentMethodIdJwt is blank in the client token, paymentMethodIdJwt is null`() {
+        val json = """
+            {
+                "configUrl": "client_api_configuration_url",
+                "authorizationFingerprint": "authorization_fingerprint",
+                "paymentMethodIdJwt": "  "
+            }
+        """
+
+        val clientToken = fromString(FixturesHelper.base64Encode(json)) as ClientToken
+
+        assertNull(clientToken.paymentMethodIdJwt)
+    }
 }
