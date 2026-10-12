@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      XML attrs for PayPalSavedPaymentMethodView. They mirror PayPalSavedPaymentMethodViewStyle's fields; see that
+      class's KDoc for what each value controls. Unset attrs use the SDK default. A later programmatic style replaces
+      the style set by these attrs.
+    -->
+    <declare-styleable name="PayPalSavedPaymentMethodView">
+        <attr name="showPayPalLogo" format="boolean" />
+        <attr name="showPayPalLabel" format="boolean" />
+        <attr name="showPayPalCreditMessaging" format="boolean" />
+        <attr name="componentBackgroundColor" format="color" />
+        <attr name="componentTextColor" format="color" />
+        <attr name="componentBaseFontSizeSp" format="dimension" />
+        <attr name="componentFontResId" format="reference" />
+        <attr name="containerHeightDp" format="dimension" />
+        <attr name="containerHorizontalPaddingDp" format="dimension" />
+        <attr name="containerVerticalPaddingDp" format="dimension" />
+        <attr name="containerCornerRadiusDp" format="dimension" />
+        <attr name="containerBorderColor" format="color" />
+        <attr name="containerBorderWidthDp" format="dimension" />
+        <attr name="payPalLogoWidthDp" format="dimension" />
+        <attr name="payPalLabelFontSizeSp" format="dimension" />
+        <attr name="payPalLabelMarginStartDp" format="dimension" />
+        <attr name="fundingInstrumentTextFontSizeSp" format="dimension" />
+        <attr name="fundingInstrumentEditIconSizeDp" format="dimension" />
+        <attr name="fundingInstrumentMarginStartDp" format="dimension" />
+        <attr name="creditMessagingFontSizeSp" format="dimension" />
+        <attr name="creditMessagingLinkColor" format="color" />
+    </declare-styleable>
+</resources>
