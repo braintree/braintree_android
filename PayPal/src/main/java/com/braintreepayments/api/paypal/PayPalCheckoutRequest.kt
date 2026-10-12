@@ -3,14 +3,12 @@ package com.braintreepayments.api.paypal
 import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
-import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.PostalAddress
 import com.braintreepayments.api.core.PostalAddressParser
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONException
@@ -125,26 +123,36 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     lineItems = lineItems
 ) {
 
-    /**
-     * Opts into the View/Edit Funding Instrument (FI) flow. When set to true and the SDK is
-     * initialized with a client token carrying a payment method ID JWT, that JWT is included in
-     * the request to seed the edit order. Defaults to false (opted out). Can only be set
-     * internally via [PayPalClient.createPaymentAuthRequestForEditFi].
-     */
-    @IgnoredOnParcel
-    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    var editBillingAgreement: Boolean = false
-        internal set
-
-    @OptIn(ExperimentalBetaApi::class)
     @Throws(JSONException::class)
-    @Suppress("LongMethod", "CyclomaticComplexMethod")
     override fun createRequestBody(
         configuration: Configuration?,
         authorization: Authorization?,
         successUrl: String?,
         cancelUrl: String?,
         appLink: String?
+    ): String = createRequestBody(
+        configuration = configuration,
+        authorization = authorization,
+        successUrl = successUrl,
+        cancelUrl = cancelUrl,
+        appLink = appLink,
+        editBillingAgreementJwt = null
+    )
+
+    /**
+     * [editBillingAgreementJwt] is sent as `edit_billing_agreement_jwt` for the View/Edit Funding Instrument flow; null
+     * omits it.
+     */
+    @OptIn(ExperimentalBetaApi::class)
+    @Throws(JSONException::class)
+    @Suppress("LongMethod", "CyclomaticComplexMethod")
+    internal fun createRequestBody(
+        configuration: Configuration?,
+        authorization: Authorization?,
+        successUrl: String?,
+        cancelUrl: String?,
+        appLink: String?,
+        editBillingAgreementJwt: String?
     ): String {
         val parameters = JSONObject()
             .put(RETURN_URL_KEY, successUrl)
@@ -156,22 +164,13 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             if (it.toString().isNotEmpty()) parameters.put(SHIPPING_CALLBACK_URL_KEY, it)
         }
 
-        // Consume the one-shot edit-FI opt-in up front so it is cleared on every path (including
-        // tokenization-key calls) and reusing this request for a later normal checkout cannot
-        // resend edit_billing_agreement_jwt.
-        val optedIntoEditFi = editBillingAgreement
-        editBillingAgreement = false
-
         if (authorization is ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
-            if (optedIntoEditFi) {
-                authorization.paymentMethodIdJwt?.let {
-                    parameters.put(EDIT_BILLING_AGREEMENT_JWT_KEY, it)
-                }
-            }
         } else {
             parameters.put(TOKENIZATION_KEY, authorization?.bearer)
         }
+
+        editBillingAgreementJwt?.let { parameters.put(EDIT_BILLING_AGREEMENT_JWT_KEY, it) }
 
         if (shouldRequestBillingAgreement) {
             parameters.put(REQUEST_BILLING_AGREEMENT_KEY, true)

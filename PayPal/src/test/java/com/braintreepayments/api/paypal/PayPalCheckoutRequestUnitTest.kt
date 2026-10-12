@@ -8,7 +8,6 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.PostalAddress
 import com.google.testing.junit.testparameterinjector.TestParameter
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.parcelize.parcelableCreator
 import org.json.JSONException
@@ -44,7 +43,6 @@ class PayPalCheckoutRequestUnitTest {
         assertFalse(request.enablePayPalAppSwitch)
         assertNull(request.userAuthenticationEmail)
         assertFalse(request.hasUserLocationConsent)
-        assertFalse(request.editBillingAgreement)
     }
 
     @OptIn(ExperimentalBetaApi::class)
@@ -296,150 +294,60 @@ class PayPalCheckoutRequestUnitTest {
     @OptIn(ExperimentalBetaApi::class)
     @Test
     @Throws(JSONException::class)
-    fun `creates requestBody and sets editBillingAgreementJwt when opted in with a paymentMethodIdJwt`() {
-        val request = PayPalCheckoutRequest("1.00", true).apply {
-            editBillingAgreement = true
-        }
-        val clientToken = mockk<ClientToken>(relaxed = true) {
-            every { paymentMethodIdJwt } returns "edit-jwt"
-        }
-
-        val requestBody = request.createRequestBody(
-            configuration = mockk<Configuration>(relaxed = true),
-            authorization = clientToken,
-            successUrl = "success_url",
-            cancelUrl = "cancel_url",
-            appLink = null
-        )
-
-        val jsonObject = JSONObject(requestBody)
-        assertEquals("edit-jwt", jsonObject.getString("edit_billing_agreement_jwt"))
-    }
-
-    @OptIn(ExperimentalBetaApi::class)
-    @Test
-    @Throws(JSONException::class)
-    fun `createRequestBody resets editBillingAgreement so reusing the request for a normal checkout omits the jwt`() {
-        val request = PayPalCheckoutRequest("1.00", true).apply {
-            editBillingAgreement = true
-        }
-        val clientToken = mockk<ClientToken>(relaxed = true) {
-            every { paymentMethodIdJwt } returns "edit-jwt"
-        }
-
-        val editRequestBody = request.createRequestBody(
-            configuration = mockk<Configuration>(relaxed = true),
-            authorization = clientToken,
-            successUrl = "success_url",
-            cancelUrl = "cancel_url",
-            appLink = null
-        )
-        assertEquals("edit-jwt", JSONObject(editRequestBody).getString("edit_billing_agreement_jwt"))
-
-        // Reusing the same request instance for a normal checkout must not resend the edit JWT.
-        val reusedRequestBody = request.createRequestBody(
-            configuration = mockk<Configuration>(relaxed = true),
-            authorization = clientToken,
-            successUrl = "success_url",
-            cancelUrl = "cancel_url",
-            appLink = null
-        )
-        assertFalse(JSONObject(reusedRequestBody).has("edit_billing_agreement_jwt"))
-    }
-
-    @OptIn(ExperimentalBetaApi::class)
-    @Test
-    @Throws(JSONException::class)
-    fun `creates requestBody and does not set editBillingAgreementJwt when editBillingAgreement is false`() {
+    fun `creates requestBody and sets edit_billing_agreement_jwt when an editBillingAgreementJwt is passed`() {
         val request = PayPalCheckoutRequest("1.00", true)
-        val clientToken = mockk<ClientToken>(relaxed = true) {
-            every { paymentMethodIdJwt } returns "edit-jwt"
-        }
 
         val requestBody = request.createRequestBody(
             configuration = mockk<Configuration>(relaxed = true),
-            authorization = clientToken,
+            authorization = mockk<ClientToken>(relaxed = true),
             successUrl = "success_url",
             cancelUrl = "cancel_url",
-            appLink = null
+            appLink = null,
+            editBillingAgreementJwt = "edit-jwt"
         )
 
-        val jsonObject = JSONObject(requestBody)
-        assertFalse(jsonObject.has("edit_billing_agreement_jwt"))
+        assertEquals("edit-jwt", JSONObject(requestBody).getString("edit_billing_agreement_jwt"))
     }
 
     @OptIn(ExperimentalBetaApi::class)
     @Test
     @Throws(JSONException::class)
-    fun `creates requestBody and does not set editBillingAgreementJwt when authorization has no paymentMethodIdJwt`() {
-        val request = PayPalCheckoutRequest("1.00", true).apply {
-            editBillingAgreement = true
-        }
-        val clientToken = mockk<ClientToken>(relaxed = true) {
-            every { paymentMethodIdJwt } returns null
-        }
+    fun `the public createRequestBody never sends edit_billing_agreement_jwt`() {
+        val request = PayPalCheckoutRequest("1.00", true)
 
         val requestBody = request.createRequestBody(
             configuration = mockk<Configuration>(relaxed = true),
-            authorization = clientToken,
+            authorization = mockk<ClientToken>(relaxed = true),
             successUrl = "success_url",
             cancelUrl = "cancel_url",
             appLink = null
         )
 
-        val jsonObject = JSONObject(requestBody)
-        assertFalse(jsonObject.has("edit_billing_agreement_jwt"))
+        assertFalse(JSONObject(requestBody).has("edit_billing_agreement_jwt"))
     }
 
     @OptIn(ExperimentalBetaApi::class)
     @Test
     @Throws(JSONException::class)
-    fun `creates requestBody and does not set editBillingAgreementJwt when authorization is not a ClientToken`() {
-        val request = PayPalCheckoutRequest("1.00", true).apply {
-            editBillingAgreement = true
-        }
-
-        val requestBody = request.createRequestBody(
-            configuration = mockk<Configuration>(relaxed = true),
-            authorization = mockk<Authorization>(relaxed = true),
-            successUrl = "success_url",
-            cancelUrl = "cancel_url",
-            appLink = null
-        )
-
-        val jsonObject = JSONObject(requestBody)
-        assertFalse(jsonObject.has("edit_billing_agreement_jwt"))
-    }
-
-    @OptIn(ExperimentalBetaApi::class)
-    @Test
-    @Throws(JSONException::class)
-    fun `createRequestBody consumes editBillingAgreement on a tokenization-key call so a later ClientToken reuse omits the jwt`() {
-        val request = PayPalCheckoutRequest("1.00", true).apply {
-            editBillingAgreement = true
-        }
-
-        // First build uses a tokenization key (not a ClientToken) - no jwt is sent, but the opt-in
-        // must still be consumed.
+    fun `createRequestBody does not modify the request, so a reuse without a jwt omits it`() {
+        val request = PayPalCheckoutRequest("1.00", true)
         request.createRequestBody(
             configuration = mockk<Configuration>(relaxed = true),
-            authorization = mockk<Authorization>(relaxed = true),
+            authorization = mockk<ClientToken>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null,
+            editBillingAgreementJwt = "edit-jwt"
+        )
+
+        val reusedRequestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<ClientToken>(relaxed = true),
             successUrl = "success_url",
             cancelUrl = "cancel_url",
             appLink = null
         )
 
-        // Reusing the same request with a ClientToken carrying a jwt must not resend the edit jwt.
-        val clientToken = mockk<ClientToken>(relaxed = true) {
-            every { paymentMethodIdJwt } returns "edit-jwt"
-        }
-        val reusedRequestBody = request.createRequestBody(
-            configuration = mockk<Configuration>(relaxed = true),
-            authorization = clientToken,
-            successUrl = "success_url",
-            cancelUrl = "cancel_url",
-            appLink = null
-        )
         assertFalse(JSONObject(reusedRequestBody).has("edit_billing_agreement_jwt"))
     }
 

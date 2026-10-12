@@ -134,34 +134,42 @@ class PayPalClient internal constructor(
     }
 
     /**
-     * Starts the PayPal payment flow for the View/Edit Funding Instrument (FI) flow by creating a
-     * [PayPalPaymentAuthRequestParams] to be used to launch the PayPal web authentication flow in
-     * [PayPalLauncher.launch].
-     *
-     * This is invoked when the customer taps Edit in the PayPal saved payment method view. It
-     * opts the given [payPalCheckoutRequest] into the edit flow by setting
-     * [PayPalCheckoutRequest.editBillingAgreement] to true, so that when the SDK is initialized
-     * with a client token carrying a payment method ID JWT, that JWT is included in the request
-     * to seed the edit order.
-     *
-     * On success [callback] is called with a [PayPalPaymentAuthRequest.ReadyToLaunch] wrapping a
-     * [PayPalPaymentAuthRequestParams].
-     * On failures [callback] is called with a [PayPalPaymentAuthRequest.Failure] with an exception.
+     * Callback version of [createPaymentAuthRequestForEditFi].
      *
      * @param context               Android Context
      * @param payPalCheckoutRequest a [PayPalCheckoutRequest] used to customize the request.
      * @param callback              [PayPalPaymentAuthCallback]
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    @OptIn(ExperimentalBetaApi::class)
     fun createPaymentAuthRequestForEditFi(
         context: Context,
         payPalCheckoutRequest: PayPalCheckoutRequest,
         callback: PayPalPaymentAuthCallback,
     ) {
-        payPalCheckoutRequest.editBillingAgreement = true
-        createPaymentAuthRequest(context, payPalCheckoutRequest, callback)
+        coroutineScope.launch {
+            val result = createPaymentAuthRequestForEditFi(context, payPalCheckoutRequest)
+            callback.onPayPalPaymentAuthRequest(result)
+        }
     }
+
+    /**
+     * Creates a [PayPalPaymentAuthRequest] for the View/Edit Funding Instrument flow, invoked when the customer taps
+     * Edit in the PayPal saved payment method view.
+     *
+     * The client token's payment method ID JWT is sent with this request only, to seed the edit order;
+     * [payPalCheckoutRequest] is not modified. Callers must make sure the client token carries a JWT, otherwise this
+     * runs as a regular checkout.
+     *
+     * @param context               Android Context
+     * @param payPalCheckoutRequest a [PayPalCheckoutRequest] used to customize the request.
+     * @return [PayPalPaymentAuthRequest]
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    suspend fun createPaymentAuthRequestForEditFi(
+        context: Context,
+        payPalCheckoutRequest: PayPalCheckoutRequest
+    ): PayPalPaymentAuthRequest =
+        createPaymentAuthRequestInternal(context, payPalCheckoutRequest, editBillingAgreement = true)
 
     /**
      * Starts the PayPal payment flow by creating a [PayPalPaymentAuthRequestParams] to be
@@ -175,10 +183,17 @@ class PayPalClient internal constructor(
      * @param payPalRequest a [PayPalRequest] used to customize the request.
      * @return [PayPalPaymentAuthRequest]
      */
-    @OptIn(ExperimentalBetaApi::class)
     suspend fun createPaymentAuthRequest(
         context: Context,
         payPalRequest: PayPalRequest
+    ): PayPalPaymentAuthRequest =
+        createPaymentAuthRequestInternal(context, payPalRequest, editBillingAgreement = false)
+
+    @OptIn(ExperimentalBetaApi::class)
+    private suspend fun createPaymentAuthRequestInternal(
+        context: Context,
+        payPalRequest: PayPalRequest,
+        editBillingAgreement: Boolean
     ): PayPalPaymentAuthRequest {
         shopperSessionId = payPalRequest.shopperSessionId
         isVaultRequest = payPalRequest is PayPalVaultRequest
@@ -200,7 +215,7 @@ class PayPalClient internal constructor(
                 )
                 return requestFailure
             } else {
-                return sendPayPalRequest(context, payPalRequest, configuration)
+                return sendPayPalRequest(context, payPalRequest, configuration, editBillingAgreement)
             }
         } catch (e: Exception) {
             if (e is CancellationException) throw e
@@ -216,13 +231,15 @@ class PayPalClient internal constructor(
     private suspend fun sendPayPalRequest(
         context: Context,
         payPalRequest: PayPalRequest,
-        configuration: Configuration
+        configuration: Configuration,
+        editBillingAgreement: Boolean
     ): PayPalPaymentAuthRequest {
         return try {
             val payPalResponse = internalPayPalClient.sendRequest(
                 context,
                 payPalRequest,
                 configuration,
+                editBillingAgreement
             )
 
             val analyticsEventParams = AnalyticsEventParams(
