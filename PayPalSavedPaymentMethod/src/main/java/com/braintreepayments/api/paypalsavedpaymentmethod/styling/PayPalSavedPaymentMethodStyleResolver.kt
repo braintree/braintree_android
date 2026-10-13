@@ -19,7 +19,10 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.R
  * default.
  *
  * [heightDp], [fontResId] and [creditMessagingLinkColor] stay null when unset: null height wraps the content, a null
- * font uses the system font, and a null link color keeps the renderer's default.
+ * font uses the system font, and a null link color shows the link bold and underlined in the text color.
+ *
+ * All sizes are in dp or sp, which don't depend on screen density or font scale, so a resolver can be kept across
+ * configuration changes. Renderers convert them to px when drawing.
  */
 @OptIn(ExperimentalBetaApi::class)
 internal class PayPalSavedPaymentMethodStyleResolver(context: Context, style: PayPalSavedPaymentMethodViewStyle) {

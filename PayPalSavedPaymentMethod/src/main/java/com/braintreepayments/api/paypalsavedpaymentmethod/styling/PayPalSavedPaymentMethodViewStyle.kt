@@ -121,7 +121,8 @@ class FundingInstrumentStyle @JvmOverloads constructor(
  * Styling of the Pay Later / credit messaging.
  *
  * @param fontSizeSp font size of the credit messaging text, in sp. Null uses [ComponentAppearance.baseFontSizeSp].
- * @param linkColor color of the "Learn more" link within credit messaging. Null uses the SDK default.
+ * @param linkColor color of the "Learn more" link within credit messaging. Null shows the link bold and underlined in
+ * the text color.
  */
 @ExperimentalBetaApi
 class CreditMessagingStyle @JvmOverloads constructor(
