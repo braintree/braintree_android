@@ -38,9 +38,9 @@ class StyleAttrsParserUnitTest {
     @Test
     fun `styleFromAttrs parses the visibility attrs`() {
         val attrs = Robolectric.buildAttributeSet()
-            .addAttribute(R.attr.showPayPalLogo, "false")
-            .addAttribute(R.attr.showPayPalLabel, "false")
-            .addAttribute(R.attr.showPayPalCreditMessaging, "false")
+            .addAttribute(R.attr.paypal_saved_payment_method_show_logo, "false")
+            .addAttribute(R.attr.paypal_saved_payment_method_show_label, "false")
+            .addAttribute(R.attr.paypal_saved_payment_method_show_credit_messaging, "false")
             .build()
 
         val style = styleFromAttrs(context, attrs, 0)
@@ -53,9 +53,9 @@ class StyleAttrsParserUnitTest {
     @Test
     fun `styleFromAttrs parses the component appearance attrs`() {
         val attrs = Robolectric.buildAttributeSet()
-            .addAttribute(R.attr.componentBackgroundColor, "#0000FF")
-            .addAttribute(R.attr.componentTextColor, "#FF0000")
-            .addAttribute(R.attr.componentBaseFontSizeSp, "18sp")
+            .addAttribute(R.attr.paypal_saved_payment_method_background_color, "#0000FF")
+            .addAttribute(R.attr.paypal_saved_payment_method_text_color, "#FF0000")
+            .addAttribute(R.attr.paypal_saved_payment_method_font_size, "18sp")
             .build()
 
         val appearance = styleFromAttrs(context, attrs, 0).componentAppearance
@@ -68,12 +68,12 @@ class StyleAttrsParserUnitTest {
     @Test
     fun `styleFromAttrs parses the container attrs`() {
         val attrs = Robolectric.buildAttributeSet()
-            .addAttribute(R.attr.containerHeightDp, "48dp")
-            .addAttribute(R.attr.containerHorizontalPaddingDp, "16dp")
-            .addAttribute(R.attr.containerVerticalPaddingDp, "12dp")
-            .addAttribute(R.attr.containerCornerRadiusDp, "8dp")
-            .addAttribute(R.attr.containerBorderColor, "#00FF00")
-            .addAttribute(R.attr.containerBorderWidthDp, "1dp")
+            .addAttribute(R.attr.paypal_saved_payment_method_height, "48dp")
+            .addAttribute(R.attr.paypal_saved_payment_method_horizontal_padding, "16dp")
+            .addAttribute(R.attr.paypal_saved_payment_method_vertical_padding, "12dp")
+            .addAttribute(R.attr.paypal_saved_payment_method_corner_radius, "8dp")
+            .addAttribute(R.attr.paypal_saved_payment_method_border_color, "#00FF00")
+            .addAttribute(R.attr.paypal_saved_payment_method_border_width, "1dp")
             .build()
 
         val container = styleFromAttrs(context, attrs, 0).container
@@ -89,14 +89,14 @@ class StyleAttrsParserUnitTest {
     @Test
     fun `styleFromAttrs parses the logo, label, funding instrument and credit messaging attrs`() {
         val attrs = Robolectric.buildAttributeSet()
-            .addAttribute(R.attr.payPalLogoWidthDp, "32dp")
-            .addAttribute(R.attr.payPalLabelFontSizeSp, "18sp")
-            .addAttribute(R.attr.payPalLabelMarginStartDp, "4dp")
-            .addAttribute(R.attr.fundingInstrumentTextFontSizeSp, "13sp")
-            .addAttribute(R.attr.fundingInstrumentEditIconSizeDp, "20dp")
-            .addAttribute(R.attr.fundingInstrumentMarginStartDp, "10dp")
-            .addAttribute(R.attr.creditMessagingFontSizeSp, "15sp")
-            .addAttribute(R.attr.creditMessagingLinkColor, "#FF00FF")
+            .addAttribute(R.attr.paypal_saved_payment_method_logo_width, "32dp")
+            .addAttribute(R.attr.paypal_saved_payment_method_label_font_size, "18sp")
+            .addAttribute(R.attr.paypal_saved_payment_method_label_margin_start, "4dp")
+            .addAttribute(R.attr.paypal_saved_payment_method_funding_instrument_font_size, "13sp")
+            .addAttribute(R.attr.paypal_saved_payment_method_edit_icon_size, "20dp")
+            .addAttribute(R.attr.paypal_saved_payment_method_funding_instrument_margin_start, "10dp")
+            .addAttribute(R.attr.paypal_saved_payment_method_credit_messaging_font_size, "15sp")
+            .addAttribute(R.attr.paypal_saved_payment_method_credit_messaging_link_color, "#FF00FF")
             .build()
 
         val container = styleFromAttrs(context, attrs, 0).container

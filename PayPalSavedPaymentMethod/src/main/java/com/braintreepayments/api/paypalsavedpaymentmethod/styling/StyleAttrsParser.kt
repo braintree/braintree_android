@@ -23,15 +23,15 @@ internal fun styleFromAttrs(
         val defaults = PayPalSavedPaymentMethodViewStyle()
         PayPalSavedPaymentMethodViewStyle(
             showPayPalLogo = typedArray.getBoolean(
-                R.styleable.PayPalSavedPaymentMethodView_showPayPalLogo,
+                R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_show_logo,
                 defaults.showPayPalLogo
             ),
             showPayPalLabel = typedArray.getBoolean(
-                R.styleable.PayPalSavedPaymentMethodView_showPayPalLabel,
+                R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_show_label,
                 defaults.showPayPalLabel
             ),
             showPayPalCreditMessaging = typedArray.getBoolean(
-                R.styleable.PayPalSavedPaymentMethodView_showPayPalCreditMessaging,
+                R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_show_credit_messaging,
                 defaults.showPayPalCreditMessaging
             ),
             componentAppearance = parseComponentAppearance(typedArray, resources),
@@ -45,63 +45,97 @@ internal fun styleFromAttrs(
 @OptIn(ExperimentalBetaApi::class)
 private fun parseComponentAppearance(typedArray: TypedArray, resources: Resources): ComponentAppearance =
     ComponentAppearance(
-        backgroundColor = typedArray.colorOrNull(R.styleable.PayPalSavedPaymentMethodView_componentBackgroundColor),
-        textColor = typedArray.colorOrNull(R.styleable.PayPalSavedPaymentMethodView_componentTextColor),
+        backgroundColor = typedArray.colorOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_background_color
+        ),
+        textColor = typedArray.colorOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_text_color
+        ),
         baseFontSizeSp = typedArray.spOrNull(
-            R.styleable.PayPalSavedPaymentMethodView_componentBaseFontSizeSp,
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_font_size,
             resources
         ),
-        fontResId = typedArray.resourceIdOrNull(R.styleable.PayPalSavedPaymentMethodView_componentFontResId)
+        fontResId = typedArray.resourceIdOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_font
+        )
     )
 
 @OptIn(ExperimentalBetaApi::class)
 private fun parseContainerStyle(typedArray: TypedArray, resources: Resources): ContainerStyle =
     ContainerStyle(
-        heightDp = typedArray.dpOrNull(R.styleable.PayPalSavedPaymentMethodView_containerHeightDp, resources),
+        heightDp = typedArray.dpOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_height,
+            resources
+        ),
         horizontalPaddingDp = typedArray.dpOrNull(
-            R.styleable.PayPalSavedPaymentMethodView_containerHorizontalPaddingDp,
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_horizontal_padding,
             resources
         ),
         verticalPaddingDp = typedArray.dpOrNull(
-            R.styleable.PayPalSavedPaymentMethodView_containerVerticalPaddingDp,
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_vertical_padding,
             resources
         ),
         cornerRadiusDp = typedArray.dpOrNull(
-            R.styleable.PayPalSavedPaymentMethodView_containerCornerRadiusDp,
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_corner_radius,
             resources
         ),
-        borderColor = typedArray.colorOrNull(R.styleable.PayPalSavedPaymentMethodView_containerBorderColor),
-        borderWidthDp = typedArray.dpOrNull(R.styleable.PayPalSavedPaymentMethodView_containerBorderWidthDp, resources),
+        borderColor = typedArray.colorOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_border_color
+        ),
+        borderWidthDp = typedArray.dpOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_border_width,
+            resources
+        ),
         logo = PayPalLogoStyle(
-            widthDp = typedArray.dpOrNull(R.styleable.PayPalSavedPaymentMethodView_payPalLogoWidthDp, resources)
-        ),
-        label = PayPalLabelStyle(
-            fontSizeSp = typedArray.spOrNull(R.styleable.PayPalSavedPaymentMethodView_payPalLabelFontSizeSp, resources),
-            marginStartDp = typedArray.dpOrNull(
-                R.styleable.PayPalSavedPaymentMethodView_payPalLabelMarginStartDp,
+            widthDp = typedArray.dpOrNull(
+                R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_logo_width,
                 resources
             )
         ),
-        fundingInstrument = FundingInstrumentStyle(
-            textFontSizeSp = typedArray.spOrNull(
-                R.styleable.PayPalSavedPaymentMethodView_fundingInstrumentTextFontSizeSp,
-                resources
-            ),
-            editIconSizeDp = typedArray.dpOrNull(
-                R.styleable.PayPalSavedPaymentMethodView_fundingInstrumentEditIconSizeDp,
-                resources
-            ),
-            marginStartDp = typedArray.dpOrNull(
-                R.styleable.PayPalSavedPaymentMethodView_fundingInstrumentMarginStartDp,
-                resources
-            )
+        label = parseLabelStyle(typedArray, resources),
+        fundingInstrument = parseFundingInstrumentStyle(typedArray, resources),
+        creditMessaging = parseCreditMessagingStyle(typedArray, resources)
+    )
+
+@OptIn(ExperimentalBetaApi::class)
+private fun parseLabelStyle(typedArray: TypedArray, resources: Resources): PayPalLabelStyle =
+    PayPalLabelStyle(
+        fontSizeSp = typedArray.spOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_label_font_size,
+            resources
         ),
-        creditMessaging = CreditMessagingStyle(
-            fontSizeSp = typedArray.spOrNull(
-                R.styleable.PayPalSavedPaymentMethodView_creditMessagingFontSizeSp,
-                resources
-            ),
-            linkColor = typedArray.colorOrNull(R.styleable.PayPalSavedPaymentMethodView_creditMessagingLinkColor)
+        marginStartDp = typedArray.dpOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_label_margin_start,
+            resources
+        )
+    )
+
+@OptIn(ExperimentalBetaApi::class)
+private fun parseFundingInstrumentStyle(typedArray: TypedArray, resources: Resources): FundingInstrumentStyle =
+    FundingInstrumentStyle(
+        textFontSizeSp = typedArray.spOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_funding_instrument_font_size,
+            resources
+        ),
+        editIconSizeDp = typedArray.dpOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_edit_icon_size,
+            resources
+        ),
+        marginStartDp = typedArray.dpOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_funding_instrument_margin_start,
+            resources
+        )
+    )
+
+@OptIn(ExperimentalBetaApi::class)
+private fun parseCreditMessagingStyle(typedArray: TypedArray, resources: Resources): CreditMessagingStyle =
+    CreditMessagingStyle(
+        fontSizeSp = typedArray.spOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_credit_messaging_font_size,
+            resources
+        ),
+        linkColor = typedArray.colorOrNull(
+            R.styleable.PayPalSavedPaymentMethodView_paypal_saved_payment_method_credit_messaging_link_color
         )
     )
 
