@@ -1,6 +1,5 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod
 
-import android.content.Context
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ClientToken
@@ -24,8 +23,6 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
-
-    constructor(context: Context, authorization: String) : this(BraintreeClient(context, authorization))
 
     /**
      * Fetches the funding instrument details for a vaulted PayPal payment method.
