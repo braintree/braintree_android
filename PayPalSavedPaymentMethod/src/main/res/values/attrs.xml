@@ -6,29 +6,29 @@
       the style set by these attrs.
 
       Attrs share one app-wide namespace even inside a declare-styleable, so every name carries the
-      paypal_saved_payment_method_ prefix to avoid clashing with other libraries or the merchant's app.
+      paypalSavedPaymentMethod prefix to avoid clashing with other libraries or the merchant's app.
     -->
     <declare-styleable name="PayPalSavedPaymentMethodView">
-        <attr name="paypal_saved_payment_method_show_logo" format="boolean" />
-        <attr name="paypal_saved_payment_method_show_label" format="boolean" />
-        <attr name="paypal_saved_payment_method_show_credit_messaging" format="boolean" />
-        <attr name="paypal_saved_payment_method_background_color" format="color" />
-        <attr name="paypal_saved_payment_method_text_color" format="color" />
-        <attr name="paypal_saved_payment_method_font_size" format="dimension" />
-        <attr name="paypal_saved_payment_method_font" format="reference" />
-        <attr name="paypal_saved_payment_method_height" format="dimension" />
-        <attr name="paypal_saved_payment_method_horizontal_padding" format="dimension" />
-        <attr name="paypal_saved_payment_method_vertical_padding" format="dimension" />
-        <attr name="paypal_saved_payment_method_corner_radius" format="dimension" />
-        <attr name="paypal_saved_payment_method_border_color" format="color" />
-        <attr name="paypal_saved_payment_method_border_width" format="dimension" />
-        <attr name="paypal_saved_payment_method_logo_width" format="dimension" />
-        <attr name="paypal_saved_payment_method_label_font_size" format="dimension" />
-        <attr name="paypal_saved_payment_method_label_margin_start" format="dimension" />
-        <attr name="paypal_saved_payment_method_funding_instrument_font_size" format="dimension" />
-        <attr name="paypal_saved_payment_method_edit_icon_size" format="dimension" />
-        <attr name="paypal_saved_payment_method_funding_instrument_margin_start" format="dimension" />
-        <attr name="paypal_saved_payment_method_credit_messaging_font_size" format="dimension" />
-        <attr name="paypal_saved_payment_method_credit_messaging_link_color" format="color" />
+        <attr name="paypalSavedPaymentMethodShowLogo" format="boolean" />
+        <attr name="paypalSavedPaymentMethodShowLabel" format="boolean" />
+        <attr name="paypalSavedPaymentMethodShowCreditMessaging" format="boolean" />
+        <attr name="paypalSavedPaymentMethodBackgroundColor" format="color" />
+        <attr name="paypalSavedPaymentMethodTextColor" format="color" />
+        <attr name="paypalSavedPaymentMethodFontSize" format="dimension" />
+        <attr name="paypalSavedPaymentMethodFont" format="reference" />
+        <attr name="paypalSavedPaymentMethodHeight" format="dimension" />
+        <attr name="paypalSavedPaymentMethodHorizontalPadding" format="dimension" />
+        <attr name="paypalSavedPaymentMethodVerticalPadding" format="dimension" />
+        <attr name="paypalSavedPaymentMethodCornerRadius" format="dimension" />
+        <attr name="paypalSavedPaymentMethodBorderColor" format="color" />
+        <attr name="paypalSavedPaymentMethodBorderWidth" format="dimension" />
+        <attr name="paypalSavedPaymentMethodLogoWidth" format="dimension" />
+        <attr name="paypalSavedPaymentMethodLabelFontSize" format="dimension" />
+        <attr name="paypalSavedPaymentMethodLabelMarginStart" format="dimension" />
+        <attr name="paypalSavedPaymentMethodFundingInstrumentFontSize" format="dimension" />
+        <attr name="paypalSavedPaymentMethodEditIconSize" format="dimension" />
+        <attr name="paypalSavedPaymentMethodFundingInstrumentMarginStart" format="dimension" />
+        <attr name="paypalSavedPaymentMethodCreditMessagingFontSize" format="dimension" />
+        <attr name="paypalSavedPaymentMethodCreditMessagingLinkColor" format="color" />
     </declare-styleable>
 </resources>

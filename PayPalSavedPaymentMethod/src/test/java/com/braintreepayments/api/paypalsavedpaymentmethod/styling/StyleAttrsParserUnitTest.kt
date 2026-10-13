@@ -38,9 +38,9 @@ class StyleAttrsParserUnitTest {
     @Test
     fun `styleFromAttrs parses the visibility attrs`() {
         val attrs = Robolectric.buildAttributeSet()
-            .addAttribute(R.attr.paypal_saved_payment_method_show_logo, "false")
-            .addAttribute(R.attr.paypal_saved_payment_method_show_label, "false")
-            .addAttribute(R.attr.paypal_saved_payment_method_show_credit_messaging, "false")
+            .addAttribute(R.attr.paypalSavedPaymentMethodShowLogo, "false")
+            .addAttribute(R.attr.paypalSavedPaymentMethodShowLabel, "false")
+            .addAttribute(R.attr.paypalSavedPaymentMethodShowCreditMessaging, "false")
             .build()
 
         val style = styleFromAttrs(context, attrs, 0)
@@ -53,9 +53,9 @@ class StyleAttrsParserUnitTest {
     @Test
     fun `styleFromAttrs parses the component appearance attrs`() {
         val attrs = Robolectric.buildAttributeSet()
-            .addAttribute(R.attr.paypal_saved_payment_method_background_color, "#0000FF")
-            .addAttribute(R.attr.paypal_saved_payment_method_text_color, "#FF0000")
-            .addAttribute(R.attr.paypal_saved_payment_method_font_size, "18sp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodBackgroundColor, "#0000FF")
+            .addAttribute(R.attr.paypalSavedPaymentMethodTextColor, "#FF0000")
+            .addAttribute(R.attr.paypalSavedPaymentMethodFontSize, "18sp")
             .build()
 
         val appearance = styleFromAttrs(context, attrs, 0).componentAppearance
@@ -68,12 +68,12 @@ class StyleAttrsParserUnitTest {
     @Test
     fun `styleFromAttrs parses the container attrs`() {
         val attrs = Robolectric.buildAttributeSet()
-            .addAttribute(R.attr.paypal_saved_payment_method_height, "48dp")
-            .addAttribute(R.attr.paypal_saved_payment_method_horizontal_padding, "16dp")
-            .addAttribute(R.attr.paypal_saved_payment_method_vertical_padding, "12dp")
-            .addAttribute(R.attr.paypal_saved_payment_method_corner_radius, "8dp")
-            .addAttribute(R.attr.paypal_saved_payment_method_border_color, "#00FF00")
-            .addAttribute(R.attr.paypal_saved_payment_method_border_width, "1dp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodHeight, "48dp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodHorizontalPadding, "16dp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodVerticalPadding, "12dp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodCornerRadius, "8dp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodBorderColor, "#00FF00")
+            .addAttribute(R.attr.paypalSavedPaymentMethodBorderWidth, "1dp")
             .build()
 
         val container = styleFromAttrs(context, attrs, 0).container
@@ -89,14 +89,14 @@ class StyleAttrsParserUnitTest {
     @Test
     fun `styleFromAttrs parses the logo, label, funding instrument and credit messaging attrs`() {
         val attrs = Robolectric.buildAttributeSet()
-            .addAttribute(R.attr.paypal_saved_payment_method_logo_width, "32dp")
-            .addAttribute(R.attr.paypal_saved_payment_method_label_font_size, "18sp")
-            .addAttribute(R.attr.paypal_saved_payment_method_label_margin_start, "4dp")
-            .addAttribute(R.attr.paypal_saved_payment_method_funding_instrument_font_size, "13sp")
-            .addAttribute(R.attr.paypal_saved_payment_method_edit_icon_size, "20dp")
-            .addAttribute(R.attr.paypal_saved_payment_method_funding_instrument_margin_start, "10dp")
-            .addAttribute(R.attr.paypal_saved_payment_method_credit_messaging_font_size, "15sp")
-            .addAttribute(R.attr.paypal_saved_payment_method_credit_messaging_link_color, "#FF00FF")
+            .addAttribute(R.attr.paypalSavedPaymentMethodLogoWidth, "32dp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodLabelFontSize, "18sp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodLabelMarginStart, "4dp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodFundingInstrumentFontSize, "13sp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodEditIconSize, "20dp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodFundingInstrumentMarginStart, "10dp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodCreditMessagingFontSize, "15sp")
+            .addAttribute(R.attr.paypalSavedPaymentMethodCreditMessagingLinkColor, "#FF00FF")
             .build()
 
         val container = styleFromAttrs(context, attrs, 0).container
