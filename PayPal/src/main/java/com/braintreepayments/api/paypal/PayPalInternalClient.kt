@@ -9,6 +9,7 @@ import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.DeviceInspectorProvider
@@ -37,7 +38,8 @@ internal class PayPalInternalClient(
     suspend fun sendRequest(
         context: Context,
         payPalRequest: PayPalRequest,
-        configuration: Configuration
+        configuration: Configuration,
+        editBillingAgreement: Boolean = false
     ): PayPalPaymentAuthRequestParams {
         val endpoint = if (payPalRequest.isBillingAgreement()) {
             SETUP_BILLING_AGREEMENT_ENDPOINT
@@ -72,13 +74,14 @@ internal class PayPalInternalClient(
             null
         }
 
-        val baseRequestBody = payPalRequest.createRequestBody(
+        val baseRequestBody = createRequestBody(
+            payPalRequest = payPalRequest,
             configuration = configuration,
-            authorization = merchantRepository.authorization,
             successUrl = successUrl,
             cancelUrl = cancelUrl,
-            appLink = appLinkParam
-        ) ?: throw JSONException("Error creating requestBody")
+            appLink = appLinkParam,
+            editBillingAgreement = editBillingAgreement
+        )
 
         val requestBody = if (payPalRequest.enablePayPalAppSwitch && appLinkParam != null) {
             appendDeviceInfo(context, baseRequestBody)
@@ -93,6 +96,45 @@ internal class PayPalInternalClient(
             context = context,
             configuration = configuration
         )
+    }
+
+    /**
+     * Adds the client token's payment method ID JWT to checkout bodies in the View/Edit Funding Instrument flow. Vault
+     * bodies are unchanged.
+     */
+    @Throws(JSONException::class)
+    private fun createRequestBody(
+        payPalRequest: PayPalRequest,
+        configuration: Configuration,
+        successUrl: String,
+        cancelUrl: String,
+        appLink: String?,
+        editBillingAgreement: Boolean
+    ): String {
+        val authorization = merchantRepository.authorization
+        val requestBody = if (payPalRequest is PayPalCheckoutRequest) {
+            payPalRequest.createRequestBody(
+                configuration = configuration,
+                authorization = authorization,
+                successUrl = successUrl,
+                cancelUrl = cancelUrl,
+                appLink = appLink,
+                editBillingAgreementJwt = if (editBillingAgreement) {
+                    (authorization as? ClientToken)?.paymentMethodIdJwt
+                } else {
+                    null
+                }
+            )
+        } else {
+            payPalRequest.createRequestBody(
+                configuration = configuration,
+                authorization = authorization,
+                successUrl = successUrl,
+                cancelUrl = cancelUrl,
+                appLink = appLink
+            )
+        }
+        return requestBody ?: throw JSONException("Error creating requestBody")
     }
 
     suspend fun tokenize(payPalAccount: PayPalAccount): PayPalAccountNonce {

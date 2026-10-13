@@ -3,6 +3,7 @@ package com.braintreepayments.api.paypal
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
+import androidx.annotation.RestrictTo
 import androidx.core.net.toUri
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.LaunchType
@@ -133,6 +134,44 @@ class PayPalClient internal constructor(
     }
 
     /**
+     * Callback version of [createPaymentAuthRequestForEditFi].
+     *
+     * @param context               Android Context
+     * @param payPalCheckoutRequest a [PayPalCheckoutRequest] used to customize the request.
+     * @param callback              [PayPalPaymentAuthCallback]
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun createPaymentAuthRequestForEditFi(
+        context: Context,
+        payPalCheckoutRequest: PayPalCheckoutRequest,
+        callback: PayPalPaymentAuthCallback,
+    ) {
+        coroutineScope.launch {
+            val result = createPaymentAuthRequestForEditFi(context, payPalCheckoutRequest)
+            callback.onPayPalPaymentAuthRequest(result)
+        }
+    }
+
+    /**
+     * Creates a [PayPalPaymentAuthRequest] for the View/Edit Funding Instrument flow, invoked when the customer taps
+     * Edit in the PayPal saved payment method view.
+     *
+     * The client token's payment method ID JWT is sent with this request only, to seed the edit order;
+     * [payPalCheckoutRequest] is not modified. Callers must make sure the client token carries a JWT, otherwise this
+     * runs as a regular checkout.
+     *
+     * @param context               Android Context
+     * @param payPalCheckoutRequest a [PayPalCheckoutRequest] used to customize the request.
+     * @return [PayPalPaymentAuthRequest]
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    suspend fun createPaymentAuthRequestForEditFi(
+        context: Context,
+        payPalCheckoutRequest: PayPalCheckoutRequest
+    ): PayPalPaymentAuthRequest =
+        createPaymentAuthRequestInternal(context, payPalCheckoutRequest, editBillingAgreement = true)
+
+    /**
      * Starts the PayPal payment flow by creating a [PayPalPaymentAuthRequestParams] to be
      * used to launch the PayPal web authentication flow in
      * [PayPalLauncher.launch].
@@ -144,10 +183,17 @@ class PayPalClient internal constructor(
      * @param payPalRequest a [PayPalRequest] used to customize the request.
      * @return [PayPalPaymentAuthRequest]
      */
-    @OptIn(ExperimentalBetaApi::class)
     suspend fun createPaymentAuthRequest(
         context: Context,
         payPalRequest: PayPalRequest
+    ): PayPalPaymentAuthRequest =
+        createPaymentAuthRequestInternal(context, payPalRequest, editBillingAgreement = false)
+
+    @OptIn(ExperimentalBetaApi::class)
+    private suspend fun createPaymentAuthRequestInternal(
+        context: Context,
+        payPalRequest: PayPalRequest,
+        editBillingAgreement: Boolean
     ): PayPalPaymentAuthRequest {
         shopperSessionId = payPalRequest.shopperSessionId
         isVaultRequest = payPalRequest is PayPalVaultRequest
@@ -169,7 +215,7 @@ class PayPalClient internal constructor(
                 )
                 return requestFailure
             } else {
-                return sendPayPalRequest(context, payPalRequest, configuration)
+                return sendPayPalRequest(context, payPalRequest, configuration, editBillingAgreement)
             }
         } catch (e: Exception) {
             if (e is CancellationException) throw e
@@ -185,13 +231,15 @@ class PayPalClient internal constructor(
     private suspend fun sendPayPalRequest(
         context: Context,
         payPalRequest: PayPalRequest,
-        configuration: Configuration
+        configuration: Configuration,
+        editBillingAgreement: Boolean
     ): PayPalPaymentAuthRequest {
         return try {
             val payPalResponse = internalPayPalClient.sendRequest(
                 context,
                 payPalRequest,
                 configuration,
+                editBillingAgreement
             )
 
             val analyticsEventParams = AnalyticsEventParams(
