@@ -5,8 +5,10 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.styling
 import android.content.Context
 import android.graphics.Color
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.paypalsavedpaymentmethod.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -213,6 +215,29 @@ class PayPalSavedPaymentMethodStyleResolverUnitTest {
         assertEquals(0f, resolver.heightDp)
         assertEquals(0f, resolver.verticalPaddingDp, DELTA)
     }
+
+    @Test
+    fun `resolved sizes do not change with font scale or density`() {
+        val labelFontSizePxBefore = labelFontSizePx()
+        val before = resolve(PayPalSavedPaymentMethodViewStyle())
+
+        RuntimeEnvironment.setFontScale(2f)
+        RuntimeEnvironment.setQualifiers("xxhdpi")
+        val after = PayPalSavedPaymentMethodStyleResolver(
+            RuntimeEnvironment.getApplication(),
+            PayPalSavedPaymentMethodViewStyle()
+        )
+
+        // The configuration really changed: the same sp resource is a different number of pixels now.
+        assertNotEquals(labelFontSizePxBefore, labelFontSizePx(), DELTA)
+        assertEquals(before.labelFontSizeSp, after.labelFontSizeSp, DELTA)
+        assertEquals(before.creditMessagingFontSizeSp, after.creditMessagingFontSizeSp, DELTA)
+        assertEquals(before.verticalPaddingDp, after.verticalPaddingDp, DELTA)
+        assertEquals(before.logoWidthDp, after.logoWidthDp, DELTA)
+    }
+
+    private fun labelFontSizePx(): Float = RuntimeEnvironment.getApplication().resources
+        .getDimension(R.dimen.paypal_saved_payment_method_style_default_label_font_size)
 
     private fun resolve(style: PayPalSavedPaymentMethodViewStyle) =
         PayPalSavedPaymentMethodStyleResolver(context, style)
