@@ -65,6 +65,7 @@ internal class UpdateCustomerSessionApi(
             put(SESSION_ID, sessionId)
             put(CUSTOMER, jsonRequestObjects.customer)
             putOpt(PURCHASE_UNITS, jsonRequestObjects.purchaseUnits)
+            putOpt(PAYPAL_CAMPAIGNS, jsonRequestObjects.campaigns)
         }
 
         return JSONObject().put(INPUT, input)
@@ -77,6 +78,7 @@ internal class UpdateCustomerSessionApi(
         private const val SESSION_ID = "sessionId"
         private const val CUSTOMER = "customer"
         private const val PURCHASE_UNITS = "purchaseUnits"
+        private const val PAYPAL_CAMPAIGNS = "paypalCampaigns"
         private const val UPDATE_CUSTOMER_SESSION = "updateCustomerSession"
     }
 }

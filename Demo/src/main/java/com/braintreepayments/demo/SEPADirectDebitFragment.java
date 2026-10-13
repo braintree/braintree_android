@@ -36,14 +36,16 @@ public class SEPADirectDebitFragment extends BaseFragment {
         SEPADirectDebitPendingRequest.Started sepaPendingRequest = PendingRequestStore.getInstance().getSEPADirectDebitPendingRequest(getContext());
         if (sepaPendingRequest != null) {
             String pendingRequest = sepaPendingRequest.getPendingRequestString();
-            sepaDirectDebitLauncher = new SEPADirectDebitLauncher(this);
+            sepaDirectDebitLauncher =
+                    new SEPADirectDebitLauncher(requireActivity().getActivityResultRegistry());
             try {
                 sepaDirectDebitLauncher.restorePendingRequest(pendingRequest);
             } catch (BrowserSwitchException e) {
                 PendingRequestStore.getInstance().clearSEPADirectDebitPendingRequest(getContext());
             }
         } else {
-            sepaDirectDebitLauncher = new SEPADirectDebitLauncher(this);
+            sepaDirectDebitLauncher =
+                    new SEPADirectDebitLauncher(requireActivity().getActivityResultRegistry());
         }
     }
 

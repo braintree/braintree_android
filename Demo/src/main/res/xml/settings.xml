@@ -11,6 +11,12 @@
             android:entryValues="@array/authorization_types"
             android:defaultValue="@string/client_token"/>
 
+        <com.braintreepayments.demo.views.SummaryEditTestPreference
+            android:key="custom_tokenization_key_value"
+            android:title="@string/custom_tokenization_key"
+            android:summary="@string/custom_tokenization_key_summary"
+            android:defaultValue="@string/empty"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory

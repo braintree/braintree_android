@@ -33,7 +33,7 @@ class LocalPaymentClientTest {
         countDownLatch = CountDownLatch(1)
         braintreeClient = BraintreeClient(
             context,
-            "sandbox_f252zhq7_hh4cpc39zq4rgjcg"
+            "sandbox_d54x7ckf_hh4cpc39zq4rgjcg"
         )
     }
 
@@ -142,7 +142,7 @@ class LocalPaymentClientTest {
     @Throws(InterruptedException::class)
     fun tokenize_afterSuccessfulBrowserSwitch_returnsNonce() {
         val returnUrlScheme = "sample-scheme"
-        val sut = LocalPaymentClient(context, "sandbox_f252zhq7_hh4cpc39zq4rgjcg", returnUrlScheme)
+        val sut = LocalPaymentClient(context, "sandbox_d54x7ckf_hh4cpc39zq4rgjcg", returnUrlScheme)
 
         val address = PostalAddress()
         address.streetAddress = "836486 of 22321 Park Lake"
@@ -202,7 +202,7 @@ class LocalPaymentClientTest {
     @Throws(InterruptedException::class)
     fun tokenize_whenBrowserSwitchCanceled_returnsCancelResult() {
         val returnUrlScheme = "sample-scheme"
-        val sut = LocalPaymentClient(context, "sandbox_f252zhq7_hh4cpc39zq4rgjcg", returnUrlScheme)
+        val sut = LocalPaymentClient(context, "sandbox_d54x7ckf_hh4cpc39zq4rgjcg", returnUrlScheme)
 
         val authResult = simulateBrowserSwitchReturn(
             returnUrlScheme = returnUrlScheme,

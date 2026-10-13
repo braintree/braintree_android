@@ -21,7 +21,7 @@ class LocalPaymentApiTest {
     fun setUp() {
         braintreeClient = BraintreeClient(
             ApplicationProvider.getApplicationContext(),
-            "sandbox_f252zhq7_hh4cpc39zq4rgjcg"
+            "sandbox_d54x7ckf_hh4cpc39zq4rgjcg"
         )
         sut = LocalPaymentApi(braintreeClient)
     }

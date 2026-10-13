@@ -45,5 +45,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
         } else if (preference instanceof SummaryEditTestPreference) {
             preference.setSummary(preference.getSummary());
         }
+        if(key.equals("authorization_type")) {
+            Preference customTokenizationKeyPreference = findPreference("custom_tokenization_key_value");
+            String selected = ((ListPreference)preference).getValue();
+            customTokenizationKeyPreference.setVisible(getString(R.string.custom_tokenization_key).equals(selected));
+        }
     }
 }
