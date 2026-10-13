@@ -7,6 +7,7 @@ import com.braintreepayments.api.paypal.AmountBreakdown;
 import com.braintreepayments.api.paypal.PayPalBillingCycle;
 import com.braintreepayments.api.paypal.PayPalBillingInterval;
 import com.braintreepayments.api.paypal.PayPalBillingPricing;
+import com.braintreepayments.api.paypal.PayPalCampaign;
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
 import com.braintreepayments.api.paypal.PayPalContactInformation;
 import com.braintreepayments.api.paypal.PayPalContactPreference;
@@ -166,7 +167,8 @@ public class PayPalRequestFactory {
         String shopperInsightsSessionId,
         Boolean offerPayLater,
         Boolean offerCredit,
-        Boolean isAmountBreakdownEnabled
+        Boolean isAmountBreakdownEnabled,
+        String campaignId
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
         request.setShouldOfferPayLater(offerPayLater);
@@ -217,6 +219,13 @@ public class PayPalRequestFactory {
             request.setShopperSessionId(shopperInsightsSessionId);
         }
 
+        if (campaignId != null && !campaignId.isEmpty()) {
+            List<PayPalCampaign> campaigns = parseCampaigns(campaignId);
+            if (!campaigns.isEmpty()) {
+                request.setCampaigns(campaigns);
+            }
+        }
+
         if (Settings.isPayPalAppSwithEnabled(context)) {
             request.setEnablePayPalAppSwitch(true);
         }
@@ -262,6 +271,17 @@ public class PayPalRequestFactory {
         }
 
         return request;
+    }
+
+    private static List<PayPalCampaign> parseCampaigns(String campaignIdText) {
+        List<PayPalCampaign> campaigns = new ArrayList<>();
+        for (String id : campaignIdText.split(",")) {
+            String trimmedId = id.trim();
+            if (!trimmedId.isEmpty()) {
+                campaigns.add(new PayPalCampaign(trimmedId));
+            }
+        }
+        return campaigns;
     }
 
     private static List<PayPalLineItem> buildLineItems(

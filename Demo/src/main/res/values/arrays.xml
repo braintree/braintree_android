@@ -3,6 +3,7 @@
     <string-array name="authorization_types">
         <item name="client-token">@string/client_token</item>
         <item name="tokenization-key">@string/tokenization_key</item>
+        <item name="custom-tokenization-key">@string/custom_tokenization_key</item>
     </string-array>
 
     <string-array name="environments">

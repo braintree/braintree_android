@@ -12,6 +12,7 @@ import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendationsResul
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionResult
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
+import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsCampaign
 import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsClientV2
 import java.security.MessageDigest
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,10 +35,11 @@ class ShopperInsightsV2ViewModel : ViewModel() {
         shopperInsightsClient = ShopperInsightsClientV2(context, authString)
     }
 
-    fun handleCreateCustomerSession(emailText: String, nationalNumberText: String) {
+    fun handleCreateCustomerSession(emailText: String, nationalNumberText: String, campaignIdText: String) {
         val customerSessionRequest = CustomerSessionRequest(
             hashedEmail = emailText.sha256(),
-            hashedPhoneNumber = nationalNumberText.sha256()
+            hashedPhoneNumber = nationalNumberText.sha256(),
+            payPalCampaigns = campaignIdText.toShopperInsightsCampaigns()
         )
 
         _sessionId.update { "" }
@@ -59,11 +61,13 @@ class ShopperInsightsV2ViewModel : ViewModel() {
     fun handleUpdateCustomerSession(
         emailText: String,
         nationalNumberText: String,
-        sessionId: String
+        sessionId: String,
+        campaignIdText: String
     ) {
         val customerSessionRequest = CustomerSessionRequest(
             hashedEmail = emailText.sha256(),
-            hashedPhoneNumber = nationalNumberText.sha256()
+            hashedPhoneNumber = nationalNumberText.sha256(),
+            payPalCampaigns = campaignIdText.toShopperInsightsCampaigns()
         )
 
         _sessionId.update { "" }
@@ -134,6 +138,12 @@ class ShopperInsightsV2ViewModel : ViewModel() {
 
 private fun String.sha256(): String {
     return hashString(this, "SHA-256")
+}
+
+@OptIn(ExperimentalBetaApi::class)
+private fun String.toShopperInsightsCampaigns(): List<ShopperInsightsCampaign>? {
+    val campaigns = split(",").map { it.trim() }.filter { it.isNotEmpty() }
+    return campaigns.takeIf { it.isNotEmpty() }?.map { ShopperInsightsCampaign(it) }
 }
 
 private fun hashString(input: String, algorithm: String = "SHA-256"): String {

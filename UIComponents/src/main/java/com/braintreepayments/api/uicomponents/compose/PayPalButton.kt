@@ -38,6 +38,18 @@ import kotlinx.coroutines.launch
  * @param authorization: An authorization string to use for tokenization.
  * @param appLinkReturnUrl: A [Uri] that sends back control to the host app after PayPal flow completes.
  * @param deepLinkFallbackUrlScheme: Fallback scheme in case [appLinkReturnUrl] doesn't work.
+ *
+ * The value must be a bare URL scheme, not a full URL. It must:
+ * - Contain only alphanumeric characters, hyphens (`-`), and periods (`.`)
+ * - Not include `://`
+ * - Not include a path, query string, or fragment (no `/`, `?`, or `#`)
+ * - Match the scheme declared in your `AndroidManifest.xml`
+ *
+ * Valid examples: `"com.merchant.app.payments"`, `"merchantapp"`, `"merchant-app.payments"`.
+ *
+ * Invalid examples: `"com.merchant.app.payments://"` (contains `://`),
+ * `"com.merchant.app.payments/callback"` (contains a path),
+ * `"com.merchant_app"` (underscore not allowed).
  * @param paypalTokenizeCallback: A [PayPalTokenizeCallback] that handles the result of the tokenization.
  */
 @Composable

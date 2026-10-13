@@ -1,7 +1,9 @@
 package com.braintreepayments.api.shopperinsights.v2.internal
 
 import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.core.GraphQLConstants
 import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendations
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
@@ -43,6 +45,7 @@ internal class GenerateCustomerRecommendationsApi(
                             paymentOption
                             recommendedPriority
                         }
+                        expiresAt
                     }
                 }
                 """.trimIndent()
@@ -75,21 +78,30 @@ internal class GenerateCustomerRecommendationsApi(
                 val jsonRequestObjects = customerSessionRequestBuilder.createRequestObjects(customerSessionRequest)
                 put(CUSTOMER, jsonRequestObjects.customer)
                 putOpt(PURCHASE_UNITS, jsonRequestObjects.purchaseUnits)
+                putOpt(PAYPAL_CAMPAIGNS, jsonRequestObjects.campaigns)
             }
         }
 
         return JSONObject().put(INPUT, input)
     }
 
-    @Throws(JSONException::class)
+    @Throws(JSONException::class, BraintreeException::class)
     private fun parseRecommendationsResponse(responseBody: String): CustomerRecommendations {
         val jsonObject = JSONObject(responseBody)
+
+        val errors = jsonObject.optJSONArray(GraphQLConstants.Keys.ERRORS)
+        if (errors != null && errors.length() > 0) {
+            val message = errors.getJSONObject(0).optString(GraphQLConstants.Keys.MESSAGE, responseBody)
+            throw BraintreeException(message)
+        }
+
         val data = jsonObject.getJSONObject("data")
         val recommendations = data.getJSONObject(GENERATE_CUSTOMER_RECOMMENDATIONS)
 
         val sessionId = recommendations.getString(SESSION_ID)
         val isInPayPalNetwork = recommendations.getBoolean("isInPayPalNetwork")
         val paymentRecommendations = recommendations.getJSONArray("paymentRecommendations")
+        val expiresAt = recommendations.opt(EXPIRES_AT) as? String
 
         val paymentOptions = mutableListOf<PaymentOptions>()
         for (i in 0 until paymentRecommendations.length()) {
@@ -105,7 +117,8 @@ internal class GenerateCustomerRecommendationsApi(
         return CustomerRecommendations(
             sessionId = sessionId,
             isInPayPalNetwork = isInPayPalNetwork,
-            paymentRecommendations = paymentOptions
+            paymentRecommendations = paymentOptions,
+            expiresAt = expiresAt
         )
     }
 
@@ -116,6 +129,8 @@ internal class GenerateCustomerRecommendationsApi(
         private const val SESSION_ID = "sessionId"
         private const val CUSTOMER = "customer"
         private const val PURCHASE_UNITS = "purchaseUnits"
+        private const val PAYPAL_CAMPAIGNS = "paypalCampaigns"
         private const val GENERATE_CUSTOMER_RECOMMENDATIONS = "generateCustomerRecommendations"
+        private const val EXPIRES_AT = "expiresAt"
     }
 }
