@@ -11,12 +11,16 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
+import okio.Buffer
 import org.junit.After
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
+import kotlin.test.assertFailsWith
 
 class OkHttpSynchronousHttpClientTest {
 
@@ -104,5 +108,86 @@ class OkHttpSynchronousHttpClientTest {
         val capturedRequest = slot.captured
         assertEquals("Bearer token", capturedRequest.header("Authorization"))
         assertEquals("Value", capturedRequest.header("Custom"))
+    }
+
+    @Test
+    fun `when response is successful, executeRequestForBytes sends a GET and returns the body bytes unchanged`() {
+        // PNG signature plus bytes that are invalid UTF-8, which a String round-trip would corrupt
+        val bytes = byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0xFF.toByte(), 0xFE.toByte(), 0x00)
+        givenBytesResponse(isSuccessful = true, body = bytes.toResponseBody())
+
+        val result = sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get))
+
+        assertArrayEquals(bytes, result)
+        val slot = slot<Request>()
+        verify { okHttpClient.newCall(capture(slot)) }
+        assertEquals("$URL/", slot.captured.url.toString())
+        assertEquals("GET", slot.captured.method)
+    }
+
+    @Test
+    fun `when response is unsuccessful or has no body, executeRequestForBytes throws IOException`() {
+        givenBytesResponse(isSuccessful = false, body = byteArrayOf(1).toResponseBody())
+        assertFailsWith<IOException> { sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get)) }
+
+        givenBytesResponse(isSuccessful = true, body = null)
+        assertFailsWith<IOException> { sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get)) }
+    }
+
+    @Test
+    fun `when declared body size exceeds maxBodyBytes, executeRequestForBytes throws without reading the body`() {
+        givenBytesResponse(isSuccessful = true, body = responseBody)
+        every { responseBody.contentLength() } returns 2048L
+
+        assertFailsWith<IOException> {
+            sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get), maxBodyBytes = 1024L)
+        }
+        verify(exactly = 0) { responseBody.bytes() }
+        verify(exactly = 0) { responseBody.source() }
+    }
+
+    @Test
+    fun `when declared body size is within maxBodyBytes, executeRequestForBytes returns the body`() {
+        val bytes = ByteArray(1024) { 7 }
+        givenBytesResponse(isSuccessful = true, body = bytes.toResponseBody())
+
+        val result = sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get), maxBodyBytes = 1024L)
+
+        assertArrayEquals(bytes, result)
+    }
+
+    @Test
+    fun `when Content-Length is not declared and actual body is within maxBodyBytes, returns the body`() {
+        val bytes = ByteArray(1024) { 7 }
+        givenBytesResponse(isSuccessful = true, body = responseBody)
+        every { responseBody.contentLength() } returns -1L
+        every { responseBody.source() } returns Buffer().write(bytes)
+
+        val result = sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get), maxBodyBytes = 1024L)
+
+        assertArrayEquals(bytes, result)
+    }
+
+    @Test
+    fun `when Content-Length is not declared but actual body exceeds maxBodyBytes, throws without buffering it all`() {
+        val bytes = ByteArray(2048) { 7 }
+        givenBytesResponse(isSuccessful = true, body = responseBody)
+        every { responseBody.contentLength() } returns -1L
+        every { responseBody.source() } returns Buffer().write(bytes)
+
+        assertFailsWith<IOException> {
+            sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get), maxBodyBytes = 1024L)
+        }
+    }
+
+    private fun givenBytesResponse(isSuccessful: Boolean, body: ResponseBody?) {
+        every { okHttpClient.newCall(any()) } returns call
+        every { call.execute() } returns response
+        every { response.isSuccessful } returns isSuccessful
+        every { response.body } returns body
+    }
+
+    companion object {
+        private const val URL = "https://example.com"
     }
 }

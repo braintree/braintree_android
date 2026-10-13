@@ -5,6 +5,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
+import okio.Buffer
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -51,6 +53,51 @@ internal class OkHttpSynchronousHttpClient(
             )
         }
     }
+
+    /**
+     * Executes a synchronous HTTP request using OkHttp and returns the raw response body.
+     *
+     * Use this for binary payloads such as images, which [executeRequest] would corrupt by decoding the body as a
+     * [String].
+     *
+     * @param okHttpRequest The request data to execute.
+     * @param maxBodyBytes Optional limit on the response body size. Rejected as soon as the declared
+     * `Content-Length` exceeds it, or, if undeclared (e.g. chunked transfer), as soon as actual bytes read exceed
+     * it — the body is never buffered past [maxBodyBytes] + 1 bytes.
+     * @return The response body bytes.
+     * @throws IOException if the request fails, the response is unsuccessful or has no body, or the body size
+     * exceeds [maxBodyBytes].
+     * @throws IllegalArgumentException if the request URL is not a valid http or https URL.
+     */
+    @Throws(IOException::class)
+    fun executeRequestForBytes(okHttpRequest: OkHttpRequest, maxBodyBytes: Long? = null): ByteArray {
+        val request = okHttpRequest.toRequest()
+
+        okHttpClient.newCall(request).execute().use { response ->
+            val responseBody = response.body?.takeIf { response.isSuccessful }
+                ?: throw IOException("Unexpected code ${response.code} for ${request.url}")
+            if (maxBodyBytes == null) return responseBody.bytes()
+            return responseBody.readBoundedBytes(maxBodyBytes, request.url.toString())
+        }
+    }
+
+    // Bounded regardless of the declared Content-Length, so a response that omits or understates it (e.g. chunked
+    // transfer) still can't be buffered unbounded in memory.
+    private fun ResponseBody.readBoundedBytes(maxBodyBytes: Long, url: String): ByteArray {
+        if (contentLength() > maxBodyBytes) throwBodyTooLarge(maxBodyBytes, url)
+
+        val limit = maxBodyBytes + 1
+        val buffer = Buffer()
+        val source = source()
+        while (buffer.size < limit && source.read(buffer, limit - buffer.size) != -1L) {
+            // keep reading until EOF or the limit is reached
+        }
+        if (buffer.size > maxBodyBytes) throwBodyTooLarge(maxBodyBytes, url)
+        return buffer.readByteArray()
+    }
+
+    private fun throwBodyTooLarge(maxBodyBytes: Long, url: String): Nothing =
+        throw IOException("Response body exceeds $maxBodyBytes bytes for $url")
 
     /**
      * Converts an [OkHttpRequest] to an OkHttp [Request].
