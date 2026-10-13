@@ -312,6 +312,24 @@ class PayPalCheckoutRequestUnitTest {
     @OptIn(ExperimentalBetaApi::class)
     @Test
     @Throws(JSONException::class)
+    fun `createRequestBody omits edit_billing_agreement_jwt when the editBillingAgreementJwt is blank`() {
+        val request = PayPalCheckoutRequest("1.00", true)
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<ClientToken>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null,
+            editBillingAgreementJwt = "  "
+        )
+
+        assertFalse(JSONObject(requestBody).has("edit_billing_agreement_jwt"))
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
     fun `the public createRequestBody never sends edit_billing_agreement_jwt`() {
         val request = PayPalCheckoutRequest("1.00", true)
 

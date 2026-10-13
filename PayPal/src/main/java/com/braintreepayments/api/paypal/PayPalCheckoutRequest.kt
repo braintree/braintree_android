@@ -141,7 +141,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
 
     /**
      * [editBillingAgreementJwt] is sent as `edit_billing_agreement_jwt` for the View/Edit Funding Instrument flow; null
-     * omits it.
+     * or blank omits it.
      */
     @OptIn(ExperimentalBetaApi::class)
     @Throws(JSONException::class)
@@ -170,7 +170,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             parameters.put(TOKENIZATION_KEY, authorization?.bearer)
         }
 
-        editBillingAgreementJwt?.let { parameters.put(EDIT_BILLING_AGREEMENT_JWT_KEY, it) }
+        editBillingAgreementJwt?.takeIf { it.isNotBlank() }?.let { parameters.put(EDIT_BILLING_AGREEMENT_JWT_KEY, it) }
 
         if (shouldRequestBillingAgreement) {
             parameters.put(REQUEST_BILLING_AGREEMENT_KEY, true)
