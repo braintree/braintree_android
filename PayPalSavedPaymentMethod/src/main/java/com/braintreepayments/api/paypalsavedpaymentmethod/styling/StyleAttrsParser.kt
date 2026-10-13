@@ -19,12 +19,20 @@ internal fun styleFromAttrs(
     val typedArray = context.obtainStyledAttributes(attrs, R.styleable.PayPalSavedPaymentMethodView, defStyleAttr, 0)
     return try {
         val resources = context.resources
+        // Unset toggles fall back to the style class's own defaults, so the two can't drift.
+        val defaults = PayPalSavedPaymentMethodViewStyle()
         PayPalSavedPaymentMethodViewStyle(
-            showPayPalLogo = typedArray.getBoolean(R.styleable.PayPalSavedPaymentMethodView_showPayPalLogo, true),
-            showPayPalLabel = typedArray.getBoolean(R.styleable.PayPalSavedPaymentMethodView_showPayPalLabel, true),
+            showPayPalLogo = typedArray.getBoolean(
+                R.styleable.PayPalSavedPaymentMethodView_showPayPalLogo,
+                defaults.showPayPalLogo
+            ),
+            showPayPalLabel = typedArray.getBoolean(
+                R.styleable.PayPalSavedPaymentMethodView_showPayPalLabel,
+                defaults.showPayPalLabel
+            ),
             showPayPalCreditMessaging = typedArray.getBoolean(
                 R.styleable.PayPalSavedPaymentMethodView_showPayPalCreditMessaging,
-                true
+                defaults.showPayPalCreditMessaging
             ),
             componentAppearance = parseComponentAppearance(typedArray, resources),
             container = parseContainerStyle(typedArray, resources)
