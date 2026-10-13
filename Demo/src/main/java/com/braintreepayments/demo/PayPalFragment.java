@@ -66,6 +66,7 @@ public class PayPalFragment extends BaseFragment {
         TextInputEditText buyerEmailEditText = view.findViewById(R.id.buyer_email_edit_text);
         TextInputEditText buyerPhoneCountryCodeEditText = view.findViewById(R.id.buyer_phone_country_code_edit_text);
         TextInputEditText buyerPhoneNationalNumberEditText = view.findViewById(R.id.buyer_phone_national_number_edit_text);
+        TextInputEditText campaignIdEditText = view.findViewById(R.id.paypal_campaign_id_edit_text);
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
         Button singlePaymentPayLaterButton = view.findViewById(R.id.paypal_single_payment_pay_later_button);
@@ -82,7 +83,8 @@ public class PayPalFragment extends BaseFragment {
                 contactInformationSwitch.isChecked(),
                 false,
                 false,
-                amountBreakdownSwitch.isChecked()
+                amountBreakdownSwitch.isChecked(),
+                campaignIdEditText.getText().toString()
             );
         });
 
@@ -95,7 +97,8 @@ public class PayPalFragment extends BaseFragment {
                 contactInformationSwitch.isChecked(),
                 false,
                 true,
-                amountBreakdownSwitch.isChecked()
+                amountBreakdownSwitch.isChecked(),
+                campaignIdEditText.getText().toString()
             );
             isPayLaterSelected = false;
         });
@@ -109,7 +112,8 @@ public class PayPalFragment extends BaseFragment {
                     contactInformationSwitch.isChecked(),
                     false,
                     false,
-                    amountBreakdownSwitch.isChecked()
+                    amountBreakdownSwitch.isChecked(),
+                    campaignIdEditText.getText().toString()
             );
             isPayLaterSelected = false;
         });
@@ -123,7 +127,8 @@ public class PayPalFragment extends BaseFragment {
                     contactInformationSwitch.isChecked(),
                     true,
                     false,
-                    amountBreakdownSwitch.isChecked()
+                    amountBreakdownSwitch.isChecked(),
+                    campaignIdEditText.getText().toString()
             );
             isPayLaterSelected = true;
         });
@@ -174,7 +179,8 @@ public class PayPalFragment extends BaseFragment {
         Boolean isContactInformationEnabled,
         Boolean offerPayLater,
         Boolean offerCredit,
-        Boolean isAmountBreakdownEnabled
+        Boolean isAmountBreakdownEnabled,
+        String campaignId
     ) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
@@ -186,10 +192,10 @@ public class PayPalFragment extends BaseFragment {
                 if (dataCollectorResult instanceof DataCollectorResult.Success) {
                     deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }
-                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, offerPayLater, offerCredit, isAmountBreakdownEnabled);
+                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, offerPayLater, offerCredit, isAmountBreakdownEnabled, campaignId);
             });
         } else {
-            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, offerPayLater, offerCredit, isAmountBreakdownEnabled);
+            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, offerPayLater, offerCredit, isAmountBreakdownEnabled, campaignId);
         }
     }
 
@@ -203,7 +209,8 @@ public class PayPalFragment extends BaseFragment {
         boolean isContactInformationEnabled,
         boolean offerPayLater,
         boolean offerCredit,
-        boolean isAmountBreakdownEnabled
+        boolean isAmountBreakdownEnabled,
+        String campaignId
     ) {
         PayPalRequest payPalRequest;
         if (isBillingAgreement) {
@@ -225,7 +232,8 @@ public class PayPalFragment extends BaseFragment {
                     null,
                     offerPayLater,
                     offerCredit,
-                    isAmountBreakdownEnabled
+                    isAmountBreakdownEnabled,
+                    campaignId
             );
         }
         payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,

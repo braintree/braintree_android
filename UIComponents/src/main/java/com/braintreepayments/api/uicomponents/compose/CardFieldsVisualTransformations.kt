@@ -1,0 +1,52 @@
+package com.braintreepayments.api.uicomponents.compose
+
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
+import com.braintreepayments.api.uicomponents.cardfields.CardNumberFormatter
+import com.braintreepayments.api.uicomponents.cardfields.ExpirationDateFormatter
+
+/**
+ * Inserts spacing gaps into the displayed card number without altering the underlying digits.
+ */
+internal class CardNumberVisualTransformation(private val formatGaps: IntArray) :
+    VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val formatted = CardNumberFormatter.formatCardNumber(text.text, formatGaps)
+        return TransformedText(AnnotatedString(formatted), digitOffsetMapping(formatted))
+    }
+}
+
+/** Inserts a `/` separator into the displayed expiration date without altering the underlying digits. */
+internal class ExpirationDateVisualTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val formatted = ExpirationDateFormatter.formatExpiration(text.text)
+        return TransformedText(AnnotatedString(formatted), digitOffsetMapping(formatted))
+    }
+}
+
+private fun digitOffsetMapping(formatted: String) = object : OffsetMapping {
+    override fun originalToTransformed(offset: Int): Int =
+        CardNumberFormatter.findIndexForDigitPosition(formatted, offset)
+
+    override fun transformedToOriginal(offset: Int): Int =
+        CardNumberFormatter.countDigitsBeforeIndex(formatted, offset)
+}
+
+/**
+ * Masks all CVV digits except the one at [revealedIndex], if any, so a freshly typed digit is
+ * briefly visible before being masked.
+ */
+internal class CvvVisualTransformation(private val revealedIndex: Int?) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val masked = text.text.mapIndexed { index, char ->
+            if (index == revealedIndex) char else MASK_CHAR
+        }.joinToString("")
+        return TransformedText(AnnotatedString(masked), OffsetMapping.Identity)
+    }
+
+    private companion object {
+        const val MASK_CHAR = '•'
+    }
+}

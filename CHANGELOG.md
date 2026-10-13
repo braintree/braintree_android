@@ -2,8 +2,37 @@
 
 ## unreleased
 
+* GooglePay
+  * Add optional `resultKey` parameter to `GooglePayLauncher` constructors, allowing a unique registration key per launcher instance
+* ThreeDSecure
+  * Add optional `resultKey` parameter to `ThreeDSecureLauncher` constructors, allowing a unique registration key per launcher instance
+* SEPADirectDebit
+    * Add Compose constructor for `SEPADirectDebitLauncher`
+
+## 5.33.0 (2026-09-16)
+
+* UIComponents
+    * Add Compose `CardFields` support to generate a premade credit card form for submitting credit card tokenize requests
+
+## 5.32.0 (2026-08-27)
+
+* GooglePay
+  * Add Compose constructor for GooglePay
+* PayPal
+    * Add `PayPalCheckoutRequest.campaigns` to associate campaigns with a checkout order
+* ShopperInsights
+    * Add `CustomerSessionRequest.payPalCampaigns` to associate campaigns with a customer session
+    * Fix response handling bug that buries customer session create and update errors
+    * Add optional `CustomerRecommendations.expiresAt` indicating when returned recommendations should be treated as stale
+* Venmo
+    * Fix `VenmoAccountNonce.externalId` returning empty after vaulting a Venmo account with a client token
+
+## 5.31.0 (2026-08-03)
+
 * PayPal
     * Collect device information to improve PayPal app switch eligibility when it's enabled
+* BraintreeCore
+    * Update Browser Switch version to 3.6.0
 
 ## 5.30.0 (2026-07-21)
 

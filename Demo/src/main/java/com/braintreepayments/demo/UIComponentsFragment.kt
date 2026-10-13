@@ -127,7 +127,8 @@ class UIComponentsFragment : BaseFragment() {
             /* shopperInsightsSessionId = */ null,
             /* offerPayLater = */ false,
             /* offerCredit = */ false,
-            /* isAmountBreakdownEnabled = */ false
+            /* isAmountBreakdownEnabled = */ false,
+            /* campaignId = */ null
         )
 
         payPalButton.initialize(

@@ -340,4 +340,29 @@ class CardFieldsViewModelUnitTest {
     }
 
     // endregion
+
+    // region Current value getters
+
+    @Test
+    fun `currentCardNumber reflects the last value passed to onCardNumberChanged`() {
+        val vm = createViewModel()
+        vm.onCardNumberChanged("4111111111111111")
+        assertEquals("4111111111111111", vm.currentCardNumber)
+    }
+
+    @Test
+    fun `currentExpiration reflects the last value passed to onExpiryChanged`() {
+        val vm = createViewModel()
+        vm.onExpiryChanged("1228")
+        assertEquals("1228", vm.currentExpiration)
+    }
+
+    @Test
+    fun `currentCvv reflects the last value passed to onCvvChanged`() {
+        val vm = createViewModel()
+        vm.onCvvChanged("123")
+        assertEquals("123", vm.currentCvv)
+    }
+
+    // endregion
 }

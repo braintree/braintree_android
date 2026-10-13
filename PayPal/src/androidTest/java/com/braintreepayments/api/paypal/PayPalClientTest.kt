@@ -223,7 +223,7 @@ class PayPalClientTest {
     private fun createPayPalClient(): PayPalClient {
         return PayPalClient(
             context,
-            "sandbox_f252zhq7_hh4cpc39zq4rgjcg",
+            "sandbox_d54x7ckf_hh4cpc39zq4rgjcg",
             Uri.parse("https://example.com/braintree"),
             returnUrlScheme
         )

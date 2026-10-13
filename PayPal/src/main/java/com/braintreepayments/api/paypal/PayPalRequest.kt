@@ -156,6 +156,7 @@ abstract class PayPalRequest internal constructor(
         internal const val CONTACT_PREFERENCE_KEY: String = "contact_preference"
         internal const val SHOPPER_SESSION_ID_KEY: String = "shopper_session_id"
         internal const val AMOUNT_BREAKDOWN_KEY: String = "amount_breakdown"
+        internal const val PAYPAL_CAMPAIGNS_KEY: String = "paypal_campaigns"
         internal const val DEVICE_INFO_KEY: String = "device_info"
         internal const val DEVICE_MODEL_KEY: String = "model"
         internal const val MEMORY_AVAILABLE_MB_KEY: String = "memory_available_mb"
