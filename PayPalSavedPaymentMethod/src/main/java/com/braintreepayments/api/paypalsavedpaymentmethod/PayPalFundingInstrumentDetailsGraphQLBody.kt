@@ -49,21 +49,22 @@ internal data class PayPalFundingInstrumentDetailsGraphQLBody(
         const val INTEGRATION_CHANNEL = "BT_NATIVE_SDK"
         const val OS_TYPE = "ANDROID"
 
-        const val QUERY =
-            "query PaypalFundingInstrumentDetails(\$input: PayPalFundingInstrumentDetailsInput!) {" +
-                "  paypalFundingInstrumentDetails(input: \$input) {" +
-                "    payer {" +
-                "      email" +
-                "      editable" +
-                "    }" +
-                "    paymentMethods {" +
-                "      label" +
-                "      imageUrl" +
-                "      lastDigits" +
-                "      type" +
-                "      subtype" +
-                "    }" +
-                "  }" +
-                "}"
+        val QUERY = """
+            query PaypalFundingInstrumentDetails(${'$'}input: PayPalFundingInstrumentDetailsInput!) {
+                paypalFundingInstrumentDetails(input: ${'$'}input) {
+                    payer {
+                        email
+                        editable
+                    }
+                    paymentMethods {
+                        label
+                        imageUrl
+                        lastDigits
+                        type
+                        subtype
+                    }
+                }
+            }
+        """.trimIndent()
     }
 }
