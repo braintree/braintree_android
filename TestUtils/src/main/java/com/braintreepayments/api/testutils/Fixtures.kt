@@ -465,6 +465,15 @@ object Fixtures {
           "clientApiUrl": "https://api.sandbox.braintreegateway.com:443/merchants/dcpspy2brwdjr3qn/client_api"
         }
     """
+
+    // language=JSON
+    const val CLIENT_TOKEN_WITH_PAYMENT_METHOD_ID_JWT = """
+        {
+            "configUrl": "client_api_configuration_url",
+            "authorizationFingerprint": "authorization_fingerprint",
+            "paymentMethodIdJwt": "payment_method_id_jwt"
+        }
+    """
     // endregion
 
     // region Card

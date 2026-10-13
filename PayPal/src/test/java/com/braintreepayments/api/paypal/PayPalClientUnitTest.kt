@@ -42,6 +42,7 @@ import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -556,9 +557,125 @@ class PayPalClientUnitTest {
             payPalInternalClient.sendRequest(
                 activity,
                 payPalRequest,
-                any<Configuration>()
+                any<Configuration>(),
+                editBillingAgreement = false
             )
         }
+    }
+
+    @Test
+    fun `suspend createPaymentAuthRequestForEditFi asks the internal client to send the edit jwt`() =
+        runTest(testDispatcher) {
+            val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true)
+            val paymentAuthRequest = PayPalPaymentAuthRequestParams(
+                payPalCheckoutRequest,
+                null,
+                "https://example.com/approval/url",
+                "sample-client-metadata-id",
+                null,
+                "https://example.com/success/url"
+            )
+            val payPalInternalClient = MockkPayPalInternalClientBuilder()
+                .sendRequestSuccess(paymentAuthRequest)
+                .build()
+            val braintreeClient =
+                MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
+            val sut = testPaypalClient(braintreeClient, payPalInternalClient, testDispatcher, this)
+
+            val result = sut.createPaymentAuthRequestForEditFi(activity, payPalCheckoutRequest)
+
+            assertTrue(result is PayPalPaymentAuthRequest.ReadyToLaunch)
+            coVerify {
+                payPalInternalClient.sendRequest(
+                    activity,
+                    payPalCheckoutRequest,
+                    any<Configuration>(),
+                    editBillingAgreement = true
+                )
+            }
+        }
+
+    @Test
+    fun `when createPaymentAuthRequestForEditFi is called, internal client sendRequest is invoked with that request`() = runTest(testDispatcher) {
+        val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
+
+        val braintreeClient =
+            MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
+
+        val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true)
+
+        val sut = testPaypalClient(
+            braintreeClient,
+            payPalInternalClient,
+            testDispatcher,
+            this
+        )
+        sut.createPaymentAuthRequestForEditFi(activity, payPalCheckoutRequest, paymentAuthCallback)
+        advanceUntilIdle()
+
+        coVerify {
+            payPalInternalClient.sendRequest(
+                activity,
+                payPalCheckoutRequest,
+                any<Configuration>(),
+                editBillingAgreement = true
+            )
+        }
+    }
+
+    @Test
+    fun `when createPaymentAuthRequestForEditFi succeeds, callback receives ReadyToLaunch`() = runTest(testDispatcher) {
+        val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true)
+        val paymentAuthRequest = PayPalPaymentAuthRequestParams(
+            payPalCheckoutRequest,
+            null,
+            "https://example.com/approval/url",
+            "sample-client-metadata-id",
+            null,
+            "https://example.com/success/url"
+        )
+        val payPalInternalClient = MockkPayPalInternalClientBuilder()
+            .sendRequestSuccess(paymentAuthRequest)
+            .build()
+
+        val braintreeClient =
+            MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
+
+        val sut = testPaypalClient(
+            braintreeClient,
+            payPalInternalClient,
+            testDispatcher,
+            this
+        )
+        sut.createPaymentAuthRequestForEditFi(activity, payPalCheckoutRequest, paymentAuthCallback)
+        advanceUntilIdle()
+
+        val slot = slot<PayPalPaymentAuthRequest>()
+        verify { paymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
+        assertTrue(slot.captured is PayPalPaymentAuthRequest.ReadyToLaunch)
+    }
+
+    @Test
+    fun `when createPaymentAuthRequestForEditFi is called and PayPal is not enabled, callback receives failure`() = runTest(testDispatcher) {
+        val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
+
+        val braintreeClient =
+            MockkBraintreeClientBuilder().configurationSuccess(payPalDisabledConfig).build()
+
+        val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true)
+
+        val sut = testPaypalClient(
+            braintreeClient,
+            payPalInternalClient,
+            testDispatcher,
+            this
+        )
+        sut.createPaymentAuthRequestForEditFi(activity, payPalCheckoutRequest, paymentAuthCallback)
+        advanceUntilIdle()
+
+        val slot = slot<PayPalPaymentAuthRequest>()
+        verify { paymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
+        assertTrue(slot.captured is PayPalPaymentAuthRequest.Failure)
     }
 
     @Test

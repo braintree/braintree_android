@@ -123,15 +123,36 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     lineItems = lineItems
 ) {
 
-    @OptIn(ExperimentalBetaApi::class)
     @Throws(JSONException::class)
-    @Suppress("LongMethod", "CyclomaticComplexMethod")
     override fun createRequestBody(
         configuration: Configuration?,
         authorization: Authorization?,
         successUrl: String?,
         cancelUrl: String?,
         appLink: String?
+    ): String = createRequestBody(
+        configuration = configuration,
+        authorization = authorization,
+        successUrl = successUrl,
+        cancelUrl = cancelUrl,
+        appLink = appLink,
+        editBillingAgreementJwt = null
+    )
+
+    /**
+     * [editBillingAgreementJwt] is sent as `edit_billing_agreement_jwt` for the View/Edit Funding Instrument flow; null
+     * or blank omits it.
+     */
+    @OptIn(ExperimentalBetaApi::class)
+    @Throws(JSONException::class)
+    @Suppress("LongMethod", "CyclomaticComplexMethod")
+    internal fun createRequestBody(
+        configuration: Configuration?,
+        authorization: Authorization?,
+        successUrl: String?,
+        cancelUrl: String?,
+        appLink: String?,
+        editBillingAgreementJwt: String?
     ): String {
         val parameters = JSONObject()
             .put(RETURN_URL_KEY, successUrl)
@@ -148,6 +169,8 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         } else {
             parameters.put(TOKENIZATION_KEY, authorization?.bearer)
         }
+
+        editBillingAgreementJwt?.takeIf { it.isNotBlank() }?.let { parameters.put(EDIT_BILLING_AGREEMENT_JWT_KEY, it) }
 
         if (shouldRequestBillingAgreement) {
             parameters.put(REQUEST_BILLING_AGREEMENT_KEY, true)

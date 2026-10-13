@@ -2,6 +2,7 @@ package com.braintreepayments.api.core
 
 import android.util.Base64
 import androidx.annotation.RestrictTo
+import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -22,6 +23,12 @@ class ClientToken @Throws(InvalidArgumentException::class) internal constructor(
     override val configUrl: String
     override val bearer: String
 
+    /**
+     * The payment method ID JWT carried by the client token, used by the View/Edit Funding Instrument flow. Null when
+     * absent or blank.
+     */
+    val paymentMethodIdJwt: String?
+
     internal val authorizationFingerprint: String
     internal val customerId: String?
 
@@ -33,6 +40,8 @@ class ClientToken @Throws(InvalidArgumentException::class) internal constructor(
             authorizationFingerprint = jsonObject.getString(AUTHORIZATION_FINGERPRINT_KEY)
             bearer = authorizationFingerprint
             customerId = parseCustomerId(authorizationFingerprint)
+            // Missing, null or blank means no JWT; it never invalidates the token.
+            paymentMethodIdJwt = Json.optString(jsonObject, PAYMENT_METHOD_ID_JWT_KEY, null)?.takeIf { it.isNotBlank() }
         } catch (e: NullPointerException) {
             throw InvalidArgumentException("Client token was invalid")
         } catch (e: JSONException) {
@@ -45,6 +54,7 @@ class ClientToken @Throws(InvalidArgumentException::class) internal constructor(
             "([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)"
         private const val CONFIG_URL_KEY = "configUrl"
         private const val AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint"
+        private const val PAYMENT_METHOD_ID_JWT_KEY = "paymentMethodIdJwt"
 
         private fun parseCustomerId(authorizationFingerprint: String?): String? {
             val result = authorizationFingerprint?.let { fingerPrint ->

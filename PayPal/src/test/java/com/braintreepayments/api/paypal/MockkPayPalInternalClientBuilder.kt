@@ -34,7 +34,8 @@ class MockkPayPalInternalClientBuilder {
             payPalInternalClient.sendRequest(
                 any<Context>(),
                 any<PayPalRequest>(),
-                any<Configuration>()
+                any<Configuration>(),
+                any<Boolean>()
             )
         } answers {
             successResponse?.let { return@answers it }

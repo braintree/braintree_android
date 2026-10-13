@@ -3,6 +3,7 @@ package com.braintreepayments.api.paypal
 import android.net.Uri
 import android.os.Parcel
 import com.braintreepayments.api.core.Authorization
+import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.PostalAddress
@@ -288,6 +289,84 @@ class PayPalCheckoutRequestUnitTest {
         )
 
         assertTrue(requestBody.contains("\"shopper_session_id\":" + "\"shopper-insights-id\""))
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody and sets edit_billing_agreement_jwt when an editBillingAgreementJwt is passed`() {
+        val request = PayPalCheckoutRequest("1.00", true)
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<ClientToken>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null,
+            editBillingAgreementJwt = "edit-jwt"
+        )
+
+        assertEquals("edit-jwt", JSONObject(requestBody).getString("edit_billing_agreement_jwt"))
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `createRequestBody omits edit_billing_agreement_jwt when the editBillingAgreementJwt is blank`() {
+        val request = PayPalCheckoutRequest("1.00", true)
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<ClientToken>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null,
+            editBillingAgreementJwt = "  "
+        )
+
+        assertFalse(JSONObject(requestBody).has("edit_billing_agreement_jwt"))
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `the public createRequestBody never sends edit_billing_agreement_jwt`() {
+        val request = PayPalCheckoutRequest("1.00", true)
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<ClientToken>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        assertFalse(JSONObject(requestBody).has("edit_billing_agreement_jwt"))
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `createRequestBody does not modify the request, so a reuse without a jwt omits it`() {
+        val request = PayPalCheckoutRequest("1.00", true)
+        request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<ClientToken>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null,
+            editBillingAgreementJwt = "edit-jwt"
+        )
+
+        val reusedRequestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<ClientToken>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        assertFalse(JSONObject(reusedRequestBody).has("edit_billing_agreement_jwt"))
     }
 
     @Test
