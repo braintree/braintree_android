@@ -68,6 +68,7 @@
     <string name="google_pay_require_email">Require Email Address</string>
     <string name="google_pay_require_email_summary">Require email address from the user</string>
     <string name="paypal">PayPal</string>
+    <string name="paypal_pay_later">PayPal Pay Later</string>
     <string name="paypal_use_hardcoded_configuration">Use Hardcoded Configuration</string>
     <string name="paypal_use_hardcoded_configuration_summary">Use the configuration included in the PayPal SDK instead of downloading new configuration</string>
     <string name="paypal_request_address_scope">Request Address Scope</string>
