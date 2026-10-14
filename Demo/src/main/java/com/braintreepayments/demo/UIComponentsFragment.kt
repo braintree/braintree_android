@@ -248,7 +248,7 @@ class UIComponentsFragment : BaseFragment() {
         // PayPal or PayPal Pay Later flow after returning to app
         val pendingRequest = getPayPalPendingRequest()
         if (pendingRequest != null) {
-            val callback = PayPalTokenizeCallback { payPalResult: PayPalResult? ->
+            val callback = PayPalTokenizeCallback { payPalResult ->
                 when (payPalResult) {
                     is PayPalResult.Success -> handlePayPalResult(payPalResult.nonce)
                     is PayPalResult.Cancel ->
