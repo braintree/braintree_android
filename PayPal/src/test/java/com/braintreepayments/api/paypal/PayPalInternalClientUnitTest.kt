@@ -1212,4 +1212,74 @@ class PayPalInternalClientUnitTest {
             val actual = JSONObject(slot.captured)
             assertFalse(actual.has("app_switch_context"))
         }
+
+    @Test
+    fun `sendRequest with editBillingAgreement sends the client token's payment method ID JWT`() =
+        runTest(testDispatcher) {
+            every { clientToken.bearer } returns "client-token-bearer"
+            every { clientToken.paymentMethodIdJwt } returns "edit-jwt"
+            every { merchantRepository.authorization } returns clientToken
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+
+            sut.sendRequest(context, PayPalCheckoutRequest("1.00", true), configuration, editBillingAgreement = true)
+
+            assertEquals("edit-jwt", JSONObject(slot.captured).getString("edit_billing_agreement_jwt"))
+        }
+
+    @Test
+    fun `sendRequest without editBillingAgreement omits edit_billing_agreement_jwt`() =
+        runTest(testDispatcher) {
+            every { clientToken.bearer } returns "client-token-bearer"
+            every { clientToken.paymentMethodIdJwt } returns "edit-jwt"
+            every { merchantRepository.authorization } returns clientToken
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+
+            sut.sendRequest(context, PayPalCheckoutRequest("1.00", true), configuration)
+
+            assertFalse(JSONObject(slot.captured).has("edit_billing_agreement_jwt"))
+        }
+
+    @Test
+    fun `sendRequest with editBillingAgreement omits the jwt when the client token has none`() =
+        runTest(testDispatcher) {
+            every { clientToken.bearer } returns "client-token-bearer"
+            every { clientToken.paymentMethodIdJwt } returns null
+            every { merchantRepository.authorization } returns clientToken
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+
+            sut.sendRequest(context, PayPalCheckoutRequest("1.00", true), configuration, editBillingAgreement = true)
+
+            assertFalse(JSONObject(slot.captured).has("edit_billing_agreement_jwt"))
+        }
+
+    @Test
+    fun `sendRequest with editBillingAgreement omits the jwt for a tokenization key`() =
+        runTest(testDispatcher) {
+            every { tokenizationKey.bearer } returns "tokenization-key-bearer"
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+            // createSutWithMocks defaults the authorization to the client token, so override it afterwards.
+            every { merchantRepository.authorization } returns tokenizationKey
+
+            sut.sendRequest(context, PayPalCheckoutRequest("1.00", true), configuration, editBillingAgreement = true)
+
+            assertFalse(JSONObject(slot.captured).has("edit_billing_agreement_jwt"))
+        }
+
+    @Test
+    fun `sendRequest for a vault request never sends the edit jwt`() =
+        runTest(testDispatcher) {
+            every { clientToken.bearer } returns "client-token-bearer"
+            every { clientToken.paymentMethodIdJwt } returns "edit-jwt"
+            every { merchantRepository.authorization } returns clientToken
+            val slot = slot<String>()
+            val sut = createSutWithMocks(captureRequestBody = slot)
+
+            sut.sendRequest(context, PayPalVaultRequest(true), configuration, editBillingAgreement = true)
+
+            assertFalse(JSONObject(slot.captured).has("edit_billing_agreement_jwt"))
+        }
 }
