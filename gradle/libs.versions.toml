@@ -28,7 +28,7 @@ mockito = "5.7.0"
 jsonAssert = "1.5.1"
 mockk = "1.13.8"
 detekt = "1.23.6"
-dokka = "1.9.10"
+dokka = "2.3.0-Beta"
 okhttp = "4.12.0"
 
 # Demo App

@@ -45,7 +45,7 @@ detekt/                 # Static analysis configuration
 ./gradlew :Card:build
 
 # Generate API docs (Dokka)
-./gradlew dokkaHtmlMultiModule
+./gradlew dokkaGeneratePublicationHtml
 ```
 
 Open the project root in Android Studio. No separate setup step is needed — Gradle handles all dependency resolution.

@@ -317,7 +317,7 @@ jobs:
           git commit -am 'Prepare for development'
           git push origin ${GITHUB_REF_NAME} "${RELEASE_VERSION}"
       - name: Generate Reference Docs
-        run: ./gradlew dokkaHtmlMultiModule
+        run: ./gradlew dokkaGeneratePublicationHtml
       - name: Publish Reference Docs
         run: |
           set -euo pipefail

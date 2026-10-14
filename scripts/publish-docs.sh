@@ -16,7 +16,7 @@ DOCS_SOURCE="${REPO_ROOT}/build/dokkaDocs"
 WORKTREE_DIR="$(dirname "${REPO_ROOT}")/$(basename "${REPO_ROOT}")-${BRANCH}"
 
 if [ ! -d "${DOCS_SOURCE}" ]; then
-  echo "No generated docs found at ${DOCS_SOURCE}. Run ./gradlew dokkaHtmlMultiModule first." >&2
+  echo "No generated docs found at ${DOCS_SOURCE}. Run ./gradlew dokkaGeneratePublicationHtml first." >&2
   exit 1
 fi
 
