@@ -31,7 +31,9 @@ internal class PaymentActionsService(
         return try {
             braintreeClient
                 .sendGraphQLPOST(buildSetPaymentActionPaymentMethodQuery(paymentMethod))
-                .toPaymentActionServiceResult()
+                .toPaymentActionServiceResult { data ->
+                    data.getJSONObject(SET_PAYMENT_ACTION_PAYMENT_METHOD_KEY).getJSONObject(PAYMENT_ACTION_KEY)
+                }
         } catch (exception: Exception) {
             if (exception is CancellationException) throw exception
             PaymentActionServiceResult.Failure(exception)
@@ -39,12 +41,48 @@ internal class PaymentActionsService(
     }
 
     /**
-     * Fetches the current state of a payment action.
+     * Self-fetches the current state of the Payment Action scoped to this client's authorization.
      *
-     * Stubbed for now — the GraphQL query for fetching a payment action by id is not yet defined.
+     * On success returns a [PaymentActionServiceResult.Success] wrapping the raw [PaymentAction].
+     * On failure returns a [PaymentActionServiceResult.Failure] wrapping an [Exception].
+     *
+     * @return a [PaymentActionServiceResult] wrapper denoting success or failure.
      */
     suspend fun getPaymentAction(): PaymentActionServiceResult {
-        throw NotImplementedError("getPaymentAction is not yet implemented")
+        return try {
+            braintreeClient
+                .sendGraphQLPOST(buildGetPaymentActionQuery())
+                .toPaymentActionServiceResult { data -> data.getJSONObject(PAYMENT_ACTION_KEY) }
+        } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
+            PaymentActionServiceResult.Failure(exception)
+        }
+    }
+
+    /**
+     * Signals that the customer has completed the current `nextAction` (e.g. device data collection
+     * or a 3D Secure challenge), advancing the Payment Action to its next state.
+     *
+     * On success returns a [PaymentActionServiceResult.Success] wrapping the raw [PaymentAction],
+     * which may carry a new `nextAction` if another customer action is required.
+     * On failure returns a [PaymentActionServiceResult.Failure] wrapping an [Exception].
+     *
+     * @param completedAction the completed action's payload — mirrors the GraphQL `@oneOf` input.
+     * @return a [PaymentActionServiceResult] wrapper denoting success or failure.
+     */
+    suspend fun signalCustomerActionComplete(
+        completedAction: CustomerCompletedAction,
+    ): PaymentActionServiceResult {
+        return try {
+            braintreeClient
+                .sendGraphQLPOST(buildSignalCustomerActionCompleteQuery(completedAction))
+                .toPaymentActionServiceResult { data ->
+                    data.getJSONObject(SIGNAL_CUSTOMER_ACTION_COMPLETE_KEY).getJSONObject(PAYMENT_ACTION_KEY)
+                }
+        } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
+            PaymentActionServiceResult.Failure(exception)
+        }
     }
 
     private fun buildSetPaymentActionPaymentMethodQuery(paymentMethod: PaymentActionRequest): JSONObject {
@@ -66,7 +104,62 @@ internal class PaymentActionsService(
             .put(GraphQLConstants.Keys.VARIABLES, variables)
     }
 
-    private fun String.toPaymentActionServiceResult(): PaymentActionServiceResult {
+    /**
+     * The Payment Action is resolved from the request's auth fingerprint — the query takes no
+     * explicit `id` argument, matching how [PaymentActionsClient] is scoped to a single Payment
+     * Action per instance's authorization.
+     */
+    private fun buildGetPaymentActionQuery(): JSONObject {
+        val query = """
+            query GetPaymentAction {
+                paymentAction {
+                    ${PaymentActionsGraphQLConstants.PAYMENT_ACTION_SELECTION_SET.trimIndent()}
+                }
+            }
+        """.trimIndent()
+
+        return JSONObject()
+            .put(GraphQLConstants.Keys.QUERY, query)
+            .put(GraphQLConstants.Keys.VARIABLES, JSONObject())
+    }
+
+    /**
+     * `paymentActionId` is intentionally omitted — the client always calls this under a
+     * payment-action-scoped auth fingerprint, which the server uses to resolve the Payment Action
+     * without an explicit id.
+     */
+    private fun buildSignalCustomerActionCompleteQuery(completedAction: CustomerCompletedAction): JSONObject {
+        val input = JSONObject().put(
+            PaymentActionsGraphQLConstants.Keys.CUSTOMER_ACTION_COMPLETE,
+            completedAction.toGraphQLVariables(),
+        )
+        val variables = JSONObject().put(GraphQLConstants.Keys.INPUT, input)
+
+        val mutation = """
+            mutation SignalCustomerActionComplete(${'$'}input: SignalCustomerActionCompleteInput!) {
+                signalCustomerActionComplete(input: ${'$'}input) {
+                    paymentAction {
+                        ${PaymentActionsGraphQLConstants.PAYMENT_ACTION_SELECTION_SET.trimIndent()}
+                    }
+                }
+            }
+        """.trimIndent()
+
+        return JSONObject()
+            .put(GraphQLConstants.Keys.QUERY, mutation)
+            .put(GraphQLConstants.Keys.VARIABLES, variables)
+    }
+
+    /**
+     * Parses a `data` -> ... -> `paymentAction` GraphQL response shared by `setPaymentActionPaymentMethod`,
+     * `getPaymentAction`, and `signalCustomerActionComplete`.
+     *
+     * @param extractPaymentAction navigates from the top-level `data` object to the operation-specific
+     *   `paymentAction` object, since each operation nests it under a different parent key.
+     */
+    private fun String.toPaymentActionServiceResult(
+        extractPaymentAction: (JSONObject) -> JSONObject,
+    ): PaymentActionServiceResult {
         return try {
             val responseJson = JSONObject(this)
             if (responseJson.has(GraphQLConstants.Keys.ERRORS) &&
@@ -75,20 +168,33 @@ internal class PaymentActionsService(
                 return PaymentActionServiceResult.Failure(BraintreeException(responseJson.toString()))
             }
 
-            responseJson
-                .getJSONObject(DATA_KEY)
-                .getJSONObject(SET_PAYMENT_ACTION_PAYMENT_METHOD_KEY)
-                .getJSONObject(PAYMENT_ACTION_KEY)
-                .let { paymentActionJson ->
-                    PaymentActionServiceResult.Success(
-                        PaymentAction(
-                            id = paymentActionJson.getString(ID_KEY),
-                            status = paymentActionJson.getString(STATUS_KEY).toPaymentActionStatus()
-                        )
-                    )
-                }
+            val paymentActionJson = extractPaymentAction(responseJson.getJSONObject(DATA_KEY))
+            PaymentActionServiceResult.Success(paymentActionJson.toPaymentAction())
         } catch (jex: JSONException) {
             PaymentActionServiceResult.Failure(jex)
+        }
+    }
+
+    private fun JSONObject.toPaymentAction(): PaymentAction {
+        return PaymentAction(
+            id = getString(ID_KEY),
+            status = getString(STATUS_KEY).toPaymentActionStatus(),
+            nextAction = optJSONObject(NEXT_ACTION_KEY)?.toPaymentActionNextAction(),
+        )
+    }
+
+    private fun JSONObject.toPaymentActionNextAction(): PaymentActionNextAction {
+        val typeName = optString(TYPENAME_KEY).takeIf { it.isNotEmpty() }
+        return when (typeName) {
+            PaymentActionsGraphQLConstants.TypeNames.THREE_D_SECURE_AUTHENTICATION ->
+                PaymentActionNextAction.ThreeDSecureAuthentication(bin = getString(BIN_KEY))
+            PaymentActionsGraphQLConstants.TypeNames.THREE_D_SECURE_CHALLENGE ->
+                PaymentActionNextAction.ThreeDSecureChallenge(
+                    acsUrl = getString(ACS_URL_KEY),
+                    acsRenderingType = optString(ACS_RENDERING_TYPE_KEY).takeIf { it.isNotEmpty() },
+                    challengePayload = getString(CHALLENGE_PAYLOAD_KEY),
+                )
+            else -> PaymentActionNextAction.Unrecognized(typeName)
         }
     }
 
@@ -104,8 +210,15 @@ internal class PaymentActionsService(
         private const val PAYMENT_METHOD_KEY = "paymentMethod"
         private const val DATA_KEY = "data"
         private const val SET_PAYMENT_ACTION_PAYMENT_METHOD_KEY = "setPaymentActionPaymentMethod"
+        private const val SIGNAL_CUSTOMER_ACTION_COMPLETE_KEY = "signalCustomerActionComplete"
         private const val PAYMENT_ACTION_KEY = "paymentAction"
         private const val ID_KEY = "id"
         private const val STATUS_KEY = "status"
+        private const val NEXT_ACTION_KEY = "nextAction"
+        private const val TYPENAME_KEY = "__typename"
+        private const val BIN_KEY = "bin"
+        private const val ACS_URL_KEY = "acsUrl"
+        private const val ACS_RENDERING_TYPE_KEY = "acsRenderingType"
+        private const val CHALLENGE_PAYLOAD_KEY = "challengePayload"
     }
 }
