@@ -11,8 +11,6 @@ import android.util.AttributeSet
 import androidx.activity.result.ActivityResultCaller
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
-import com.braintreepayments.api.core.AnalyticsClient
-import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
@@ -22,7 +20,6 @@ import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayLaterButtonColor.Companion.fromId
-import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_XML_VIEW
 
 /**
  * A customizable PayPal Pay Later branded button to initiate the PayPal Pay Later flow.
@@ -117,12 +114,6 @@ class PayLaterButton @JvmOverloads constructor(
             appLinkReturnUrl = appLinkReturnUrl,
             deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
         )
-
-        val analyticsClient = AnalyticsClient.lazyInstance.value
-        analyticsClient.sendEvent(
-            UIComponentsAnalytics.PAY_LATER_BUTTON_PRESENTED,
-            AnalyticsEventParams(uiType = UI_TYPE_XML_VIEW)
-        )
     }
 
     /**
@@ -173,11 +164,6 @@ class PayLaterButton @JvmOverloads constructor(
      */
     private fun completePayPalFlow(paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch) {
         getActivity()?.let { activity ->
-            val analyticsClient = AnalyticsClient.lazyInstance.value
-            analyticsClient.sendEvent(
-                UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
-                AnalyticsEventParams(uiType = UI_TYPE_XML_VIEW)
-            )
             val payPalPendingRequest = payPalLauncher.launch(
                 activity = activity,
                 paymentAuthRequest = paymentAuthRequest
