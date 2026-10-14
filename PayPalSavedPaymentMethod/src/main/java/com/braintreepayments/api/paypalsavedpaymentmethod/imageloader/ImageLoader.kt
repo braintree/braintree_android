@@ -92,7 +92,12 @@ internal class ImageLoader internal constructor(
             imageView.setImageBitmap(cached)
             return
         }
-        placeholder?.let { imageView.setImageResource(it) }
+        // Clear any stale image (e.g. from a recycled RecyclerView row) when no placeholder is given.
+        if (placeholder != null) {
+            imageView.setImageResource(placeholder)
+        } else {
+            imageView.setImageDrawable(null)
+        }
         if (validUrl == null) return
 
         // Remove-then-add keeps exactly one listener per view, however many times the view is re-bound.
@@ -183,9 +188,16 @@ internal class ImageLoader internal constructor(
     private class ViewRequest(val url: String, val job: Job)
 
     companion object {
+        // 4 MB keeps a reasonable number of small FI icons resident without pressuring low-memory devices.
         private const val DEFAULT_CACHE_SIZE_BYTES = 4 * 1024 * 1024
+
+        // Bounds concurrent BitmapFactory decodes so many icons loading at once can't spike memory/CPU.
         private const val DEFAULT_MAX_PARALLEL_DECODES = 4
+
+        // FI icons never render larger than this in any current layout; decoding beyond it wastes memory.
         private const val MAX_DECODE_DIMENSION_PX = 128
+
+        // Generous ceiling for a small icon; guards against an unexpectedly large or malicious response.
         private const val MAX_IMAGE_BYTES = 1024 * 1024L
 
         private fun createMemoryCache() = object : LruCache<String, Bitmap>(DEFAULT_CACHE_SIZE_BYTES) {
