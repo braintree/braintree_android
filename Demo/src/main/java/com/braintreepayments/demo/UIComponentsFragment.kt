@@ -171,7 +171,6 @@ class UIComponentsFragment : BaseFragment() {
     }
 
     private fun setupPayLaterButton() {
-        // The PayPal Pay Later button sets shouldOfferPayLater to true on the request
         val payPalCheckoutRequest = PayPalRequestFactory.createPayPalCheckoutRequest(
             /* context = */ requireContext(),
             /* amount = */ "10.0",
@@ -180,7 +179,7 @@ class UIComponentsFragment : BaseFragment() {
             /* buyerPhoneNationalNumber = */ null,
             /* isContactInformationEnabled = */ false,
             /* shopperInsightsSessionId = */ null,
-            /* offerPayLater = */ false,
+            /* offerPayLater = */ true,
             /* offerCredit = */ false,
             /* isAmountBreakdownEnabled = */ false,
             /* campaignId = */ null
