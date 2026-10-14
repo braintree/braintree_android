@@ -13,6 +13,9 @@ import com.braintreepayments.api.core.PaymentMethodNonce
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalRequest
 import com.braintreepayments.api.paypal.PayPalResult
+import com.braintreepayments.api.paypal.PayPalTokenizeCallback
+import com.braintreepayments.api.uicomponents.PayLaterButton
+import com.braintreepayments.api.uicomponents.PayLaterButtonColor
 import com.braintreepayments.api.uicomponents.PayPalButton
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.PayPalLaunchCallback
@@ -34,6 +37,12 @@ import com.google.android.material.button.MaterialButtonToggleGroup
 class UIComponentsFragment : BaseFragment() {
     private lateinit var payPalButton: PayPalButton
     private lateinit var payPalToggleGroup: MaterialButtonToggleGroup
+    private lateinit var payLaterButton: PayLaterButton
+    private lateinit var payLaterToggleGroup: MaterialButtonToggleGroup
+
+    // The PayPal and PayPal Pay Later buttons share one pending request slot. This tracks which button launched the
+    // flow so the return to app is handled by that button.
+    private var isPayLaterFlowInProgress = false
     private lateinit var venmoButton: VenmoButton
     private lateinit var venmoRequest: VenmoRequest
     private lateinit var venmoToggleGroup: MaterialButtonToggleGroup
@@ -46,12 +55,15 @@ class UIComponentsFragment : BaseFragment() {
         val view = inflater.inflate(R.layout.fragment_ui_components, container, false)
         payPalButton = view.findViewById(R.id.pp_payment_button)
         payPalToggleGroup = view.findViewById(R.id.pp_button_toggle_group)
+        payLaterButton = view.findViewById(R.id.pay_later_payment_button)
+        payLaterToggleGroup = view.findViewById(R.id.pay_later_button_toggle_group)
         venmoButton = view.findViewById(R.id.venmo_payment_button)
         venmoToggleGroup = view.findViewById(R.id.venmo_button_toggle_group)
 
         setupCardFields(view)
         setupColorToggles()
         setupPayPalButton()
+        setupPayLaterButton()
         setupVenmoButton()
         return view
     }
@@ -105,6 +117,15 @@ class UIComponentsFragment : BaseFragment() {
                 }
             }
         }
+        payLaterToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.button_pay_later_blue -> payLaterButton.setButtonColor(PayLaterButtonColor.Blue)
+                    R.id.button_pay_later_black -> payLaterButton.setButtonColor(PayLaterButtonColor.Black)
+                    R.id.button_pay_later_white -> payLaterButton.setButtonColor(PayLaterButtonColor.White)
+                }
+            }
+        }
         venmoToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
                 when (checkedId) {
@@ -140,7 +161,44 @@ class UIComponentsFragment : BaseFragment() {
         payPalButton.setPayPalRequest(payPalRequest)
         payPalButton.payPalLaunchCallback = PayPalLaunchCallback { request: PayPalPendingRequest ->
             when (request) {
-                is PayPalPendingRequest.Started -> storePayPalPendingRequest(request)
+                is PayPalPendingRequest.Started -> {
+                    isPayLaterFlowInProgress = false
+                    storePayPalPendingRequest(request)
+                }
+                is PayPalPendingRequest.Failure -> handleError(request.error)
+            }
+        }
+    }
+
+    private fun setupPayLaterButton() {
+        // The PayPal Pay Later button sets shouldOfferPayLater to true on the request
+        val payPalCheckoutRequest = PayPalRequestFactory.createPayPalCheckoutRequest(
+            /* context = */ requireContext(),
+            /* amount = */ "10.0",
+            /* buyerEmailAddress = */ null,
+            /* buyerPhoneCountryCode = */ null,
+            /* buyerPhoneNationalNumber = */ null,
+            /* isContactInformationEnabled = */ false,
+            /* shopperInsightsSessionId = */ null,
+            /* offerPayLater = */ false,
+            /* offerCredit = */ false,
+            /* isAmountBreakdownEnabled = */ false,
+            /* campaignId = */ null
+        )
+
+        payLaterButton.initialize(
+            this,
+            super.getAuthStringArg(),
+            "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
+            "com.braintreepayments.demo.braintree"
+        )
+        payLaterButton.setPayPalRequest(payPalCheckoutRequest)
+        payLaterButton.payPalLaunchCallback = PayPalLaunchCallback { request: PayPalPendingRequest ->
+            when (request) {
+                is PayPalPendingRequest.Started -> {
+                    isPayLaterFlowInProgress = true
+                    storePayPalPendingRequest(request)
+                }
                 is PayPalPendingRequest.Failure -> handleError(request.error)
             }
         }
@@ -187,19 +245,24 @@ class UIComponentsFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
 
-        // PayPal flow after returning to app
+        // PayPal or PayPal Pay Later flow after returning to app
         val pendingRequest = getPayPalPendingRequest()
         if (pendingRequest != null) {
-            payPalButton.handleReturnToApp(
-                pendingRequest, requireActivity().intent) { payPalResult: PayPalResult? ->
-                    when (payPalResult) {
-                        is PayPalResult.Success -> handlePayPalResult(payPalResult.nonce)
-                        is PayPalResult.Cancel ->
-                            handleError(Exception("User did not complete payment flow"))
-                        is PayPalResult.Failure -> handleError(payPalResult.error)
-                        else -> Unit
-                    }
+            val callback = PayPalTokenizeCallback { payPalResult: PayPalResult? ->
+                when (payPalResult) {
+                    is PayPalResult.Success -> handlePayPalResult(payPalResult.nonce)
+                    is PayPalResult.Cancel ->
+                        handleError(Exception("User did not complete payment flow"))
+                    is PayPalResult.Failure -> handleError(payPalResult.error)
+                    else -> Unit
                 }
+            }
+            if (isPayLaterFlowInProgress) {
+                payLaterButton.handleReturnToApp(pendingRequest, requireActivity().intent, callback)
+            } else {
+                payPalButton.handleReturnToApp(pendingRequest, requireActivity().intent, callback)
+            }
+            isPayLaterFlowInProgress = false
             clearPayPalPendingRequest()
             requireActivity().intent.data = null
         }
