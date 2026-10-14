@@ -27,11 +27,16 @@ import java.lang.ref.WeakReference
 import java.util.Collections
 import java.util.WeakHashMap
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Loads funding-instrument icons into memory, de-duplicating concurrent requests for the same URL and bounding how
  * many bitmaps are decoded at once. Bytes are fetched through the SDK's pinned [HttpClient]. Dependencies are
  * injectable for tests; production code uses [getInstance].
+ *
+ * Decodes raster formats only (PNG, JPEG, etc.) via [android.graphics.BitmapFactory]. There is currently no image
+ * loader in Braintree Native, and this custom implementation does not support SVG, matching standard Android image
+ * loading in general (BitmapFactory, and Coil/Glide without an SVG add-on).
  */
 internal class ImageLoader internal constructor(
     private val httpClient: HttpClient = HttpClient(),
@@ -78,7 +83,11 @@ internal class ImageLoader internal constructor(
         return inFlightRequest(url).await()
     }
 
-    /** Binds [url] into [imageView], showing [placeholder] until the image is ready, or permanently if it fails. */
+    /**
+     * Binds [url] into [imageView], showing [placeholder] until the image is ready, or permanently if it fails.
+     *
+     * Must be called on the main thread; it updates [imageView] directly.
+     */
     fun load(
         url: String?,
         imageView: ImageView,
@@ -106,6 +115,7 @@ internal class ImageLoader internal constructor(
         startViewRequest(imageView, validUrl)
     }
 
+    /** Cancels any pending load for [imageView]. Must be called on the main thread. */
     fun cancel(imageView: ImageView) {
         // Symmetric with the add in load(): once a request is fully cancelled there is nothing left to resume on
         // a future re-attach, so the view shouldn't keep carrying the listener.
@@ -135,6 +145,9 @@ internal class ImageLoader internal constructor(
                 null // keep the placeholder; no automatic retry
             } catch (ignored: IllegalArgumentException) {
                 null // malformed URL rejected before any request; see the URL validation TODO in load()
+            } catch (ignored: Exception) {
+                if (ignored is CancellationException) throw ignored
+                null // unexpected failure (e.g. a malformed response the decoder can't handle); keep the placeholder
             }
             val view = target.get() ?: return@launch
             // Drop the result if the view has been re-bound to a different request since this one started.
