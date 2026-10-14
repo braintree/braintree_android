@@ -170,7 +170,7 @@ class UIComponentsFragment : BaseFragment() {
         }
     }
 
-    private fun setupPayLaterButton() {
+    private fun setupPayLaterButton() { 
         val payPalCheckoutRequest = PayPalRequestFactory.createPayPalCheckoutRequest(
             /* context = */ requireContext(),
             /* amount = */ "10.0",
