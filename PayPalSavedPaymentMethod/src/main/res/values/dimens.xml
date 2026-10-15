@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Fixed component dimensions, not merchant-configurable. -->
+    <dimen name="paypal_saved_payment_method_placeholder_height">16dp</dimen>
+    <dimen name="paypal_saved_payment_method_placeholder_corner_radius">4dp</dimen>
+    <dimen name="paypal_saved_payment_method_placeholder_trailing_gap">40dp</dimen>
+    <dimen name="paypal_saved_payment_method_loading_dialog_spinner_size">48dp</dimen>
+    <dimen name="paypal_saved_payment_method_loading_dialog_spinner_stroke_width">2dp</dimen>
+</resources>
