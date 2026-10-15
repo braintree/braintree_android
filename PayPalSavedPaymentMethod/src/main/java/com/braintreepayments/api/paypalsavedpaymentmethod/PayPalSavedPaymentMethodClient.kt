@@ -1,11 +1,17 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod
 
+import android.content.Context
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.GraphQLConstants
 import com.braintreepayments.api.core.MerchantRepository
+import com.braintreepayments.api.paypal.PayPalCheckoutRequest
+import com.braintreepayments.api.paypal.PayPalClient
+import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
+import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
+import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodSummary
 import com.braintreepayments.api.sharedutils.Json
@@ -13,7 +19,8 @@ import org.json.JSONObject
 
 /**
  * Fetches what to display for a buyer's vaulted PayPal payment method: the buyer's saved funding instrument, and the
- * Pay Later message that accompanies it.
+ * Pay Later message that accompanies it. Also runs the PayPal side of the edit flow; the views launch the paysheet
+ * with `PayPalLauncher` between [createEditFundingInstrumentAuthRequest] and [tokenize].
  *
  * Requires a client token generated with the buyer's payment method ID. A tokenization key carries no
  * `paymentMethodIdJwt`, so the saved funding instrument cannot be resolved.
@@ -21,8 +28,40 @@ import org.json.JSONObject
 @OptIn(ExperimentalBetaApi::class)
 internal class PayPalSavedPaymentMethodClient internal constructor(
     private val braintreeClient: BraintreeClient,
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val payPalClient: PayPalClient
 ) {
+
+    /**
+     * Starts the edit flow by creating the PayPal auth request, seeded with the buyer's billing agreement. Launch it
+     * with `PayPalLauncher`, then pass the result to [tokenize].
+     *
+     * @param context an Android Context.
+     * @param payPalCheckoutRequest the checkout the edited funding instrument applies to.
+     * @return the [PayPalPaymentAuthRequest] to launch, or a failure from PayPal.
+     * @throws PayPalSavedPaymentMethodException.InvalidAuthorization if the authorization is not a client token.
+     * @throws PayPalSavedPaymentMethodException.MissingPaymentMethodIdJwt if the client token carries no payment method
+     * ID JWT. Both are thrown before any request, so the paysheet never opens as a regular checkout.
+     */
+    suspend fun createEditFundingInstrumentAuthRequest(
+        context: Context,
+        payPalCheckoutRequest: PayPalCheckoutRequest
+    ): PayPalPaymentAuthRequest {
+        if (requireClientToken().paymentMethodIdJwt == null) {
+            throw PayPalSavedPaymentMethodException.MissingPaymentMethodIdJwt()
+        }
+        return payPalClient.createPaymentAuthRequestForEditFi(context, payPalCheckoutRequest)
+    }
+
+    /**
+     * Tokenizes the PayPal account once the buyer returns from the edit flow. On success, the nonce's `paymentId` is
+     * the approved order ID to pass to [fetchPaymentMethod] with
+     * [PayPalFundingInstrumentFetchType.BUYER_UPDATED_BILLING_AGREEMENT].
+     *
+     * @param paymentAuthResult the success returned by `PayPalLauncher.handleReturnToApp`.
+     */
+    suspend fun tokenize(paymentAuthResult: PayPalPaymentAuthResult.Success): PayPalResult =
+        payPalClient.tokenize(paymentAuthResult)
 
     /**
      * Fetches the funding instrument details for a vaulted PayPal payment method.
