@@ -158,7 +158,7 @@ internal sealed class CustomerCompletedAction {
     /**
      * Signals that device data collection (the 3D Secure authentication step) has completed.
      */
-    class DeviceDataCollection(val dfReferenceId: String) : CustomerCompletedAction() {
+    data class DeviceDataCollection(val dfReferenceId: String) : CustomerCompletedAction() {
         override fun toGraphQLVariables(): JSONObject {
             val deviceDataCollection = JSONObject()
                 .put(PaymentActionsGraphQLConstants.Keys.DF_REFERENCE_ID, dfReferenceId)
@@ -169,7 +169,7 @@ internal sealed class CustomerCompletedAction {
     /**
      * Signals that the 3D Secure challenge has completed.
      */
-    class Challenge(val cardinalAuthenticationJWT: String) : CustomerCompletedAction() {
+    data class Challenge(val cardinalAuthenticationJWT: String) : CustomerCompletedAction() {
         override fun toGraphQLVariables(): JSONObject {
             val challenge = JSONObject()
                 .put(PaymentActionsGraphQLConstants.Keys.CARDINAL_AUTHENTICATION_JWT, cardinalAuthenticationJWT)

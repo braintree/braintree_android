@@ -105,9 +105,8 @@ internal class PaymentActionsService(
     }
 
     /**
-     * The Payment Action is resolved from the request's auth fingerprint — the query takes no
-     * explicit `id` argument, matching how [PaymentActionsClient] is scoped to a single Payment
-     * Action per instance's authorization.
+     * Builds the GraphQL request body for the `GetPaymentAction` query, which self-fetches the
+     * current Payment Action using the request's auth fingerprint rather than an explicit id.
      */
     private fun buildGetPaymentActionQuery(): JSONObject {
         val query = """
@@ -124,9 +123,9 @@ internal class PaymentActionsService(
     }
 
     /**
-     * `paymentActionId` is intentionally omitted — the client always calls this under a
-     * payment-action-scoped auth fingerprint, which the server uses to resolve the Payment Action
-     * without an explicit id.
+     * Builds the GraphQL request body for the `SignalCustomerActionComplete` mutation. Omits
+     * `paymentActionId`, since the server resolves the Payment Action from the request's auth
+     * fingerprint.
      */
     private fun buildSignalCustomerActionCompleteQuery(completedAction: CustomerCompletedAction): JSONObject {
         val input = JSONObject().put(
