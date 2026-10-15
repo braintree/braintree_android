@@ -20,6 +20,7 @@ buildscript {
         classpath libs.androidx.navigation.safe.args.gradle.plugin
         classpath libs.dokka.gradle.plugin
         classpath libs.dokka.android.documentation.plugin
+        classpath libs.freemarker
     }
 }
 
@@ -137,6 +138,7 @@ dokka {
 }
 
 // Dokka V2 no longer aggregates subprojects implicitly;  must list every documented module
+// Must depend on new version of freemarker here to resolve security vulnerability
 dependencies {
     dokka project(':AmericanExpress')
     dokka project(':BraintreeCore')
@@ -150,12 +152,16 @@ dependencies {
     dokka project(':ThreeDSecure')
     dokka project(':UIComponents')
     dokka project(':Venmo')
+
+    dokkaHtmlGeneratorRuntime libs.freemarker
+    dokkaHtmlPublicationPlugin libs.freemarker
 }
 
 subprojects {
     plugins.withId('org.jetbrains.dokka') {
         dependencies {
             dokkaPlugin 'com.braintreepayments.dokka:DokkaRestrictToPlugin:1.0.0'
+            dokkaHtmlGeneratorRuntime libs.freemarker
         }
     }
 }
