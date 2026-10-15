@@ -528,7 +528,7 @@ class BraintreeClientUnitTest {
         advanceUntilIdle()
 
         coVerify {
-            configurationLoader.loadConfiguration()
+            configurationLoader.loadConfiguration(any(), any())
         }
 
         verify { analyticsClient.reportCrash(any()) }
@@ -542,7 +542,7 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
         coEvery {
-            configurationLoader.loadConfiguration()
+            configurationLoader.loadConfiguration(any(), any())
         } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
 
         val sut = createBraintreeClient(
