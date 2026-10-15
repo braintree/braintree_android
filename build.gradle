@@ -20,6 +20,7 @@ buildscript {
         classpath libs.androidx.navigation.safe.args.gradle.plugin
         classpath libs.dokka.gradle.plugin
         classpath libs.dokka.android.documentation.plugin
+        classpath libs.freemarker
     }
 }
 
@@ -128,16 +129,39 @@ subprojects {
     }
 }
 
-dokkaHtmlMultiModule.configure {
-    // generate into a gitignored build directory; scripts/publish-docs.sh publishes
-    // this to the gh-pages branch instead of committing it into main
-    outputDirectory.set(project.file("build/dokkaDocs"))
+dokka {
+    dokkaPublications.html {
+        // generate into a gitignored build directory; scripts/publish-docs.sh publishes
+        // this to the gh-pages branch instead of committing it into main
+        outputDirectory.set(project.file("build/dokkaDocs"))
+    }
+}
+
+// Dokka V2 no longer aggregates subprojects implicitly;  must list every documented module
+// Must depend on new version of freemarker here to resolve security vulnerability
+dependencies {
+    dokka project(':AmericanExpress')
+    dokka project(':BraintreeCore')
+    dokka project(':Card')
+    dokka project(':DataCollector')
+    dokka project(':GooglePay')
+    dokka project(':LocalPayment')
+    dokka project(':PayPal')
+    dokka project(':SEPADirectDebit')
+    dokka project(':ShopperInsights')
+    dokka project(':ThreeDSecure')
+    dokka project(':UIComponents')
+    dokka project(':Venmo')
+
+    dokkaHtmlGeneratorRuntime libs.freemarker
+    dokkaHtmlPublicationPlugin libs.freemarker
 }
 
 subprojects {
     plugins.withId('org.jetbrains.dokka') {
         dependencies {
-            dokkaHtmlPartialPlugin 'com.braintreepayments.dokka:DokkaRestrictToPlugin:1.0.0'
+            dokkaPlugin 'com.braintreepayments.dokka:DokkaRestrictToPlugin:1.0.0'
+            dokkaHtmlGeneratorRuntime libs.freemarker
         }
     }
 }
