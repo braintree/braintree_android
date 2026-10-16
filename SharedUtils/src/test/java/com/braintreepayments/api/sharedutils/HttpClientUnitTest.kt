@@ -6,6 +6,7 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -93,5 +94,34 @@ class HttpClientUnitTest {
     fun `when HttpClient constructor is called without parameters, default instances are created`() {
         val sut = HttpClient()
         assertNotNull(sut)
+    }
+
+    @Test
+    fun `when sendRequestForBytes is called, returns bytes and forwards maxBodyBytes`() =
+        runTest(testDispatcher) {
+        val request = mockk<OkHttpRequest>()
+        val bytes = byteArrayOf(1, 2, 3)
+
+        every { mockOkHttpClient.executeRequestForBytes(request, any()) } returns bytes
+
+        assertArrayEquals(bytes, sut.sendRequestForBytes(request, maxBodyBytes = 1024L))
+        sut.sendRequestForBytes(request)
+
+        verify { mockOkHttpClient.executeRequestForBytes(request, 1024L) }
+        verify { mockOkHttpClient.executeRequestForBytes(request, null) }
+    }
+
+    @Test
+    fun `when sendRequestForBytes fails with IOException, throws IOException`() =
+        runTest(testDispatcher) {
+        val request = mockk<OkHttpRequest>()
+
+        every { mockOkHttpClient.executeRequestForBytes(request, null) } throws java.io.IOException("Not found")
+
+        val thrownException = assertFailsWith<java.io.IOException> {
+            sut.sendRequestForBytes(request)
+        }
+
+        assertEquals("Not found", thrownException.message)
     }
 }

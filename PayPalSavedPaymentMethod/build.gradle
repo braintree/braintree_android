@@ -71,6 +71,9 @@ dependencies {
     testImplementation libs.test.parameter.injector
     testImplementation project(':TestUtils')
     testImplementation libs.coroutines.test
+    testImplementation composeBom
+    testImplementation libs.androidx.compose.ui.test.junit4
+    testImplementation libs.androidx.compose.ui.test.manifest
     debugImplementation libs.androidx.ui.tooling
 
     androidTestImplementation project(':TestUtils')
