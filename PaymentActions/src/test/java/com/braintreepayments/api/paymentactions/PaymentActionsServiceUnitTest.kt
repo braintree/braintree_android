@@ -576,7 +576,7 @@ class PaymentActionsServiceUnitTest {
             val success = result as PaymentActionServiceResult.Success
             assertEquals("pa123", success.paymentAction.id)
             assertEquals(
-                PaymentActionNextAction.ThreeDSecureAuthentication(bin = "401288"),
+                NextAction.ThreeDSecureAuthentication(bin = "401288"),
                 success.paymentAction.nextAction,
             )
         }
@@ -611,7 +611,7 @@ class PaymentActionsServiceUnitTest {
 
             val success = result as PaymentActionServiceResult.Success
             assertEquals(
-                PaymentActionNextAction.ThreeDSecureChallenge(
+                NextAction.ThreeDSecureChallenge(
                     acsUrl = "https://acs.example.com",
                     acsRenderingType = "otp",
                     challengePayload = "payload-data",
@@ -647,7 +647,7 @@ class PaymentActionsServiceUnitTest {
 
             val success = result as PaymentActionServiceResult.Success
             assertEquals(
-                PaymentActionNextAction.Unrecognized(typeName = "PaymentActionRedirectUrl"),
+                NextAction.Unrecognized(typeName = "PaymentActionRedirectUrl"),
                 success.paymentAction.nextAction,
             )
         }

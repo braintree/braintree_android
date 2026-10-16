@@ -39,7 +39,7 @@ internal object PaymentActionsGraphQLConstants {
      * regardless of payment method, so it's safe to share rather than duplicate per operation.
      *
      * `nextAction` only requests fields for the union members this SDK currently supports; others
-     * (redirect, QR code, etc.) parse safely as [PaymentActionNextAction.Unrecognized] until added.
+     * (redirect, QR code, etc.) parse safely as [NextAction.Unrecognized] until added.
      */
     const val PAYMENT_ACTION_SELECTION_SET = """
         id

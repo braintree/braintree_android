@@ -178,22 +178,22 @@ internal class PaymentActionsService(
         return PaymentAction(
             id = getString(ID_KEY),
             status = getString(STATUS_KEY).toPaymentActionStatus(),
-            nextAction = optJSONObject(NEXT_ACTION_KEY)?.toPaymentActionNextAction(),
+            nextAction = optJSONObject(NEXT_ACTION_KEY)?.toNextAction(),
         )
     }
 
-    private fun JSONObject.toPaymentActionNextAction(): PaymentActionNextAction {
+    private fun JSONObject.toNextAction(): NextAction {
         val typeName = optString(TYPENAME_KEY).takeIf { it.isNotEmpty() }
         return when (typeName) {
             PaymentActionsGraphQLConstants.TypeNames.THREE_D_SECURE_AUTHENTICATION ->
-                PaymentActionNextAction.ThreeDSecureAuthentication(bin = getString(BIN_KEY))
+                NextAction.ThreeDSecureAuthentication(bin = getString(BIN_KEY))
             PaymentActionsGraphQLConstants.TypeNames.THREE_D_SECURE_CHALLENGE ->
-                PaymentActionNextAction.ThreeDSecureChallenge(
+                NextAction.ThreeDSecureChallenge(
                     acsUrl = getString(ACS_URL_KEY),
                     acsRenderingType = optString(ACS_RENDERING_TYPE_KEY).takeIf { it.isNotEmpty() },
                     challengePayload = getString(CHALLENGE_PAYLOAD_KEY),
                 )
-            else -> PaymentActionNextAction.Unrecognized(typeName)
+            else -> NextAction.Unrecognized(typeName)
         }
     }
 

@@ -111,7 +111,7 @@ class CreditCard(
 internal data class PaymentAction(
     val id: String,
     val status: PaymentActionStatus,
-    val nextAction: PaymentActionNextAction? = null,
+    val nextAction: NextAction? = null,
 )
 
 /**
@@ -122,12 +122,12 @@ internal data class PaymentAction(
  * to [Unrecognized] rather than failing the response, since the schema is additive and new action
  * types (redirect, QR code, CVV input, etc.) may be returned before this SDK supports them.
  */
-internal sealed class PaymentActionNextAction {
+internal sealed class NextAction {
 
     /**
      * Device data collection must be performed; [bin] drives method selection (e.g. Cardinal setup).
      */
-    data class ThreeDSecureAuthentication(val bin: String) : PaymentActionNextAction()
+    data class ThreeDSecureAuthentication(val bin: String) : NextAction()
 
     /**
      * A 3D Secure challenge must be presented to the customer.
@@ -136,12 +136,12 @@ internal sealed class PaymentActionNextAction {
         val acsUrl: String,
         val acsRenderingType: String?,
         val challengePayload: String,
-    ) : PaymentActionNextAction()
+    ) : NextAction()
 
     /**
      * A `nextAction` whose `__typename` was not recognized by this SDK version.
      */
-    data class Unrecognized(val typeName: String?) : PaymentActionNextAction()
+    data class Unrecognized(val typeName: String?) : NextAction()
 }
 
 /**
