@@ -180,11 +180,32 @@ class OkHttpSynchronousHttpClientTest {
         }
     }
 
-    private fun givenBytesResponse(isSuccessful: Boolean, body: ResponseBody?) {
+    @Test
+    fun `when an https request is redirected to http, executeRequestForBytes throws IOException`() {
+        givenBytesResponse(isSuccessful = true, body = byteArrayOf(1).toResponseBody(), finalUrl = "http://example.com")
+
+        assertFailsWith<IOException> { sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get)) }
+    }
+
+    @Test
+    fun `when maxBodyBytes is Long MAX_VALUE, executeRequestForBytes returns the body`() {
+        val bytes = ByteArray(1024) { 7 }
+        givenBytesResponse(isSuccessful = true, body = responseBody)
+        every { responseBody.contentLength() } returns -1L
+        every { responseBody.source() } returns Buffer().write(bytes)
+
+        val result = sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get), maxBodyBytes = Long.MAX_VALUE)
+
+        assertArrayEquals(bytes, result)
+    }
+
+    private fun givenBytesResponse(isSuccessful: Boolean, body: ResponseBody?, finalUrl: String = URL) {
         every { okHttpClient.newCall(any()) } returns call
         every { call.execute() } returns response
         every { response.isSuccessful } returns isSuccessful
         every { response.body } returns body
+        // The request OkHttp ended on after following any redirects.
+        every { response.request } returns Request.Builder().url(finalUrl).build()
     }
 
     companion object {

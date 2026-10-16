@@ -65,8 +65,8 @@ internal class OkHttpSynchronousHttpClient(
      * `Content-Length` exceeds it, or, if undeclared (e.g. chunked transfer), as soon as actual bytes read exceed
      * it — the body is never buffered past [maxBodyBytes] + 1 bytes.
      * @return The response body bytes.
-     * @throws IOException if the request fails, the response is unsuccessful or has no body, or the body size
-     * exceeds [maxBodyBytes].
+     * @throws IOException if the request fails, the response is unsuccessful or has no body, an https request is
+     * redirected to a non-https URL, or the body size exceeds [maxBodyBytes].
      * @throws IllegalArgumentException if the request URL is not a valid http or https URL.
      */
     @Throws(IOException::class)
@@ -76,6 +76,10 @@ internal class OkHttpSynchronousHttpClient(
         okHttpClient.newCall(request).execute().use { response ->
             val responseBody = response.body?.takeIf { response.isSuccessful }
                 ?: throw IOException("Unexpected code ${response.code} for ${request.url}")
+            // OkHttp follows redirects, including https to http; never accept a downgraded download.
+            if (request.url.isHttps && !response.request.url.isHttps) {
+                throw IOException("Redirected from https to a non-https URL for ${request.url}")
+            }
             if (maxBodyBytes == null) return responseBody.bytes()
             return responseBody.readBoundedBytes(maxBodyBytes, request.url.toString())
         }
@@ -86,7 +90,8 @@ internal class OkHttpSynchronousHttpClient(
     private fun ResponseBody.readBoundedBytes(maxBodyBytes: Long, url: String): ByteArray {
         if (contentLength() > maxBodyBytes) throwBodyTooLarge(maxBodyBytes, url)
 
-        val limit = maxBodyBytes + 1
+        // Saturated so a limit of Long.MAX_VALUE can't overflow to a negative read limit.
+        val limit = if (maxBodyBytes == Long.MAX_VALUE) maxBodyBytes else maxBodyBytes + 1
         val buffer = Buffer()
         val source = source()
         while (buffer.size < limit && source.read(buffer, limit - buffer.size) != -1L) {

@@ -126,7 +126,8 @@ internal class ImageLoader internal constructor(
     private fun inFlightRequest(url: String): Deferred<Bitmap> =
         inFlightRequests[url] ?: synchronized(inFlightRequests) {
             inFlightRequests[url] ?: loaderScope.async(start = CoroutineStart.LAZY) {
-                fetchAndDecode(url)
+                // Another download may have cached this URL after the caller's cache miss and before this started.
+                memoryCache.get(url) ?: fetchAndDecode(url)
             }.also { deferred ->
                 inFlightRequests[url] = deferred
                 // Registered after the put and before start, so a download that finishes immediately cannot leave
