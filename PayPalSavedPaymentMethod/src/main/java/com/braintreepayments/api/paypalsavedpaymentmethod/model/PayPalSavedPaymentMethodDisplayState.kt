@@ -1,6 +1,6 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.model
 
-import java.net.ConnectException
+import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
@@ -52,9 +52,12 @@ internal fun PayPalSavedPaymentMethodSummary.toDisplayState(): PayPalSavedPaymen
 }
 
 /**
- * Maps a failed fetch to what the component renders. Only connection failures count as
- * [PayPalSavedPaymentMethodDisplayState.NoNetwork]; server and parsing errors, including a `BraintreeException`, which
- * is an `IOException`, map to [PayPalSavedPaymentMethodDisplayState.Error].
+ * Maps a failed fetch to what the component renders. Only connection failures anywhere in the cause chain count as
+ * [PayPalSavedPaymentMethodDisplayState.NoNetwork], including one wrapped in a `ConfigurationException` when the
+ * configuration fetch fails first. Server and parsing errors, including a `BraintreeException`, which is an
+ * `IOException`, map to [PayPalSavedPaymentMethodDisplayState.Error].
+ *
+ * Callers must re-throw a `CancellationException` instead of mapping it, so a cancelled fetch isn't shown as an error.
  */
 internal fun Throwable.toDisplayState(): PayPalSavedPaymentMethodDisplayState =
     if (generateSequence(this) { it.cause }.any { it.isConnectionFailure() }) {
@@ -63,5 +66,6 @@ internal fun Throwable.toDisplayState(): PayPalSavedPaymentMethodDisplayState =
         PayPalSavedPaymentMethodDisplayState.Error
     }
 
+// SocketException covers ConnectException, NoRouteToHostException and a reset connection.
 private fun Throwable.isConnectionFailure(): Boolean =
-    this is UnknownHostException || this is ConnectException || this is SocketTimeoutException
+    this is UnknownHostException || this is SocketException || this is SocketTimeoutException

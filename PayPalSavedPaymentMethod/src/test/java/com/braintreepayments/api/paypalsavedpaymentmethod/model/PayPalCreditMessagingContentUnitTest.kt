@@ -30,6 +30,23 @@ class PayPalCreditMessagingContentUnitTest {
     }
 
     @Test
+    fun `toContent trims the parts so a trailing space in the main text adds no double space`() {
+        val content = result(
+            mainItems = listOf(text("Pay in 4 with PayPal. ")),
+            disclaimerItems = listOf(text("US only."))
+        ).toContent()
+
+        assertEquals("Pay in 4 with PayPal. US only.", content.message)
+    }
+
+    @Test
+    fun `toContent returns an empty message when the main text is blank, even with a disclaimer`() {
+        val content = result(mainItems = listOf(text("  ")), disclaimerItems = listOf(text("US only."))).toContent()
+
+        assertEquals("", content.message)
+    }
+
+    @Test
     fun `toContent uses the first link action for learn more`() {
         val content = result(
             actionItems = listOf(
@@ -72,6 +89,20 @@ class PayPalCreditMessagingContentUnitTest {
     }
 
     @Test
+    fun `toContent uses the link's alternative text when its text is blank`() {
+        val link = item(
+            PayPalCreditMessageItemType.LINK,
+            text = "",
+            alternativeText = "Learn more about Pay in 4",
+            clickUrl = "https://www.paypal.com/learn"
+        )
+
+        val content = result(actionItems = listOf(link)).toContent()
+
+        assertEquals("Learn more about Pay in 4", content.learnMoreText)
+    }
+
+    @Test
     fun `toContent prefers the link's text over its alternative text`() {
         val link = item(
             PayPalCreditMessageItemType.LINK,
@@ -83,6 +114,15 @@ class PayPalCreditMessagingContentUnitTest {
         val content = result(actionItems = listOf(link)).toContent()
 
         assertEquals("Learn more", content.learnMoreText)
+    }
+
+    @Test
+    fun `toContent carries the message id, message type and impression url for analytics`() {
+        val content = result().copy(impressionUrl = "https://www.paypal.com/impression").toContent()
+
+        assertEquals("message-id", content.messageId)
+        assertEquals("PLST_SQ", content.messageType)
+        assertEquals("https://www.paypal.com/impression", content.impressionUrl)
     }
 
     @Test

@@ -13,6 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
@@ -50,10 +53,12 @@ internal fun LoadingDialog() {
                 .background(colorResource(R.color.paypal_saved_payment_method_loading_dialog_background)),
             contentAlignment = Alignment.Center
         ) {
+            val loadingDescription =
+                stringResource(R.string.paypal_saved_payment_method_loading_dialog_content_description)
             CircularProgressIndicator(
-                modifier = Modifier.size(
-                    dimensionResource(R.dimen.paypal_saved_payment_method_loading_dialog_spinner_size)
-                ),
+                modifier = Modifier
+                    .size(dimensionResource(R.dimen.paypal_saved_payment_method_loading_dialog_spinner_size))
+                    .semantics { contentDescription = loadingDescription },
                 color = colorResource(R.color.paypal_saved_payment_method_loading_dialog_content),
                 strokeWidth = dimensionResource(R.dimen.paypal_saved_payment_method_loading_dialog_spinner_stroke_width)
             )
