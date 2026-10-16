@@ -526,5 +526,320 @@ class PaymentActionsServiceUnitTest {
             assertTrue((result as PaymentActionServiceResult.Failure).error is JSONException)
         }
 
+    // MARK: - getPaymentAction
+
+    @Test
+    fun `when getPaymentAction is called, the correct GraphQL request body is sent`() =
+        runTest(testDispatcher) {
+            val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+            val service = PaymentActionsService(braintreeClient)
+
+            service.getPaymentAction()
+            advanceUntilIdle()
+
+            coVerify {
+                braintreeClient.sendGraphQLPOST(withArg { actualRequestBody ->
+                    assertTrue(actualRequestBody.getString("query").contains("query GetPaymentAction"))
+                    assertTrue(actualRequestBody.getString("query").contains("paymentAction {"))
+                    assertTrue(!actualRequestBody.getString("query").contains("\$id"))
+                    JSONAssert.assertEquals(JSONObject(), actualRequestBody.getJSONObject("variables"), true)
+                })
+            }
+        }
+
+    @Test
+    fun `when getPaymentAction returns a nextAction, Success is returned with the parsed nextAction`() =
+        runTest(testDispatcher) {
+            val responseBody = """
+                {
+                    "data": {
+                        "paymentAction": {
+                            "id": "pa123",
+                            "status": "requires_customer_action",
+                            "nextAction": {
+                                "__typename": "PaymentActionThreeDSecureAuthentication",
+                                "bin": "401288"
+                            }
+                        }
+                    }
+                }
+            """.trimIndent()
+
+            val braintreeClient = MockkBraintreeClientBuilder()
+                .sendGraphQLPostSuccessfulResponse(responseBody)
+                .build()
+
+            val service = PaymentActionsService(braintreeClient)
+            val result = service.getPaymentAction()
+            advanceUntilIdle()
+
+            val success = result as PaymentActionServiceResult.Success
+            assertEquals("pa123", success.paymentAction.id)
+            assertEquals(
+                NextAction.ThreeDSecureAuthentication(bin = "401288"),
+                success.paymentAction.nextAction,
+            )
+        }
+
+    @Test
+    fun `when getPaymentAction returns a 3DS challenge nextAction, Success parses its fields`() =
+        runTest(testDispatcher) {
+            val responseBody = """
+                {
+                    "data": {
+                        "paymentAction": {
+                            "id": "pa123",
+                            "status": "requires_customer_action",
+                            "nextAction": {
+                                "__typename": "PaymentActionThreeDSecureChallenge",
+                                "acsUrl": "https://acs.example.com",
+                                "acsRenderingType": "otp",
+                                "challengePayload": "payload-data"
+                            }
+                        }
+                    }
+                }
+            """.trimIndent()
+
+            val braintreeClient = MockkBraintreeClientBuilder()
+                .sendGraphQLPostSuccessfulResponse(responseBody)
+                .build()
+
+            val service = PaymentActionsService(braintreeClient)
+            val result = service.getPaymentAction()
+            advanceUntilIdle()
+
+            val success = result as PaymentActionServiceResult.Success
+            assertEquals(
+                NextAction.ThreeDSecureChallenge(
+                    acsUrl = "https://acs.example.com",
+                    acsRenderingType = "otp",
+                    challengePayload = "payload-data",
+                ),
+                success.paymentAction.nextAction,
+            )
+        }
+
+    @Test
+    fun `when getPaymentAction returns an unrecognized nextAction typename, Success returns Unrecognized`() =
+        runTest(testDispatcher) {
+            val responseBody = """
+                {
+                    "data": {
+                        "paymentAction": {
+                            "id": "pa123",
+                            "status": "requires_customer_action",
+                            "nextAction": {
+                                "__typename": "PaymentActionRedirectUrl"
+                            }
+                        }
+                    }
+                }
+            """.trimIndent()
+
+            val braintreeClient = MockkBraintreeClientBuilder()
+                .sendGraphQLPostSuccessfulResponse(responseBody)
+                .build()
+
+            val service = PaymentActionsService(braintreeClient)
+            val result = service.getPaymentAction()
+            advanceUntilIdle()
+
+            val success = result as PaymentActionServiceResult.Success
+            assertEquals(
+                NextAction.Unrecognized(typeName = "PaymentActionRedirectUrl"),
+                success.paymentAction.nextAction,
+            )
+        }
+
+    @Test
+    fun `when getPaymentAction returns no nextAction, Success returns a null nextAction`() =
+        runTest(testDispatcher) {
+            val responseBody = """
+                {
+                    "data": {
+                        "paymentAction": {
+                            "id": "pa123",
+                            "status": "succeeded"
+                        }
+                    }
+                }
+            """.trimIndent()
+
+            val braintreeClient = MockkBraintreeClientBuilder()
+                .sendGraphQLPostSuccessfulResponse(responseBody)
+                .build()
+
+            val service = PaymentActionsService(braintreeClient)
+            val result = service.getPaymentAction()
+            advanceUntilIdle()
+
+            val success = result as PaymentActionServiceResult.Success
+            assertEquals(null, success.paymentAction.nextAction)
+        }
+
+    @Test
+    fun `when getPaymentAction's nextAction is missing required fields, Failure is returned with a JSONException`() =
+        runTest(testDispatcher) {
+            val responseBody = """
+                {
+                    "data": {
+                        "paymentAction": {
+                            "id": "pa123",
+                            "status": "requires_customer_action",
+                            "nextAction": {
+                                "__typename": "PaymentActionThreeDSecureAuthentication"
+                            }
+                        }
+                    }
+                }
+            """.trimIndent()
+
+            val braintreeClient = MockkBraintreeClientBuilder()
+                .sendGraphQLPostSuccessfulResponse(responseBody)
+                .build()
+
+            val service = PaymentActionsService(braintreeClient)
+            val result = service.getPaymentAction()
+            advanceUntilIdle()
+
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertTrue((result as PaymentActionServiceResult.Failure).error is JSONException)
+        }
+
+    @Test
+    fun `when getPaymentAction's BraintreeClient throws an IOException, Failure is returned with the same exception`() =
+        runTest(testDispatcher) {
+            val error = IOException("Network error")
+
+            val braintreeClient = MockkBraintreeClientBuilder()
+                .sendGraphQLPostErrorResponse(error)
+                .build()
+
+            val service = PaymentActionsService(braintreeClient)
+            val result = service.getPaymentAction()
+            advanceUntilIdle()
+
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertEquals(error, (result as PaymentActionServiceResult.Failure).error)
+        }
+
+    // MARK: - signalCustomerActionComplete
+
+    @Test
+    fun `when signalCustomerActionComplete is called with deviceDataCollection, the correct GraphQL request body is sent`() =
+        runTest(testDispatcher) {
+            val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+            val service = PaymentActionsService(braintreeClient)
+
+            service.signalCustomerActionComplete(
+                CustomerCompletedAction.DeviceDataCollection(dfReferenceId = "df-reference-id"),
+            )
+            advanceUntilIdle()
+
+            val expectedVariables = JSONObject().apply {
+                put(
+                    "input",
+                    JSONObject().apply {
+                        put(
+                            "customerActionComplete",
+                            JSONObject().apply {
+                                put("deviceDataCollection", JSONObject().apply { put("dfReferenceId", "df-reference-id") })
+                            },
+                        )
+                    },
+                )
+            }
+
+            coVerify {
+                braintreeClient.sendGraphQLPOST(withArg { actualRequestBody ->
+                    assertTrue(
+                        actualRequestBody.getString("query").contains("mutation SignalCustomerActionComplete")
+                    )
+                    assertTrue(
+                        !actualRequestBody.getJSONObject("variables").getJSONObject("input").has("paymentActionId")
+                    )
+                    JSONAssert.assertEquals(
+                        expectedVariables,
+                        actualRequestBody.getJSONObject("variables"),
+                        false,
+                    )
+                })
+            }
+        }
+
+    @Test
+    fun `when signalCustomerActionComplete is called with challenge, only the challenge variant is encoded`() =
+        runTest(testDispatcher) {
+            val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+            val service = PaymentActionsService(braintreeClient)
+
+            service.signalCustomerActionComplete(
+                CustomerCompletedAction.Challenge(cardinalAuthenticationJWT = "jwt-value"),
+            )
+            advanceUntilIdle()
+
+            coVerify {
+                braintreeClient.sendGraphQLPOST(withArg { actualRequestBody ->
+                    val customerActionComplete = actualRequestBody
+                        .getJSONObject("variables")
+                        .getJSONObject("input")
+                        .getJSONObject("customerActionComplete")
+                    assertEquals("jwt-value", customerActionComplete.getJSONObject("challenge").getString("cardinalAuthenticationJWT"))
+                    assertTrue(!customerActionComplete.has("deviceDataCollection"))
+                })
+            }
+        }
+
+    @Test
+    fun `when signalCustomerActionComplete succeeds, Success is returned with the resulting PaymentAction`() =
+        runTest(testDispatcher) {
+            val responseBody = """
+                {
+                    "data": {
+                        "signalCustomerActionComplete": {
+                            "paymentAction": {
+                                "id": "pa123",
+                                "status": "ready_for_confirmation"
+                            }
+                        }
+                    }
+                }
+            """.trimIndent()
+
+            val braintreeClient = MockkBraintreeClientBuilder()
+                .sendGraphQLPostSuccessfulResponse(responseBody)
+                .build()
+
+            val service = PaymentActionsService(braintreeClient)
+            val result = service.signalCustomerActionComplete(
+                CustomerCompletedAction.DeviceDataCollection(dfReferenceId = "df-reference-id"),
+            )
+            advanceUntilIdle()
+
+            val success = result as PaymentActionServiceResult.Success
+            assertEquals("pa123", success.paymentAction.id)
+            assertEquals(PaymentActionStatus.READY_FOR_CONFIRMATION, success.paymentAction.status)
+        }
+
+    @Test
+    fun `when signalCustomerActionComplete's BraintreeClient throws an IOException, Failure is returned`() =
+        runTest(testDispatcher) {
+            val error = IOException("Network error")
+
+            val braintreeClient = MockkBraintreeClientBuilder()
+                .sendGraphQLPostErrorResponse(error)
+                .build()
+
+            val service = PaymentActionsService(braintreeClient)
+            val result = service.signalCustomerActionComplete(
+                CustomerCompletedAction.Challenge(cardinalAuthenticationJWT = "jwt-value"),
+            )
+            advanceUntilIdle()
+
+            assertTrue(result is PaymentActionServiceResult.Failure)
+            assertEquals(error, (result as PaymentActionServiceResult.Failure).error)
+        }
+
     private fun String.normalizeWhitespace(): String = trim().replace(Regex("\\s+"), " ")
 }
