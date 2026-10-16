@@ -33,22 +33,30 @@ class PayPalCreditMessagingDisplayStateUnitTest {
         assertEquals(PayPalCreditMessagingDisplayState.Hidden, result(mainText = "   ").toDisplayState())
     }
 
-    private fun result(mainText: String) = PayPalCreditMessagingResult(
-        mainItems = listOf(
-            PayPalCreditMessageItem(
-                type = PayPalCreditMessageItemType.TEXT,
-                text = mainText,
-                alternativeText = null,
-                clickUrl = null,
-                sourceUrl = null,
-                name = null,
-                isEmbeddable = null
-            )
-        ),
-        disclaimerItems = emptyList(),
+    @Test
+    fun `a disclaimer without main text maps to Hidden`() {
+        assertEquals(
+            PayPalCreditMessagingDisplayState.Hidden,
+            result(mainText = "", disclaimerText = "US only.").toDisplayState()
+        )
+    }
+
+    private fun result(mainText: String, disclaimerText: String? = null) = PayPalCreditMessagingResult(
+        mainItems = listOf(textItem(mainText)),
+        disclaimerItems = listOfNotNull(disclaimerText?.let(::textItem)),
         actionItems = emptyList(),
         messageId = null,
         messageType = null,
         impressionUrl = null
+    )
+
+    private fun textItem(text: String) = PayPalCreditMessageItem(
+        type = PayPalCreditMessageItemType.TEXT,
+        text = text,
+        alternativeText = null,
+        clickUrl = null,
+        sourceUrl = null,
+        name = null,
+        isEmbeddable = null
     )
 }

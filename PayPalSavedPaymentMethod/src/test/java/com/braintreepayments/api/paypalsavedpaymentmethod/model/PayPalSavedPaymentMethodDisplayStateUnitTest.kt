@@ -1,11 +1,14 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.model
 
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.ConfigurationException
 import org.json.JSONException
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.io.IOException
 import java.net.ConnectException
+import java.net.NoRouteToHostException
+import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
@@ -60,7 +63,14 @@ class PayPalSavedPaymentMethodDisplayStateUnitTest {
 
     @Test
     fun `connection failures map to NoNetwork`() {
-        listOf(UnknownHostException(), ConnectException(), SocketTimeoutException()).forEach { error ->
+        val errors = listOf(
+            UnknownHostException(),
+            ConnectException(),
+            NoRouteToHostException(),
+            SocketException("Connection reset"),
+            SocketTimeoutException()
+        )
+        errors.forEach { error ->
             assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, error.toDisplayState())
         }
     }
@@ -68,6 +78,13 @@ class PayPalSavedPaymentMethodDisplayStateUnitTest {
     @Test
     fun `a connection failure wrapped as the cause maps to NoNetwork`() {
         val error = IOException("request failed", UnknownHostException("api.braintreegateway.com"))
+
+        assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, error.toDisplayState())
+    }
+
+    @Test
+    fun `a configuration fetch that fails while offline maps to NoNetwork`() {
+        val error = ConfigurationException("Request for configuration has failed", UnknownHostException())
 
         assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, error.toDisplayState())
     }
