@@ -74,7 +74,7 @@ internal class PayPalInternalClient(
 
         val baseRequestBody = payPalRequest.createRequestBody(
             configuration = configuration,
-            authorization = merchantRepository.authorization,
+            authorization = braintreeClient.authorization,
             successUrl = successUrl,
             cancelUrl = cancelUrl,
             appLink = appLinkParam
