@@ -58,7 +58,9 @@ internal class ImageLoader internal constructor(
             val imageView = v as? ImageView ?: return
             // Resume a load whose wait was cancelled by a detach, e.g. a RecyclerView row re-attached without re-bind.
             val request = viewRequests[imageView]
-            if (request != null && request.job.isCancelled) startViewRequest(imageView, request.url)
+            if (request != null && request.job.isCancelled) {
+                startViewRequest(imageView, request.url, request.errorPlaceholder)
+            }
         }
 
         override fun onViewDetachedFromWindow(v: View) {
@@ -84,14 +86,17 @@ internal class ImageLoader internal constructor(
     }
 
     /**
-     * Binds [url] into [imageView], showing [placeholder] until the image is ready, or permanently if it fails.
+     * Binds [url] into [imageView]. While the image loads, the view shows [loadingPlaceholder], or stays blank when it
+     * is `null`. If [url] is missing or blank, or the load fails, it shows [errorPlaceholder], or stays blank when it
+     * is `null`.
      *
      * Must be called on the main thread; it updates [imageView] directly.
      */
     fun load(
         url: String?,
         imageView: ImageView,
-        @DrawableRes placeholder: Int?,
+        @DrawableRes loadingPlaceholder: Int? = null,
+        @DrawableRes errorPlaceholder: Int? = null,
     ) {
         cancel(imageView)
         // TODO: validate with asHttpsUrlOrNull() from UrlValidation.kt (PR #1718) instead of a blank check.
@@ -101,18 +106,16 @@ internal class ImageLoader internal constructor(
             imageView.setImageBitmap(cached)
             return
         }
-        // Clear any stale image (e.g. from a recycled RecyclerView row) when no placeholder is given.
-        if (placeholder != null) {
-            imageView.setImageResource(placeholder)
-        } else {
-            imageView.setImageDrawable(null)
+        if (validUrl == null) {
+            imageView.setPlaceholder(errorPlaceholder)
+            return
         }
-        if (validUrl == null) return
+        imageView.setPlaceholder(loadingPlaceholder)
 
         // Remove-then-add keeps exactly one listener per view, however many times the view is re-bound.
         imageView.removeOnAttachStateChangeListener(attachStateListener)
         imageView.addOnAttachStateChangeListener(attachStateListener)
-        startViewRequest(imageView, validUrl)
+        startViewRequest(imageView, validUrl, errorPlaceholder)
     }
 
     /** Cancels any pending load for [imageView]. Must be called on the main thread. */
@@ -137,7 +140,7 @@ internal class ImageLoader internal constructor(
             }
         }
 
-    private fun startViewRequest(imageView: ImageView, url: String) {
+    private fun startViewRequest(imageView: ImageView, url: String, @DrawableRes errorPlaceholder: Int?) {
         val target = WeakReference(imageView)
         val job = loaderScope.launch(mainDispatcher, start = CoroutineStart.LAZY) {
             val bitmap = try {
@@ -154,10 +157,10 @@ internal class ImageLoader internal constructor(
             // Drop the result if the view has been re-bound to a different request since this one started.
             if (viewRequests[view]?.job !== coroutineContext.job) return@launch
             viewRequests.remove(view)
-            bitmap?.let(view::setImageBitmap)
+            if (bitmap != null) view.setImageBitmap(bitmap) else view.setPlaceholder(errorPlaceholder)
         }
         // Recorded before start so the identity check above always sees this request.
-        viewRequests[imageView] = ViewRequest(url, job)
+        viewRequests[imageView] = ViewRequest(url, errorPlaceholder, job)
         job.start()
     }
 
@@ -199,7 +202,12 @@ internal class ImageLoader internal constructor(
         return inSampleSize
     }
 
-    private class ViewRequest(val url: String, val job: Job)
+    // Also clears a stale image (e.g. from a recycled RecyclerView row) when there is no placeholder.
+    private fun ImageView.setPlaceholder(@DrawableRes placeholder: Int?) {
+        if (placeholder != null) setImageResource(placeholder) else setImageDrawable(null)
+    }
+
+    private class ViewRequest(val url: String, @DrawableRes val errorPlaceholder: Int?, val job: Job)
 
     companion object {
         // 4 MB keeps a reasonable number of small FI icons resident without pressuring low-memory devices.

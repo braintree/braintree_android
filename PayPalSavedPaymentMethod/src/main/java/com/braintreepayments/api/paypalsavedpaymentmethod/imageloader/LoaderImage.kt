@@ -2,6 +2,7 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.imageloader
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,41 +16,44 @@ import androidx.compose.ui.platform.testTag
 import java.io.IOException
 
 /**
- * Renders the funding-instrument icon at [url] via [ImageLoader], falling back to [placeholder]
- * until the load completes, if it fails, or if [url] is `null` or blank.
+ * Renders the funding-instrument icon at [url] via [ImageLoader]. While the image loads it shows [loading], which is
+ * blank by default. It shows [placeholder] only when there is no image to show: if the load fails, or if [url] is
+ * `null` or blank.
  *
  * The icon is decorative (the FI label is rendered next to it), so it has no content description.
+ *
+ * @param loading drawn while the image loads. It must apply the [Modifier] it receives so it takes the icon's size.
  */
 @Composable
 internal fun LoaderImage(
     url: String?,
     placeholder: Painter,
     modifier: Modifier = Modifier,
+    loading: @Composable (Modifier) -> Unit = { Spacer(it) },
     imageLoader: ImageLoader = remember { ImageLoader.getInstance() },
 ) {
-    // Seed from the memory cache so a cached icon renders on the first frame instead of flashing the placeholder.
-    var bitmap by remember(url) { mutableStateOf<Bitmap?>(url?.let(imageLoader::peek)) }
+    // Seeded from the memory cache so a cached icon renders on the first frame instead of flashing the loading state.
+    var state by remember(url) { mutableStateOf(initialState(url, imageLoader)) }
 
     LaunchedEffect(url) {
-        if (bitmap != null || url.isNullOrBlank()) return@LaunchedEffect
-        bitmap = try {
-            imageLoader.load(url)
+        if (state != LoadState.Loading || url == null) return@LaunchedEffect
+        state = try {
+            LoadState.Loaded(imageLoader.load(url))
         } catch (ignored: IOException) {
-            null
+            LoadState.Failed
         } catch (ignored: IllegalArgumentException) {
-            null
+            LoadState.Failed
         }
     }
 
-    val loadedBitmap = bitmap
-    if (loadedBitmap != null) {
-        Image(
-            bitmap = loadedBitmap.asImageBitmap(),
+    when (val current = state) {
+        LoadState.Loading -> loading(modifier.testTag(LOADING_TEST_TAG))
+        is LoadState.Loaded -> Image(
+            bitmap = current.bitmap.asImageBitmap(),
             contentDescription = null,
             modifier = modifier.testTag(LOADED_IMAGE_TEST_TAG)
         )
-    } else {
-        Image(
+        LoadState.Failed -> Image(
             painter = placeholder,
             contentDescription = null,
             modifier = modifier.testTag(PLACEHOLDER_IMAGE_TEST_TAG)
@@ -57,6 +61,19 @@ internal fun LoaderImage(
     }
 }
 
+private sealed interface LoadState {
+    data object Loading : LoadState
+    data class Loaded(val bitmap: Bitmap) : LoadState
+    data object Failed : LoadState
+}
+
+// A missing URL has nothing to load, so it goes straight to the placeholder instead of showing the loading state.
+private fun initialState(url: String?, imageLoader: ImageLoader): LoadState = when {
+    url.isNullOrBlank() -> LoadState.Failed
+    else -> imageLoader.peek(url)?.let(LoadState::Loaded) ?: LoadState.Loading
+}
+
 // No semantic distinction exists otherwise, since the icon is decorative (contentDescription = null above).
+internal const val LOADING_TEST_TAG = "loader_image_loading"
 internal const val LOADED_IMAGE_TEST_TAG = "loader_image_loaded"
 internal const val PLACEHOLDER_IMAGE_TEST_TAG = "loader_image_placeholder"

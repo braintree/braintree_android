@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -43,10 +44,21 @@ class ImageLoaderViewBindingUnitTest {
     private val imageView = ImageView(activity).also { activity.setContentView(it) }
 
     @Test
-    fun `load shows the placeholder and then the downloaded bitmap`() {
+    fun `load stays blank while loading and then shows the downloaded bitmap`() {
         givenImage(32)
 
-        sut.load(URL, imageView, PLACEHOLDER)
+        sut.load(URL, imageView, errorPlaceholder = ERROR_PLACEHOLDER)
+        assertBlank()
+
+        advanceUntilIdle()
+        assertShowsBitmapOfWidth(32)
+    }
+
+    @Test
+    fun `load shows the loading placeholder while loading`() {
+        givenImage(32)
+
+        sut.load(URL, imageView, loadingPlaceholder = LOADING_PLACEHOLDER)
         assertShowsPlaceholder()
 
         advanceUntilIdle()
@@ -58,15 +70,15 @@ class ImageLoaderViewBindingUnitTest {
         givenImage(32)
         sut.load(URL)
 
-        sut.load(URL, imageView, PLACEHOLDER)
+        sut.load(URL, imageView, LOADING_PLACEHOLDER, ERROR_PLACEHOLDER)
 
         assertShowsBitmapOfWidth(32)
     }
 
     @Test
-    fun `load keeps the placeholder for a null or blank url without making a request`() {
+    fun `load shows the error placeholder for a null or blank url without making a request`() {
         listOf(null, "  ").forEach { url ->
-            sut.load(url, imageView, PLACEHOLDER)
+            sut.load(url, imageView, LOADING_PLACEHOLDER, ERROR_PLACEHOLDER)
             advanceUntilIdle()
             assertShowsPlaceholder()
         }
@@ -74,11 +86,12 @@ class ImageLoaderViewBindingUnitTest {
     }
 
     @Test
-    fun `load keeps the placeholder when the download fails or the url is rejected as malformed`() {
+    fun `load shows the error placeholder when the download fails or the url is rejected as malformed`() {
         listOf(IOException("Unexpected code 404"), IllegalArgumentException("Invalid URL host")).forEach { error ->
             coEvery { httpClient.sendRequestForBytes(any(), any()) } throws error
 
-            sut.load(URL, imageView, PLACEHOLDER)
+            sut.load(URL, imageView, errorPlaceholder = ERROR_PLACEHOLDER)
+            assertBlank()
             advanceUntilIdle()
 
             assertShowsPlaceholder()
@@ -86,12 +99,23 @@ class ImageLoaderViewBindingUnitTest {
     }
 
     @Test
+    fun `load goes blank when the download fails and there is no error placeholder`() {
+        coEvery { httpClient.sendRequestForBytes(any(), any()) } throws IOException("Unexpected code 404")
+
+        sut.load(URL, imageView, loadingPlaceholder = LOADING_PLACEHOLDER)
+        assertShowsPlaceholder()
+        advanceUntilIdle()
+
+        assertBlank()
+    }
+
+    @Test
     fun `re-binding the view before the first load completes shows only the latest image`() {
         coEvery { httpClient.sendRequestForBytes(match { it.url == URL }, any()) } returns pngBytes(16, 16)
         coEvery { httpClient.sendRequestForBytes(match { it.url == OTHER_URL }, any()) } returns pngBytes(48, 48)
 
-        sut.load(URL, imageView, PLACEHOLDER)
-        sut.load(OTHER_URL, imageView, PLACEHOLDER)
+        sut.load(URL, imageView, errorPlaceholder = ERROR_PLACEHOLDER)
+        sut.load(OTHER_URL, imageView, errorPlaceholder = ERROR_PLACEHOLDER)
         advanceUntilIdle()
 
         assertShowsBitmapOfWidth(48)
@@ -101,10 +125,10 @@ class ImageLoaderViewBindingUnitTest {
     fun `a detached view resumes its load when re-attached`() {
         givenImage(32)
 
-        sut.load(URL, imageView, PLACEHOLDER)
+        sut.load(URL, imageView, errorPlaceholder = ERROR_PLACEHOLDER)
         activity.setContentView(FrameLayout(activity))
         advanceUntilIdle()
-        assertShowsPlaceholder()
+        assertBlank()
 
         activity.setContentView(imageView)
         advanceUntilIdle()
@@ -115,11 +139,11 @@ class ImageLoaderViewBindingUnitTest {
     fun `cancel stops the bitmap from being set`() {
         givenImage(32)
 
-        sut.load(URL, imageView, PLACEHOLDER)
+        sut.load(URL, imageView, errorPlaceholder = ERROR_PLACEHOLDER)
         sut.cancel(imageView)
         advanceUntilIdle()
 
-        assertShowsPlaceholder()
+        assertBlank()
     }
 
     private fun givenImage(size: Int) {
@@ -127,6 +151,10 @@ class ImageLoaderViewBindingUnitTest {
     }
 
     private fun advanceUntilIdle() = testDispatcher.scheduler.advanceUntilIdle()
+
+    private fun assertBlank() {
+        assertNull(imageView.drawable)
+    }
 
     private fun assertShowsPlaceholder() {
         assertNotNull(imageView.drawable)
@@ -140,6 +168,7 @@ class ImageLoaderViewBindingUnitTest {
     companion object {
         private const val URL = "https://www.paypalobjects.com/images/visa.png"
         private const val OTHER_URL = "https://www.paypalobjects.com/images/bank.png"
-        private val PLACEHOLDER = R.drawable.ic_fi_card_placeholder
+        private val LOADING_PLACEHOLDER = R.drawable.ic_fi_bank_placeholder
+        private val ERROR_PLACEHOLDER = R.drawable.ic_fi_card_placeholder
     }
 }

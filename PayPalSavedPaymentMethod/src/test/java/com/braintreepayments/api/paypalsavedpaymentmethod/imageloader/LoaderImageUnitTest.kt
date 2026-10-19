@@ -2,11 +2,14 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.imageloader
 
 import android.graphics.Bitmap
 import android.util.LruCache
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import com.braintreepayments.api.sharedutils.HttpClient
@@ -44,21 +47,46 @@ class LoaderImageUnitTest {
     private val placeholder = ColorPainter(Color.Red)
 
     @Test
-    fun `shows the placeholder then the loaded image`() {
+    fun `shows the loading state, not the placeholder, while the image loads`() {
         coEvery { httpClient.sendRequestForBytes(any(), any()) } returns pngBytes(32, 32)
 
         composeTestRule.setContent {
             LoaderImage(url = URL, placeholder = placeholder, imageLoader = sut)
         }
 
-        composeTestRule.onNodeWithTag(PLACEHOLDER_IMAGE_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(LOADING_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(PLACEHOLDER_IMAGE_TEST_TAG).assertDoesNotExist()
         composeTestRule.onNodeWithTag(LOADED_IMAGE_TEST_TAG).assertDoesNotExist()
 
         testDispatcher.scheduler.advanceUntilIdle()
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithTag(LOADED_IMAGE_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(LOADING_TEST_TAG).assertDoesNotExist()
         composeTestRule.onNodeWithTag(PLACEHOLDER_IMAGE_TEST_TAG).assertDoesNotExist()
+    }
+
+    @Test
+    fun `draws the loading slot while the image loads`() {
+        coEvery { httpClient.sendRequestForBytes(any(), any()) } returns pngBytes(32, 32)
+
+        composeTestRule.setContent {
+            LoaderImage(
+                url = URL,
+                placeholder = placeholder,
+                loading = { Box(it) { Box(Modifier.testTag(CUSTOM_LOADING_TEST_TAG)) } },
+                imageLoader = sut
+            )
+        }
+
+        composeTestRule.onNodeWithTag(CUSTOM_LOADING_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(PLACEHOLDER_IMAGE_TEST_TAG).assertDoesNotExist()
+
+        testDispatcher.scheduler.advanceUntilIdle()
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithTag(CUSTOM_LOADING_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(LOADED_IMAGE_TEST_TAG).assertExists()
     }
 
     @Test
@@ -71,11 +99,12 @@ class LoaderImageUnitTest {
         }
 
         composeTestRule.onNodeWithTag(LOADED_IMAGE_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(LOADING_TEST_TAG).assertDoesNotExist()
         composeTestRule.onNodeWithTag(PLACEHOLDER_IMAGE_TEST_TAG).assertDoesNotExist()
     }
 
     @Test
-    fun `keeps the placeholder when the load fails`() {
+    fun `shows the placeholder when the load fails`() {
         coEvery { httpClient.sendRequestForBytes(any(), any()) } throws IOException("boom")
 
         composeTestRule.setContent {
@@ -85,7 +114,18 @@ class LoaderImageUnitTest {
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithTag(PLACEHOLDER_IMAGE_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(LOADING_TEST_TAG).assertDoesNotExist()
         composeTestRule.onNodeWithTag(LOADED_IMAGE_TEST_TAG).assertDoesNotExist()
+    }
+
+    @Test
+    fun `shows the placeholder without a loading state for a null url`() {
+        assertPlaceholderWithoutLoading(url = null)
+    }
+
+    @Test
+    fun `shows the placeholder without a loading state for a blank url`() {
+        assertPlaceholderWithoutLoading(url = "  ")
     }
 
     @Test
@@ -112,8 +152,21 @@ class LoaderImageUnitTest {
         coVerify(exactly = 1) { httpClient.sendRequestForBytes(match { it.url == OTHER_URL }, any()) }
     }
 
+    private fun assertPlaceholderWithoutLoading(url: String?) {
+        composeTestRule.setContent {
+            LoaderImage(url = url, placeholder = placeholder, imageLoader = sut)
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithTag(PLACEHOLDER_IMAGE_TEST_TAG).assertExists()
+        composeTestRule.onNodeWithTag(LOADING_TEST_TAG).assertDoesNotExist()
+        coVerify(exactly = 0) { httpClient.sendRequestForBytes(any(), any()) }
+    }
+
     private companion object {
         const val URL = "https://www.paypalobjects.com/images/visa.png"
         const val OTHER_URL = "https://www.paypalobjects.com/images/bank.png"
+        const val CUSTOM_LOADING_TEST_TAG = "custom_loading"
     }
 }
