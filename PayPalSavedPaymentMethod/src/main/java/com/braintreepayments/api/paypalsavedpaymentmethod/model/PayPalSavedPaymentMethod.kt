@@ -11,7 +11,7 @@ import org.json.JSONObject
  * recognize.
  * @property label The display name of the funding instrument, for example `"Visa"` or `"CREDIT UNION 1"`.
  * @property imageUrl The card art or bank glyph to render alongside the label. `null` unless PayPal returns an https
- * URL. Nullable, unlike the LLD, so the view can fall back to a generic glyph when no usable image is returned.
+ * URL, so the view can fall back to a generic glyph when no usable image is returned.
  * @property lastDigits The last digits of the funding instrument's account number.
  * @property subtype A further qualifier on [type], returned for [PayPalSavedPaymentMethodType.PAYPAL_CREDIT]
  * instruments.
