@@ -19,6 +19,13 @@
     <string name="sepa_direct_debit_button">SEPA Direct Debit</string>
     <string name="cards">Credit or Debit Cards</string>
     <string name="paypal_messaging_button">PayPal Messaging</string>
+    <string name="paypal_saved_payment_method_compose_button">PayPal Saved Payment Method Compose</string>
+    <string name="paypal_saved_payment_method_client_token_label">Client token with a paymentMethodIdJwt</string>
+    <string name="paypal_saved_payment_method_amount_label">Amount</string>
+    <string name="paypal_saved_payment_method_edit_style">Edit Style</string>
+    <string name="paypal_saved_payment_method_load">Load component</string>
+    <string name="paypal_saved_payment_method_missing_token">Paste a client token generated with the buyer\'s payment method ID.</string>
+    <string name="paypal_saved_payment_method_canceled">The buyer did not complete the edit.</string>
     <string name="shopper_insights_button">Payment Ready V1</string>
     <string name="shopper_insights_v2_button">Payment Ready V2</string>
     <string name="create_transaction">Create a Transaction</string>
