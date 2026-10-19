@@ -21,7 +21,10 @@ internal class ConfigurationLoader(
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 
     /**
-     * Loads configuration using the authorization from [MerchantRepository].
+     * Loads configuration using the authorization of the most recently created client, from
+     * [MerchantRepository]. Used only by components without a [BraintreeClient] reference
+     * (e.g. analytics); clients must use [BraintreeClient.authorization] with the
+     * parameterized overloads instead.
      * Sends analytics on successful API fetch.
      */
     suspend fun loadConfiguration(): ConfigurationLoaderResult {
