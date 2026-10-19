@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
@@ -56,5 +57,19 @@ class BraintreeClientTest {
         }
 
         countDownLatch.await()
+    }
+
+    @Test(timeout = 10000)
+    fun configuration_succeedsWhenALaterClientHasAnInvalidAuthorization() {
+        val sut = BraintreeClient(context, Fixtures.TOKENIZATION_KEY)
+        BraintreeClient(context, "invalid-authorization")
+
+        try {
+            val configuration = runBlocking { sut.getConfiguration() }
+            assertNotNull(configuration)
+        } finally {
+            // the singleton is process-wide; restore a valid authorization for later analytics
+            BraintreeClient(context, Fixtures.TOKENIZATION_KEY)
+        }
     }
 }

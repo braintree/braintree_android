@@ -12,6 +12,13 @@ class MerchantRepository {
 
     lateinit var applicationContext: Context
     lateinit var integrationType: IntegrationType
+
+    /**
+     * The authorization of the most recently created [BraintreeClient].
+     *
+     * Only read by components without a [BraintreeClient] reference (e.g. analytics);
+     * clients must use [BraintreeClient.authorization] instead.
+     */
     lateinit var authorization: Authorization
     lateinit var returnUrlScheme: String
     var appLinkReturnUri: Uri? = null
