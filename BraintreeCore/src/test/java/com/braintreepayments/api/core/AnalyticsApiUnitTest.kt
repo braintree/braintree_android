@@ -179,6 +179,29 @@ class AnalyticsApiUnitTest {
     }
 
     @Test
+    fun `when authorization changes after execute, request uses the captured authorization`() = runTest {
+        every { merchantRepository.authorization } returns clientToken
+        every { clientToken.bearer } returns "auth-fingerprint"
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        sut = createAnalyticsApi(testDispatcher, testScope)
+
+        sut.execute(listOf(clientTokenEvent), configuration)
+        every { merchantRepository.authorization } returns tokenizationKey
+        advanceUntilIdle()
+
+        coVerify {
+            httpClient.post(
+                path = any(),
+                data = any(),
+                configuration = null,
+                authorization = clientToken
+            )
+        }
+    }
+
+    @Test
     fun `when httpClient post throws UnknownHostException, execute does not crash`() = runTest {
         every { merchantRepository.authorization } returns tokenizationKey
         coEvery {
