@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.coroutineScope
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
@@ -92,10 +93,11 @@ fun PayPalButton(
         )
     }
     val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
+    val analyticsAuthorization = remember { Authorization.fromString(authorization) }
 
     PayPalButtonView(style = style, enabled = enabled) {
         enabled = false
-        logButtonSelected(analyticsClient)
+        logButtonSelected(analyticsClient, analyticsAuthorization)
         payPalClient.createPaymentAuthRequest(
             context = context,
             payPalRequest = payPalRequest
@@ -130,7 +132,7 @@ fun PayPalButton(
     LaunchedEffect(Unit) {
         if (shouldLogButtonPresentment) {
             shouldLogButtonPresentment = false
-            logButtonPresented(analyticsClient)
+            logButtonPresented(analyticsClient, analyticsAuthorization)
         }
     }
 
@@ -219,16 +221,18 @@ private fun handleReturnToApp(
     }
 }
 
-private fun logButtonPresented(analyticsClient: AnalyticsClient) {
+private fun logButtonPresented(analyticsClient: AnalyticsClient, authorization: Authorization) {
     analyticsClient.sendEvent(
         UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED,
+        authorization,
         AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
     )
 }
 
-private fun logButtonSelected(analyticsClient: AnalyticsClient) {
+private fun logButtonSelected(analyticsClient: AnalyticsClient, authorization: Authorization) {
     analyticsClient.sendEvent(
         UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED,
+        authorization,
         AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
     )
 }
