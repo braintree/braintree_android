@@ -2,11 +2,11 @@ package com.braintreepayments.api.core
 
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Time
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONException
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
@@ -16,12 +16,14 @@ class AnalyticsClient internal constructor(
     private val analyticsEventRepository: AnalyticsEventRepository = AnalyticsEventRepository.instance,
     private val time: Time = Time(),
     private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
     private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
 ) {
 
     fun sendEvent(
         eventName: String,
+        authorization: Authorization,
         analyticsEventParams: AnalyticsEventParams = AnalyticsEventParams(),
         sendImmediately: Boolean = true,
     ) {
@@ -51,34 +53,69 @@ class AnalyticsClient internal constructor(
         )
         if (sendImmediately) {
             coroutineScope.launch {
-                val configResult = configurationLoader.loadConfiguration()
-                if (configResult is ConfigurationLoaderResult.Success) {
-                    executeEventsApi(event, configResult.configuration)
-                }
+                send(event, authorization)
             }
         } else {
-            analyticsEventRepository.addEvent(event)
+            analyticsEventRepository.addEvent(event, authorization)
         }
     }
 
-    fun reportCrash(configuration: Configuration?) {
+    // shortcut: reads the newest client's authorization for callers not yet migrated,
+    // remove once every caller passes its own authorization
+    fun sendEvent(
+        eventName: String,
+        analyticsEventParams: AnalyticsEventParams = AnalyticsEventParams(),
+        sendImmediately: Boolean = true,
+    ) = sendEvent(eventName, merchantRepository.authorization, analyticsEventParams, sendImmediately)
+
+    fun reportCrash(authorization: Authorization) {
         val event = AnalyticsEvent(
             name = "crash",
             timestamp = time.currentTime
         )
-        try {
-            executeEventsApi(event, configuration)
-        } catch (e: JSONException) { /* ignored */
+        coroutineScope.launch {
+            send(event, authorization)
         }
     }
 
-    private fun executeEventsApi(
-        event: AnalyticsEvent,
+    private suspend fun send(trigger: AnalyticsEvent, authorization: Authorization) {
+        val configuration = loadConfiguration(authorization) ?: return
+        val batches = analyticsEventRepository.flushAndReturnEvents()
+        val ownEvents = batches.filter { it.authorization == authorization }.flatMap { it.events }
+        execute(ownEvents + trigger, configuration, authorization)
+        for (batch in batches) {
+            if (batch.authorization == authorization) continue
+            coroutineScope.launch {
+                // A failed configuration load drops the batch; retrying an expired authorization
+                // would refetch configuration on every send.
+                loadConfiguration(batch.authorization)?.let {
+                    execute(batch.events, it, batch.authorization)
+                }
+            }
+        }
+    }
+
+    private suspend fun loadConfiguration(authorization: Authorization): Configuration? {
+        return try {
+            (configurationLoader.loadConfiguration(authorization) as? ConfigurationLoaderResult.Success)
+                ?.configuration
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    private fun execute(
+        events: List<AnalyticsEvent>,
         configuration: Configuration?,
+        authorization: Authorization,
     ) {
-        val events = analyticsEventRepository.flushAndReturnEvents().toMutableList()
-        events.add(event)
-        analyticsApi.execute(events, configuration)
+        try {
+            analyticsApi.execute(events, configuration, authorization)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) { /* a failed send must not cancel the shared analytics scope */ }
     }
 
     companion object {
