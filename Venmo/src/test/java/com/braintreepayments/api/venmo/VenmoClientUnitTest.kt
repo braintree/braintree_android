@@ -42,6 +42,7 @@ import org.robolectric.RobolectricTestRunner
 import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -293,6 +294,8 @@ class VenmoClientUnitTest {
         val params = paymentAuthRequest.requestParams
         assertEquals(BraintreeRequestCodes.VENMO.code, params.browserSwitchOptions.requestCode)
         assertEquals("com.example", params.browserSwitchOptions.returnUrlScheme)
+        assertSame(clientToken, params.authorization)
+        assertFalse(params.toString().contains(clientToken.toString()))
 
         val url = params.browserSwitchOptions.url
         assertEquals("com.example://x-callback-url/vzero/auth/venmo/success", url!!.getQueryParameter("x-success"))
