@@ -11,6 +11,8 @@ import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
+import com.braintreepayments.api.core.Authorization
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.usecase.GetAppSwitchUseCase
 import com.google.testing.junit.testparameterinjector.TestParameter
 import io.mockk.CapturingSlot
@@ -43,6 +45,8 @@ class PayPalLauncherUnitTest {
     private val isBillingAgreement = true
     private val isPurchase = true
     private val recurringBillingPlanType = PayPalRecurringBillingPlanType.RECURRING.name
+    private val authorization: Authorization = mockk()
+    private val merchantRepository = MerchantRepository().also { it.authorization = authorization }
 
     private lateinit var sut: PayPalLauncher
 
@@ -55,6 +59,7 @@ class PayPalLauncherUnitTest {
         every { paymentAuthRequestParams.approvalUrl } returns approvalUrl
         every { paymentAuthRequestParams.shouldRequestBillingAgreement } returns isBillingAgreement
         every { paymentAuthRequestParams.recurringBillingPlanType } returns recurringBillingPlanType
+        every { paymentAuthRequestParams.authorization } returns authorization
         every { intent.data } returns Uri.parse(approvalUrl)
         every { options.url } returns Uri.parse(approvalUrl)
 
@@ -63,7 +68,8 @@ class PayPalLauncherUnitTest {
             getAppSwitchUseCase = getAppSwitchUseCase,
             resolvePayPalUseCase = resolvePayPalUseCase,
             lazyAnalyticsClient = lazy { analyticsClient },
-            analyticsParamRepository = analyticsParamRepository
+            analyticsParamRepository = analyticsParamRepository,
+            merchantRepository = merchantRepository
         )
     }
 
@@ -136,6 +142,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -150,6 +157,7 @@ class PayPalLauncherUnitTest {
                 } else {
                     PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
                 },
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -173,6 +181,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -188,6 +197,7 @@ class PayPalLauncherUnitTest {
                 } else {
                     PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
                 },
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -212,6 +222,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -227,6 +238,7 @@ class PayPalLauncherUnitTest {
                 } else {
                     PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
                 },
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -252,6 +264,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -262,6 +275,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_FAILED else PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -285,6 +299,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 PayPalAnalytics.APP_SWITCH_STARTED,
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -295,6 +310,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 PayPalAnalytics.APP_SWITCH_FAILED,
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -323,6 +339,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -333,6 +350,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_FAILED else PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -356,6 +374,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 PayPalAnalytics.HANDLE_RETURN_STARTED,
+                authorization,
                 AnalyticsEventParams(contextId = token, appSwitchUrl = returnUrl)
             )
         }
@@ -374,7 +393,7 @@ class PayPalLauncherUnitTest {
 
         val slot1 = CapturingSlot<String>()
         val slot2 = CapturingSlot<AnalyticsEventParams>()
-        every { analyticsClient.sendEvent(capture(slot1), capture(slot2)) } returns Unit
+        every { analyticsClient.sendEvent(capture(slot1), authorization, capture(slot2)) } returns Unit
 
         val paymentAuthResult = sut.handleReturnToApp(
             PayPalPendingRequest.Started(pendingRequestString),
@@ -387,8 +406,8 @@ class PayPalLauncherUnitTest {
             (paymentAuthResult as PayPalPaymentAuthResult.Success).browserSwitchSuccess
         )
 
-        verify { analyticsClient.sendEvent(any(), any<AnalyticsEventParams>()) }
-        verify { analyticsClient.sendEvent(any(), any<AnalyticsEventParams>()) }
+        verify { analyticsClient.sendEvent(any(), authorization, any<AnalyticsEventParams>()) }
+        verify { analyticsClient.sendEvent(any(), authorization, any<AnalyticsEventParams>()) }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED, slot1.captured)
         assertEquals(paymentToken, slot2.captured.contextId)
@@ -405,7 +424,7 @@ class PayPalLauncherUnitTest {
 
         val slot1 = CapturingSlot<String>()
         val slot2 = CapturingSlot<AnalyticsEventParams>()
-        every { analyticsClient.sendEvent(capture(slot1), capture(slot2)) } returns Unit
+        every { analyticsClient.sendEvent(capture(slot1), authorization, capture(slot2)) } returns Unit
 
         val exception = BrowserSwitchException("BrowserSwitchException")
         every { browserSwitchFinalResult.error } returns exception
@@ -421,7 +440,7 @@ class PayPalLauncherUnitTest {
             (paymentAuthResult as PayPalPaymentAuthResult.Failure).error
         )
         verify {
-            analyticsClient.sendEvent(any(), any<AnalyticsEventParams>())
+            analyticsClient.sendEvent(any(), authorization, any<AnalyticsEventParams>())
         }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_FAILED, slot1.captured)
@@ -441,6 +460,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 PayPalAnalytics.APP_SWITCH_STARTED,
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -462,6 +482,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -483,6 +504,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                authorization,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -527,7 +549,7 @@ class PayPalLauncherUnitTest {
 
         val slot1 = CapturingSlot<String>()
         val slot2 = CapturingSlot<AnalyticsEventParams>()
-        every { analyticsClient.sendEvent(capture(slot1), capture(slot2)) } returns Unit
+        every { analyticsClient.sendEvent(capture(slot1), authorization, capture(slot2)) } returns Unit
 
         val paymentAuthResult = sut.handleReturnToApp(
             PayPalPendingRequest.Started(pendingRequestString),
@@ -535,7 +557,7 @@ class PayPalLauncherUnitTest {
         )
 
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.NoResult)
-        verify { analyticsClient.sendEvent(any(), any<AnalyticsEventParams>()) }
+        verify { analyticsClient.sendEvent(any(), authorization, any<AnalyticsEventParams>()) }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, slot1.captured)
         assertEquals(paymentToken, slot2.captured.contextId)
@@ -563,5 +585,160 @@ class PayPalLauncherUnitTest {
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
         verify { browserSwitchClient.start(activity, options, false) }
+    }
+
+    private fun createSut(
+        repository: MerchantRepository,
+        lazyClient: Lazy<AnalyticsClient> = lazy { analyticsClient }
+    ) = PayPalLauncher(
+        browserSwitchClient = browserSwitchClient,
+        getAppSwitchUseCase = getAppSwitchUseCase,
+        resolvePayPalUseCase = resolvePayPalUseCase,
+        lazyAnalyticsClient = lazyClient,
+        analyticsParamRepository = analyticsParamRepository,
+        merchantRepository = repository
+    )
+
+    private fun repositoryWith(auth: Authorization) = MerchantRepository().also { it.authorization = auth }
+
+    private fun launchStarted(launcher: PayPalLauncher, pendingRequest: String) {
+        every { browserSwitchClient.start(activity, options, any()) } returns
+            BrowserSwitchStartResult.Started(pendingRequest)
+        launcher.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+    }
+
+    @Test
+    fun `when no authorization is available, launch and handleReturnToApp skip analytics and return results`() {
+        val failIfEvaluated: Lazy<AnalyticsClient> = lazy { throw AssertionError("evaluated") }
+        every { paymentAuthRequestParams.authorization } returns null
+        val launcher = createSut(MerchantRepository(), failIfEvaluated)
+        every { browserSwitchClient.start(activity, options, any()) } returns
+            BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            BrowserSwitchFinalResult.NoResult
+
+        val pendingRequest =
+            launcher.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+        val result = launcher.handleReturnToApp(PayPalPendingRequest.Started(pendingRequestString), intent)
+
+        assertTrue(pendingRequest is PayPalPendingRequest.Started)
+        assertTrue(result is PayPalPaymentAuthResult.NoResult)
+    }
+
+    @Test
+    fun `launch events carry the request params authorization`() {
+        val other: Authorization = mockk()
+        val launcher = createSut(repositoryWith(other))
+
+        launchStarted(launcher, pendingRequestString)
+
+        verify { analyticsClient.sendEvent(PayPalAnalytics.BROWSER_PRESENTATION_STARTED, authorization, any()) }
+        verify { analyticsClient.sendEvent(PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED, authorization, any()) }
+        verify(exactly = 0) { analyticsClient.sendEvent(any(), other, any<AnalyticsEventParams>()) }
+    }
+
+    @Test
+    fun `handleReturnToApp events use the authorization of the launch that started the pending request`() {
+        val other: Authorization = mockk()
+        val launcher = createSut(repositoryWith(other))
+        launchStarted(launcher, pendingRequestString)
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            BrowserSwitchFinalResult.NoResult
+
+        launcher.handleReturnToApp(PayPalPendingRequest.Started(pendingRequestString), intent)
+
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, authorization, any()) }
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, authorization, any()) }
+        verify(exactly = 0) { analyticsClient.sendEvent(any(), other, any<AnalyticsEventParams>()) }
+    }
+
+    @Test
+    fun `handleReturnToApp with an unknown pending request falls back to the merchant repository authorization`() {
+        val newest: Authorization = mockk()
+        val launcher = createSut(repositoryWith(newest))
+        launchStarted(launcher, pendingRequestString)
+        every { browserSwitchClient.completeRequest(intent, "other_request") } returns
+            BrowserSwitchFinalResult.NoResult
+
+        launcher.handleReturnToApp(PayPalPendingRequest.Started("other_request"), intent)
+
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, newest, any()) }
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, newest, any()) }
+    }
+
+    @Test
+    fun `a failed launch does not remember the request`() {
+        val newest: Authorization = mockk()
+        val launcher = createSut(repositoryWith(newest))
+        every { browserSwitchClient.start(activity, options, any()) } returns
+            BrowserSwitchStartResult.Failure(BrowserSwitchException("error"))
+        launcher.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            BrowserSwitchFinalResult.NoResult
+
+        launcher.handleReturnToApp(PayPalPendingRequest.Started(pendingRequestString), intent)
+
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, newest, any()) }
+    }
+
+    @Test
+    fun `a later launch replaces the remembered request only when it starts successfully`() {
+        val second: Authorization = mockk()
+        val newest: Authorization = mockk()
+        val launcher = createSut(repositoryWith(newest))
+        launchStarted(launcher, "first_request")
+
+        every { paymentAuthRequestParams.authorization } returns second
+        every { browserSwitchClient.start(activity, options, any()) } returns
+            BrowserSwitchStartResult.Failure(BrowserSwitchException("error"))
+        launcher.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+        every { browserSwitchClient.completeRequest(intent, any()) } returns BrowserSwitchFinalResult.NoResult
+        launcher.handleReturnToApp(PayPalPendingRequest.Started("first_request"), intent)
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, authorization, any()) }
+
+        launchStarted(launcher, "second_request")
+        launcher.handleReturnToApp(PayPalPendingRequest.Started("first_request"), intent)
+        launcher.handleReturnToApp(PayPalPendingRequest.Started("second_request"), intent)
+
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, second, any()) }
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, newest, any()) }
+    }
+
+    @Test
+    fun `handleReturnToApp clears the remembered request after a success result`() {
+        val newest: Authorization = mockk()
+        val launcher = createSut(repositoryWith(newest))
+        launchStarted(launcher, pendingRequestString)
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            mockk<BrowserSwitchFinalResult.Success>()
+
+        launcher.handleReturnToApp(PayPalPendingRequest.Started(pendingRequestString), intent)
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED, authorization, any()) }
+
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            BrowserSwitchFinalResult.NoResult
+        launcher.handleReturnToApp(PayPalPendingRequest.Started(pendingRequestString), intent)
+
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, newest, any()) }
+        verify(exactly = 0) { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, authorization, any()) }
+    }
+
+    @Test
+    fun `handleReturnToApp clears the remembered request after a failure result`() {
+        val newest: Authorization = mockk()
+        val launcher = createSut(repositoryWith(newest))
+        launchStarted(launcher, pendingRequestString)
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            mockk<BrowserSwitchFinalResult.Failure> { every { error } returns BrowserSwitchException("error") }
+
+        launcher.handleReturnToApp(PayPalPendingRequest.Started(pendingRequestString), intent)
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_FAILED, authorization, any()) }
+
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            BrowserSwitchFinalResult.NoResult
+        launcher.handleReturnToApp(PayPalPendingRequest.Started(pendingRequestString), intent)
+
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, newest, any()) }
+        verify(exactly = 0) { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, authorization, any()) }
     }
 }

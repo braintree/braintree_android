@@ -21,6 +21,12 @@ class MerchantRepository {
      */
     lateinit var authorization: Authorization
 
+    /**
+     * The most recently created [BraintreeClient]'s authorization, or null if no client exists yet.
+     */
+    val authorizationOrNull: Authorization?
+        get() = if (::authorization.isInitialized) authorization else null
+
     lateinit var returnUrlScheme: String
     var appLinkReturnUri: Uri? = null
 

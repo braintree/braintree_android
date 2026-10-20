@@ -152,6 +152,7 @@ internal class PayPalInternalClient(
             contextId = contextId,
             successUrl = "$returnLink/success"
         )
+        paymentAuthRequest.authorization = braintreeClient.authorization
 
         if (getAppSwitchUseCase()) {
             if (!contextId.isNullOrEmpty()) {

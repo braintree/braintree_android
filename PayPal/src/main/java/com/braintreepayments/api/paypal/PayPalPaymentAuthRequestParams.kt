@@ -2,6 +2,7 @@ package com.braintreepayments.api.paypal
 
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.BrowserSwitchOptions
+import com.braintreepayments.api.core.Authorization
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
@@ -12,6 +13,9 @@ data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
     val contextId: String? = null,
     val successUrl: String? = null,
 ) {
+
+    // body property: keeps the credential out of the data class generated toString/equals/copy
+    internal var authorization: Authorization? = null
 
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val intent: PayPalPaymentIntent?
