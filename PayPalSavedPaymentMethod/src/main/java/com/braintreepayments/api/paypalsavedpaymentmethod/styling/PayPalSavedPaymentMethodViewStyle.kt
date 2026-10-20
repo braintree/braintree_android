@@ -49,7 +49,8 @@ class ComponentAppearance @JvmOverloads constructor(
 /**
  * Dimensions, spacing, shape, border, and internal layout of the PayPal Saved Payment Method component.
  *
- * @param heightDp height of the container, in dp. Null wraps the content.
+ * @param heightDp minimum height of the container, in dp. Null wraps the content. The container is never smaller than
+ * its content, so 0 or less behaves like null.
  * @param horizontalPaddingDp horizontal padding between the container edges and its content, in dp. Null uses the
  * SDK default.
  * @param verticalPaddingDp vertical padding between the container edges and its content, in dp. Null uses the SDK
@@ -91,7 +92,8 @@ class PayPalLogoStyle @JvmOverloads constructor(
 /**
  * Typography and positioning of the "PayPal" text label.
  *
- * @param fontSizeSp font size of the "PayPal" label, in sp. Null uses [ComponentAppearance.baseFontSizeSp].
+ * @param fontSizeSp font size of the "PayPal" label, in sp. Null uses [ComponentAppearance.baseFontSizeSp], then the
+ * SDK default.
  * @param marginStartDp start margin of the label relative to the preceding PayPal logo, in dp. Null uses the SDK
  * default.
  */
@@ -105,7 +107,7 @@ class PayPalLabelStyle @JvmOverloads constructor(
  * Styling and positioning of the saved payment method and its edit affordance.
  *
  * @param textFontSizeSp font size of the saved payment method text, in sp. Null uses
- * [ComponentAppearance.baseFontSizeSp].
+ * [ComponentAppearance.baseFontSizeSp], then the SDK default.
  * @param editIconSizeDp size of the edit icon for the saved payment method, in dp. Null uses the SDK default.
  * @param marginStartDp start margin of the funding instrument relative to the preceding "PayPal" label, in dp. Null
  * uses the SDK default.
@@ -120,7 +122,8 @@ class FundingInstrumentStyle @JvmOverloads constructor(
 /**
  * Styling of the Pay Later / credit messaging.
  *
- * @param fontSizeSp font size of the credit messaging text, in sp. Null uses [ComponentAppearance.baseFontSizeSp].
+ * @param fontSizeSp font size of the credit messaging text, in sp. Null uses [ComponentAppearance.baseFontSizeSp],
+ * then the SDK default.
  * @param linkColor color of the "Learn more" link within credit messaging. Null shows the link bold and underlined in
  * the text color.
  */
