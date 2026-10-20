@@ -127,7 +127,6 @@ class AnalyticsApiUnitTest {
     @Test
     fun `when execute is called with client token, httpClient post is invoked`() = runTest {
         val authFingerprint = "auth-fingerprint"
-        every { merchantRepository.authorization } returns clientToken
         every { clientToken.bearer } returns authFingerprint
 
         val expectedJson = getExpectedJson(clientToken)
@@ -136,7 +135,7 @@ class AnalyticsApiUnitTest {
         val testScope = TestScope(testDispatcher)
         sut = createAnalyticsApi(testDispatcher, testScope)
 
-        sut.execute(listOf(clientTokenEvent), configuration)
+        sut.execute(listOf(clientTokenEvent), configuration, clientToken)
         advanceUntilIdle()
 
         coVerify {
@@ -154,7 +153,6 @@ class AnalyticsApiUnitTest {
     @Test
     fun `when execute is called with tokenization key, httpClient post is invoked`() = runTest {
         val tokenizationKeyBearer = "tokenization-key-bearer"
-        every { merchantRepository.authorization } returns tokenizationKey
         every { tokenizationKey.bearer } returns tokenizationKeyBearer
 
         val expectedJson = getExpectedJson(tokenizationKey)
@@ -163,7 +161,7 @@ class AnalyticsApiUnitTest {
         val testScope = TestScope(testDispatcher)
         sut = createAnalyticsApi(testDispatcher, testScope)
 
-        sut.execute(listOf(tokenizationKeyEvent), configuration)
+        sut.execute(listOf(tokenizationKeyEvent), configuration, tokenizationKey)
         advanceUntilIdle()
 
         coVerify {
@@ -179,16 +177,15 @@ class AnalyticsApiUnitTest {
     }
 
     @Test
-    fun `when authorization changes after execute, request uses the captured authorization`() = runTest {
-        every { merchantRepository.authorization } returns clientToken
+    fun `when execute is called, the passed authorization wins over the merchantRepository one`() = runTest {
+        every { merchantRepository.authorization } returns tokenizationKey
         every { clientToken.bearer } returns "auth-fingerprint"
 
         val testDispatcher = StandardTestDispatcher(testScheduler)
         val testScope = TestScope(testDispatcher)
         sut = createAnalyticsApi(testDispatcher, testScope)
 
-        sut.execute(listOf(clientTokenEvent), configuration)
-        every { merchantRepository.authorization } returns tokenizationKey
+        sut.execute(listOf(clientTokenEvent), configuration, clientToken)
         advanceUntilIdle()
 
         coVerify {
@@ -203,7 +200,8 @@ class AnalyticsApiUnitTest {
 
     @Test
     fun `when httpClient post throws UnknownHostException, execute does not crash`() = runTest {
-        every { merchantRepository.authorization } returns tokenizationKey
+        val tokenizationKeyBearer = "tokenization-key-bearer"
+        every { tokenizationKey.bearer } returns tokenizationKeyBearer
         coEvery {
             httpClient.post(any(), any(), any(), any())
         } throws UnknownHostException("Unable to resolve host \"api-m.paypal.com\"")
@@ -212,13 +210,14 @@ class AnalyticsApiUnitTest {
         val testScope = TestScope(testDispatcher)
         sut = createAnalyticsApi(testDispatcher, testScope)
 
-        sut.execute(listOf(tokenizationKeyEvent), configuration)
+        sut.execute(listOf(tokenizationKeyEvent), configuration, tokenizationKey)
         advanceUntilIdle()
     }
 
     @Test
     fun `when httpClient post throws CancellationException, execute does not crash`() = runTest {
-        every { merchantRepository.authorization } returns tokenizationKey
+        val tokenizationKeyBearer = "tokenization-key-bearer"
+        every { tokenizationKey.bearer } returns tokenizationKeyBearer
         coEvery {
             httpClient.post(any(), any(), any(), any())
         } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
@@ -227,7 +226,7 @@ class AnalyticsApiUnitTest {
         val testScope = TestScope(testDispatcher)
         sut = createAnalyticsApi(testDispatcher, testScope)
 
-        sut.execute(listOf(tokenizationKeyEvent), configuration)
+        sut.execute(listOf(tokenizationKeyEvent), configuration, tokenizationKey)
         advanceUntilIdle()
     }
 
