@@ -14,6 +14,7 @@ import com.braintreepayments.api.card.CardResult
 import com.braintreepayments.api.card.CardTokenizeCallback
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.uicomponents.R
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
@@ -73,8 +74,16 @@ class CardFieldsUnitTest {
     private fun createCardFields() =
         CardFields(activity, viewModel = viewModel, analyticsClient = analyticsClient)
 
+    private val tokenizationKey = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
+
     private fun createCardFieldsWithClient() =
-        CardFields(activity, viewModel = viewModel, cardClient = cardClient, analyticsClient = analyticsClient)
+        CardFields(
+            activity,
+            viewModel = viewModel,
+            cardClient = cardClient,
+            analyticsClient = analyticsClient,
+            parsedAuthorization = Authorization.fromString(tokenizationKey)
+        )
 
     private fun CardFields.attach() = activity.setContentView(this)
 
@@ -489,11 +498,12 @@ class CardFieldsUnitTest {
     fun `initialize sends the card fields presented event`() {
         val cardFields = createCardFields()
 
-        cardFields.initialize("fake-authorization")
+        cardFields.initialize(tokenizationKey)
 
         verify {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.CARD_FIELDS_PRESENTED,
+                Authorization.fromString(tokenizationKey),
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
             )
         }
@@ -508,6 +518,7 @@ class CardFieldsUnitTest {
         verify {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
+                Authorization.fromString(tokenizationKey),
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
             )
         }
@@ -523,6 +534,7 @@ class CardFieldsUnitTest {
         verify(exactly = 0) {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
+                any<Authorization>(),
                 any<AnalyticsEventParams>()
             )
         }

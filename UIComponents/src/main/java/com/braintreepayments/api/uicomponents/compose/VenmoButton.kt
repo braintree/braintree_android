@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.coroutineScope
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_COMPOSE
 import com.braintreepayments.api.uicomponents.VenmoButtonColor
@@ -93,10 +94,11 @@ fun VenmoButton(
         )
     }
     val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
+    val analyticsAuthorization = remember { Authorization.fromString(authorization) }
 
     VenmoButtonView(style = style, enabled = enabled) {
         enabled = false
-        logButtonSelected(analyticsClient)
+        logButtonSelected(analyticsClient, analyticsAuthorization)
         venmoClient.createPaymentAuthRequest(
             context = context,
             request = venmoRequest
@@ -131,7 +133,7 @@ fun VenmoButton(
     LaunchedEffect(Unit) {
         if (shouldLogButtonPresentment) {
             shouldLogButtonPresentment = false
-            logButtonPresented(analyticsClient)
+            logButtonPresented(analyticsClient, analyticsAuthorization)
         }
     }
 
@@ -217,16 +219,18 @@ private fun handleReturnToApp(
     }
 }
 
-private fun logButtonPresented(analyticsClient: AnalyticsClient) {
+private fun logButtonPresented(analyticsClient: AnalyticsClient, authorization: Authorization) {
     analyticsClient.sendEvent(
         UIComponentsAnalytics.VENMO_BUTTON_PRESENTED,
+        authorization,
         AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
     )
 }
 
-private fun logButtonSelected(analyticsClient: AnalyticsClient) {
+private fun logButtonSelected(analyticsClient: AnalyticsClient, authorization: Authorization) {
     analyticsClient.sendEvent(
         UIComponentsAnalytics.VENMO_BUTTON_SELECTED,
+        authorization,
         AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
     )
 }

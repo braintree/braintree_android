@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
@@ -53,6 +54,7 @@ class PayPalButton @JvmOverloads constructor(
      */
     private lateinit var payPalClient: PayPalClient
     private lateinit var payPalLauncher: PayPalLauncher
+    private lateinit var analyticsAuthorization: Authorization
 
     /**
      * Callback invoked when the PayPal payment authentication request is launched.
@@ -108,6 +110,7 @@ class PayPalButton @JvmOverloads constructor(
         deepLinkFallbackUrlScheme: String? = null
     ) {
 
+        analyticsAuthorization = Authorization.fromString(authorization)
         payPalLauncher = PayPalLauncher(activityResultCaller)
         payPalClient = PayPalClient(
             context = context,
@@ -119,6 +122,7 @@ class PayPalButton @JvmOverloads constructor(
         val analyticsClient = AnalyticsClient.lazyInstance.value
         analyticsClient.sendEvent(
             UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED,
+            analyticsAuthorization,
             AnalyticsEventParams(uiType = UI_TYPE_XML_VIEW)
         )
     }
@@ -170,6 +174,7 @@ class PayPalButton @JvmOverloads constructor(
             val analyticsClient = AnalyticsClient.lazyInstance.value
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED,
+                analyticsAuthorization,
                 AnalyticsEventParams(uiType = UI_TYPE_XML_VIEW)
             )
             val payPalPendingRequest = payPalLauncher.launch(

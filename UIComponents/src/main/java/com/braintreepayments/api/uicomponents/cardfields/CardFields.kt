@@ -14,6 +14,7 @@ import com.braintreepayments.api.card.CardClient
 import com.braintreepayments.api.card.CardResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeException
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.uicomponents.R
@@ -31,7 +32,8 @@ class CardFields internal constructor(
     defStyleAttr: Int = 0,
     private val viewModel: CardFieldsViewModel = CardFieldsViewModel(),
     private var cardClient: CardClient? = null,
-    private val analyticsClient: AnalyticsClient? = null
+    private val analyticsClient: AnalyticsClient? = null,
+    private var parsedAuthorization: Authorization? = null
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private fun getAnalyticsClient(): AnalyticsClient = analyticsClient ?: AnalyticsClient.lazyInstance.value
@@ -101,8 +103,11 @@ class CardFields internal constructor(
      */
     fun initialize(authorization: String) {
         cardClient = CardClient(context, authorization)
+        val parsed = Authorization.fromString(authorization)
+        parsedAuthorization = parsed
         getAnalyticsClient().sendEvent(
             UIComponentsAnalytics.CARD_FIELDS_PRESENTED,
+            parsed,
             AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
         )
     }
@@ -141,10 +146,13 @@ class CardFields internal constructor(
             )
             return
         }
-        getAnalyticsClient().sendEvent(
-            UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
-            AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
-        )
+        parsedAuthorization?.let {
+            getAnalyticsClient().sendEvent(
+                UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
+                it,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+            )
+        }
         client.tokenize(buildCard()) { cardResult ->
             val result = when (cardResult) {
                 is CardResult.Success -> {
