@@ -306,10 +306,15 @@ class VenmoClient internal constructor(
                     is GetReturnLinkUseCase.ReturnLinkResult.Failure -> throw returnLinkResult.exception
                 }
             }
-        val params = VenmoPaymentAuthRequestParams(browserSwitchOptions)
+        val params = buildAuthRequestParams(browserSwitchOptions)
 
         return VenmoPaymentAuthRequest.ReadyToLaunch(params)
     }
+
+    private fun buildAuthRequestParams(browserSwitchOptions: BrowserSwitchOptions) =
+        VenmoPaymentAuthRequestParams(browserSwitchOptions).apply {
+            authorization = braintreeClient.authorization
+        }
 
     /**
      * After successfully authenticating a Venmo user account via [VenmoClient.createPaymentAuthRequest],
