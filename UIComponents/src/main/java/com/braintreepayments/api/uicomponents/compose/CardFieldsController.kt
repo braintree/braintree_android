@@ -15,6 +15,7 @@ import com.braintreepayments.api.card.CardClient
 import com.braintreepayments.api.card.CardResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import com.braintreepayments.api.uicomponents.cardfields.CardFieldsResult
 import com.braintreepayments.api.uicomponents.cardfields.CardFieldsResultCallback
@@ -31,6 +32,7 @@ class CardFieldsController internal constructor(
     internal val expiration: MutableState<TextFieldValue>,
     internal val cvv: MutableState<TextFieldValue>,
     private val cardClient: CardClient,
+    private val authorization: Authorization,
     private val request: Card = Card(),
     private val analyticsClient: AnalyticsClient = AnalyticsClient.lazyInstance.value,
     private val shouldSendPresentedEvent: MutableState<Boolean> = mutableStateOf(true),
@@ -41,6 +43,7 @@ class CardFieldsController internal constructor(
         if (shouldSendPresentedEvent.value) {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.CARD_FIELDS_PRESENTED,
+                authorization,
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
             )
             shouldSendPresentedEvent.value = false
@@ -55,6 +58,7 @@ class CardFieldsController internal constructor(
     fun submit(callback: CardFieldsResultCallback) {
         analyticsClient.sendEvent(
             UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
+            authorization,
             AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
         )
 
@@ -121,6 +125,7 @@ fun rememberCardFieldsController(authorization: String, request: Card = Card()):
             expiration,
             cvv,
             CardClient(context, authorization),
+            Authorization.fromString(authorization),
             request,
             shouldSendPresentedEvent = shouldSendPresentedEvent,
         )

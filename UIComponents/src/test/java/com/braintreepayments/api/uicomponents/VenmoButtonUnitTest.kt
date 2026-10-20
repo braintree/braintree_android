@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.venmo.VenmoClient
 import com.braintreepayments.api.venmo.VenmoLauncher
 import com.braintreepayments.api.venmo.VenmoPaymentAuthRequest
@@ -32,12 +33,14 @@ class VenmoButtonUnitTest {
 
     private val mockVenmoClient: VenmoClient = mockk(relaxed = true)
     private val mockVenmoLauncher: VenmoLauncher = mockk(relaxed = true)
+    private val mockAnalyticsClient: AnalyticsClient = mockk(relaxed = true)
     private val venmoRequest = VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE)
+    private val analyticsAuthorization = Authorization.fromString("sandbox_tmxhyf7d_dcpspy2brwdjr3qn")
 
     @Before
     fun setUp() {
         mockkObject(AnalyticsClient.Companion)
-        every { AnalyticsClient.lazyInstance } returns lazyOf(mockk(relaxed = true))
+        every { AnalyticsClient.lazyInstance } returns lazyOf(mockAnalyticsClient)
     }
 
     @After
@@ -55,7 +58,8 @@ class VenmoButtonUnitTest {
         val button = VenmoButton(
             ApplicationProvider.getApplicationContext(),
             mockVenmoClient,
-            mockVenmoLauncher
+            mockVenmoLauncher,
+            analyticsAuthorization
         )
         button.setVenmoRequest(venmoRequest)
         button.performClick()
@@ -83,7 +87,8 @@ class VenmoButtonUnitTest {
         val button = VenmoButton(
             ApplicationProvider.getApplicationContext(),
             mockVenmoClient,
-            mockVenmoLauncher
+            mockVenmoLauncher,
+            analyticsAuthorization
         )
         button.setVenmoRequest(venmoRequest)
         button.performClick()
@@ -112,7 +117,7 @@ class VenmoButtonUnitTest {
 
         // Using a ComponentActivity context so getActivity() returns non-null
         val activity = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
-        val button = VenmoButton(activity, mockVenmoClient, mockVenmoLauncher)
+        val button = VenmoButton(activity, mockVenmoClient, mockVenmoLauncher, analyticsAuthorization)
         val launchCallback = mockk<VenmoLaunchCallback>(relaxed = true)
         button.venmoLaunchCallback = launchCallback
         button.setVenmoRequest(venmoRequest)
@@ -130,6 +135,14 @@ class VenmoButtonUnitTest {
                 match { it is VenmoPendingRequest.Failure && it.error === launchError }
             )
         }
+        verify {
+            mockAnalyticsClient.sendEvent(
+                UIComponentsAnalytics.VENMO_BUTTON_SELECTED,
+                analyticsAuthorization,
+                any(),
+                any()
+            )
+        }
         assertTrue(button.isEnabled)
     }
 
@@ -138,7 +151,8 @@ class VenmoButtonUnitTest {
         val button = VenmoButton(
             ApplicationProvider.getApplicationContext(),
             mockVenmoClient,
-            mockVenmoLauncher
+            mockVenmoLauncher,
+            analyticsAuthorization
         )
 
         val pendingRequest = VenmoPendingRequest.Started("test-pending-request")
@@ -167,7 +181,8 @@ class VenmoButtonUnitTest {
         val button = VenmoButton(
             ApplicationProvider.getApplicationContext(),
             mockVenmoClient,
-            mockVenmoLauncher
+            mockVenmoLauncher,
+            analyticsAuthorization
         )
 
         val pendingRequest = VenmoPendingRequest.Started("test-pending-request")
@@ -194,7 +209,8 @@ class VenmoButtonUnitTest {
         val button = VenmoButton(
             ApplicationProvider.getApplicationContext(),
             mockVenmoClient,
-            mockVenmoLauncher
+            mockVenmoLauncher,
+            analyticsAuthorization
         )
 
         val pendingRequest = VenmoPendingRequest.Started("test-pending-request")

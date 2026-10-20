@@ -1,7 +1,6 @@
 package com.braintreepayments.api.shopperinsights.v2
 
 import android.content.Context
-import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.DeviceInspector
@@ -41,7 +40,6 @@ class ShopperInsightsClientV2 internal constructor(
     private val generateCustomerRecommendationsApi: GenerateCustomerRecommendationsApi =
         GenerateCustomerRecommendationsApi(braintreeClient),
     private val deviceInspector: DeviceInspector = DeviceInspectorProvider().deviceInspector,
-    lazyAnalyticsClient: Lazy<AnalyticsClient> = AnalyticsClient.lazyInstance,
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
     private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher)
 ) {
@@ -56,8 +54,6 @@ class ShopperInsightsClientV2 internal constructor(
     ) : this(
         BraintreeClient(context, authorization)
     )
-
-    private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 
     /**
      * Creates a new customer session.
@@ -88,17 +84,17 @@ class ShopperInsightsClientV2 internal constructor(
     suspend fun createCustomerSession(
         customerSessionRequest: CustomerSessionRequest
     ): CustomerSessionResult {
-        analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
+        braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
         return when (
             val createCustomerSessionResult = createCustomerSessionApi.execute(customerSessionRequest)
         ) {
             is CreateCustomerSessionApi.CreateCustomerSessionResult.Success -> {
-                analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_SUCCEEDED)
+                braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_SUCCEEDED)
                 CustomerSessionResult.Success(createCustomerSessionResult.sessionId)
             }
 
             is CreateCustomerSessionApi.CreateCustomerSessionResult.Error -> {
-                analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_FAILED)
+                braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_FAILED)
                 CustomerSessionResult.Failure(createCustomerSessionResult.error)
             }
         }
@@ -137,17 +133,17 @@ class ShopperInsightsClientV2 internal constructor(
         customerSessionRequest: CustomerSessionRequest,
         sessionId: String
     ): CustomerSessionResult {
-        analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
+        braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
         return when (
             val updateCustomerSessionResult = updateCustomerSessionApi.execute(customerSessionRequest, sessionId)
         ) {
             is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Success -> {
-                analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_SUCCEEDED)
+                braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_SUCCEEDED)
                 CustomerSessionResult.Success(updateCustomerSessionResult.sessionId)
             }
 
             is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Error -> {
-                analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_FAILED)
+                braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_FAILED)
                 CustomerSessionResult.Failure(updateCustomerSessionResult.error)
             }
         }
@@ -187,18 +183,18 @@ class ShopperInsightsClientV2 internal constructor(
         customerSessionRequest: CustomerSessionRequest? = null,
         sessionId: String? = null,
     ): CustomerRecommendationsResult {
-        analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
+        braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
         return when (
             val generateCustomerRecommendationsResult =
                 generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId)
         ) {
             is GenerateCustomerRecommendationsResult.Success -> {
-                analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED)
+                braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED)
                 CustomerRecommendationsResult.Success(generateCustomerRecommendationsResult.customerRecommendations)
             }
 
             is GenerateCustomerRecommendationsResult.Error -> {
-                analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
+                braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
                 CustomerRecommendationsResult.Failure(generateCustomerRecommendationsResult.error)
             }
         }
@@ -224,7 +220,7 @@ class ShopperInsightsClientV2 internal constructor(
             buttonOrder = presentmentDetails.buttonOrder.stringValue,
             pageType = presentmentDetails.pageType.stringValue
         )
-        analyticsClient.sendEvent(BUTTON_PRESENTED, params)
+        braintreeClient.sendAnalyticsEvent(BUTTON_PRESENTED, params)
     }
 
     /**
@@ -241,7 +237,7 @@ class ShopperInsightsClientV2 internal constructor(
             shopperSessionId = sessionId,
             buttonType = buttonType.stringValue,
         )
-        analyticsClient.sendEvent(BUTTON_SELECTED, params)
+        braintreeClient.sendAnalyticsEvent(BUTTON_SELECTED, params)
     }
 
     /**
