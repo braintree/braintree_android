@@ -11,6 +11,7 @@ import com.braintreepayments.api.testutils.PaymentActionConfirmationMethod
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.CountDownLatch
@@ -42,6 +43,7 @@ class PaymentActionsClientTest {
         )
     }
 
+    @Ignore("Blocked: nextAction union types not yet deployed to sandbox GraphQL schema (ADR 0022)")
     @Test(timeout = 30000)
     fun submitForPaymentAction_autoConfirmAutoCapture_returnsCompleted() {
         val createPaymentActionResponse = PaymentActionClientTokenBuilder().build()
@@ -59,6 +61,7 @@ class PaymentActionsClientTest {
         assertEquals(createPaymentActionResponse.paymentAction.id, outcome.id)
     }
 
+    @Ignore("Blocked: nextAction union types not yet deployed to sandbox GraphQL schema (ADR 0022)")
     @Test(timeout = 30000)
     fun submitForPaymentAction_manualConfirmAutoCapture_returnsServerActionRequiredConfirm() {
         val createPaymentActionResponse = PaymentActionClientTokenBuilder()
@@ -79,6 +82,7 @@ class PaymentActionsClientTest {
         assertEquals(ServerAction.CONFIRM, outcome.serverAction)
     }
 
+    @Ignore("Blocked: nextAction union types not yet deployed to sandbox GraphQL schema (ADR 0022)")
     @Test(timeout = 30000)
     fun submitForPaymentAction_autoConfirmManualCapture_returnsServerActionRequiredCapture() {
         val createPaymentActionResponse = PaymentActionClientTokenBuilder()
@@ -99,6 +103,7 @@ class PaymentActionsClientTest {
         assertEquals(ServerAction.CAPTURE, outcome.serverAction)
     }
 
+    @Ignore("Blocked: nextAction union types not yet deployed to sandbox GraphQL schema (ADR 0022)")
     @Test(timeout = 30000)
     fun submitForPaymentAction_manualConfirmManualCapture_returnsServerActionRequiredConfirm() {
         val createPaymentActionResponse = PaymentActionClientTokenBuilder()
@@ -148,6 +153,7 @@ class PaymentActionsClientTest {
         assertEquals(PaymentActionResult.Failure::class.java, result?.javaClass)
     }
 
+    @Ignore("Blocked: nextAction union types not yet deployed to sandbox GraphQL schema (ADR 0022)")
     @Test(timeout = 30000)
     fun submitForPaymentAction_withAlreadyUsedClientToken_returnsFailure() {
         val createPaymentActionResponse = PaymentActionClientTokenBuilder().build()

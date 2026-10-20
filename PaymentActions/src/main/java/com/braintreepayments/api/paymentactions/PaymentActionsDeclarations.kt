@@ -14,13 +14,11 @@ sealed class PaymentActionRequest {
     internal abstract fun toGraphQLVariables(): JSONObject
 
     /**
-     * A string representing the minimal selection set for the GraphQL call in
+     * A string representing the selection set for the GraphQL call in
      * [PaymentActionsService.setPaymentActionPaymentMethod].
      */
-    internal open fun paymentActionSelectionSet(): String = """
-        id
-        status
-    """.trimIndent()
+    internal open fun paymentActionSelectionSet(): String =
+        PaymentActionsGraphQLConstants.PAYMENT_ACTION_SELECTION_SET.trimIndent()
 }
 
 /**
@@ -113,7 +111,72 @@ class CreditCard(
 internal data class PaymentAction(
     val id: String,
     val status: PaymentActionStatus,
+    val nextAction: NextAction? = null,
 )
+
+/**
+ * The next action a Payment Action requires the client to complete, derived from the `nextAction`
+ * union's `__typename` in the GraphQL response.
+ *
+ * An unrecognized `__typename` — a union member this SDK version doesn't know about yet — resolves
+ * to [Unrecognized] rather than failing the response, since the schema is additive and new action
+ * types (redirect, QR code, CVV input, etc.) may be returned before this SDK supports them.
+ */
+internal sealed class NextAction {
+
+    /**
+     * Device data collection must be performed; [bin] drives method selection (e.g. Cardinal setup).
+     */
+    data class ThreeDSecureAuthentication(val bin: String) : NextAction()
+
+    /**
+     * A 3D Secure challenge must be presented to the customer.
+     */
+    data class ThreeDSecureChallenge(
+        val acsUrl: String,
+        val acsRenderingType: String?,
+        val challengePayload: String,
+    ) : NextAction()
+
+    /**
+     * A `nextAction` whose `__typename` was not recognized by this SDK version.
+     */
+    data class Unrecognized(val typeName: String?) : NextAction()
+}
+
+/**
+ * Mirrors the GraphQL `CustomerActionCompleteInput` `@oneOf` input on `signalCustomerActionComplete` —
+ * exactly one case is ever encoded, enforced by the type system rather than by convention.
+ */
+internal sealed class CustomerCompletedAction {
+
+    /**
+     * Produces the `customerActionComplete` GraphQL variable for this completed action.
+     */
+    internal abstract fun toGraphQLVariables(): JSONObject
+
+    /**
+     * Signals that device data collection (the 3D Secure authentication step) has completed.
+     */
+    data class DeviceDataCollection(val dfReferenceId: String) : CustomerCompletedAction() {
+        override fun toGraphQLVariables(): JSONObject {
+            val deviceDataCollection = JSONObject()
+                .put(PaymentActionsGraphQLConstants.Keys.DF_REFERENCE_ID, dfReferenceId)
+            return JSONObject().put(PaymentActionsGraphQLConstants.Keys.DEVICE_DATA_COLLECTION, deviceDataCollection)
+        }
+    }
+
+    /**
+     * Signals that the 3D Secure challenge has completed.
+     */
+    data class Challenge(val cardinalAuthenticationJWT: String) : CustomerCompletedAction() {
+        override fun toGraphQLVariables(): JSONObject {
+            val challenge = JSONObject()
+                .put(PaymentActionsGraphQLConstants.Keys.CARDINAL_AUTHENTICATION_JWT, cardinalAuthenticationJWT)
+            return JSONObject().put(PaymentActionsGraphQLConstants.Keys.CHALLENGE, challenge)
+        }
+    }
+}
 
 /**
  * Enum of possible payment action status values.

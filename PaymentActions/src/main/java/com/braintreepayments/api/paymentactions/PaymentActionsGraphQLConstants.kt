@@ -17,5 +17,43 @@ internal object PaymentActionsGraphQLConstants {
         const val BILLING_ADDRESS_REGION = "adminArea1"
         const val BILLING_ADDRESS_POSTAL_CODE = "postalCode"
         const val BILLING_ADDRESS_COUNTRY_CODE_ALPHA_2 = "countryCode"
+        const val CUSTOMER_ACTION_COMPLETE = "customerActionComplete"
+        const val DEVICE_DATA_COLLECTION = "deviceDataCollection"
+        const val DF_REFERENCE_ID = "dfReferenceId"
+        const val CHALLENGE = "challenge"
+        const val CARDINAL_AUTHENTICATION_JWT = "cardinalAuthenticationJWT"
     }
+
+    /**
+     * The GraphQL `__typename` values for the `nextAction` union's members.
+     */
+    object TypeNames {
+        const val THREE_D_SECURE_AUTHENTICATION = "PaymentActionThreeDSecureAuthentication"
+        const val THREE_D_SECURE_CHALLENGE = "PaymentActionThreeDSecureChallenge"
+    }
+
+    /**
+     * The `paymentAction` selection set shared by every GraphQL operation that returns a
+     * `PaymentAction` — `setPaymentActionPaymentMethod`, `getPaymentAction`, and
+     * `signalCustomerActionComplete`. This is the schema-defined response shape, uniform
+     * regardless of payment method, so it's safe to share rather than duplicate per operation.
+     *
+     * `nextAction` only requests fields for the union members this SDK currently supports; others
+     * (redirect, QR code, etc.) parse safely as [NextAction.Unrecognized] until added.
+     */
+    const val PAYMENT_ACTION_SELECTION_SET = """
+        id
+        status
+        nextAction {
+            __typename
+            ... on PaymentActionThreeDSecureAuthentication {
+                bin
+            }
+            ... on PaymentActionThreeDSecureChallenge {
+                acsUrl
+                acsRenderingType
+                challengePayload
+            }
+        }
+    """
 }

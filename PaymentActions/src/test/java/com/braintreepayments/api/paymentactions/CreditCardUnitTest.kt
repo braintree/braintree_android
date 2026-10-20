@@ -106,14 +106,14 @@ class CreditCardUnitTest {
     }
 
     @Test
-    fun `paymentActionSelectionSet returns the default id and status selection`() {
+    fun `paymentActionSelectionSet returns the shared payment action selection set`() {
         val creditCard = CreditCard(
             number = "4111111111111111",
             expirationMonth = "12",
             expirationYear = "2028",
         )
 
-        val expected = "id\nstatus"
+        val expected = PaymentActionsGraphQLConstants.PAYMENT_ACTION_SELECTION_SET.trimIndent()
 
         kotlin.test.assertEquals(expected, creditCard.paymentActionSelectionSet())
     }
