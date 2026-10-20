@@ -4,8 +4,8 @@ import com.braintreepayments.api.core.GraphQLConstants
 import org.json.JSONObject
 
 /**
- * The POST body for the GraphQL query `PaypalFundingInstrumentDetails`. A null [paymentMethodIdJwt], [orderId] or
- * [merchantAccountId] is omitted from the request.
+ * The POST body for the GraphQL query `PaypalFundingInstrumentDetails`. A null or blank [paymentMethodIdJwt],
+ * [orderId] or [merchantAccountId] is omitted from the request.
  *
  * @property fundingInstrumentType Which funding instrument to resolve.
  * @property paymentMethodIdJwt The client token's payment method ID JWT. Sent for
@@ -29,14 +29,17 @@ internal data class PayPalFundingInstrumentDetailsGraphQLBody(
             .put(FUNDING_INSTRUMENT_TYPE_KEY, fundingInstrumentType.rawValue)
             .put(INTEGRATION_CHANNEL_KEY, INTEGRATION_CHANNEL)
             .put(OS_TYPE_KEY, OS_TYPE)
-            .putOpt(PAYMENT_METHOD_ID_JWT_KEY, paymentMethodIdJwt)
-            .putOpt(ORDER_ID_KEY, orderId)
-            .putOpt(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId)
+            .putOpt(PAYMENT_METHOD_ID_JWT_KEY, paymentMethodIdJwt.nullIfBlank())
+            .putOpt(ORDER_ID_KEY, orderId.nullIfBlank())
+            .putOpt(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId.nullIfBlank())
 
         return JSONObject()
             .put(GraphQLConstants.Keys.QUERY, QUERY)
             .put(GraphQLConstants.Keys.VARIABLES, JSONObject().put(GraphQLConstants.Keys.INPUT, input))
     }
+
+    // putOpt only skips null, so a blank value would be sent as "".
+    private fun String?.nullIfBlank(): String? = takeIf { !it.isNullOrBlank() }
 
     private companion object {
         const val FUNDING_INSTRUMENT_TYPE_KEY = "fundingInstrumentType"

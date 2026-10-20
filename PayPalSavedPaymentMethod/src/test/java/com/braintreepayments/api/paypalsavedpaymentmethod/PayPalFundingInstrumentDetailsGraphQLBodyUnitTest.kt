@@ -58,6 +58,22 @@ class PayPalFundingInstrumentDetailsGraphQLBodyUnitTest {
     }
 
     @Test
+    fun `toJson omits a blank paymentMethodIdJwt, orderId and merchantAccountId`() {
+        listOf("", "   ").forEach { blank ->
+            val input = input(
+                PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT,
+                paymentMethodIdJwt = blank,
+                orderId = blank,
+                merchantAccountId = blank
+            )
+
+            assertFalse(input.has("paymentMethodIdJwt"))
+            assertFalse(input.has("orderId"))
+            assertFalse(input.has("merchantAccountId"))
+        }
+    }
+
+    @Test
     fun `toJson sends the PaypalFundingInstrumentDetails query`() {
         val query = PayPalFundingInstrumentDetailsGraphQLBody(
             fundingInstrumentType = PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT,

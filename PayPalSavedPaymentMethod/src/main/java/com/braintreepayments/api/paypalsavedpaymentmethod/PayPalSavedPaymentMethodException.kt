@@ -7,7 +7,10 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
  * Exceptions thrown by the PayPal saved payment method module.
  */
 @ExperimentalBetaApi
-sealed class PayPalSavedPaymentMethodException(message: String) : BraintreeException(message) {
+sealed class PayPalSavedPaymentMethodException(
+    message: String,
+    cause: Throwable? = null
+) : BraintreeException(message, cause) {
 
     /**
      * The authorization used to initialize the client is not a client token.
@@ -38,10 +41,12 @@ sealed class PayPalSavedPaymentMethodException(message: String) : BraintreeExcep
     )
 
     /**
-     * The funding instrument details could not be parsed from the response.
+     * The funding instrument details could not be parsed from the response, because it is not valid JSON or has no
+     * funding instrument details.
      */
-    class FailedToParseSummary internal constructor() : PayPalSavedPaymentMethodException(
-        "Unable to parse the funding instrument details from the response."
+    class FailedToParseSummary internal constructor(cause: Throwable? = null) : PayPalSavedPaymentMethodException(
+        "Unable to parse the funding instrument details from the response.",
+        cause
     )
 
     /**

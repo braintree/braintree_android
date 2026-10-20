@@ -15,6 +15,7 @@ import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodSummary
 import com.braintreepayments.api.sharedutils.Json
+import org.json.JSONException
 import org.json.JSONObject
 
 /**
@@ -75,9 +76,8 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
      * Applies to both fetch types and is omitted from the request when null.
      * @return The funding instrument details to display for the buyer.
      * @throws PayPalSavedPaymentMethodException if the authorization is not a client token, the identity field for
-     * [fundingInstrumentType] is missing, or the response is empty or cannot be parsed.
+     * [fundingInstrumentType] is missing or blank, or the response is empty, is not valid JSON, or cannot be parsed.
      * @throws BraintreeException if the GraphQL response contains errors.
-     * @throws org.json.JSONException if the response is not valid JSON.
      * @throws java.io.IOException if the request fails.
      */
     @Suppress("ThrowsCount")
@@ -104,7 +104,7 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
             }
 
             PayPalFundingInstrumentFetchType.BUYER_UPDATED_BILLING_AGREEMENT -> {
-                if (orderId == null) throw PayPalSavedPaymentMethodException.MissingOrderId()
+                if (orderId.isNullOrBlank()) throw PayPalSavedPaymentMethodException.MissingOrderId()
 
                 PayPalFundingInstrumentDetailsGraphQLBody(
                     fundingInstrumentType = fundingInstrumentType,
@@ -119,7 +119,11 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
         if (responseBody.isEmpty()) throw PayPalSavedPaymentMethodException.EmptyBodyReturned()
 
         // GraphQL returns errors in a 200 response, so they are checked here.
-        val response = JSONObject(responseBody)
+        val response = try {
+            JSONObject(responseBody)
+        } catch (e: JSONException) {
+            throw PayPalSavedPaymentMethodException.FailedToParseSummary(e)
+        }
         val errors = response.optJSONArray(GraphQLConstants.Keys.ERRORS)
         if (errors != null && errors.length() > 0) {
             throw BraintreeException(

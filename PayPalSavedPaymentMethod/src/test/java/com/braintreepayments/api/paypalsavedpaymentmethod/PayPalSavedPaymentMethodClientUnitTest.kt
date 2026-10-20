@@ -38,6 +38,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.IOException
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 
 @RunWith(RobolectricTestRunner::class)
 class PayPalSavedPaymentMethodClientUnitTest {
@@ -147,6 +148,17 @@ class PayPalSavedPaymentMethodClientUnitTest {
     }
 
     @Test
+    fun `fetchPaymentMethod throws MissingOrderId for a blank orderId without sending a request`() = runTest {
+        val braintreeClient = MockkBraintreeClientBuilder().build()
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenRepository, payPalClient)
+
+        assertFailsWith<PayPalSavedPaymentMethodException.MissingOrderId> {
+            sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_UPDATED_BILLING_AGREEMENT, orderId = "  ")
+        }
+        coVerify(exactly = 0) { braintreeClient.sendGraphQLPOST(any()) }
+    }
+
+    @Test
     fun `fetchPaymentMethod throws EmptyBodyReturned when the response body is empty`() = runTest {
         val sut = PayPalSavedPaymentMethodClient(graphQLClient(""), clientTokenRepository, payPalClient)
 
@@ -202,13 +214,16 @@ class PayPalSavedPaymentMethodClientUnitTest {
     }
 
     @Test
-    fun `fetchPaymentMethod throws a JSONException when the response is not valid JSON`() = runTest {
-        val sut = PayPalSavedPaymentMethodClient(graphQLClient("not json"), clientTokenRepository, payPalClient)
+    fun `fetchPaymentMethod throws FailedToParseSummary, keeping the cause, when the response is not valid JSON`() =
+        runTest {
+            val sut = PayPalSavedPaymentMethodClient(graphQLClient("not json"), clientTokenRepository, payPalClient)
 
-        assertFailsWith<JSONException> {
-            sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
+            val error = assertFailsWith<PayPalSavedPaymentMethodException.FailedToParseSummary> {
+                sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
+            }
+
+            assertIs<JSONException>(error.cause)
         }
-    }
 
     @Test
     fun `fetchPaymentMethod propagates the error when the request fails`() = runTest {
