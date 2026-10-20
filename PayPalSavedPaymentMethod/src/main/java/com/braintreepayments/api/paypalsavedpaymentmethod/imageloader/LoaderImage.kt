@@ -13,12 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.testTag
+import com.braintreepayments.api.paypalsavedpaymentmethod.asHttpsUrlOrNull
 import java.io.IOException
 
 /**
  * Renders the funding-instrument icon at [url] via [ImageLoader]. While the image loads it shows [loading], which is
  * blank by default. It shows [placeholder] only when there is no image to show: if the load fails, or if [url] is
- * `null` or blank.
+ * `null` or not an https URL with a host.
  *
  * The icon is decorative (the FI label is rendered next to it), so it has no content description.
  *
@@ -67,10 +68,10 @@ private sealed interface LoadState {
     data object Failed : LoadState
 }
 
-// A missing URL has nothing to load, so it goes straight to the placeholder instead of showing the loading state.
-private fun initialState(url: String?, imageLoader: ImageLoader): LoadState = when {
-    url.isNullOrBlank() -> LoadState.Failed
-    else -> imageLoader.peek(url)?.let(LoadState::Loaded) ?: LoadState.Loading
+// A missing or non-https URL has nothing to load, so it goes straight to the placeholder instead of showing loading.
+private fun initialState(url: String?, imageLoader: ImageLoader): LoadState {
+    val validUrl = url.asHttpsUrlOrNull() ?: return LoadState.Failed
+    return imageLoader.peek(validUrl)?.let(LoadState::Loaded) ?: LoadState.Loading
 }
 
 // No semantic distinction exists otherwise, since the icon is decorative (contentDescription = null above).

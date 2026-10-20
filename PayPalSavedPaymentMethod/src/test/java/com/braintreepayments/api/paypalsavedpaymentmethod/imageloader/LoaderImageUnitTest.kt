@@ -129,6 +129,11 @@ class LoaderImageUnitTest {
     }
 
     @Test
+    fun `shows the placeholder without a loading state for a non-https url`() {
+        assertPlaceholderWithoutLoading(url = "http://www.paypalobjects.com/images/visa.png")
+    }
+
+    @Test
     fun `loads the new image after the url changes`() {
         coEvery { httpClient.sendRequestForBytes(match { it.url == URL }, any()) } returns pngBytes(16, 16)
         coEvery { httpClient.sendRequestForBytes(match { it.url == OTHER_URL }, any()) } returns pngBytes(48, 48)

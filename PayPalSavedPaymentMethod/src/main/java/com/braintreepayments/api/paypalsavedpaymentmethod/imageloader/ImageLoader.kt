@@ -6,6 +6,7 @@ import android.util.LruCache
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
+import com.braintreepayments.api.paypalsavedpaymentmethod.asHttpsUrlOrNull
 import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.Method
 import com.braintreepayments.api.sharedutils.OkHttpRequest
@@ -74,21 +75,19 @@ internal class ImageLoader internal constructor(
     fun peek(url: String): Bitmap? = memoryCache.get(url)
 
     /**
-     * Returns the bitmap for [url], from memory when cached. Throws [IllegalArgumentException] if [url] is blank or
-     * malformed, and [IOException] if the download or decode fails.
+     * Returns the bitmap for [url], from memory when cached. Throws [IllegalArgumentException] if [url] is not an https
+     * URL with a host, and [IOException] if the download or decode fails.
      */
     suspend fun load(url: String): Bitmap {
-        // TODO: validate with asHttpsUrlOrNull() from UrlValidation.kt (PR #1718) once it is on this branch, so only
-        //  https URLs with a host reach the network.
-        require(url.isNotBlank()) { "url must not be blank" }
-        memoryCache.get(url)?.let { return it }
-        return inFlightRequest(url).await()
+        val validUrl = requireNotNull(url.asHttpsUrlOrNull()) { "url must be an https URL with a host" }
+        memoryCache.get(validUrl)?.let { return it }
+        return inFlightRequest(validUrl).await()
     }
 
     /**
      * Binds [url] into [imageView]. While the image loads, the view shows [loadingPlaceholder], or stays blank when it
-     * is `null`. If [url] is missing or blank, or the load fails, it shows [errorPlaceholder], or stays blank when it
-     * is `null`.
+     * is `null`. If [url] is missing or not an https URL with a host, or the load fails, it shows [errorPlaceholder],
+     * or stays blank when it is `null`.
      *
      * Must be called on the main thread; it updates [imageView] directly.
      */
@@ -99,8 +98,7 @@ internal class ImageLoader internal constructor(
         @DrawableRes errorPlaceholder: Int? = null,
     ) {
         cancel(imageView)
-        // TODO: validate with asHttpsUrlOrNull() from UrlValidation.kt (PR #1718) instead of a blank check.
-        val validUrl = url?.takeIf { it.isNotBlank() }
+        val validUrl = url.asHttpsUrlOrNull()
         val cached = validUrl?.let { memoryCache.get(it) }
         if (cached != null) {
             imageView.setImageBitmap(cached)
@@ -148,7 +146,7 @@ internal class ImageLoader internal constructor(
             } catch (ignored: IOException) {
                 null // keep the placeholder; no automatic retry
             } catch (ignored: IllegalArgumentException) {
-                null // malformed URL rejected before any request; see the URL validation TODO in load()
+                null // non-https or host-less URL rejected before any request
             } catch (ignored: Exception) {
                 if (ignored is CancellationException) throw ignored
                 null // unexpected failure (e.g. a malformed response the decoder can't handle); keep the placeholder

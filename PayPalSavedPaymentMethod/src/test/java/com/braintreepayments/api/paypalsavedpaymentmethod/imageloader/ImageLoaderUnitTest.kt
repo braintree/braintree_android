@@ -114,12 +114,13 @@ class ImageLoaderUnitTest {
     }
 
     @Test
-    fun `load throws IllegalArgumentException for a blank url without making a request`() = runTest(testDispatcher) {
-        assertFailsWith<IllegalArgumentException> { sut.load("") }
-        assertFailsWith<IllegalArgumentException> { sut.load("   ") }
+    fun `load throws IllegalArgumentException for a blank or non-https url without making a request`() =
+        runTest(testDispatcher) {
+            listOf("", "   ", "http://www.paypalobjects.com/images/visa.png", "javascript:alert(1)", "https://")
+                .forEach { url -> assertFailsWith<IllegalArgumentException> { sut.load(url) } }
 
-        coVerify(exactly = 0) { httpClient.sendRequestForBytes(any(), any()) }
-    }
+            coVerify(exactly = 0) { httpClient.sendRequestForBytes(any(), any()) }
+        }
 
     @Test
     fun `load downsamples a large image to at most 128 px`() = runTest(testDispatcher) {

@@ -76,8 +76,8 @@ class ImageLoaderViewBindingUnitTest {
     }
 
     @Test
-    fun `load shows the error placeholder for a null or blank url without making a request`() {
-        listOf(null, "  ").forEach { url ->
+    fun `load shows the error placeholder for a null, blank or non-https url without making a request`() {
+        listOf(null, "  ", "http://www.paypalobjects.com/images/visa.png").forEach { url ->
             sut.load(url, imageView, LOADING_PLACEHOLDER, ERROR_PLACEHOLDER)
             advanceUntilIdle()
             assertShowsPlaceholder()
