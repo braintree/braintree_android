@@ -12,6 +12,7 @@
 * BraintreeCore
   * Fix an issue where creating a new client replaced the authorization used by previously created clients. A client no longer picks up the authorization of clients created after it; after login, logout or fetching a new client token, create new clients with it, including any client held in a ViewModel or dependency-injection scope. This includes the Compose `PayPalButton` and `VenmoButton`, which keep the authorization they were created with; to use a different one, recreate the button.
   * Fix an issue where a client's custom `returnUrlScheme` was replaced when another client was created.
+  * Fix analytics events being sent with the authorization of the most recently created client; events now use the authorization of the client that produced them, including events from `PayPalLauncher`, `VenmoLauncher`, `ShopperInsightsClientV2`, `CardFields` and the PayPal and Venmo buttons. PayPal and Venmo return events handled when the launcher no longer remembers the request owner, for example after Activity recreation or process death, are attributed to the newest client. Update all Braintree modules to the same version together.
 
 ## 5.33.0 (2026-09-16)
 

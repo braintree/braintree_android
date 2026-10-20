@@ -33,7 +33,6 @@ class AnalyticsClientUnitTest {
     private val analyticsEventRepository: AnalyticsEventRepository = mockk(relaxed = true)
     private val analyticsParamRepository: AnalyticsParamRepository = mockk(relaxed = true)
     private val time: Time = mockk()
-    private val merchantRepository: MerchantRepository = mockk(relaxed = true)
 
     private val configuration: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
     private val otherConfiguration: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
@@ -110,7 +109,6 @@ class AnalyticsClientUnitTest {
         analyticsEventRepository = analyticsEventRepository,
         time = time,
         configurationLoader = configurationLoader,
-        merchantRepository = merchantRepository,
         dispatcher = dispatcher,
         coroutineScope = coroutineScope,
     )
@@ -132,23 +130,6 @@ class AnalyticsClientUnitTest {
         verify { analyticsEventRepository.addEvent(expectedAnalyticsEvent, authorization) }
         coVerify(exactly = 0) { configurationLoader.loadConfiguration(any()) }
         verify(exactly = 0) { analyticsApi.execute(any(), any(), any()) }
-    }
-
-    @Test
-    fun `when sendEvent is called without an authorization, the shim uses the merchantRepository authorization`() {
-        every { merchantRepository.authorization } returns authorization
-        val configurationLoader = MockkConfigurationLoaderBuilder()
-            .configuration(configuration)
-            .build()
-        val sut = createSut(configurationLoader, testDispatcher(), testScope())
-
-        sut.sendEvent(
-            eventName = eventName,
-            analyticsEventParams = analyticsEventParams,
-            sendImmediately = false
-        )
-
-        verify { analyticsEventRepository.addEvent(expectedAnalyticsEvent, authorization) }
     }
 
     @Test

@@ -858,7 +858,6 @@ class BraintreeClientUnitTest {
             analyticsParamRepository = analyticsParamRepository,
             analyticsEventRepository = AnalyticsEventRepository(),
             configurationLoader = configurationLoader,
-            merchantRepository = analyticsMerchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = testScope
         )
@@ -918,7 +917,6 @@ class BraintreeClientUnitTest {
                     analyticsParamRepository = analyticsParamRepository,
                     analyticsEventRepository = sharedEventRepository,
                     configurationLoader = configurationLoader,
-                    merchantRepository = analyticsMerchantRepository,
                     dispatcher = testDispatcher,
                     coroutineScope = CoroutineScope(testDispatcher)
                 ),

@@ -16,7 +16,6 @@ class AnalyticsClient internal constructor(
     private val analyticsEventRepository: AnalyticsEventRepository = AnalyticsEventRepository.instance,
     private val time: Time = Time(),
     private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
     private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
 ) {
@@ -59,14 +58,6 @@ class AnalyticsClient internal constructor(
             analyticsEventRepository.addEvent(event, authorization)
         }
     }
-
-    // shortcut: reads the newest client's authorization for callers not yet migrated,
-    // remove once every caller passes its own authorization
-    fun sendEvent(
-        eventName: String,
-        analyticsEventParams: AnalyticsEventParams = AnalyticsEventParams(),
-        sendImmediately: Boolean = true,
-    ) = sendEvent(eventName, merchantRepository.authorization, analyticsEventParams, sendImmediately)
 
     fun reportCrash(authorization: Authorization) {
         val event = AnalyticsEvent(
