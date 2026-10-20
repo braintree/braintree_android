@@ -4,6 +4,7 @@
 
 * GooglePay
   * Add optional `resultKey` parameter to `GooglePayLauncher` constructors, allowing a unique registration key per launcher instance
+  * Add optional `transactionId` property to `GooglePayRequest` to pass a merchant-defined transaction identifier to Google Pay's `TransactionInfo`
 * ThreeDSecure
   * Add optional `resultKey` parameter to `ThreeDSecureLauncher` constructors, allowing a unique registration key per launcher instance
 * SEPADirectDebit
