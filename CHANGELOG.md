@@ -7,6 +7,7 @@
 * BraintreeCore
   * Fix new clients overwriting existing clients' authorization; recreate clients with the new authorization after login, logout, or fetching a new client token, including ViewModel/DI-scoped clients
   * Fix new clients overwriting custom `returnUrlScheme` values in `LocalPaymentClient` or `SEPADirectDebitClient`
+  * Fix analytics events using the most recently created client's authorization
   * Update all Braintree modules to the same version; older modules still use the most recently created client's authorization
 
 ## 5.34.0 (2026-10-29)

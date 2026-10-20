@@ -16,8 +16,8 @@ class MerchantRepository {
     /**
      * The authorization of the most recently created [BraintreeClient].
      *
-     * Only read by components without a [BraintreeClient] reference (e.g. analytics);
-     * clients must use [BraintreeClient.authorization] instead.
+     * Only read by components without a [BraintreeClient] reference (the PayPal and Venmo launchers,
+     * as a fallback); clients must use [BraintreeClient.authorization] instead.
      */
     lateinit var authorization: Authorization
 
