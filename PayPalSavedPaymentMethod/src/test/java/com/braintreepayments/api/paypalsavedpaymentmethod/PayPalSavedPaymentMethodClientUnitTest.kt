@@ -54,7 +54,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
     @Test
     fun `fetchPaymentMethod for a buyer default billing agreement sends the paymentMethodIdJwt`() = runTest {
         val braintreeClient = graphQLClient(INSTRUMENT_RESPONSE)
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
 
         val result = sut.fetchPaymentMethod(
             fundingInstrumentType = PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT,
@@ -73,7 +73,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
     @Test
     fun `fetchPaymentMethod for a buyer default billing agreement ignores an orderId`() = runTest {
         val braintreeClient = graphQLClient(INSTRUMENT_RESPONSE)
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
 
         sut.fetchPaymentMethod(
             fundingInstrumentType = PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT,
@@ -86,7 +86,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
     @Test
     fun `fetchPaymentMethod for a buyer updated billing agreement sends the orderId`() = runTest {
         val braintreeClient = graphQLClient(PAYER_RESPONSE)
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
 
         val result = sut.fetchPaymentMethod(
             fundingInstrumentType = PayPalFundingInstrumentFetchType.BUYER_UPDATED_BILLING_AGREEMENT,
@@ -106,7 +106,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
         val braintreeClient = graphQLClient(
             """{ "data": { "paypalFundingInstrumentDetails": { "payer": null, "paymentMethods": [] } } }"""
         )
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
 
         val result = sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
 
@@ -117,7 +117,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
     @Test
     fun `fetchPaymentMethod rejects a tokenization key without sending a request`() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, tokenizationKeyRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, tokenizationKeyRepository)
 
         assertFailsWith<PayPalSavedPaymentMethodException.InvalidAuthorization> {
             sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
@@ -128,7 +128,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
     @Test
     fun `fetchPaymentMethod throws MissingPaymentMethodIdJwt without sending a request`() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenWithoutJwtRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenWithoutJwtRepository)
 
         assertFailsWith<PayPalSavedPaymentMethodException.MissingPaymentMethodIdJwt> {
             sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
@@ -139,7 +139,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
     @Test
     fun `fetchPaymentMethod throws MissingOrderId without sending a request`() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
 
         assertFailsWith<PayPalSavedPaymentMethodException.MissingOrderId> {
             sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_UPDATED_BILLING_AGREEMENT)
@@ -150,7 +150,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
     @Test
     fun `fetchPaymentMethod throws MissingOrderId for a blank orderId without sending a request`() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
 
         assertFailsWith<PayPalSavedPaymentMethodException.MissingOrderId> {
             sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_UPDATED_BILLING_AGREEMENT, orderId = "  ")
@@ -160,7 +160,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
 
     @Test
     fun `fetchPaymentMethod throws EmptyBodyReturned when the response body is empty`() = runTest {
-        val sut = PayPalSavedPaymentMethodClient(graphQLClient(""), clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(graphQLClient(""), payPalClient, clientTokenRepository)
 
         assertFailsWith<PayPalSavedPaymentMethodException.EmptyBodyReturned> {
             sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
@@ -183,7 +183,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
             }
             """
         )
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
 
         val error = assertFailsWith<BraintreeException> {
             sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
@@ -193,20 +193,23 @@ class PayPalSavedPaymentMethodClientUnitTest {
     }
 
     @Test
-    fun `fetchPaymentMethod uses the response as the message when a GraphQL error has none`() = runTest {
-        val response = """{ "errors": [ {} ] }"""
-        val sut = PayPalSavedPaymentMethodClient(graphQLClient(response), clientTokenRepository, payPalClient)
+    fun `fetchPaymentMethod uses a fallback message when a GraphQL error has no usable message`() = runTest {
+        // A missing message, a blank message, and an error entry that isn't an object.
+        listOf("""{ "errors": [ {} ] }""", """{ "errors": [ { "message": "  " } ] }""", """{ "errors": [ "x" ] }""")
+            .forEach { response ->
+                val sut = PayPalSavedPaymentMethodClient(graphQLClient(response), payPalClient, clientTokenRepository)
 
-        val error = assertFailsWith<BraintreeException> {
-            sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
-        }
+                val error = assertFailsWith<BraintreeException> {
+                    sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
+                }
 
-        assertEquals(response, error.message)
+                assertEquals("Unable to fetch the funding instrument details.", error.message)
+            }
     }
 
     @Test
     fun `fetchPaymentMethod throws FailedToParseSummary without funding instrument details`() = runTest {
-        val sut = PayPalSavedPaymentMethodClient(graphQLClient("{}"), clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(graphQLClient("{}"), payPalClient, clientTokenRepository)
 
         assertFailsWith<PayPalSavedPaymentMethodException.FailedToParseSummary> {
             sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
@@ -216,7 +219,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
     @Test
     fun `fetchPaymentMethod throws FailedToParseSummary, keeping the cause, when the response is not valid JSON`() =
         runTest {
-            val sut = PayPalSavedPaymentMethodClient(graphQLClient("not json"), clientTokenRepository, payPalClient)
+            val sut = PayPalSavedPaymentMethodClient(graphQLClient("not json"), payPalClient, clientTokenRepository)
 
             val error = assertFailsWith<PayPalSavedPaymentMethodException.FailedToParseSummary> {
                 sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
@@ -229,7 +232,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
     fun `fetchPaymentMethod propagates the error when the request fails`() = runTest {
         val requestError = IOException("network down")
         val braintreeClient = MockkBraintreeClientBuilder().sendGraphQLPostErrorResponse(requestError).build()
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
 
         val error = assertFailsWith<IOException> {
             sut.fetchPaymentMethod(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
@@ -241,7 +244,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
     @Test
     fun `fetchCreditPresentmentMessages posts the request body to the sandbox URL`() = runTest {
         val braintreeClient = restClient("sandbox", MESSAGING_RESPONSE)
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
 
         sut.fetchCreditPresentmentMessages(amount = "55.00", currencyCode = "USD")
 
@@ -276,7 +279,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
     @Test
     fun `fetchCreditPresentmentMessages posts to the production URL in production`() = runTest {
         val braintreeClient = restClient("production", MESSAGING_RESPONSE)
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
 
         sut.fetchCreditPresentmentMessages(amount = "55.00", currencyCode = "USD")
 
@@ -289,8 +292,8 @@ class PayPalSavedPaymentMethodClientUnitTest {
     fun `fetchCreditPresentmentMessages returns the parsed message`() = runTest {
         val sut = PayPalSavedPaymentMethodClient(
             restClient("sandbox", MESSAGING_RESPONSE),
-            clientTokenRepository,
-            payPalClient
+            payPalClient,
+            clientTokenRepository
         )
 
         val result = sut.fetchCreditPresentmentMessages(amount = "55.00", currencyCode = "USD")
@@ -301,7 +304,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
     @Test
     fun `fetchCreditPresentmentMessages rejects a tokenization key without sending a request`() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, tokenizationKeyRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, tokenizationKeyRepository)
 
         assertFailsWith<PayPalSavedPaymentMethodException.InvalidAuthorization> {
             sut.fetchCreditPresentmentMessages(amount = "55.00", currencyCode = "USD")
@@ -311,7 +314,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
 
     @Test
     fun `fetchCreditPresentmentMessages throws EmptyBodyReturned when the response body is empty`() = runTest {
-        val sut = PayPalSavedPaymentMethodClient(restClient("sandbox", ""), clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(restClient("sandbox", ""), payPalClient, clientTokenRepository)
 
         assertFailsWith<PayPalSavedPaymentMethodException.EmptyBodyReturned> {
             sut.fetchCreditPresentmentMessages(amount = "55.00", currencyCode = "USD")
@@ -322,8 +325,8 @@ class PayPalSavedPaymentMethodClientUnitTest {
     fun `fetchCreditPresentmentMessages throws MissingPreferredMessage when there is no message to render`() = runTest {
         val sut = PayPalSavedPaymentMethodClient(
             restClient("sandbox", """{ "messages": [] }"""),
-            clientTokenRepository,
-            payPalClient
+            payPalClient,
+            clientTokenRepository
         )
 
         assertFailsWith<PayPalSavedPaymentMethodException.MissingPreferredMessage> {
@@ -333,7 +336,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
 
     @Test
     fun `fetchCreditPresentmentMessages throws a JSONException when the response is not valid JSON`() = runTest {
-        val sut = PayPalSavedPaymentMethodClient(restClient("sandbox", "not json"), clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(restClient("sandbox", "not json"), payPalClient, clientTokenRepository)
 
         assertFailsWith<JSONException> {
             sut.fetchCreditPresentmentMessages(amount = "55.00", currencyCode = "USD")
@@ -347,7 +350,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
             .configurationSuccess(Configuration.fromJson(TestConfigurationBuilder().environment("sandbox").build()))
             .sendPostErrorResponse(requestError)
             .build()
-        val sut = PayPalSavedPaymentMethodClient(braintreeClient, clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
 
         val error = assertFailsWith<IOException> {
             sut.fetchCreditPresentmentMessages(amount = "55.00", currencyCode = "USD")
@@ -361,14 +364,14 @@ class PayPalSavedPaymentMethodClientUnitTest {
         runTest {
             val authRequest = mockk<PayPalPaymentAuthRequest>()
             coEvery { payPalClient.createPaymentAuthRequestForEditFi(context, checkoutRequest) } returns authRequest
-            val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), clientTokenRepository, payPalClient)
+            val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), payPalClient, clientTokenRepository)
 
             assertSame(authRequest, sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest))
         }
 
     @Test
     fun `createEditFundingInstrumentAuthRequest throws MissingPaymentMethodIdJwt without a JWT`() = runTest {
-        val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), clientTokenWithoutJwtRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), payPalClient, clientTokenWithoutJwtRepository)
 
         assertFailsWith<PayPalSavedPaymentMethodException.MissingPaymentMethodIdJwt> {
             sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest)
@@ -378,7 +381,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
 
     @Test
     fun `createEditFundingInstrumentAuthRequest throws InvalidAuthorization for a tokenization key`() = runTest {
-        val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), tokenizationKeyRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), payPalClient, tokenizationKeyRepository)
 
         assertFailsWith<PayPalSavedPaymentMethodException.InvalidAuthorization> {
             sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest)
@@ -391,7 +394,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
         val authResult = mockk<PayPalPaymentAuthResult.Success>()
         val result = mockk<PayPalResult>()
         coEvery { payPalClient.tokenize(authResult) } returns result
-        val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), clientTokenRepository, payPalClient)
+        val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), payPalClient, clientTokenRepository)
 
         assertSame(result, sut.tokenize(authResult))
     }

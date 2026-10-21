@@ -29,8 +29,8 @@ import org.json.JSONObject
 @OptIn(ExperimentalBetaApi::class)
 internal class PayPalSavedPaymentMethodClient internal constructor(
     private val braintreeClient: BraintreeClient,
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    private val payPalClient: PayPalClient
+    private val payPalClient: PayPalClient,
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
 
     /**
@@ -126,9 +126,9 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
         }
         val errors = response.optJSONArray(GraphQLConstants.Keys.ERRORS)
         if (errors != null && errors.length() > 0) {
-            throw BraintreeException(
-                Json.optString(errors.optJSONObject(0), GraphQLConstants.Keys.MESSAGE, responseBody)
-            )
+            val message = Json.optString(errors.optJSONObject(0), GraphQLConstants.Keys.MESSAGE, null)
+                ?.takeIf { it.isNotBlank() }
+            throw BraintreeException(message ?: GRAPHQL_ERROR_FALLBACK_MESSAGE)
         }
 
         val details = response
@@ -139,8 +139,9 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
     }
 
     /**
-     * Fetches the PayPal Pay Later message to display alongside the funding instrument. The message is additive, so
-     * callers are expected to hide the row when this throws rather than fail checkout.
+     * Fetches the PayPal Pay Later message to display alongside the funding instrument. The message is optional, so
+     * when this throws, callers should hide only the Pay Later message and keep showing the funding instrument; it
+     * must not fail checkout.
      *
      * @param amount The order amount the message is calculated from, for example `"55.00"`.
      * @param currencyCode The ISO-4217 currency code for [amount], for example `"USD"`.
@@ -176,6 +177,7 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
     private companion object {
         const val DATA_KEY = "data"
         const val PAYPAL_FUNDING_INSTRUMENT_DETAILS_KEY = "paypalFundingInstrumentDetails"
+        const val GRAPHQL_ERROR_FALLBACK_MESSAGE = "Unable to fetch the funding instrument details."
 
         const val PRODUCTION = "production"
         const val PRODUCTION_BASE_URL = "https://api.paypal.com"
