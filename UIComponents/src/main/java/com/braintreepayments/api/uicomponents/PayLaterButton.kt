@@ -36,6 +36,7 @@ class PayLaterButton @JvmOverloads constructor(
 
     internal var currentStyle: PayLaterButtonColor = PayLaterButtonColor.Blue
         private set
+    private var style: PaymentButtonStyle = currentStyle.toStyle()
     private val gradientDrawable = GradientDrawable()
     private val focusIndicatorDrawable = GradientDrawable()
     private var logo: Drawable? = null
@@ -65,6 +66,7 @@ class PayLaterButton @JvmOverloads constructor(
         context.theme.obtainStyledAttributes(attrs, R.styleable.PayLaterButton, 0, 0).apply {
             try {
                 currentStyle = fromId(getInt(R.styleable.PayLaterButton_paymentButtonColor, 0))
+                style = currentStyle.toStyle()
             } finally {
                 recycle()
             }
@@ -234,7 +236,7 @@ class PayLaterButton @JvmOverloads constructor(
 
     private fun setButtonClicked() {
         this.isEnabled = false
-        logo = ContextCompat.getDrawable(context, currentStyle.spinnerId)
+        logo = ContextCompat.getDrawable(context, style.spinnerId)
         (logo as? android.graphics.drawable.Animatable)?.start()
         logoOffset = 0
         invalidate()
@@ -243,7 +245,7 @@ class PayLaterButton @JvmOverloads constructor(
     private fun setButtonReEnabled() {
         this.isEnabled = true
         (logo as? android.graphics.drawable.Animatable)?.stop()
-        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
+        logo = ContextCompat.getDrawable(context, style.logoId)
         logoOffset = ppLogoOffset
         invalidate()
     }
@@ -262,9 +264,9 @@ class PayLaterButton @JvmOverloads constructor(
 
     private fun applyStyle() {
         updateButtonAppearance()
-        gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.default.fill))
+        gradientDrawable.setColor(ContextCompat.getColor(context, style.default.fill))
         val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
-        gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(context, currentStyle.default.border))
+        gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(context, style.default.border))
         logo = ContextCompat.getDrawable(context, currentStyle.logoId)
         invalidate()
     }
@@ -273,40 +275,15 @@ class PayLaterButton @JvmOverloads constructor(
         val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
         val focusStrokeWidth = resources.getDimension(R.dimen.pay_button_focus_border).toInt()
 
-        when {
-            isPressed -> {
-                gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.pressed.fill))
-                gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(context, currentStyle.pressed.border))
-                focusIndicatorDrawable.setStroke(
-                    strokeWidth,
-                    ContextCompat.getColor(context, currentStyle.pressed.focusIndicator)
-                )
-            }
-            isHovered -> {
-                gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.hover.fill))
-                gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(context, currentStyle.hover.border))
-                focusIndicatorDrawable.setStroke(
-                    focusStrokeWidth,
-                    ContextCompat.getColor(context, currentStyle.hover.focusIndicator)
-                )
-            }
-            isFocused -> {
-                gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.focus.fill))
-                gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(context, currentStyle.focus.border))
-                focusIndicatorDrawable.setStroke(
-                    focusStrokeWidth,
-                    ContextCompat.getColor(context, currentStyle.focus.focusIndicator)
-                )
-            }
-            else -> {
-                gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.default.fill))
-                gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(context, currentStyle.default.border))
-                focusIndicatorDrawable.setStroke(
-                    focusStrokeWidth,
-                    ContextCompat.getColor(context, currentStyle.default.focusIndicator)
-                )
-            }
+        val (colors, indicatorWidth) = when {
+            isPressed -> style.pressed to strokeWidth
+            isHovered -> style.hover to focusStrokeWidth
+            isFocused -> style.focus to focusStrokeWidth
+            else -> style.default to focusStrokeWidth
         }
+        gradientDrawable.setColor(ContextCompat.getColor(context, colors.fill))
+        gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(context, colors.border))
+        focusIndicatorDrawable.setStroke(indicatorWidth, ContextCompat.getColor(context, colors.focusIndicator))
     }
 
     private fun setMinimumSize() {
@@ -351,9 +328,9 @@ class PayLaterButton @JvmOverloads constructor(
      * @property color Value representing the button color. Valid values are BLUE, BLACK, and WHITE
      */
     fun setButtonColor(color: PayLaterButtonColor) {
-        val style = color
-        if (style == currentStyle) return
-        currentStyle = style
+        if (color == currentStyle) return
+        currentStyle = color
+        style = color.toStyle()
         applyStyle()
     }
 }
