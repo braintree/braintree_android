@@ -85,7 +85,7 @@ fun VenmoButton(
     }
 
     val venmoLauncher = remember { VenmoLauncher(registry) }
-    val venmoClient = remember {
+    val venmoClient = remember(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme) {
         VenmoClient(
             context = context,
             authorization = authorization,
@@ -94,7 +94,7 @@ fun VenmoButton(
         )
     }
     val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
-    val analyticsAuthorization = remember { Authorization.fromString(authorization) }
+    val analyticsAuthorization = remember(authorization) { Authorization.fromString(authorization) }
 
     VenmoButtonView(style = style, enabled = enabled) {
         enabled = false
@@ -137,7 +137,7 @@ fun VenmoButton(
         }
     }
 
-    LifecycleResumeEffect(Unit) {
+    LifecycleResumeEffect(venmoClient) {
         if (flowLaunched) {
             flowLaunched = false
             lifecycle.coroutineScope.launch {

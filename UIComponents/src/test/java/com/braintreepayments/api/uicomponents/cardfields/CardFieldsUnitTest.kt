@@ -525,6 +525,31 @@ class CardFieldsUnitTest {
     }
 
     @Test
+    fun `submit sends the validated event with the authorization passed to initialize`() {
+        val otherKey = "sandbox_9dbg82cq_dcpspy2brwdjr3qn"
+        val cardFields = createCardFields()
+        cardFields.initialize(tokenizationKey)
+        CardClient(activity, otherKey)
+
+        cardFields.submit()
+
+        verify {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
+                Authorization.fromString(tokenizationKey),
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+            )
+        }
+        verify(exactly = 0) {
+            analyticsClient.sendEvent(
+                any<String>(),
+                Authorization.fromString(otherKey),
+                any<AnalyticsEventParams>()
+            )
+        }
+    }
+
+    @Test
     fun `submit before initialize does not send the validated event`() {
         val cardFields = createCardFields()
         cardFields.setCardFieldsResultCallback { }
