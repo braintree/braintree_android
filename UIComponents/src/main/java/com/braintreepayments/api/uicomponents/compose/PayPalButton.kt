@@ -84,7 +84,7 @@ fun PayPalButton(
     }
 
     val payPalLauncher = remember { PayPalLauncher(registry) }
-    val payPalClient = remember {
+    val payPalClient = remember(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme) {
         PayPalClient(
             context = context,
             authorization = authorization,
@@ -93,7 +93,7 @@ fun PayPalButton(
         )
     }
     val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
-    val analyticsAuthorization = remember { Authorization.fromString(authorization) }
+    val analyticsAuthorization = remember(authorization) { Authorization.fromString(authorization) }
 
     PayPalButtonView(style = style, enabled = enabled) {
         enabled = false
@@ -136,7 +136,7 @@ fun PayPalButton(
         }
     }
 
-    LifecycleResumeEffect(Unit) {
+    LifecycleResumeEffect(payPalClient) {
         if (flowLaunched) {
             flowLaunched = false
             lifecycle.coroutineScope.launch {
