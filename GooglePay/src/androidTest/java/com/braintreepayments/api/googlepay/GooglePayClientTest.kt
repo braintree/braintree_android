@@ -249,7 +249,8 @@ class GooglePayClientTest {
             totalPrice = "25.50",
             totalPriceStatus = GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_ESTIMATED,
             countryCode = "DE",
-            googleMerchantName = "Test Merchant"
+            googleMerchantName = "Test Merchant",
+            transactionId = "transaction-id-123"
         )
 
         val countDownLatch = CountDownLatch(1)
@@ -263,6 +264,7 @@ class GooglePayClientTest {
             val transactionInfo = paymentDataRequestJson.getJSONObject("transactionInfo")
             assertEquals("EUR", transactionInfo.getString("currencyCode"))
             assertEquals("25.50", transactionInfo.getString("totalPrice"))
+            assertEquals("transaction-id-123", transactionInfo.getString("transactionId"))
             assertEquals("ESTIMATED", transactionInfo.getString("totalPriceStatus"))
             assertEquals("DE", transactionInfo.getString("countryCode"))
 
