@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
@@ -69,6 +70,7 @@ fun PayPalButton(
 
     var enabled by remember { mutableStateOf(true) }
     var flowLaunched by remember { mutableStateOf(false) }
+    var flowClient by remember { mutableStateOf<PayPalClient?>(null) }
     var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
@@ -94,11 +96,14 @@ fun PayPalButton(
     }
     val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
     val analyticsAuthorization = remember(authorization) { Authorization.fromString(authorization) }
+    val currentTokenizeCallback by rememberUpdatedState(paypalTokenizeCallback)
+    val currentPendingRequestRepository by rememberUpdatedState(pendingRequestRepository)
 
     PayPalButtonView(style = style, enabled = enabled) {
         enabled = false
         logButtonSelected(analyticsClient, analyticsAuthorization)
-        payPalClient.createPaymentAuthRequest(
+        val clientAtClick = payPalClient
+        clientAtClick.createPaymentAuthRequest(
             context = context,
             payPalRequest = payPalRequest
         ) { paymentAuthRequest: PayPalPaymentAuthRequest ->
@@ -108,21 +113,22 @@ fun PayPalButton(
                         coroutineScope.launch {
                             completePayPalFlow(
                                 payPalLauncher,
-                                pendingRequestRepository,
+                                currentPendingRequestRepository,
                                 it,
                                 paymentAuthRequest,
-                                paypalTokenizeCallback
+                                currentTokenizeCallback
                             )
+                            flowClient = clientAtClick
                             flowLaunched = true
                         }
                     } ?: run {
                         enabled = true
-                        paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(Exception("Activity is null")))
+                        currentTokenizeCallback.onPayPalResult(PayPalResult.Failure(Exception("Activity is null")))
                     }
                 }
 
                 is PayPalPaymentAuthRequest.Failure -> {
-                    paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(paymentAuthRequest.error))
+                    currentTokenizeCallback.onPayPalResult(PayPalResult.Failure(paymentAuthRequest.error))
                     enabled = true
                 }
             }
@@ -136,21 +142,36 @@ fun PayPalButton(
         }
     }
 
-    LifecycleResumeEffect(payPalClient) {
+    LifecycleResumeEffect(Unit) {
         if (flowLaunched) {
             flowLaunched = false
-            lifecycle.coroutineScope.launch {
-                val pendingRequestStr = pendingRequestRepository.getPendingRequest()
+            val resumeClient = flowClient
+            flowClient = null
+            if (resumeClient == null) {
+                enabled = true
+                currentTokenizeCallback.onPayPalResult(
+                    PayPalResult.Failure(Exception("Flow client is null. Unable to restore state."))
+                )
+            } else {
+                lifecycle.coroutineScope.launch {
+                    val pendingRequestStr = currentPendingRequestRepository.getPendingRequest()
 
-                activity?.intent?.let { intent ->
-                    handleReturnToApp(payPalLauncher, payPalClient, pendingRequestStr, intent, paypalTokenizeCallback)
-                    enabled = true
-                    pendingRequestRepository.clearPendingRequest()
-                } ?: run {
-                    enabled = true
-                    paypalTokenizeCallback.onPayPalResult(
-                        PayPalResult.Failure(Exception("Activity or Intent is null. Unable to restore state."))
-                    )
+                    activity?.intent?.let { intent ->
+                        handleReturnToApp(
+                            payPalLauncher,
+                            resumeClient,
+                            pendingRequestStr,
+                            intent,
+                            currentTokenizeCallback
+                        )
+                        enabled = true
+                        currentPendingRequestRepository.clearPendingRequest()
+                    } ?: run {
+                        enabled = true
+                        currentTokenizeCallback.onPayPalResult(
+                            PayPalResult.Failure(Exception("Activity or Intent is null. Unable to restore state."))
+                        )
+                    }
                 }
             }
         }
