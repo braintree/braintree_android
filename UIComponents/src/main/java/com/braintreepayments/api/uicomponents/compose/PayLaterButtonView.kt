@@ -164,3 +164,4 @@ private fun PreviewPayLaterButtonWhite() {
 private fun PreviewPayLaterButtonLoading() {
     PayLaterButtonView(style = PayLaterButtonColor.Blue, enabled = false) {}
 }
+
