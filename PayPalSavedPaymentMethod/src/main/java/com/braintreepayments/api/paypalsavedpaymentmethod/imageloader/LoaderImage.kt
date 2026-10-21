@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.testTag
 import com.braintreepayments.api.paypalsavedpaymentmethod.asHttpsUrlOrNull
 import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Renders the funding-instrument icon at [url] via [ImageLoader]. While the image loads it shows [loading], which is
@@ -43,6 +44,10 @@ internal fun LoaderImage(
         } catch (ignored: IOException) {
             LoadState.Failed
         } catch (ignored: IllegalArgumentException) {
+            LoadState.Failed
+        } catch (ignored: Exception) {
+            if (ignored is CancellationException) throw ignored
+            // Unexpected failure (e.g. a response the decoder can't handle): show the placeholder, don't crash.
             LoadState.Failed
         }
     }

@@ -97,7 +97,7 @@ class HttpClientUnitTest {
     }
 
     @Test
-    fun `when sendRequestForBytes is called, returns bytes and forwards maxBodyBytes`() =
+    fun `when sendRequestForBytes is called, returns bytes and forwards maxBodyBytes or the default limit`() =
         runTest(testDispatcher) {
         val request = mockk<OkHttpRequest>()
         val bytes = byteArrayOf(1, 2, 3)
@@ -108,7 +108,7 @@ class HttpClientUnitTest {
         sut.sendRequestForBytes(request)
 
         verify { mockOkHttpClient.executeRequestForBytes(request, 1024L) }
-        verify { mockOkHttpClient.executeRequestForBytes(request, null) }
+        verify { mockOkHttpClient.executeRequestForBytes(request, OkHttpSynchronousHttpClient.DEFAULT_MAX_BODY_BYTES) }
     }
 
     @Test
@@ -116,7 +116,7 @@ class HttpClientUnitTest {
         runTest(testDispatcher) {
         val request = mockk<OkHttpRequest>()
 
-        every { mockOkHttpClient.executeRequestForBytes(request, null) } throws java.io.IOException("Not found")
+        every { mockOkHttpClient.executeRequestForBytes(request, any()) } throws java.io.IOException("Not found")
 
         val thrownException = assertFailsWith<java.io.IOException> {
             sut.sendRequestForBytes(request)

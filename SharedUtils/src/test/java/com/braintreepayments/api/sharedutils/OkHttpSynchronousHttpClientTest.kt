@@ -13,6 +13,7 @@ import okhttp3.Response
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
+import okio.Timeout
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -20,6 +21,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 import kotlin.test.assertFailsWith
 
 class OkHttpSynchronousHttpClientTest {
@@ -143,6 +145,26 @@ class OkHttpSynchronousHttpClientTest {
             sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get), maxBodyBytes = 1024L)
         }
         verify(exactly = 0) { responseBody.bytes() }
+        verify(exactly = 0) { responseBody.source() }
+    }
+
+    @Test
+    fun `executeRequestForBytes limits the whole call to 30 seconds`() {
+        val callTimeout = mockk<Timeout>(relaxed = true)
+        givenBytesResponse(isSuccessful = true, body = byteArrayOf(1).toResponseBody())
+        every { call.timeout() } returns callTimeout
+
+        sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get))
+
+        verify { callTimeout.timeout(30L, TimeUnit.SECONDS) }
+    }
+
+    @Test
+    fun `when maxBodyBytes is not given, executeRequestForBytes rejects a body over the default limit`() {
+        givenBytesResponse(isSuccessful = true, body = responseBody)
+        every { responseBody.contentLength() } returns OkHttpSynchronousHttpClient.DEFAULT_MAX_BODY_BYTES + 1
+
+        assertFailsWith<IOException> { sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get)) }
         verify(exactly = 0) { responseBody.source() }
     }
 

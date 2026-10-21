@@ -47,7 +47,9 @@ internal class ImageLoader internal constructor(
     private val decodeSemaphore: Semaphore = Semaphore(DEFAULT_MAX_PARALLEL_DECODES),
 ) {
     // Deliberately unscoped to any lifecycle: ImageLoader is a process-wide singleton (see getInstance()), so
-    // in-flight downloads outlive any single screen and are only ever torn down by process death.
+    // in-flight downloads outlive any single screen and are only ever torn down by process death. That is safe because
+    // each download is short and bounded (30 s call timeout, size cap) and failures aren't cached, so nothing
+    // accumulates.
     private val loaderScope = CoroutineScope(SupervisorJob() + defaultDispatcher)
     private val inFlightRequests = ConcurrentHashMap<String, Deferred<Bitmap>>()
 

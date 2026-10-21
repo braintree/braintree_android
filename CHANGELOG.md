@@ -9,7 +9,7 @@
 * SEPADirectDebit
     * Add Compose constructor for `SEPADirectDebitLauncher`
 * SharedUtils
-    * Add `HttpClient#sendRequestForBytes` for fetching binary payloads with a size cap, enforced via streaming even when the response omits `Content-Length`
+    * Add `HttpClient#sendRequestForBytes` for fetching binary payloads with a size cap (5 MB by default), enforced via streaming even when the response omits `Content-Length`, and a 30 second limit on the whole call
 
 ## 5.33.0 (2026-09-16)
 

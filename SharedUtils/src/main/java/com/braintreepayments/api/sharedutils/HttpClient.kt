@@ -27,13 +27,16 @@ class HttpClient internal constructor(
     /**
      * Sends [request] and returns the raw response body, for binary payloads such as images.
      *
-     * @param maxBodyBytes Optional limit on the response body size, enforced even if the response omits
+     * @param maxBodyBytes Limit on the response body size, 5 MB by default, enforced even if the response omits
      * `Content-Length` (e.g. chunked transfer).
      * @throws java.io.IOException if the network request fails, the response is unsuccessful or has no body, or the
      * body size exceeds [maxBodyBytes]
      * @throws IllegalArgumentException if the request URL is not a valid http or https URL
      */
-    suspend fun sendRequestForBytes(request: OkHttpRequest, maxBodyBytes: Long? = null): ByteArray {
+    suspend fun sendRequestForBytes(
+        request: OkHttpRequest,
+        maxBodyBytes: Long = OkHttpSynchronousHttpClient.DEFAULT_MAX_BODY_BYTES
+    ): ByteArray {
         return withContext(ioDispatcher) {
             okHttpSynchronousHttpClient.executeRequestForBytes(request, maxBodyBytes)
         }

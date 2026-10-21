@@ -61,26 +61,30 @@ internal class OkHttpSynchronousHttpClient(
      * [String].
      *
      * @param okHttpRequest The request data to execute.
-     * @param maxBodyBytes Optional limit on the response body size. Rejected as soon as the declared
-     * `Content-Length` exceeds it, or, if undeclared (e.g. chunked transfer), as soon as actual bytes read exceed
-     * it — the body is never buffered past [maxBodyBytes] + 1 bytes.
+     * @param maxBodyBytes Limit on the response body size, [DEFAULT_MAX_BODY_BYTES] by default. Rejected as soon as the
+     * declared `Content-Length` exceeds it, or, if undeclared (e.g. chunked transfer), as soon as actual bytes read
+     * exceed it — the body is never buffered past [maxBodyBytes] + 1 bytes.
      * @return The response body bytes.
      * @throws IOException if the request fails, the response is unsuccessful or has no body, an https request is
-     * redirected to a non-https URL, or the body size exceeds [maxBodyBytes].
+     * redirected to a non-https URL, the body size exceeds [maxBodyBytes], or the whole call, body included, takes
+     * longer than [BYTES_CALL_TIMEOUT_SECONDS].
      * @throws IllegalArgumentException if the request URL is not a valid http or https URL.
      */
     @Throws(IOException::class)
-    fun executeRequestForBytes(okHttpRequest: OkHttpRequest, maxBodyBytes: Long? = null): ByteArray {
+    fun executeRequestForBytes(okHttpRequest: OkHttpRequest, maxBodyBytes: Long = DEFAULT_MAX_BODY_BYTES): ByteArray {
         val request = okHttpRequest.toRequest()
 
-        okHttpClient.newCall(request).execute().use { response ->
+        // The connect and read timeouts only bound each step, so a server that trickles bytes could hold the call open
+        // for as long as it keeps sending; this bounds the whole call.
+        val call = okHttpClient.newCall(request)
+        call.timeout().timeout(BYTES_CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        call.execute().use { response ->
             val responseBody = response.body?.takeIf { response.isSuccessful }
                 ?: throw IOException("Unexpected code ${response.code} for ${request.url}")
             // OkHttp follows redirects, including https to http; never accept a downgraded download.
             if (request.url.isHttps && !response.request.url.isHttps) {
                 throw IOException("Redirected from https to a non-https URL for ${request.url}")
             }
-            if (maxBodyBytes == null) return responseBody.bytes()
             return responseBody.readBoundedBytes(maxBodyBytes, request.url.toString())
         }
     }
@@ -133,5 +137,11 @@ internal class OkHttpSynchronousHttpClient(
 
     companion object {
         private const val THIRTY = 30L
+
+        /** How long [executeRequestForBytes] may take in total, from connecting to reading the last byte. */
+        private const val BYTES_CALL_TIMEOUT_SECONDS = THIRTY
+
+        /** The largest response body [executeRequestForBytes] reads unless the caller asks for a different limit. */
+        const val DEFAULT_MAX_BODY_BYTES = 5L * 1024L * 1024L
     }
 }
