@@ -3,7 +3,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <application>
+    <!-- Lets the redirect test point an https response at a plain http MockWebServer. -->
+    <application android:usesCleartextTraffic="true">
         <activity android:name="com.braintreepayments.api.sharedutils.ManifestTestActivity" />
     </application>
 </manifest>

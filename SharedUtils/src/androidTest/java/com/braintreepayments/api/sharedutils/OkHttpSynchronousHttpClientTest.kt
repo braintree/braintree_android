@@ -2,11 +2,14 @@ package com.braintreepayments.api.sharedutils
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
+import okio.Buffer
 import org.junit.After
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -35,6 +38,8 @@ class OkHttpSynchronousHttpClientTest {
             .build()
 
         mockWebServer = MockWebServer()
+        // HTTP/2 has no chunked transfer encoding, so the chunked-body tests need HTTP/1.1.
+        mockWebServer.protocols = listOf(Protocol.HTTP_1_1)
         mockWebServer.useHttps(serverCertificates.sslSocketFactory(), false)
         mockWebServer.start()
 
@@ -106,6 +111,91 @@ class OkHttpSynchronousHttpClientTest {
     }
 
     @Test
+    fun executeRequestForBytes_returnsBinaryBodyUnchanged() {
+        // PNG signature plus bytes that are invalid UTF-8, which a String round-trip would corrupt
+        val bytes = byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0xFF.toByte(), 0xFE.toByte(), 0x00)
+        mockWebServer.enqueue(MockResponse().setBody(Buffer().write(bytes)).setResponseCode(200))
+
+        val result = sut.executeRequestForBytes(bytesRequest("/image"))
+
+        assertArrayEquals(bytes, result)
+    }
+
+    @Test
+    fun executeRequestForBytes_declaredLengthOverLimit_throwsIOException() {
+        mockWebServer.enqueue(MockResponse().setBody(Buffer().write(ByteArray(2048))).setResponseCode(200))
+
+        val error = assertThrows<IOException> { sut.executeRequestForBytes(bytesRequest("/big"), maxBodyBytes = 1024L) }
+
+        assertTrue(error.message, error.message.orEmpty().contains("exceeds 1024 bytes"))
+    }
+
+    @Test
+    fun executeRequestForBytes_chunkedBodyOverLimit_throwsIOException() {
+        // A chunked response carries no Content-Length, so only the streaming bound can reject it.
+        mockWebServer.enqueue(MockResponse().setChunkedBody(Buffer().write(ByteArray(4096)), 512))
+
+        val error = assertThrows<IOException> {
+            sut.executeRequestForBytes(bytesRequest("/chunked"), maxBodyBytes = 1024L)
+        }
+
+        assertTrue(error.message, error.message.orEmpty().contains("exceeds 1024 bytes"))
+    }
+
+    @Test
+    fun executeRequestForBytes_chunkedBodyWithinLimit_returnsBody() {
+        val bytes = ByteArray(4096) { (it % 251).toByte() }
+        mockWebServer.enqueue(MockResponse().setChunkedBody(Buffer().write(bytes), 512))
+
+        val result = sut.executeRequestForBytes(bytesRequest("/chunked"), maxBodyBytes = 8192L)
+
+        assertArrayEquals(bytes, result)
+    }
+
+    @Test
+    fun executeRequestForBytes_unsuccessfulResponse_throwsIOException() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(404).setBody("not found"))
+
+        val error = assertThrows<IOException> { sut.executeRequestForBytes(bytesRequest("/missing")) }
+
+        assertTrue(error.message, error.message.orEmpty().contains("404"))
+    }
+
+    @Test
+    fun executeRequestForBytes_httpsRedirectedToHttp_throwsIOException() {
+        val plainServer = MockWebServer()
+        plainServer.enqueue(MockResponse().setBody("downgraded").setResponseCode(200))
+        plainServer.start()
+        try {
+            mockWebServer.enqueue(
+                MockResponse()
+                    .setResponseCode(302)
+                    .setHeader("Location", plainServer.url("/downgraded").toString())
+            )
+
+            val error = assertThrows<IOException> { sut.executeRequestForBytes(bytesRequest("/redirect")) }
+
+            // Asserting the message rules out the request failing for another reason, such as cleartext being blocked.
+            assertTrue(error.message, error.message.orEmpty().contains("Redirected from https to a non-https URL"))
+        } finally {
+            plainServer.shutdown()
+        }
+    }
+
+    @Test
+    fun executeRequestForBytes_httpsRedirectedToHttps_returnsBody() {
+        val bytes = byteArrayOf(1, 2, 3)
+        mockWebServer.enqueue(
+            MockResponse().setResponseCode(302).setHeader("Location", mockWebServer.url("/final").toString())
+        )
+        mockWebServer.enqueue(MockResponse().setBody(Buffer().write(bytes)).setResponseCode(200))
+
+        val result = sut.executeRequestForBytes(bytesRequest("/redirect"))
+
+        assertArrayEquals(bytes, result)
+    }
+
+    @Test
     fun executeRequest_sendsCustomHeaders() {
         mockWebServer.enqueue(MockResponse().setBody("ok").setResponseCode(200))
         val url = mockWebServer.url("/headers").toString()
@@ -117,5 +207,17 @@ class OkHttpSynchronousHttpClientTest {
         val recordedRequest = mockWebServer.takeRequest()
         assertEquals("custom-value", recordedRequest.getHeader("X-Custom-Header"))
         assertEquals("Bearer token123", recordedRequest.getHeader("Authorization"))
+    }
+
+    private fun bytesRequest(path: String) = OkHttpRequest(mockWebServer.url(path).toString(), Method.Get)
+
+    private inline fun <reified T : Throwable> assertThrows(block: () -> Unit): T {
+        try {
+            block()
+        } catch (e: Throwable) {
+            if (e is T) return e
+            throw e
+        }
+        throw AssertionError("Expected ${T::class.java.simpleName} to be thrown")
     }
 }
