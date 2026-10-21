@@ -146,11 +146,11 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
      * @param amount The order amount the message is calculated from, for example `"55.00"`.
      * @param currencyCode The ISO-4217 currency code for [amount], for example `"USD"`.
      * @return The Pay Later message to display.
-     * @throws PayPalSavedPaymentMethodException if the authorization is not a client token, the response is empty, or
-     * PayPal returns no message.
-     * @throws org.json.JSONException if the response is not valid JSON.
+     * @throws PayPalSavedPaymentMethodException if the authorization is not a client token, the response is empty or
+     * not valid JSON, or PayPal returns no message.
      * @throws java.io.IOException if the request fails.
      */
+    @Suppress("ThrowsCount")
     suspend fun fetchCreditPresentmentMessages(
         amount: String,
         currencyCode: String
@@ -166,7 +166,12 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
         )
         if (responseBody.isEmpty()) throw PayPalSavedPaymentMethodException.EmptyBodyReturned()
 
-        return PayPalCreditMessagingResult.fromJson(JSONObject(responseBody))
+        val response = try {
+            JSONObject(responseBody)
+        } catch (e: JSONException) {
+            throw PayPalSavedPaymentMethodException.MissingPreferredMessage(e)
+        }
+        return PayPalCreditMessagingResult.fromJson(response)
             ?: throw PayPalSavedPaymentMethodException.MissingPreferredMessage()
     }
 

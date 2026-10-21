@@ -57,10 +57,12 @@ sealed class PayPalSavedPaymentMethodException(
     )
 
     /**
-     * PayPal returned no Pay Later message to display for this buyer.
+     * PayPal returned no Pay Later message to display for this buyer, or the response is not valid JSON.
      */
-    class MissingPreferredMessage @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) internal constructor() :
-        PayPalSavedPaymentMethodException(
-            "No Pay Later message was returned for this buyer."
-        )
+    class MissingPreferredMessage @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) internal constructor(
+        cause: Throwable? = null
+    ) : PayPalSavedPaymentMethodException(
+        "No Pay Later message was returned for this buyer.",
+        cause
+    )
 }

@@ -335,12 +335,14 @@ class PayPalSavedPaymentMethodClientUnitTest {
     }
 
     @Test
-    fun `fetchCreditPresentmentMessages throws a JSONException when the response is not valid JSON`() = runTest {
+    fun `fetchCreditPresentmentMessages throws MissingPreferredMessage for invalid JSON`() = runTest {
         val sut = PayPalSavedPaymentMethodClient(restClient("sandbox", "not json"), payPalClient, clientTokenRepository)
 
-        assertFailsWith<JSONException> {
+        val error = assertFailsWith<PayPalSavedPaymentMethodException.MissingPreferredMessage> {
             sut.fetchCreditPresentmentMessages(amount = "55.00", currencyCode = "USD")
         }
+
+        assertIs<JSONException>(error.cause)
     }
 
     @Test
