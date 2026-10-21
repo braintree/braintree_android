@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
@@ -70,6 +71,7 @@ fun VenmoButton(
 
     var enabled by remember { mutableStateOf(true) }
     var flowLaunched by remember { mutableStateOf(false) }
+    var flowClient by remember { mutableStateOf<VenmoClient?>(null) }
     var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
@@ -95,11 +97,14 @@ fun VenmoButton(
     }
     val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
     val analyticsAuthorization = remember(authorization) { Authorization.fromString(authorization) }
+    val currentTokenizeCallback by rememberUpdatedState(venmoTokenizeCallback)
+    val currentPendingRequestRepository by rememberUpdatedState(pendingRequestRepository)
 
     VenmoButtonView(style = style, enabled = enabled) {
         enabled = false
         logButtonSelected(analyticsClient, analyticsAuthorization)
-        venmoClient.createPaymentAuthRequest(
+        val clientAtClick = venmoClient
+        clientAtClick.createPaymentAuthRequest(
             context = context,
             request = venmoRequest
         ) { paymentAuthRequest: VenmoPaymentAuthRequest ->
@@ -109,12 +114,13 @@ fun VenmoButton(
                         coroutineScope.launch {
                             val started = completeVenmoFlow(
                                 venmoLauncher,
-                                pendingRequestRepository,
+                                currentPendingRequestRepository,
                                 it,
                                 paymentAuthRequest,
-                                venmoTokenizeCallback
+                                currentTokenizeCallback
                             )
                             if (started) {
+                                flowClient = clientAtClick
                                 flowLaunched = true
                             } else {
                                 enabled = true
@@ -122,12 +128,12 @@ fun VenmoButton(
                         }
                     } ?: run {
                         enabled = true
-                        venmoTokenizeCallback.onVenmoResult(VenmoResult.Failure(Exception("Activity is null")))
+                        currentTokenizeCallback.onVenmoResult(VenmoResult.Failure(Exception("Activity is null")))
                     }
                 }
 
                 is VenmoPaymentAuthRequest.Failure -> {
-                    venmoTokenizeCallback.onVenmoResult(VenmoResult.Failure(paymentAuthRequest.error))
+                    currentTokenizeCallback.onVenmoResult(VenmoResult.Failure(paymentAuthRequest.error))
                     enabled = true
                 }
             }
@@ -141,21 +147,36 @@ fun VenmoButton(
         }
     }
 
-    LifecycleResumeEffect(venmoClient) {
+    LifecycleResumeEffect(Unit) {
         if (flowLaunched) {
             flowLaunched = false
-            lifecycle.coroutineScope.launch {
-                val pendingRequestString = pendingRequestRepository.getPendingRequest()
+            val resumeClient = flowClient
+            flowClient = null
+            if (resumeClient == null) {
+                enabled = true
+                currentTokenizeCallback.onVenmoResult(
+                    VenmoResult.Failure(Exception("Flow client is null. Unable to restore state."))
+                )
+            } else {
+                lifecycle.coroutineScope.launch {
+                    val pendingRequestString = currentPendingRequestRepository.getPendingRequest()
 
-                activity?.intent?.let { intent ->
-                    handleReturnToApp(venmoLauncher, venmoClient, pendingRequestString, intent, venmoTokenizeCallback)
-                    enabled = true
-                    pendingRequestRepository.clearPendingRequest()
-                } ?: run {
-                    enabled = true
-                    venmoTokenizeCallback.onVenmoResult(
-                        VenmoResult.Failure(Exception("Activity or Intent is null. Unable to restore state."))
-                    )
+                    activity?.intent?.let { intent ->
+                        handleReturnToApp(
+                            venmoLauncher,
+                            resumeClient,
+                            pendingRequestString,
+                            intent,
+                            currentTokenizeCallback
+                        )
+                        enabled = true
+                        currentPendingRequestRepository.clearPendingRequest()
+                    } ?: run {
+                        enabled = true
+                        currentTokenizeCallback.onVenmoResult(
+                            VenmoResult.Failure(Exception("Activity or Intent is null. Unable to restore state."))
+                        )
+                    }
                 }
             }
         }
