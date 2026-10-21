@@ -4,6 +4,7 @@
 
 * UIComponents
     * Fix `VenmoButton` not re-enabling after failure in `createPaymentAuthRequest`, `venmoLauncher.launch()`, or when the hosting Activity is null
+    * Use the latest `authorization` in Compose `PayPalButton` and `VenmoButton`
 * BraintreeCore
   * Fix new clients overwriting existing clients' authorization; recreate clients with the new authorization after login, logout, or fetching a new client token, including ViewModel/DI-scoped clients
   * Fix new clients overwriting custom `returnUrlScheme` values in `LocalPaymentClient` or `SEPADirectDebitClient`
