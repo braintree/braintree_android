@@ -9,7 +9,9 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
+import okio.Buffer
 import org.junit.After
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -74,6 +76,40 @@ class HttpClientTest {
 
         sut.sendRequest(request)
 
+        assertFalse(
+            "Network call should execute on a different thread",
+            networkThreadName == callingThreadName
+        )
+        assertFalse(
+            "Network call should not execute on main thread",
+            Looper.getMainLooper().thread.name == networkThreadName
+        )
+    }
+
+    @Test
+    fun sendRequestForBytes_returnsBodyAndDispatchesNetworkCallOffCallingThread() = runTest {
+        var networkThreadName = ""
+        val callingThreadName = Thread.currentThread().name
+        val okHttpClient = OkHttpClient.Builder()
+            .sslSocketFactory(
+                clientCertificates.sslSocketFactory(),
+                clientCertificates.trustManager
+            )
+            .addInterceptor { chain ->
+                networkThreadName = Thread.currentThread().name
+                chain.proceed(chain.request())
+            }
+            .build()
+        val sut = HttpClient(
+            okHttpSynchronousHttpClient = OkHttpSynchronousHttpClient(okHttpClient = okHttpClient)
+        )
+        // PNG signature plus bytes that are invalid UTF-8, which a String round-trip would corrupt
+        val bytes = byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0xFF.toByte(), 0xFE.toByte(), 0x00)
+        mockWebServer.enqueue(MockResponse().setBody(Buffer().write(bytes)).setResponseCode(200))
+
+        val result = sut.sendRequestForBytes(OkHttpRequest(mockWebServer.url("/image").toString(), Method.Get))
+
+        assertArrayEquals(bytes, result)
         assertFalse(
             "Network call should execute on a different thread",
             networkThreadName == callingThreadName

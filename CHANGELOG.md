@@ -8,6 +8,8 @@
   * Add optional `resultKey` parameter to `ThreeDSecureLauncher` constructors, allowing a unique registration key per launcher instance
 * SEPADirectDebit
     * Add Compose constructor for `SEPADirectDebitLauncher`
+* SharedUtils
+    * Add `sendRequestForBytes` to `HttpClient` for fetching binary payloads
 
 ## 5.33.0 (2026-09-16)
 
