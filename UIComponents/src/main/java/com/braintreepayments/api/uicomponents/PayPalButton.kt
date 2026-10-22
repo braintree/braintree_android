@@ -123,6 +123,7 @@ class PayPalButton @JvmOverloads constructor(
             if (payPalLaunchCallback == null) {
                 throw(NullPointerException("PayPalLaunchCallback must be initialized first"))
             }
+            renderer.showLoading()
             payPalClient.createPaymentAuthRequest(
                 context = context,
                 payPalRequest = payPalRequest
@@ -139,7 +140,6 @@ class PayPalButton @JvmOverloads constructor(
                     }
                 }
             }
-            renderer.showLoading()
         }
     }
 

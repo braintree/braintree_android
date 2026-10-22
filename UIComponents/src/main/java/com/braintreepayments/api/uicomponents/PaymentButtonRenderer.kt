@@ -63,6 +63,7 @@ internal class PaymentButtonRenderer(
 
     /** Swaps the logo for the spinner and shifts it to the center. Call when the flow launches. */
     fun showLoading() {
+        view.isEnabled = false
         logo = ContextCompat.getDrawable(context, style.spinnerId)
         (logo as? Animatable)?.start()
         logoOffset = 0
@@ -71,6 +72,7 @@ internal class PaymentButtonRenderer(
 
     /** Restores the logo. Call when the flow returns to the app. */
     fun hideLoading() {
+        view.isEnabled = true
         (logo as? Animatable)?.stop()
         logo = ContextCompat.getDrawable(context, style.logoId)
         logoOffset = defaultLogoOffset

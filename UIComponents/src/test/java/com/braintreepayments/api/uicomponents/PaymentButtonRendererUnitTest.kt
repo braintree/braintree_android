@@ -15,6 +15,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.junit.Assert.assertFalse
 
 @RunWith(RobolectricTestRunner::class)
 class PaymentButtonRendererUnitTest {
@@ -102,6 +103,17 @@ class PaymentButtonRendererUnitTest {
         renderer.updateAppearance()
 
         assertNotNull(view.background)
+    }
+
+    @Test
+    fun `showLoading disables the view and hideLoading re-enables it`() {
+        assertTrue(view.isEnabled)
+
+        renderer.showLoading()
+        assertFalse(view.isEnabled)
+
+        renderer.hideLoading()
+        assertTrue(view.isEnabled)
     }
 
     private fun dimen(id: Int) = context.resources.getDimension(id).toInt()
