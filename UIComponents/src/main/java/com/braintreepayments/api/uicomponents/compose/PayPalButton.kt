@@ -186,7 +186,7 @@ internal suspend fun completePayPalFlow(
     }
 }
 
-private fun handleReturnToApp(
+internal fun handleReturnToApp(
     payPalLauncher: PayPalLauncher,
     payPalClient: PayPalClient,
     pendingRequestString: String,
