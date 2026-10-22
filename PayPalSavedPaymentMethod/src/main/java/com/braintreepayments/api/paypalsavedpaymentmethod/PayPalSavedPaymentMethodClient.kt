@@ -39,19 +39,29 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
      *
      * @param context an Android Context.
      * @param payPalCheckoutRequest the checkout the edited funding instrument applies to.
-     * @return the [PayPalPaymentAuthRequest] to launch, or a failure from PayPal.
-     * @throws PayPalSavedPaymentMethodException.InvalidAuthorization if the authorization is not a client token.
-     * @throws PayPalSavedPaymentMethodException.MissingPaymentMethodIdJwt if the client token carries no payment method
-     * ID JWT. Both are thrown before any request, so the paysheet never opens as a regular checkout.
+     * @return [PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch] with the request to hand to `PayPalLauncher`, or
+     * [PayPalSavedPaymentMethodAuthRequest.Failure] if the authorization is not a client token
+     * ([PayPalSavedPaymentMethodException.InvalidAuthorization]), the client token carries no payment method ID JWT
+     * ([PayPalSavedPaymentMethodException.MissingPaymentMethodIdJwt]), or PayPal fails to build the request. The
+     * preconditions are checked before any request, so the paysheet never opens as a regular checkout.
      */
     suspend fun createEditFundingInstrumentAuthRequest(
         context: Context,
         payPalCheckoutRequest: PayPalCheckoutRequest
-    ): PayPalPaymentAuthRequest {
-        if (requireClientToken().paymentMethodIdJwt == null) {
-            throw PayPalSavedPaymentMethodException.MissingPaymentMethodIdJwt()
+    ): PayPalSavedPaymentMethodAuthRequest {
+        val clientToken = merchantRepository.authorization as? ClientToken
+            ?: return PayPalSavedPaymentMethodAuthRequest.Failure(
+                PayPalSavedPaymentMethodException.InvalidAuthorization()
+            )
+        if (clientToken.paymentMethodIdJwt == null) {
+            return PayPalSavedPaymentMethodAuthRequest.Failure(
+                PayPalSavedPaymentMethodException.MissingPaymentMethodIdJwt()
+            )
         }
-        return payPalClient.createPaymentAuthRequestForEditFi(context, payPalCheckoutRequest)
+        return when (val request = payPalClient.createPaymentAuthRequestForEditFi(context, payPalCheckoutRequest)) {
+            is PayPalPaymentAuthRequest.ReadyToLaunch -> PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch(request)
+            is PayPalPaymentAuthRequest.Failure -> PayPalSavedPaymentMethodAuthRequest.Failure(request.error)
+        }
     }
 
     /**
@@ -67,6 +77,8 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
     /**
      * Fetches the funding instrument details for a vaulted PayPal payment method.
      *
+     * Callers should catch broadly and rethrow [kotlin.coroutines.cancellation.CancellationException].
+     *
      * @param fundingInstrumentType Which funding instrument to resolve.
      * [PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT] uses the payment method ID JWT carried by the
      * client token; [PayPalFundingInstrumentFetchType.BUYER_UPDATED_BILLING_AGREEMENT] requires [orderId].
@@ -77,7 +89,7 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
      * @return The funding instrument details to display for the buyer.
      * @throws PayPalSavedPaymentMethodException if the authorization is not a client token, the identity field for
      * [fundingInstrumentType] is missing or blank, or the response is empty, is not valid JSON, or cannot be parsed.
-     * @throws BraintreeException if the GraphQL response contains errors.
+     * @throws BraintreeException if the GraphQL response contains errors, or the configuration can't be fetched.
      * @throws java.io.IOException if the request fails.
      */
     @Suppress("ThrowsCount")
@@ -143,11 +155,14 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
      * when this throws, callers should hide only the Pay Later message and keep showing the funding instrument; it
      * must not fail checkout.
      *
+     * Callers should catch broadly and rethrow [kotlin.coroutines.cancellation.CancellationException].
+     *
      * @param amount The order amount the message is calculated from, for example `"55.00"`.
      * @param currencyCode The ISO-4217 currency code for [amount], for example `"USD"`.
      * @return The Pay Later message to display.
      * @throws PayPalSavedPaymentMethodException if the authorization is not a client token, the response is empty or
      * not valid JSON, or PayPal returns no message.
+     * @throws BraintreeException if the configuration can't be fetched.
      * @throws java.io.IOException if the request fails.
      */
     @Suppress("ThrowsCount")

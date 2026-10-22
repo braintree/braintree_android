@@ -362,34 +362,58 @@ class PayPalSavedPaymentMethodClientUnitTest {
     }
 
     @Test
-    fun `createEditFundingInstrumentAuthRequest creates the edit auth request for a client token with a JWT`() =
+    fun `createEditFundingInstrumentAuthRequest wraps the PayPal request for a client token with a JWT`() = runTest {
+        val payPalRequest = mockk<PayPalPaymentAuthRequest.ReadyToLaunch>()
+        coEvery { payPalClient.createPaymentAuthRequestForEditFi(context, checkoutRequest) } returns payPalRequest
+        val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), payPalClient, clientTokenRepository)
+
+        val result = sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest)
+
+        val readyToLaunch = assertIs<PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch>(result)
+        assertSame(payPalRequest, readyToLaunch.paymentAuthRequest)
+    }
+
+    @Test
+    fun `createEditFundingInstrumentAuthRequest returns Failure with the PayPal error`() = runTest {
+        val payPalError = BraintreeException("PayPal failed")
+        val payPalFailure = mockk<PayPalPaymentAuthRequest.Failure> { every { error } returns payPalError }
+        coEvery { payPalClient.createPaymentAuthRequestForEditFi(context, checkoutRequest) } returns payPalFailure
+        val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), payPalClient, clientTokenRepository)
+
+        val result = sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest)
+
+        assertSame(payPalError, assertIs<PayPalSavedPaymentMethodAuthRequest.Failure>(result).error)
+    }
+
+    @Test
+    fun `createEditFundingInstrumentAuthRequest returns Failure with MissingPaymentMethodIdJwt without a JWT`() =
         runTest {
-            val authRequest = mockk<PayPalPaymentAuthRequest>()
-            coEvery { payPalClient.createPaymentAuthRequestForEditFi(context, checkoutRequest) } returns authRequest
-            val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), payPalClient, clientTokenRepository)
+            val sut = PayPalSavedPaymentMethodClient(
+                mockk(relaxed = true),
+                payPalClient,
+                clientTokenWithoutJwtRepository
+            )
 
-            assertSame(authRequest, sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest))
+            val result = sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest)
+
+            assertIs<PayPalSavedPaymentMethodException.MissingPaymentMethodIdJwt>(
+                assertIs<PayPalSavedPaymentMethodAuthRequest.Failure>(result).error
+            )
+            coVerify(exactly = 0) { payPalClient.createPaymentAuthRequestForEditFi(any(), any()) }
         }
 
     @Test
-    fun `createEditFundingInstrumentAuthRequest throws MissingPaymentMethodIdJwt without a JWT`() = runTest {
-        val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), payPalClient, clientTokenWithoutJwtRepository)
+    fun `createEditFundingInstrumentAuthRequest returns Failure with InvalidAuthorization for a tokenization key`() =
+        runTest {
+            val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), payPalClient, tokenizationKeyRepository)
 
-        assertFailsWith<PayPalSavedPaymentMethodException.MissingPaymentMethodIdJwt> {
-            sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest)
+            val result = sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest)
+
+            assertIs<PayPalSavedPaymentMethodException.InvalidAuthorization>(
+                assertIs<PayPalSavedPaymentMethodAuthRequest.Failure>(result).error
+            )
+            coVerify(exactly = 0) { payPalClient.createPaymentAuthRequestForEditFi(any(), any()) }
         }
-        coVerify(exactly = 0) { payPalClient.createPaymentAuthRequestForEditFi(any(), any()) }
-    }
-
-    @Test
-    fun `createEditFundingInstrumentAuthRequest throws InvalidAuthorization for a tokenization key`() = runTest {
-        val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), payPalClient, tokenizationKeyRepository)
-
-        assertFailsWith<PayPalSavedPaymentMethodException.InvalidAuthorization> {
-            sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest)
-        }
-        coVerify(exactly = 0) { payPalClient.createPaymentAuthRequestForEditFi(any(), any()) }
-    }
 
     @Test
     fun `tokenize returns the PayPal client's result`() = runTest {
