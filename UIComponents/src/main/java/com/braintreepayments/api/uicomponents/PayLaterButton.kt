@@ -3,14 +3,10 @@ package com.braintreepayments.api.uicomponents
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.util.AttributeSet
 import androidx.activity.result.ActivityResultCaller
 import androidx.appcompat.widget.AppCompatButton
-import androidx.core.content.ContextCompat
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
@@ -27,7 +23,6 @@ import com.braintreepayments.api.uicomponents.PayLaterButtonColor.Companion.from
  * This button provides a pre-styled PayPal Pay Later button with configurable colors and handles
  * the complete PayPal payment flow, offering PayPal Pay Later to customers who qualify.
  */
-@Suppress("TooManyFunctions")
 class PayLaterButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -36,15 +31,7 @@ class PayLaterButton @JvmOverloads constructor(
 
     internal var currentStyle: PayLaterButtonColor = PayLaterButtonColor.Blue
         private set
-    private val gradientDrawable = GradientDrawable()
-    private val focusIndicatorDrawable = GradientDrawable()
-    private var logo: Drawable? = null
-
-    private val ppLogoOffset = resources.getDimension(R.dimen.pp_logo_offset).toInt()
-    private var logoOffset = ppLogoOffset
-    private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
-    private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
-
+    private val renderer = PaymentButtonRenderer(this, currentStyle.toStyle())
     /**
      * The PayPal client used to create payment auth requests and tokenize results.
      * Must be initialized via [initialize] before use.
@@ -70,9 +57,8 @@ class PayLaterButton @JvmOverloads constructor(
             }
         }
         contentDescription = context.getString(R.string.pay_later_button_content_description)
-        setupBackground()
-        applyStyle()
-        setMinimumSize()
+        renderer.setStyle(currentStyle.toStyle())
+        renderer.setup()
     }
 
     /**
@@ -149,8 +135,7 @@ class PayLaterButton @JvmOverloads constructor(
                     }
                 }
             }
-
-            setButtonClicked()
+            renderer.showLoading()
         }
     }
 
@@ -229,120 +214,27 @@ class PayLaterButton @JvmOverloads constructor(
                 callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
             }
         }
-        setButtonReEnabled()
-    }
-
-    private fun setButtonClicked() {
-        this.isEnabled = false
-        logo = ContextCompat.getDrawable(context, currentStyle.spinnerId)
-        (logo as? android.graphics.drawable.Animatable)?.start()
-        logoOffset = 0
-        invalidate()
-    }
-
-    private fun setButtonReEnabled() {
-        this.isEnabled = true
-        (logo as? android.graphics.drawable.Animatable)?.stop()
-        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
-        logoOffset = ppLogoOffset
-        invalidate()
-    }
-
-    private fun setupBackground() {
-        gradientDrawable.shape = GradientDrawable.RECTANGLE
-        gradientDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
-        focusIndicatorDrawable.shape = GradientDrawable.RECTANGLE
-        focusIndicatorDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
-        val layers = arrayOf(focusIndicatorDrawable, gradientDrawable)
-        val layerDrawable = LayerDrawable(layers)
-        val focusPadding = resources.getDimension(R.dimen.pay_button_focus_padding).toInt()
-        layerDrawable.setLayerInset(1, focusPadding, focusPadding, focusPadding, focusPadding)
-        background = layerDrawable
-    }
-
-    private fun applyStyle() {
-        updateButtonAppearance()
-        gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.default.fill))
-        val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
-        gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(context, currentStyle.default.border))
-        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
-        invalidate()
-    }
-
-    private fun updateButtonAppearance() {
-        val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
-        val focusStrokeWidth = resources.getDimension(R.dimen.pay_button_focus_border).toInt()
-
-        when {
-            isPressed -> {
-                gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.pressed.fill))
-                gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(context, currentStyle.pressed.border))
-                focusIndicatorDrawable.setStroke(
-                    strokeWidth,
-                    ContextCompat.getColor(context, currentStyle.pressed.focusIndicator)
-                )
-            }
-            isHovered -> {
-                gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.hover.fill))
-                gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(context, currentStyle.hover.border))
-                focusIndicatorDrawable.setStroke(
-                    focusStrokeWidth,
-                    ContextCompat.getColor(context, currentStyle.hover.focusIndicator)
-                )
-            }
-            isFocused -> {
-                gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.focus.fill))
-                gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(context, currentStyle.focus.border))
-                focusIndicatorDrawable.setStroke(
-                    focusStrokeWidth,
-                    ContextCompat.getColor(context, currentStyle.focus.focusIndicator)
-                )
-            }
-            else -> {
-                gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.default.fill))
-                gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(context, currentStyle.default.border))
-                focusIndicatorDrawable.setStroke(
-                    focusStrokeWidth,
-                    ContextCompat.getColor(context, currentStyle.default.focusIndicator)
-                )
-            }
-        }
-    }
-
-    private fun setMinimumSize() {
-        minimumHeight = desiredHeight
-        val logoDrawable = logo ?: return
-        val fullButtonFocusPadding = resources.getDimension(R.dimen.pay_button_focus_padding).toInt() * 2
-        val logoBufferPadding = fullButtonFocusPadding
-        minimumWidth = logoDrawable.intrinsicWidth + fullButtonFocusPadding + logoBufferPadding
+        renderer.hideLoading()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val width = resolveSize(desiredWidth, widthMeasureSpec).coerceAtLeast(minimumWidth)
-        val height = resolveSize(desiredHeight, heightMeasureSpec).coerceAtLeast(minimumHeight)
+        val (width, height) = renderer.onMeasure(widthMeasureSpec, heightMeasureSpec)
         setMeasuredDimension(width, height)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        logo?.let { logoDrawable ->
-            val w = logoDrawable.intrinsicWidth
-            val h = logoDrawable.intrinsicHeight
-            val left = (width - w) / 2
-            val top = (height - h) / 2 + logoOffset
-            logoDrawable.setBounds(left, top, left + w, top + h)
-            logoDrawable.draw(canvas)
-        }
+        renderer.onDraw(canvas)
     }
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
-        updateButtonAppearance()
+        renderer.updateAppearance()
     }
 
     override fun drawableStateChanged() {
         super.drawableStateChanged()
-        updateButtonAppearance()
+        renderer.updateAppearance()
     }
 
     /**
@@ -351,9 +243,8 @@ class PayLaterButton @JvmOverloads constructor(
      * @property color Value representing the button color. Valid values are BLUE, BLACK, and WHITE
      */
     fun setButtonColor(color: PayLaterButtonColor) {
-        val style = color
-        if (style == currentStyle) return
-        currentStyle = style
-        applyStyle()
+        if (color == currentStyle) return
+        currentStyle = color
+        renderer.setStyle(color.toStyle())
     }
 }

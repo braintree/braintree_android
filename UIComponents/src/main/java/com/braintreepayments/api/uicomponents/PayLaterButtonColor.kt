@@ -9,13 +9,9 @@ sealed class PayLaterButtonColor(
 ) {
     internal abstract val logoId: Int
 
-    // PayPal Pay Later buttons share fill, border, focus, and spinner styling with the PayPal buttons.
-    internal val default: PayPalButtonColor.ButtonColors get() = payPalButtonColor.default
-    internal val hover: PayPalButtonColor.ButtonColors get() = payPalButtonColor.hover
-    internal val focus: PayPalButtonColor.ButtonColors get() = payPalButtonColor.focus
-    internal val focusHover: PayPalButtonColor.ButtonColors get() = payPalButtonColor.focusHover
-    internal val pressed: PayPalButtonColor.ButtonColors get() = payPalButtonColor.pressed
-    internal val spinnerId: Int get() = payPalButtonColor.spinnerId
+    // Pay Later shares fill, border, focus and spinner styling with PayPal; only the wordmark differs.
+    internal fun toStyle(): PaymentButtonStyle =
+        payPalButtonColor.toStyle().copy(logoId = logoId)
 
     object Blue : PayLaterButtonColor(key = 0, payPalButtonColor = PayPalButtonColor.Blue) {
         override val logoId: Int get() = R.drawable.pay_later_logo_black

@@ -39,10 +39,6 @@ class UIComponentsFragment : BaseFragment() {
     private lateinit var payPalToggleGroup: MaterialButtonToggleGroup
     private lateinit var payLaterButton: PayLaterButton
     private lateinit var payLaterToggleGroup: MaterialButtonToggleGroup
-
-    // The PayPal and PayPal Pay Later buttons share one pending request slot. This tracks which button launched the
-    // flow so the return to app is handled by that button.
-    private var isPayLaterFlowInProgress = false
     private lateinit var venmoButton: VenmoButton
     private lateinit var venmoRequest: VenmoRequest
     private lateinit var venmoToggleGroup: MaterialButtonToggleGroup
@@ -162,7 +158,7 @@ class UIComponentsFragment : BaseFragment() {
         payPalButton.payPalLaunchCallback = PayPalLaunchCallback { request: PayPalPendingRequest ->
             when (request) {
                 is PayPalPendingRequest.Started -> {
-                    isPayLaterFlowInProgress = false
+                    clearPayLaterPendingRequest()
                     storePayPalPendingRequest(request)
                 }
                 is PayPalPendingRequest.Failure -> handleError(request.error)
@@ -170,7 +166,7 @@ class UIComponentsFragment : BaseFragment() {
         }
     }
 
-    private fun setupPayLaterButton() { 
+    private fun setupPayLaterButton() {
         val payPalCheckoutRequest = PayPalRequestFactory.createPayPalCheckoutRequest(
             /* context = */ requireContext(),
             /* amount = */ "10.0",
@@ -195,8 +191,8 @@ class UIComponentsFragment : BaseFragment() {
         payLaterButton.payPalLaunchCallback = PayPalLaunchCallback { request: PayPalPendingRequest ->
             when (request) {
                 is PayPalPendingRequest.Started -> {
-                    isPayLaterFlowInProgress = true
-                    storePayPalPendingRequest(request)
+                    clearPayPalPendingRequest()
+                    storePayLaterPendingRequest(request)
                 }
                 is PayPalPendingRequest.Failure -> handleError(request.error)
             }
@@ -245,24 +241,24 @@ class UIComponentsFragment : BaseFragment() {
         super.onResume()
 
         // PayPal or PayPal Pay Later flow after returning to app
-        val pendingRequest = getPayPalPendingRequest()
-        if (pendingRequest != null) {
-            val callback = PayPalTokenizeCallback { payPalResult ->
-                when (payPalResult) {
-                    is PayPalResult.Success -> handlePayPalResult(payPalResult.nonce)
-                    is PayPalResult.Cancel ->
-                        handleError(Exception("User did not complete payment flow"))
-                    is PayPalResult.Failure -> handleError(payPalResult.error)
-                    else -> Unit
-                }
+        val callback = PayPalTokenizeCallback { payPalResult ->
+            when (payPalResult) {
+                is PayPalResult.Success -> handlePayPalResult(payPalResult.nonce)
+                is PayPalResult.Cancel ->
+                    handleError(Exception("User did not complete payment flow"))
+                is PayPalResult.Failure -> handleError(payPalResult.error)
             }
-            if (isPayLaterFlowInProgress) {
-                payLaterButton.handleReturnToApp(pendingRequest, requireActivity().intent, callback)
-            } else {
-                payPalButton.handleReturnToApp(pendingRequest, requireActivity().intent, callback)
-            }
-            isPayLaterFlowInProgress = false
+        }
+
+        getPayPalPendingRequest()?.let { pending ->
+            payPalButton.handleReturnToApp(pending, requireActivity().intent, callback)
             clearPayPalPendingRequest()
+            requireActivity().intent.data = null
+        }
+
+        getPayLaterPendingRequest()?.let { pending ->
+            payLaterButton.handleReturnToApp(pending, requireActivity().intent, callback)
+            clearPayLaterPendingRequest()
             requireActivity().intent.data = null
         }
 
@@ -271,15 +267,16 @@ class UIComponentsFragment : BaseFragment() {
         if (venmoPendingRequest != null) {
             venmoButton.handleReturnToApp(
                 venmoPendingRequest,
-                requireActivity().intent) { venmoResult: VenmoResult? ->
-                    when (venmoResult) {
-                        is VenmoResult.Success -> handleVenmoAccountNonce(venmoResult.nonce)
-                        is VenmoResult.Failure -> handleError(venmoResult.error)
-                        is VenmoResult.Cancel ->
-                            handleError(Exception("User did not complete payment flow"))
-                        else -> Unit
-                    }
+                requireActivity().intent
+            ) { venmoResult: VenmoResult? ->
+                when (venmoResult) {
+                    is VenmoResult.Success -> handleVenmoAccountNonce(venmoResult.nonce)
+                    is VenmoResult.Failure -> handleError(venmoResult.error)
+                    is VenmoResult.Cancel ->
+                        handleError(Exception("User did not complete payment flow"))
+                    else -> Unit
                 }
+            }
             clearVenmoPendingRequest()
             requireActivity().intent.data = null
         }
@@ -318,4 +315,13 @@ class UIComponentsFragment : BaseFragment() {
 
     private fun clearPayPalPendingRequest() =
         PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext())
+
+    private fun storePayLaterPendingRequest(request: PayPalPendingRequest.Started) =
+        PendingRequestStore.getInstance().putPayLaterPendingRequest(requireContext(), request)
+
+    private fun getPayLaterPendingRequest(): PayPalPendingRequest.Started? =
+        PendingRequestStore.getInstance().getPayLaterPendingRequest(requireContext())
+
+    private fun clearPayLaterPendingRequest() =
+        PendingRequestStore.getInstance().clearPayLaterPendingRequest(requireContext())
 }

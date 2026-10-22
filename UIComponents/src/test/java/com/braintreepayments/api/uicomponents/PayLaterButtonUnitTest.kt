@@ -26,44 +26,16 @@ class PayLaterButtonUnitTest {
     }
 
     // region PayLaterButtonColor
-
     @Test
-    fun `blue uses the black wordmark and PayPal blue styling`() {
-        val color = PayLaterButtonColor.Blue
-
-        assertEquals(R.drawable.pay_later_logo_black, color.logoId)
-        assertEquals(PayPalButtonColor.Blue.default, color.default)
-        assertEquals(PayPalButtonColor.Blue.hover, color.hover)
-        assertEquals(PayPalButtonColor.Blue.focus, color.focus)
-        assertEquals(PayPalButtonColor.Blue.focusHover, color.focusHover)
-        assertEquals(PayPalButtonColor.Blue.pressed, color.pressed)
-        assertEquals(R.drawable.avd_spinner_black, color.spinnerId)
-    }
-
-    @Test
-    fun `black uses the white wordmark and PayPal black styling`() {
-        val color = PayLaterButtonColor.Black
-
-        assertEquals(R.drawable.pay_later_logo_white, color.logoId)
-        assertEquals(PayPalButtonColor.Black.default, color.default)
-        assertEquals(PayPalButtonColor.Black.hover, color.hover)
-        assertEquals(PayPalButtonColor.Black.focus, color.focus)
-        assertEquals(PayPalButtonColor.Black.focusHover, color.focusHover)
-        assertEquals(PayPalButtonColor.Black.pressed, color.pressed)
-        assertEquals(R.drawable.avd_spinner_white, color.spinnerId)
-    }
-
-    @Test
-    fun `white uses the black wordmark and PayPal white styling`() {
-        val color = PayLaterButtonColor.White
-
-        assertEquals(R.drawable.pay_later_logo_black, color.logoId)
-        assertEquals(PayPalButtonColor.White.default, color.default)
-        assertEquals(PayPalButtonColor.White.hover, color.hover)
-        assertEquals(PayPalButtonColor.White.focus, color.focus)
-        assertEquals(PayPalButtonColor.White.focusHover, color.focusHover)
-        assertEquals(PayPalButtonColor.White.pressed, color.pressed)
-        assertEquals(R.drawable.avd_spinner_black, color.spinnerId)
+    fun `each color maps to PayPal styling with its own wordmark`() {
+        listOf(
+            Triple(PayLaterButtonColor.Blue, PayPalButtonColor.Blue, R.drawable.pay_later_logo_black),
+            Triple(PayLaterButtonColor.Black, PayPalButtonColor.Black, R.drawable.pay_later_logo_white),
+            Triple(PayLaterButtonColor.White, PayPalButtonColor.White, R.drawable.pay_later_logo_black),
+        ).forEach { (payLater, payPal, logo) ->
+            assertEquals(logo, payLater.logoId)
+            assertEquals(payPal.toStyle().copy(logoId = logo), payLater.toStyle())
+        }
     }
 
     @Test
