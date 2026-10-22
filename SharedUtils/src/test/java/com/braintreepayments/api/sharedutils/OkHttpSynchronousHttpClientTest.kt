@@ -27,6 +27,7 @@ import kotlin.test.assertFailsWith
 class OkHttpSynchronousHttpClientTest {
 
     private lateinit var okHttpClient: OkHttpClient
+    private lateinit var bytesOkHttpClientBuilder: OkHttpClient.Builder
     private lateinit var certificatePinner: CertificatePinner
     private lateinit var sut: OkHttpSynchronousHttpClient
 
@@ -38,6 +39,10 @@ class OkHttpSynchronousHttpClientTest {
     fun setUp() {
         okHttpClient = mockk(relaxed = true)
         certificatePinner = mockk(relaxed = true)
+        bytesOkHttpClientBuilder = mockk()
+        every { okHttpClient.newBuilder() } returns bytesOkHttpClientBuilder
+        every { bytesOkHttpClientBuilder.followSslRedirects(false) } returns bytesOkHttpClientBuilder
+        every { bytesOkHttpClientBuilder.build() } returns okHttpClient
 
         sut = OkHttpSynchronousHttpClient(
             okHttpClient = okHttpClient
@@ -203,10 +208,22 @@ class OkHttpSynchronousHttpClientTest {
     }
 
     @Test
-    fun `when an https request is redirected to http, executeRequestForBytes throws IOException`() {
-        givenBytesResponse(isSuccessful = true, body = byteArrayOf(1).toResponseBody(), finalUrl = "http://example.com")
+    fun `executeRequestForBytes uses a client that does not follow redirects between https and http`() {
+        givenBytesResponse(isSuccessful = true, body = byteArrayOf(1).toResponseBody())
 
-        assertFailsWith<IOException> { sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get)) }
+        sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get))
+
+        verify { bytesOkHttpClientBuilder.followSslRedirects(false) }
+    }
+
+    @Test
+    fun `when the response is a redirect that was not followed, executeRequestForBytes throws IOException`() {
+        givenBytesResponse(isSuccessful = false, body = byteArrayOf(1).toResponseBody())
+        every { response.code } returns 302
+
+        val error = assertFailsWith<IOException> { sut.executeRequestForBytes(OkHttpRequest(URL, Method.Get)) }
+
+        assertTrue(error.message.orEmpty().contains("302"))
     }
 
     @Test
@@ -221,13 +238,11 @@ class OkHttpSynchronousHttpClientTest {
         assertArrayEquals(bytes, result)
     }
 
-    private fun givenBytesResponse(isSuccessful: Boolean, body: ResponseBody?, finalUrl: String = URL) {
+    private fun givenBytesResponse(isSuccessful: Boolean, body: ResponseBody?) {
         every { okHttpClient.newCall(any()) } returns call
         every { call.execute() } returns response
         every { response.isSuccessful } returns isSuccessful
         every { response.body } returns body
-        // The request OkHttp ended on after following any redirects.
-        every { response.request } returns Request.Builder().url(finalUrl).build()
     }
 
     companion object {

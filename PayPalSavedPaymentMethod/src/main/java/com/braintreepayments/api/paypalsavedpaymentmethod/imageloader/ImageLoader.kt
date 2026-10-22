@@ -201,8 +201,14 @@ internal class ImageLoader internal constructor(
         val options = BitmapFactory.Options().apply {
             inSampleSize = calculateInSampleSize(bounds, MAX_DECODE_DIMENSION_PX, MAX_DECODE_DIMENSION_PX)
         }
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
-            ?: throw IOException("Unable to decode image from $url")
+        // An optional icon must never crash the host app, so an out-of-memory decode fails like any other decode
+        // failure and the view keeps its error placeholder.
+        val bitmap = try {
+            BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+        } catch (e: OutOfMemoryError) {
+            throw IOException("Not enough memory to decode image from $url", e)
+        }
+        return bitmap ?: throw IOException("Unable to decode image from $url")
     }
 
     // Also clears a stale image (e.g. from a recycled RecyclerView row) when there is no placeholder.

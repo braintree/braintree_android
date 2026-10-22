@@ -28,6 +28,13 @@ internal class OkHttpSynchronousHttpClient(
         .build(),
 ) {
 
+    // OkHttp follows redirects between https and http by default. Byte downloads must never make a cleartext hop, so
+    // they use a client that doesn't follow a redirect that changes the scheme; it shares the connection pool and TLS
+    // setup of [okHttpClient].
+    private val bytesOkHttpClient: OkHttpClient by lazy {
+        okHttpClient.newBuilder().followSslRedirects(false).build()
+    }
+
     /**
      * Executes a synchronous HTTP request using OkHttp.
      *
@@ -65,9 +72,9 @@ internal class OkHttpSynchronousHttpClient(
      * declared `Content-Length` exceeds it, or, if undeclared (e.g. chunked transfer), as soon as actual bytes read
      * exceed it — the body is never buffered past [maxBodyBytes] + 1 bytes.
      * @return The response body bytes.
-     * @throws IOException if the request fails, the response is unsuccessful or has no body, an https request is
-     * redirected to a non-https URL, the body size exceeds [maxBodyBytes], or the whole call, body included, takes
-     * longer than [BYTES_CALL_TIMEOUT_SECONDS].
+     * @throws IOException if the request fails, the response is unsuccessful or has no body (including a redirect
+     * between https and http, which is never followed), the body size exceeds [maxBodyBytes], or the whole call, body
+     * included, takes longer than [BYTES_CALL_TIMEOUT_SECONDS].
      * @throws IllegalArgumentException if the request URL is not a valid http or https URL.
      */
     @Throws(IOException::class)
@@ -76,15 +83,11 @@ internal class OkHttpSynchronousHttpClient(
 
         // The connect and read timeouts only bound each step, so a server that trickles bytes could hold the call open
         // for as long as it keeps sending; this bounds the whole call.
-        val call = okHttpClient.newCall(request)
+        val call = bytesOkHttpClient.newCall(request)
         call.timeout().timeout(BYTES_CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         call.execute().use { response ->
             val responseBody = response.body?.takeIf { response.isSuccessful }
                 ?: throw IOException("Unexpected code ${response.code} for ${request.url}")
-            // OkHttp follows redirects, including https to http; never accept a downgraded download.
-            if (request.url.isHttps && !response.request.url.isHttps) {
-                throw IOException("Redirected from https to a non-https URL for ${request.url}")
-            }
             return responseBody.readBoundedBytes(maxBodyBytes, request.url.toString())
         }
     }

@@ -1,14 +1,18 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.imageloader
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.LruCache
 import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.Method
 import com.braintreepayments.api.sharedutils.OkHttpRequest
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.slot
+import io.mockk.unmockkStatic
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -23,6 +27,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -111,6 +116,25 @@ class ImageLoaderUnitTest {
 
         assertFailsWith<IOException> { sut.load(URL) }
         assertNull(sut.peek(URL))
+    }
+
+    @Test
+    fun `load throws IOException and caches nothing when decoding runs out of memory`() = runTest(testDispatcher) {
+        givenImage(32)
+        mockkStatic(BitmapFactory::class)
+        try {
+            every {
+                BitmapFactory.decodeByteArray(any(), any(), any(), match { !it.inJustDecodeBounds })
+            } throws OutOfMemoryError()
+
+            val error = assertFailsWith<IOException> { sut.load(URL) }
+
+            // Checked by message: coroutine stack-trace recovery may wrap the exception in a copy.
+            assertTrue(error.message.orEmpty().contains("Not enough memory"))
+            assertNull(sut.peek(URL))
+        } finally {
+            unmockkStatic(BitmapFactory::class)
+        }
     }
 
     @Test

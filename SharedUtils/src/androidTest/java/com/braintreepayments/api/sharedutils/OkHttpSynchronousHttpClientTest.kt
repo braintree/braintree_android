@@ -162,7 +162,7 @@ class OkHttpSynchronousHttpClientTest {
     }
 
     @Test
-    fun executeRequestForBytes_httpsRedirectedToHttp_throwsIOException() {
+    fun executeRequestForBytes_httpsRedirectedToHttp_throwsIOExceptionWithoutCleartextRequest() {
         val plainServer = MockWebServer()
         plainServer.enqueue(MockResponse().setBody("downgraded").setResponseCode(200))
         plainServer.start()
@@ -175,8 +175,9 @@ class OkHttpSynchronousHttpClientTest {
 
             val error = assertThrows<IOException> { sut.executeRequestForBytes(bytesRequest("/redirect")) }
 
-            // Asserting the message rules out the request failing for another reason, such as cleartext being blocked.
-            assertTrue(error.message, error.message.orEmpty().contains("Redirected from https to a non-https URL"))
+            // The redirect is never followed, so the cleartext server is never contacted.
+            assertTrue(error.message, error.message.orEmpty().contains("302"))
+            assertEquals(0, plainServer.requestCount)
         } finally {
             plainServer.shutdown()
         }
