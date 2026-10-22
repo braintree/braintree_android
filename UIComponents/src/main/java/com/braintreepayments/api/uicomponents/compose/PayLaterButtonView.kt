@@ -37,9 +37,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.uicomponents.PayLaterButtonColor
+import com.braintreepayments.api.uicomponents.PaymentButtonStyle
 import com.braintreepayments.api.uicomponents.R
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 
+/**
+ * A stateless PayPal Pay Later branded button.
+ *
+ * Use [PayLaterButton] to get the complete PayPal Pay Later flow. Use this composable directly only if you want
+ * to render the button and handle the flow yourself.
+ *
+ * @param style A [PayLaterButtonColor] that determines the color of the button.
+ * @param enabled When `false` the button is not clickable and displays a loading indicator.
+ * @param onClick Invoked when the button is clicked.
+ */
 @Composable
 fun PayLaterButtonView(style: PayLaterButtonColor, enabled: Boolean = true, onClick: () -> Unit) {
     val context = LocalContext.current
@@ -58,9 +69,12 @@ fun PayLaterButtonView(style: PayLaterButtonColor, enabled: Boolean = true, onCl
     val isHovered = interactionSource.collectIsHoveredAsState()
     val isFocused = interactionSource.collectIsFocusedAsState()
 
-    val containerColor = colorResource(fillColor(style, isPressed.value, isHovered.value, isFocused.value))
-    val borderColor = colorResource(borderColor(style, isPressed.value, isHovered.value, isFocused.value))
-    val focusColor = colorResource(focusColor(style, isPressed.value, isHovered.value, isFocused.value))
+    // Pay Later shares its fill/border/focus styling with PayPal; only the wordmark differs.
+    val buttonStyle = remember(style) { style.toStyle() }
+
+    val containerColor = colorResource(fillColor(buttonStyle, isPressed.value, isHovered.value, isFocused.value))
+    val borderColor = colorResource(borderColor(buttonStyle, isPressed.value, isHovered.value, isFocused.value))
+    val focusColor = colorResource(focusColor(buttonStyle, isPressed.value, isHovered.value, isFocused.value))
 
     Surface(
         onClick = onClick,
@@ -93,7 +107,7 @@ fun PayLaterButtonView(style: PayLaterButtonColor, enabled: Boolean = true, onCl
             content = {
                 val loading = !enabled
                 if (!loading) {
-                    val logo: Drawable? = ContextCompat.getDrawable(context, style.logoId)
+                    val logo: Drawable? = ContextCompat.getDrawable(context, buttonStyle.logoId)
                     Image(
                         painter = rememberDrawablePainter(drawable = logo),
                         modifier = Modifier.padding(top = ppLogoOffset),
@@ -117,7 +131,7 @@ fun PayLaterButtonView(style: PayLaterButtonColor, enabled: Boolean = true, onCl
     }
 }
 
-private fun fillColor(style: PayLaterButtonColor, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
+private fun fillColor(style: PaymentButtonStyle, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
     isPressed -> style.pressed.fill
     isHovered && isFocused -> style.focusHover.fill
     isHovered -> style.hover.fill
@@ -125,7 +139,7 @@ private fun fillColor(style: PayLaterButtonColor, isPressed: Boolean, isHovered:
     else -> style.default.fill
 }
 
-private fun borderColor(style: PayLaterButtonColor, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
+private fun borderColor(style: PaymentButtonStyle, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
     isPressed -> style.pressed.border
     isHovered && isFocused -> style.focusHover.border
     isHovered -> style.hover.border
@@ -133,7 +147,7 @@ private fun borderColor(style: PayLaterButtonColor, isPressed: Boolean, isHovere
     else -> style.default.border
 }
 
-private fun focusColor(style: PayLaterButtonColor, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
+private fun focusColor(style: PaymentButtonStyle, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
     isPressed -> style.pressed.focusIndicator
     isHovered && isFocused -> style.focusHover.focusIndicator
     isHovered -> style.hover.focusIndicator
@@ -164,4 +178,3 @@ private fun PreviewPayLaterButtonWhite() {
 private fun PreviewPayLaterButtonLoading() {
     PayLaterButtonView(style = PayLaterButtonColor.Blue, enabled = false) {}
 }
-
