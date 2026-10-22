@@ -29,8 +29,9 @@ class HttpClient internal constructor(
      *
      * @param maxBodyBytes Limit on the response body size, 5 MB by default, enforced even if the response omits
      * `Content-Length` (e.g. chunked transfer).
-     * @throws java.io.IOException if the network request fails, the response is unsuccessful or has no body, or the
-     * body size exceeds [maxBodyBytes]
+     * @throws java.io.IOException if the network request fails, the response is unsuccessful or has no body
+     * (including a redirect between https and http, which is never followed), the body size exceeds [maxBodyBytes],
+     * or the whole call takes longer than 30 seconds
      * @throws IllegalArgumentException if the request URL is not a valid http or https URL
      */
     suspend fun sendRequestForBytes(

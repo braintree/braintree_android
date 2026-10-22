@@ -92,7 +92,7 @@ internal class ImageLoader internal constructor(
 
     /**
      * Returns the bitmap for [url], from memory when cached. Throws [IllegalArgumentException] if [url] is not an https
-     * URL with a host, and [IOException] if the download or decode fails.
+     * URL with a host, and [IOException] if the download or decode fails, including when decoding runs out of memory.
      */
     suspend fun load(url: String): Bitmap {
         val validUrl = requireNotNull(url.asHttpsUrlOrNull()) { "url must be an https URL with a host" }
