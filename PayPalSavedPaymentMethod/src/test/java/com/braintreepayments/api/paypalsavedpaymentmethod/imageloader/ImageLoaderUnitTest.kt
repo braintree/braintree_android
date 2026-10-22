@@ -147,6 +147,32 @@ class ImageLoaderUnitTest {
     }
 
     @Test
+    fun `fetching waits for a fetch permit`() = runTest(testDispatcher) {
+        val fetchSemaphore = Semaphore(1).apply { acquire() }
+        sut = createImageLoader(fetchSemaphore = fetchSemaphore)
+        givenImage(32)
+
+        val result = async { sut.load(URL) }
+        advanceUntilIdle()
+        assertFalse(result.isCompleted)
+        coVerify(exactly = 0) { httpClient.sendRequestForBytes(any(), any()) }
+
+        fetchSemaphore.release()
+        assertEquals(32, result.await().width)
+    }
+
+    @Test
+    fun `clearCache evicts cached bitmaps`() = runTest(testDispatcher) {
+        givenImage(32)
+        sut.load(URL)
+        assertEquals(32, sut.peek(URL)?.width)
+
+        sut.clearCache()
+
+        assertNull(sut.peek(URL))
+    }
+
+    @Test
     fun `getInstance always returns the same loader`() {
         assertSame(ImageLoader.getInstance(), ImageLoader.getInstance())
     }
@@ -155,12 +181,16 @@ class ImageLoaderUnitTest {
         coEvery { httpClient.sendRequestForBytes(any(), any()) } returns pngBytes(size, size)
     }
 
-    private fun createImageLoader(decodeSemaphore: Semaphore = Semaphore(4)) = ImageLoader(
+    private fun createImageLoader(
+        decodeSemaphore: Semaphore = Semaphore(4),
+        fetchSemaphore: Semaphore = Semaphore(4),
+    ) = ImageLoader(
         httpClient = httpClient,
         defaultDispatcher = testDispatcher,
         mainDispatcher = testDispatcher,
         memoryCache = LruCache<String, Bitmap>(4 * 1024 * 1024),
         decodeSemaphore = decodeSemaphore,
+        fetchSemaphore = fetchSemaphore,
     )
 
     companion object {

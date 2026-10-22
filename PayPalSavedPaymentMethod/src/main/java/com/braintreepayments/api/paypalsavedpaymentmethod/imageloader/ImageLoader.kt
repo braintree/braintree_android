@@ -32,12 +32,15 @@ import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Loads funding-instrument icons into memory, de-duplicating concurrent requests for the same URL and bounding how
- * many bitmaps are decoded at once. Bytes are fetched through the SDK's pinned [HttpClient]. Dependencies are
- * injectable for tests; production code uses [getInstance].
+ * many bitmaps are fetched and decoded at once. Bytes are fetched through the SDK's pinned [HttpClient]. Dependencies
+ * are injectable for tests; production code uses [getInstance].
  *
  * Decodes raster formats only (PNG, JPEG, etc.) via [android.graphics.BitmapFactory]. There is currently no image
  * loader in Braintree Native, and this custom implementation does not support SVG, matching standard Android image
  * loading in general (BitmapFactory, and Coil/Glide without an SVG add-on).
+ *
+ * Call [clearCache] from the host app's memory-pressure callback to release cached bitmaps; see [clearCache] for why
+ * this loader can't do that on its own.
  */
 internal class ImageLoader internal constructor(
     private val httpClient: HttpClient = HttpClient(),
@@ -45,6 +48,7 @@ internal class ImageLoader internal constructor(
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
     private val memoryCache: LruCache<String, Bitmap> = createMemoryCache(),
     private val decodeSemaphore: Semaphore = Semaphore(DEFAULT_MAX_PARALLEL_DECODES),
+    private val fetchSemaphore: Semaphore = Semaphore(DEFAULT_MAX_PARALLEL_FETCHES),
 ) {
     // Deliberately unscoped to any lifecycle: ImageLoader is a process-wide singleton (see getInstance()), so
     // in-flight downloads outlive any single screen and are only ever torn down by process death. That is safe because
@@ -75,6 +79,16 @@ internal class ImageLoader internal constructor(
 
     /** Returns the cached bitmap for [url] without touching the network, or `null` on a cache miss. */
     fun peek(url: String): Bitmap? = memoryCache.get(url)
+
+    /**
+     * Evicts every cached bitmap. The loader holds no [android.content.Context] and so cannot register for memory
+     * callbacks itself; call this from the host app's [android.content.ComponentCallbacks2.onTrimMemory] (e.g.
+     * `Application.onTrimMemory`) to release the cache under memory pressure. Safe to call at any time -- in-flight
+     * downloads are unaffected and simply re-populate the cache on completion.
+     */
+    fun clearCache() {
+        memoryCache.evictAll()
+    }
 
     /**
      * Returns the bitmap for [url], from memory when cached. Throws [IllegalArgumentException] if [url] is not an https
@@ -165,7 +179,12 @@ internal class ImageLoader internal constructor(
     }
 
     private suspend fun fetchAndDecode(url: String): Bitmap {
-        val bytes = httpClient.sendRequestForBytes(OkHttpRequest(url, Method.Get), MAX_IMAGE_BYTES)
+        // Bounds how many icon downloads run over the network at once; distinct URLs are not deduplicated like
+        // repeat requests for the same URL are (see inFlightRequest), so without this a burst of distinct icons
+        // (e.g. a list screen) could open one connection per icon at the same time.
+        val bytes = fetchSemaphore.withPermit {
+            httpClient.sendRequestForBytes(OkHttpRequest(url, Method.Get), MAX_IMAGE_BYTES)
+        }
         val bitmap = withContext(defaultDispatcher) {
             decodeSemaphore.withPermit { decodeBitmap(bytes, url) }
         }
@@ -215,6 +234,9 @@ internal class ImageLoader internal constructor(
 
         // Bounds concurrent BitmapFactory decodes so many icons loading at once can't spike memory/CPU.
         private const val DEFAULT_MAX_PARALLEL_DECODES = 4
+
+        // Bounds concurrent icon downloads so a burst of distinct URLs can't open unbounded connections at once.
+        private const val DEFAULT_MAX_PARALLEL_FETCHES = 4
 
         // FI icons never render larger than this in any current layout; decoding beyond it wastes memory.
         private const val MAX_DECODE_DIMENSION_PX = 128
