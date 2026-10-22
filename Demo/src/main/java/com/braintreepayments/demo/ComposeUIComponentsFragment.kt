@@ -46,6 +46,8 @@ import com.braintreepayments.api.core.PaymentMethodNonce
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
+import com.braintreepayments.api.uicomponents.PayLaterButtonColor
+import com.braintreepayments.api.uicomponents.compose.PayLaterButton
 import com.braintreepayments.api.uicomponents.VenmoButtonColor
 import com.braintreepayments.api.uicomponents.cardfields.CardFieldsResult
 import com.braintreepayments.api.uicomponents.compose.CardFields
@@ -73,6 +75,8 @@ class ComposeUIComponentsFragment : BaseFragment() {
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
         val payPalRequest = payPalRequest(requireContext())
+        // Pay Later gets its own request: PayLaterButton sets shouldOfferPayLater = true on the request it is given.
+        val payLaterRequest = payPalRequest(requireContext())
         return ComposeView(requireContext()).apply {
             setContent {
                 var venmoStyleId by rememberSaveable { mutableIntStateOf(VenmoButtonColor.Blue.key) }
@@ -87,6 +91,13 @@ class ComposeUIComponentsFragment : BaseFragment() {
                     1 -> PayPalButtonColor.Black
                     2 -> PayPalButtonColor.White
                     else -> PayPalButtonColor.Blue
+                }
+
+                var payLaterStyleId by rememberSaveable { mutableIntStateOf(PayLaterButtonColor.Blue.key) }
+                val payLaterStyle: PayLaterButtonColor = when (payLaterStyleId) {
+                    1 -> PayLaterButtonColor.Black
+                    2 -> PayLaterButtonColor.White
+                    else -> PayLaterButtonColor.Blue
                 }
 
                 val cardFieldsController = rememberCardFieldsController(
@@ -150,6 +161,33 @@ class ComposeUIComponentsFragment : BaseFragment() {
                                     paypalTokenizeCallback = paypalTokenizeCallback
                                 )
                             }
+                        }
+                    }
+
+                    // Pay Later section
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp)
+                    ) {
+                        SectionLabel(stringResource(R.string.paypal_pay_later))
+                        SingleChoiceSegmentedButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            selectedIndex = payLaterStyleId,
+                            onClick = { index -> payLaterStyleId = index }
+                        )
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            PayLaterButton(
+                                style = payLaterStyle,
+                                payPalRequest = payLaterRequest,
+                                authorization = authStringArg,
+                                appLinkReturnUrl = APP_LINK_RETURN_URL.toUri(),
+                                deepLinkFallbackUrlScheme = DEEP_LINK_FALLBACK_SCHEME,
+                                paypalTokenizeCallback = paypalTokenizeCallback
+                            )
                         }
                     }
 
