@@ -205,22 +205,6 @@ internal class ImageLoader internal constructor(
             ?: throw IOException("Unable to decode image from $url")
     }
 
-    private fun calculateInSampleSize(
-        options: BitmapFactory.Options,
-        reqWidth: Int,
-        reqHeight: Int,
-    ): Int {
-        val height = options.outHeight
-        val width = options.outWidth
-        var inSampleSize = 1
-
-        while (height / inSampleSize > reqHeight || width / inSampleSize > reqWidth) {
-            inSampleSize *= 2
-        }
-
-        return inSampleSize
-    }
-
     // Also clears a stale image (e.g. from a recycled RecyclerView row) when there is no placeholder.
     private fun ImageView.setPlaceholder(@DrawableRes placeholder: Int?) {
         if (placeholder != null) setImageResource(placeholder) else setImageDrawable(null)
@@ -256,4 +240,21 @@ internal class ImageLoader internal constructor(
                 instance ?: ImageLoader().also { instance = it }
             }
     }
+}
+
+// Top level rather than a member: it uses nothing from the loader.
+private fun calculateInSampleSize(
+    options: BitmapFactory.Options,
+    reqWidth: Int,
+    reqHeight: Int,
+): Int {
+    val height = options.outHeight
+    val width = options.outWidth
+    var inSampleSize = 1
+
+    while (height / inSampleSize > reqHeight || width / inSampleSize > reqWidth) {
+        inSampleSize *= 2
+    }
+
+    return inSampleSize
 }
