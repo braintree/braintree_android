@@ -155,24 +155,28 @@ private fun focusColor(style: PaymentButtonStyle, isPressed: Boolean, isHovered:
     else -> style.default.focusIndicator
 }
 
+@Suppress("UnusedPrivateMember")
 @Preview(name = "Pay Later - Blue", showBackground = true)
 @Composable
 private fun PreviewPayLaterButtonBlue() {
     PayLaterButtonView(style = PayLaterButtonColor.Blue) {}
 }
 
+@Suppress("UnusedPrivateMember")
 @Preview(name = "Pay Later - Black", showBackground = true)
 @Composable
 private fun PreviewPayLaterButtonBlack() {
     PayLaterButtonView(style = PayLaterButtonColor.Black) {}
 }
 
+@Suppress("UnusedPrivateMember")
 @Preview(name = "Pay Later - White", showBackground = true)
 @Composable
 private fun PreviewPayLaterButtonWhite() {
     PayLaterButtonView(style = PayLaterButtonColor.White) {}
 }
 
+@Suppress("UnusedPrivateMember")
 @Preview(name = "Pay Later - Loading", showBackground = true)
 @Composable
 private fun PreviewPayLaterButtonLoading() {
