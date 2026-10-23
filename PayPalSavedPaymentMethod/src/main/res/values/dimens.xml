@@ -12,4 +12,11 @@
     <dimen name="paypal_saved_payment_method_style_default_edit_icon_size">16dp</dimen>
     <dimen name="paypal_saved_payment_method_style_default_funding_instrument_margin_start">8dp</dimen>
     <dimen name="paypal_saved_payment_method_style_default_credit_messaging_font_size">16sp</dimen>
+    <!-- Fixed component dimensions, not merchant-configurable. -->
+    <dimen name="paypal_saved_payment_method_funding_instrument_chip_corner_radius">6dp</dimen>
+    <dimen name="paypal_saved_payment_method_funding_instrument_chip_horizontal_padding">8dp</dimen>
+    <dimen name="paypal_saved_payment_method_funding_instrument_chip_vertical_padding">4dp</dimen>
+    <dimen name="paypal_saved_payment_method_funding_instrument_icon_width">28dp</dimen>
+    <dimen name="paypal_saved_payment_method_funding_instrument_icon_margin">8dp</dimen>
+    <dimen name="paypal_saved_payment_method_credit_messaging_top_spacing">6dp</dimen>
 </resources>
