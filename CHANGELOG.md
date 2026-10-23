@@ -9,6 +9,8 @@
   * Add optional `resultKey` parameter to `ThreeDSecureLauncher` constructors, allowing a unique registration key per launcher instance
 * SEPADirectDebit
     * Add Compose constructor for `SEPADirectDebitLauncher`
+* UIComponents
+  * Fix `VenmoButton` not re-enabling after failure in `createPaymentAuthRequest`, `venmoLauncher.launch()`, or when the hosting Activity is null
 
 ## 5.33.0 (2026-09-16)
 
