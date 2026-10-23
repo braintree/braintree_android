@@ -15,8 +15,8 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.R
  * `res/values/dimens.xml` (`paypal_saved_payment_method_style_default_*`).
  *
  * Sizes and spacing are never negative: a negative merchant value resolves to 0. Element font sizes fall back to the
- * element's own value, then [ComponentAppearance.baseFontSizeSp] if the merchant set it, then the element's SDK
- * default.
+ * element's own value, then [PayPalSavedPaymentMethodAppearance.baseFontSizeSp] if the merchant set it, then the
+ * element's SDK default.
  *
  * [heightDp], [fontResId] and [creditMessagingLinkColor] stay null when unset: null height wraps the content, a null
  * font uses the system font, and a null link color shows the link bold and underlined in the text color.

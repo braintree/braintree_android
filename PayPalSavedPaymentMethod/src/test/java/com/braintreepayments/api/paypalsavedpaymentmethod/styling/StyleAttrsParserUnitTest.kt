@@ -30,6 +30,7 @@ class StyleAttrsParserUnitTest {
         assertTrue(style.showPayPalCreditMessaging)
         assertNull(style.componentAppearance?.backgroundColor)
         assertNull(style.componentAppearance?.baseFontSizeSp)
+        assertNull(style.componentAppearance?.fontResId)
         assertNull(style.container?.heightDp)
         assertNull(style.container?.horizontalPaddingDp)
         assertNull(style.container?.logo?.widthDp)
@@ -63,6 +64,18 @@ class StyleAttrsParserUnitTest {
         assertEquals(Color.BLUE, appearance?.backgroundColor)
         assertEquals(Color.RED, appearance?.textColor)
         assertEquals(18f, appearance?.baseFontSizeSp)
+    }
+
+    @Test
+    fun `styleFromAttrs parses the font attr as a resource ID`() {
+        // The module ships no font, and the parser reads any resource reference, so a drawable stands in for one.
+        val attrs = Robolectric.buildAttributeSet()
+            .addAttribute(R.attr.paypalSavedPaymentMethodFont, "@drawable/ic_edit_pencil")
+            .build()
+
+        val appearance = styleFromAttrs(context, attrs, 0).componentAppearance
+
+        assertEquals(R.drawable.ic_edit_pencil, appearance?.fontResId)
     }
 
     @Test

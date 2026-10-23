@@ -43,8 +43,8 @@ internal fun styleFromAttrs(
 }
 
 @OptIn(ExperimentalBetaApi::class)
-private fun parseComponentAppearance(typedArray: TypedArray, resources: Resources): ComponentAppearance =
-    ComponentAppearance(
+private fun parseComponentAppearance(typedArray: TypedArray, resources: Resources): PayPalSavedPaymentMethodAppearance =
+    PayPalSavedPaymentMethodAppearance(
         backgroundColor = typedArray.colorOrNull(
             R.styleable.PayPalSavedPaymentMethodView_paypalSavedPaymentMethodBackgroundColor
         ),
@@ -61,8 +61,8 @@ private fun parseComponentAppearance(typedArray: TypedArray, resources: Resource
     )
 
 @OptIn(ExperimentalBetaApi::class)
-private fun parseContainerStyle(typedArray: TypedArray, resources: Resources): ContainerStyle =
-    ContainerStyle(
+private fun parseContainerStyle(typedArray: TypedArray, resources: Resources): PayPalSavedPaymentMethodContainerStyle =
+    PayPalSavedPaymentMethodContainerStyle(
         heightDp = typedArray.dpOrNull(
             R.styleable.PayPalSavedPaymentMethodView_paypalSavedPaymentMethodHeight,
             resources
@@ -111,8 +111,11 @@ private fun parseLabelStyle(typedArray: TypedArray, resources: Resources): PayPa
     )
 
 @OptIn(ExperimentalBetaApi::class)
-private fun parseFundingInstrumentStyle(typedArray: TypedArray, resources: Resources): FundingInstrumentStyle =
-    FundingInstrumentStyle(
+private fun parseFundingInstrumentStyle(
+    typedArray: TypedArray,
+    resources: Resources
+): PayPalSavedPaymentMethodFundingInstrumentStyle =
+    PayPalSavedPaymentMethodFundingInstrumentStyle(
         textFontSizeSp = typedArray.spOrNull(
             R.styleable.PayPalSavedPaymentMethodView_paypalSavedPaymentMethodFundingInstrumentFontSize,
             resources
@@ -128,8 +131,11 @@ private fun parseFundingInstrumentStyle(typedArray: TypedArray, resources: Resou
     )
 
 @OptIn(ExperimentalBetaApi::class)
-private fun parseCreditMessagingStyle(typedArray: TypedArray, resources: Resources): CreditMessagingStyle =
-    CreditMessagingStyle(
+private fun parseCreditMessagingStyle(
+    typedArray: TypedArray,
+    resources: Resources
+): PayPalSavedPaymentMethodCreditMessagingStyle =
+    PayPalSavedPaymentMethodCreditMessagingStyle(
         fontSizeSp = typedArray.spOrNull(
             R.styleable.PayPalSavedPaymentMethodView_paypalSavedPaymentMethodCreditMessagingFontSize,
             resources

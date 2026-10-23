@@ -90,7 +90,7 @@ class PayPalSavedPaymentMethodStyleResolverUnitTest {
     fun `component appearance uses the merchant values`() {
         val resolver = resolve(
             PayPalSavedPaymentMethodViewStyle(
-                componentAppearance = ComponentAppearance(
+                componentAppearance = PayPalSavedPaymentMethodAppearance(
                     backgroundColor = Color.BLACK,
                     textColor = Color.WHITE,
                     fontResId = FONT_RES_ID
@@ -107,7 +107,7 @@ class PayPalSavedPaymentMethodStyleResolverUnitTest {
     fun `container style uses the merchant values`() {
         val resolver = resolve(
             PayPalSavedPaymentMethodViewStyle(
-                container = ContainerStyle(
+                container = PayPalSavedPaymentMethodContainerStyle(
                     heightDp = 56f,
                     horizontalPaddingDp = 16f,
                     verticalPaddingDp = 12f,
@@ -116,8 +116,11 @@ class PayPalSavedPaymentMethodStyleResolverUnitTest {
                     borderWidthDp = 1f,
                     logo = PayPalLogoStyle(widthDp = 32f),
                     label = PayPalLabelStyle(marginStartDp = 4f),
-                    fundingInstrument = FundingInstrumentStyle(editIconSizeDp = 20f, marginStartDp = 10f),
-                    creditMessaging = CreditMessagingStyle(linkColor = Color.BLUE)
+                    fundingInstrument = PayPalSavedPaymentMethodFundingInstrumentStyle(
+                        editIconSizeDp = 20f,
+                        marginStartDp = 10f
+                    ),
+                    creditMessaging = PayPalSavedPaymentMethodCreditMessagingStyle(linkColor = Color.BLUE)
                 )
             )
         )
@@ -139,11 +142,11 @@ class PayPalSavedPaymentMethodStyleResolverUnitTest {
     fun `element font sizes take precedence over the base font size`() {
         val resolver = resolve(
             PayPalSavedPaymentMethodViewStyle(
-                componentAppearance = ComponentAppearance(baseFontSizeSp = 18f),
-                container = ContainerStyle(
+                componentAppearance = PayPalSavedPaymentMethodAppearance(baseFontSizeSp = 18f),
+                container = PayPalSavedPaymentMethodContainerStyle(
                     label = PayPalLabelStyle(fontSizeSp = 22f),
-                    fundingInstrument = FundingInstrumentStyle(textFontSizeSp = 13f),
-                    creditMessaging = CreditMessagingStyle(fontSizeSp = 15f)
+                    fundingInstrument = PayPalSavedPaymentMethodFundingInstrumentStyle(textFontSizeSp = 13f),
+                    creditMessaging = PayPalSavedPaymentMethodCreditMessagingStyle(fontSizeSp = 15f)
                 )
             )
         )
@@ -156,7 +159,9 @@ class PayPalSavedPaymentMethodStyleResolverUnitTest {
     @Test
     fun `base font size applies to elements without their own font size`() {
         val resolver = resolve(
-            PayPalSavedPaymentMethodViewStyle(componentAppearance = ComponentAppearance(baseFontSizeSp = 18f))
+            PayPalSavedPaymentMethodViewStyle(
+                componentAppearance = PayPalSavedPaymentMethodAppearance(baseFontSizeSp = 18f)
+            )
         )
 
         assertEquals(18f, resolver.labelFontSizeSp, DELTA)
@@ -168,7 +173,7 @@ class PayPalSavedPaymentMethodStyleResolverUnitTest {
     fun `negative sizes and spacing resolve to 0`() {
         val resolver = resolve(
             PayPalSavedPaymentMethodViewStyle(
-                container = ContainerStyle(
+                container = PayPalSavedPaymentMethodContainerStyle(
                     heightDp = -1f,
                     horizontalPaddingDp = -1f,
                     verticalPaddingDp = -1f,
@@ -176,7 +181,10 @@ class PayPalSavedPaymentMethodStyleResolverUnitTest {
                     borderWidthDp = -1f,
                     logo = PayPalLogoStyle(widthDp = -1f),
                     label = PayPalLabelStyle(marginStartDp = -1f),
-                    fundingInstrument = FundingInstrumentStyle(editIconSizeDp = -1f, marginStartDp = -1f)
+                    fundingInstrument = PayPalSavedPaymentMethodFundingInstrumentStyle(
+                        editIconSizeDp = -1f,
+                        marginStartDp = -1f
+                    )
                 )
             )
         )
@@ -196,8 +204,8 @@ class PayPalSavedPaymentMethodStyleResolverUnitTest {
     fun `negative font sizes resolve to 0`() {
         val resolver = resolve(
             PayPalSavedPaymentMethodViewStyle(
-                componentAppearance = ComponentAppearance(baseFontSizeSp = -1f),
-                container = ContainerStyle(label = PayPalLabelStyle(fontSizeSp = -1f))
+                componentAppearance = PayPalSavedPaymentMethodAppearance(baseFontSizeSp = -1f),
+                container = PayPalSavedPaymentMethodContainerStyle(label = PayPalLabelStyle(fontSizeSp = -1f))
             )
         )
 
@@ -209,7 +217,9 @@ class PayPalSavedPaymentMethodStyleResolverUnitTest {
     @Test
     fun `zero values are kept instead of falling back to the default`() {
         val resolver = resolve(
-            PayPalSavedPaymentMethodViewStyle(container = ContainerStyle(heightDp = 0f, verticalPaddingDp = 0f))
+            PayPalSavedPaymentMethodViewStyle(
+                container = PayPalSavedPaymentMethodContainerStyle(heightDp = 0f, verticalPaddingDp = 0f)
+            )
         )
 
         assertEquals(0f, resolver.heightDp)
