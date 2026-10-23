@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <!-- Decorative only: the funding instrument skeleton already announces the loading state. -->
+    <com.braintreepayments.api.paypalsavedpaymentmethod.xml.ShimmerPlaceholderView
+        android:id="@+id/paypal_saved_payment_method_credit_messaging_shimmer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/paypal_saved_payment_method_credit_messaging_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</merge>
