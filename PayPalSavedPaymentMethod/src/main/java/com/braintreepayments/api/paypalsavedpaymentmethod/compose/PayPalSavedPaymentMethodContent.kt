@@ -217,14 +217,27 @@ private fun FundingInstrumentChip(
             is PayPalSavedPaymentMethodDisplayState.Content -> {
                 val paymentMethod = state.paymentMethod
                 val fallbackIcon = paymentMethod.type.iconRes()
-                // Card art from PayPal, with the generic card or bank icon until it loads or if it can't be loaded.
+                // Card art from PayPal, with a shimmer while it loads and the generic card or bank icon if it can't be
+                // loaded.
                 if (paymentMethod.imageUrl != null || fallbackIcon != null) {
+                    val iconWidth = dimensionResource(R.dimen.paypal_saved_payment_method_funding_instrument_icon_width)
+                    val iconLoadingHeight =
+                        dimensionResource(R.dimen.paypal_saved_payment_method_funding_instrument_icon_loading_height)
                     LoaderImage(
                         url = paymentMethod.imageUrl,
                         placeholder = fallbackIcon?.let { painterResource(it) } ?: ColorPainter(Color.Transparent),
                         modifier = Modifier
-                            .width(dimensionResource(R.dimen.paypal_saved_payment_method_funding_instrument_icon_width))
                             .padding(end = iconMargin)
+                            .width(iconWidth),
+                        loading = {
+                            // Decorative: the chip is read as one element.
+                            ShimmerPlaceholder(
+                                contentDescription = null,
+                                modifier = it,
+                                height = iconLoadingHeight,
+                                trailingGap = 0.dp
+                            )
+                        }
                     )
                 }
                 FundingInstrumentText(
