@@ -123,6 +123,7 @@ class PayPalButton @JvmOverloads constructor(
             if (payPalLaunchCallback == null) {
                 throw(NullPointerException("PayPalLaunchCallback must be initialized first"))
             }
+            renderer.showLoading()
             payPalClient.createPaymentAuthRequest(
                 context = context,
                 payPalRequest = payPalRequest
@@ -133,13 +134,13 @@ class PayPalButton @JvmOverloads constructor(
                     }
 
                     is PayPalPaymentAuthRequest.Failure -> {
+                        renderer.hideLoading()
                         payPalLaunchCallback?.onPayPalPaymentAuthRequest(
                             PayPalPendingRequest.Failure(paymentAuthRequest.error)
                         )
                     }
                 }
             }
-            renderer.showLoading()
         }
     }
 
@@ -170,12 +171,14 @@ class PayPalButton @JvmOverloads constructor(
                 }
 
                 is PayPalPendingRequest.Failure -> {
+                    renderer.hideLoading()
                     payPalLaunchCallback?.onPayPalPaymentAuthRequest(
                         PayPalPendingRequest.Failure(payPalPendingRequest.error)
                     )
                 }
             }
         } ?: run {
+            renderer.hideLoading()
             payPalLaunchCallback?.onPayPalPaymentAuthRequest(
                 PayPalPendingRequest.Failure(NullPointerException("Activity is null")))
         }
@@ -213,17 +216,19 @@ class PayPalButton @JvmOverloads constructor(
         when (paymentAuthResult) {
             is PayPalPaymentAuthResult.Success -> {
                 payPalClient.tokenize(paymentAuthResult) { payPalResult ->
+                    renderer.hideLoading()
                     callback.onPayPalResult(payPalResult)
                 }
             }
             is PayPalPaymentAuthResult.NoResult -> {
+                renderer.hideLoading()
                 callback.onPayPalResult(PayPalResult.Cancel)
             }
             is PayPalPaymentAuthResult.Failure -> {
+                renderer.hideLoading()
                 callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
             }
         }
-        renderer.hideLoading()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
