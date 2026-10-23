@@ -22,6 +22,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.unit.Dp
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 
 /**
@@ -30,11 +31,15 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.R
  *
  * @param contentDescription What screen readers announce, for example "Loading saved payment method", or `null` to
  * hide the bar from screen readers, for a bar shown next to one that already announces loading.
+ * @param height The height of the bar.
+ * @param trailingGap The space left after the bar; `0.dp` for a placeholder that fills its box, such as card art.
  */
 @Composable
 internal fun ShimmerPlaceholder(
     contentDescription: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    height: Dp = dimensionResource(R.dimen.paypal_saved_payment_method_placeholder_height),
+    trailingGap: Dp = dimensionResource(R.dimen.paypal_saved_payment_method_placeholder_trailing_gap)
 ) {
     val transition = rememberInfiniteTransition(label = "shimmer")
     val progress by transition.animateFloat(
@@ -53,8 +58,8 @@ internal fun ShimmerPlaceholder(
             .clearAndSetSemantics {
                 if (contentDescription != null) this.contentDescription = contentDescription
             }
-            .padding(end = dimensionResource(R.dimen.paypal_saved_payment_method_placeholder_trailing_gap))
-            .height(dimensionResource(R.dimen.paypal_saved_payment_method_placeholder_height))
+            .padding(end = trailingGap)
+            .height(height)
             .clip(shape)
             .background(colorResource(R.color.paypal_saved_payment_method_placeholder))
             .drawWithContent {
