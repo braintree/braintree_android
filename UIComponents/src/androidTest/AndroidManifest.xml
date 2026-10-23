@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application>
+
+    <!-- Serves the local MockWebServer used by the compose button flow tests. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application android:usesCleartextTraffic="true">
         <activity
             android:name="com.braintreepayments.api.uicomponents.cardfields.CardFieldsTestActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="com.braintreepayments.api.uicomponents.compose.ButtonFlowTestActivity"
+            android:exported="true"
+            android:launchMode="singleTop" />
     </application>
 </manifest>
