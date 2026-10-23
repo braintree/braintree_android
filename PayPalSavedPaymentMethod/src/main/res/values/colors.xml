@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Fixed component colors, not merchant-configurable. -->
+    <!-- Loading skeleton bar. -->
+    <color name="paypal_saved_payment_method_placeholder">#E5E5EA</color>
+    <color name="paypal_saved_payment_method_loading_dialog_background">#E6FFFFFF</color>
+    <color name="paypal_saved_payment_method_loading_dialog_content">#000000</color>
+</resources>
