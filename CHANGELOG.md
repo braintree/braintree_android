@@ -14,6 +14,7 @@
   * Analytics-triggered configuration loads no longer queue their own request-latency event.
   * Fix an issue where a client's custom `returnUrlScheme` was replaced when another client was created.
   * Fix analytics events being sent with the authorization of the most recently created client; events now use the authorization of the client that produced them, including events from `PayPalLauncher`, `VenmoLauncher`, `ShopperInsightsClientV2`, `CardFields` and the PayPal and Venmo buttons. PayPal and Venmo return events handled when the launcher no longer remembers the request owner, for example after Activity recreation or process death, are attributed to the newest client. Events sent by modules built against an earlier release are also attributed to the newest client. When no client exists, those events are dropped.
+  * Update all Braintree modules together to receive per-client authorization isolation.
 
 ## 5.33.0 (2026-09-16)
 
