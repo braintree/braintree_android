@@ -13,6 +13,9 @@ import com.braintreepayments.api.core.PaymentMethodNonce
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalRequest
 import com.braintreepayments.api.paypal.PayPalResult
+import com.braintreepayments.api.paypal.PayPalTokenizeCallback
+import com.braintreepayments.api.uicomponents.PayLaterButton
+import com.braintreepayments.api.uicomponents.PayLaterButtonColor
 import com.braintreepayments.api.uicomponents.PayPalButton
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.PayPalLaunchCallback
@@ -34,6 +37,8 @@ import com.google.android.material.button.MaterialButtonToggleGroup
 class UIComponentsFragment : BaseFragment() {
     private lateinit var payPalButton: PayPalButton
     private lateinit var payPalToggleGroup: MaterialButtonToggleGroup
+    private lateinit var payLaterButton: PayLaterButton
+    private lateinit var payLaterToggleGroup: MaterialButtonToggleGroup
     private lateinit var venmoButton: VenmoButton
     private lateinit var venmoRequest: VenmoRequest
     private lateinit var venmoToggleGroup: MaterialButtonToggleGroup
@@ -46,12 +51,15 @@ class UIComponentsFragment : BaseFragment() {
         val view = inflater.inflate(R.layout.fragment_ui_components, container, false)
         payPalButton = view.findViewById(R.id.pp_payment_button)
         payPalToggleGroup = view.findViewById(R.id.pp_button_toggle_group)
+        payLaterButton = view.findViewById(R.id.pay_later_payment_button)
+        payLaterToggleGroup = view.findViewById(R.id.pay_later_button_toggle_group)
         venmoButton = view.findViewById(R.id.venmo_payment_button)
         venmoToggleGroup = view.findViewById(R.id.venmo_button_toggle_group)
 
         setupCardFields(view)
         setupColorToggles()
         setupPayPalButton()
+        setupPayLaterButton()
         setupVenmoButton()
         return view
     }
@@ -105,6 +113,15 @@ class UIComponentsFragment : BaseFragment() {
                 }
             }
         }
+        payLaterToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.button_pay_later_blue -> payLaterButton.setButtonColor(PayLaterButtonColor.Blue)
+                    R.id.button_pay_later_black -> payLaterButton.setButtonColor(PayLaterButtonColor.Black)
+                    R.id.button_pay_later_white -> payLaterButton.setButtonColor(PayLaterButtonColor.White)
+                }
+            }
+        }
         venmoToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
                 when (checkedId) {
@@ -140,7 +157,43 @@ class UIComponentsFragment : BaseFragment() {
         payPalButton.setPayPalRequest(payPalRequest)
         payPalButton.payPalLaunchCallback = PayPalLaunchCallback { request: PayPalPendingRequest ->
             when (request) {
-                is PayPalPendingRequest.Started -> storePayPalPendingRequest(request)
+                is PayPalPendingRequest.Started -> {
+                    clearPayLaterPendingRequest()
+                    storePayPalPendingRequest(request)
+                }
+                is PayPalPendingRequest.Failure -> handleError(request.error)
+            }
+        }
+    }
+
+    private fun setupPayLaterButton() {
+        val payPalCheckoutRequest = PayPalRequestFactory.createPayPalCheckoutRequest(
+            /* context = */ requireContext(),
+            /* amount = */ "10.0",
+            /* buyerEmailAddress = */ null,
+            /* buyerPhoneCountryCode = */ null,
+            /* buyerPhoneNationalNumber = */ null,
+            /* isContactInformationEnabled = */ false,
+            /* shopperInsightsSessionId = */ null,
+            /* offerPayLater = */ true,
+            /* offerCredit = */ false,
+            /* isAmountBreakdownEnabled = */ false,
+            /* campaignId = */ null
+        )
+
+        payLaterButton.initialize(
+            this,
+            super.getAuthStringArg(),
+            "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
+            "com.braintreepayments.demo.braintree"
+        )
+        payLaterButton.setPayPalRequest(payPalCheckoutRequest)
+        payLaterButton.payPalLaunchCallback = PayPalLaunchCallback { request: PayPalPendingRequest ->
+            when (request) {
+                is PayPalPendingRequest.Started -> {
+                    clearPayPalPendingRequest()
+                    storePayLaterPendingRequest(request)
+                }
                 is PayPalPendingRequest.Failure -> handleError(request.error)
             }
         }
@@ -187,20 +240,25 @@ class UIComponentsFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
 
-        // PayPal flow after returning to app
-        val pendingRequest = getPayPalPendingRequest()
-        if (pendingRequest != null) {
-            payPalButton.handleReturnToApp(
-                pendingRequest, requireActivity().intent) { payPalResult: PayPalResult? ->
-                    when (payPalResult) {
-                        is PayPalResult.Success -> handlePayPalResult(payPalResult.nonce)
-                        is PayPalResult.Cancel ->
-                            handleError(Exception("User did not complete payment flow"))
-                        is PayPalResult.Failure -> handleError(payPalResult.error)
-                        else -> Unit
-                    }
-                }
+        // PayPal or PayPal Pay Later flow after returning to app
+        val callback = PayPalTokenizeCallback { payPalResult ->
+            when (payPalResult) {
+                is PayPalResult.Success -> handlePayPalResult(payPalResult.nonce)
+                is PayPalResult.Cancel ->
+                    handleError(Exception("User did not complete payment flow"))
+                is PayPalResult.Failure -> handleError(payPalResult.error)
+            }
+        }
+
+        getPayPalPendingRequest()?.let { pending ->
+            payPalButton.handleReturnToApp(pending, requireActivity().intent, callback)
             clearPayPalPendingRequest()
+            requireActivity().intent.data = null
+        }
+
+        getPayLaterPendingRequest()?.let { pending ->
+            payLaterButton.handleReturnToApp(pending, requireActivity().intent, callback)
+            clearPayLaterPendingRequest()
             requireActivity().intent.data = null
         }
 
@@ -209,15 +267,16 @@ class UIComponentsFragment : BaseFragment() {
         if (venmoPendingRequest != null) {
             venmoButton.handleReturnToApp(
                 venmoPendingRequest,
-                requireActivity().intent) { venmoResult: VenmoResult? ->
-                    when (venmoResult) {
-                        is VenmoResult.Success -> handleVenmoAccountNonce(venmoResult.nonce)
-                        is VenmoResult.Failure -> handleError(venmoResult.error)
-                        is VenmoResult.Cancel ->
-                            handleError(Exception("User did not complete payment flow"))
-                        else -> Unit
-                    }
+                requireActivity().intent
+            ) { venmoResult: VenmoResult? ->
+                when (venmoResult) {
+                    is VenmoResult.Success -> handleVenmoAccountNonce(venmoResult.nonce)
+                    is VenmoResult.Failure -> handleError(venmoResult.error)
+                    is VenmoResult.Cancel ->
+                        handleError(Exception("User did not complete payment flow"))
+                    else -> Unit
                 }
+            }
             clearVenmoPendingRequest()
             requireActivity().intent.data = null
         }
@@ -256,4 +315,13 @@ class UIComponentsFragment : BaseFragment() {
 
     private fun clearPayPalPendingRequest() =
         PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext())
+
+    private fun storePayLaterPendingRequest(request: PayPalPendingRequest.Started) =
+        PendingRequestStore.getInstance().putPayLaterPendingRequest(requireContext(), request)
+
+    private fun getPayLaterPendingRequest(): PayPalPendingRequest.Started? =
+        PendingRequestStore.getInstance().getPayLaterPendingRequest(requireContext())
+
+    private fun clearPayLaterPendingRequest() =
+        PendingRequestStore.getInstance().clearPayLaterPendingRequest(requireContext())
 }
