@@ -9,7 +9,6 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.every
@@ -41,7 +40,6 @@ class ShopperInsightsClientUnitTest {
     private lateinit var api: ShopperInsightsApi
     private lateinit var braintreeClient: BraintreeClient
     private lateinit var analyticsParamRepository: AnalyticsParamRepository
-    private lateinit var merchantRepository: MerchantRepository
     private lateinit var context: Context
     private lateinit var deviceInspector: DeviceInspector
     private var shopperSessionId = "test-shopper-session-id"
@@ -53,16 +51,14 @@ class ShopperInsightsClientUnitTest {
         api = mockk(relaxed = true)
         braintreeClient = mockk(relaxed = true)
         analyticsParamRepository = mockk(relaxed = true)
-        merchantRepository = mockk(relaxed = true)
         deviceInspector = mockk(relaxed = true)
 
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         sut = ShopperInsightsClient(
             braintreeClient,
             analyticsParamRepository,
             api,
-            merchantRepository,
             deviceInspector,
             shopperSessionId = shopperSessionId
         )
@@ -407,14 +403,14 @@ class ShopperInsightsClientUnitTest {
 
     @Test
     fun `test getRecommendPaymentMethods is called with a tokenization key, error is sent`() {
-        every { merchantRepository.authorization } returns mockk<TokenizationKey>()
-        val braintreeClient = MockkBraintreeClientBuilder().build()
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .authorizationSuccess(mockk<TokenizationKey>())
+            .build()
 
         sut = ShopperInsightsClient(
             braintreeClient,
             analyticsParamRepository,
             api,
-            merchantRepository,
             deviceInspector
         )
 

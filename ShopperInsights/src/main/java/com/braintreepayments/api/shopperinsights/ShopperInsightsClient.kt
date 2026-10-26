@@ -8,7 +8,6 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.DeviceInspectorProvider
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_SELECTED
@@ -32,7 +31,6 @@ class ShopperInsightsClient internal constructor(
     private val api: ShopperInsightsApi = ShopperInsightsApi(
         EligiblePaymentsApi(braintreeClient, analyticsParamRepository)
     ),
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val deviceInspector: DeviceInspector = DeviceInspectorProvider().deviceInspector,
     private val shopperSessionId: String? = null
 ) {
@@ -82,7 +80,7 @@ class ShopperInsightsClient internal constructor(
             return
         }
 
-        if (merchantRepository.authorization is TokenizationKey) {
+        if (braintreeClient.authorization is TokenizationKey) {
             callbackFailure(
                 callback = callback,
                 error = BraintreeException(

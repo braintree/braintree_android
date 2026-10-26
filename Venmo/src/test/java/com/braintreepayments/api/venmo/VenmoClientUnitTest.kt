@@ -179,7 +179,7 @@ class VenmoClientUnitTest {
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
@@ -245,7 +245,7 @@ class VenmoClientUnitTest {
             .returnUrlScheme("com.example")
             .build()
 
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
         every { getReturnLinkUseCase(any()) } returns GetReturnLinkUseCase.ReturnLinkResult.DeepLink("com.example")
 
         venmoApi = MockkVenmoApiBuilder()
@@ -420,7 +420,7 @@ class VenmoClientUnitTest {
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
@@ -511,7 +511,7 @@ class VenmoClientUnitTest {
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
         every { getReturnLinkUseCase.invoke(any()) } returns
                 GetReturnLinkUseCase.ReturnLinkResult.Failure(exception)
 
@@ -556,7 +556,7 @@ class VenmoClientUnitTest {
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
@@ -638,7 +638,9 @@ class VenmoClientUnitTest {
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
+        // decoy: proves the vault check reads braintreeClient.authorization, not the merchant repository
+        every { merchantRepository.authorization } returns tokenizationKey
 
         venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
@@ -677,7 +679,7 @@ class VenmoClientUnitTest {
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
@@ -781,7 +783,7 @@ class VenmoClientUnitTest {
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         sut = VenmoClient(
             braintreeClient,
@@ -823,7 +825,7 @@ class VenmoClientUnitTest {
             .build()
 
         every { browserSwitchResult.returnUrl } returns CANCEL_URL
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         sut = VenmoClient(
             braintreeClient,
@@ -863,7 +865,7 @@ class VenmoClientUnitTest {
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         venmoApi = MockkVenmoApiBuilder()
             .createNonceFromPaymentContextSuccess(VenmoAccountNonce.fromJSON(
@@ -929,7 +931,7 @@ class VenmoClientUnitTest {
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         venmoApi = MockkVenmoApiBuilder()
             .createNonceFromPaymentContextError(graphQLError)
@@ -993,7 +995,7 @@ class VenmoClientUnitTest {
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         val nonce = mockk<VenmoAccountNonce>()
         every { nonce.string } returns "some-nonce"
@@ -1029,7 +1031,7 @@ class VenmoClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         sut = VenmoClient(
             braintreeClient,
@@ -1058,7 +1060,7 @@ class VenmoClientUnitTest {
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         val venmoApi = MockkVenmoApiBuilder()
             .createNonceFromPaymentContextSuccess(VenmoAccountNonce.fromJSON(
@@ -1093,7 +1095,7 @@ class VenmoClientUnitTest {
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
         every { sharedPrefsWriter.getVenmoVaultOption(context) } returns true
-        every { merchantRepository.authorization } returns tokenizationKey
+        every { braintreeClient.authorization } returns tokenizationKey
 
         sut = VenmoClient(
             braintreeClient,
@@ -1122,7 +1124,7 @@ class VenmoClientUnitTest {
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         val riskCorrelationId = "risk-id-123"
         venmoApi = MockkVenmoApiBuilder()
@@ -1166,7 +1168,7 @@ class VenmoClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL_WITHOUT_RESOURCE_ID
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         val venmoAccountNonce = mockk<VenmoAccountNonce>()
         venmoApi = MockkVenmoApiBuilder()
@@ -1214,7 +1216,7 @@ class VenmoClientUnitTest {
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         val venmoAccountNonce = VenmoAccountNonce.fromJSON(
             JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE))
@@ -1263,7 +1265,7 @@ class VenmoClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL_WITHOUT_RESOURCE_ID
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         val error = Exception("error")
         venmoApi = MockkVenmoApiBuilder()
@@ -1379,7 +1381,7 @@ class VenmoClientUnitTest {
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
-        every { merchantRepository.authorization } returns clientToken
+        every { braintreeClient.authorization } returns clientToken
 
         val venmoAccountNonce = VenmoAccountNonce.fromJSON(
             JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE))
