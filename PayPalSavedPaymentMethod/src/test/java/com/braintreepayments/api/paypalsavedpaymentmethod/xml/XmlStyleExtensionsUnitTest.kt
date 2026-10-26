@@ -5,10 +5,12 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.util.TypedValue
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.paypalsavedpaymentmethod.styling.ComponentAppearance
+import com.braintreepayments.api.paypalsavedpaymentmethod.R
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodAppearance
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
 import io.mockk.every
@@ -17,6 +19,8 @@ import io.mockk.unmockkStatic
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,7 +35,9 @@ class XmlStyleExtensionsUnitTest {
     private val context: Context = RuntimeEnvironment.getApplication()
     private val resolvedStyle = PayPalSavedPaymentMethodStyleResolver(
         context,
-        PayPalSavedPaymentMethodViewStyle(componentAppearance = ComponentAppearance(textColor = Color.RED))
+        PayPalSavedPaymentMethodViewStyle(
+            componentAppearance = PayPalSavedPaymentMethodAppearance(textColor = Color.RED)
+        )
     )
 
     @Test
@@ -106,6 +112,48 @@ class XmlStyleExtensionsUnitTest {
         assertSame(font, textView.typeface)
     }
 
+    @Test
+    fun `drawableOrNull loads the drawable a theme attribute points to`() {
+        val value = TypedValue().apply { resourceId = R.drawable.ic_edit_pencil }
+
+        assertNotNull(value.drawableOrNull(context))
+    }
+
+    @Test
+    fun `drawableOrNull returns null instead of crashing for a theme attribute set to a plain color`() {
+        val value = TypedValue().apply {
+            type = TypedValue.TYPE_INT_COLOR_ARGB8
+            data = Color.GRAY
+            resourceId = 0
+        }
+
+        assertNull(value.drawableOrNull(context))
+    }
+
+    @Test
+    fun `applyTextStyle falls back to the system font when the font resource isn't a font`() {
+        val notAFont = PayPalSavedPaymentMethodStyleResolver(
+            context,
+            PayPalSavedPaymentMethodViewStyle(
+                componentAppearance = PayPalSavedPaymentMethodAppearance(fontResId = R.drawable.ic_edit_pencil)
+            )
+        )
+        val textView = TextView(context)
+
+        textView.applyTextStyle(notAFont, sizeSp = 14f)
+
+        assertEquals(Typeface.DEFAULT, textView.typeface)
+    }
+
+    @Test
+    fun `applyTextStyle uses the given text color instead of the style's`() {
+        val textView = TextView(context)
+
+        textView.applyTextStyle(resolvedStyle, sizeSp = 14f, textColor = Color.BLUE)
+
+        assertEquals(Color.BLUE, textView.currentTextColor)
+    }
+
     private fun givenMerchantFont(): Typeface {
         val font = Typeface.create(Typeface.SERIF, Typeface.NORMAL)
         mockkStatic(ResourcesCompat::class)
@@ -115,7 +163,9 @@ class XmlStyleExtensionsUnitTest {
 
     private fun merchantFontStyle() = PayPalSavedPaymentMethodStyleResolver(
         context,
-        PayPalSavedPaymentMethodViewStyle(componentAppearance = ComponentAppearance(fontResId = FONT_RES))
+        PayPalSavedPaymentMethodViewStyle(
+            componentAppearance = PayPalSavedPaymentMethodAppearance(fontResId = FONT_RES)
+        )
     )
 
     private companion object {
