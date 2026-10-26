@@ -466,6 +466,73 @@ class BraintreeClientUnitTest {
     }
 
     @Test
+    fun `when two clients are created with different authorizations, each client sends requests and loads configuration with its own authorization`() = runTest(testDispatcher) {
+        val configuration = mockk<Configuration>(relaxed = true)
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configuration(configuration)
+            .build()
+
+        val tokenizationKeyAuth = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
+        val sharedMerchantRepository = MerchantRepository()
+
+        val clientOne = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            merchantRepository = sharedMerchantRepository,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
+        val clientTwo = createBraintreeClient(
+            auth = tokenizationKeyAuth,
+            configurationLoader = configurationLoader,
+            merchantRepository = sharedMerchantRepository,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
+
+        val mockResponse = HttpResponse(body = "response-body", timing = HttpResponseTiming(0, 0))
+        coEvery { braintreeHttpClient.get(any(), any(), any()) } returns mockResponse
+        coEvery { braintreeHttpClient.post(any(), any(), any(), any(), any()) } returns mockResponse
+        coEvery { braintreeGraphQLClient.post(any(), any(), any()) } returns mockResponse
+
+        clientOne.sendGET("sample-url")
+        clientOne.sendPOST("sample-url", "{}")
+        clientOne.sendGraphQLPOST(JSONObject())
+
+        clientTwo.sendGET("sample-url")
+        clientTwo.sendPOST("sample-url", "{}")
+        clientTwo.sendGraphQLPOST(JSONObject())
+
+        advanceUntilIdle()
+
+        coVerify { braintreeHttpClient.get("sample-url", configuration, authorization) }
+        coVerify { braintreeHttpClient.get("sample-url", configuration, tokenizationKeyAuth) }
+        coVerify {
+            braintreeHttpClient.post(
+                path = "sample-url",
+                data = "{}",
+                configuration = configuration,
+                authorization = authorization,
+                additionalHeaders = emptyMap()
+            )
+        }
+        coVerify {
+            braintreeHttpClient.post(
+                path = "sample-url",
+                data = "{}",
+                configuration = configuration,
+                authorization = tokenizationKeyAuth,
+                additionalHeaders = emptyMap()
+            )
+        }
+        coVerify { braintreeGraphQLClient.post("{}", configuration, authorization) }
+        coVerify { braintreeGraphQLClient.post("{}", configuration, tokenizationKeyAuth) }
+        coVerify { configurationLoader.loadConfiguration(authorization, true) }
+        coVerify { configurationLoader.loadConfiguration(tokenizationKeyAuth, true) }
+        assertSame(authorization, clientOne.authorization)
+        assertSame(tokenizationKeyAuth, clientTwo.authorization)
+    }
+
+    @Test
     @Throws(JSONException::class)
     fun `when sendAnalyticsEvent is called, event is sent to analyticsClient`() {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
@@ -509,6 +576,19 @@ class BraintreeClientUnitTest {
             returnUrlScheme = returnUrlScheme
         )
         assertEquals("custom-url-scheme", sut.getReturnUrlScheme())
+    }
+
+    @Test
+    fun `when another client is created later, getReturnUrlScheme keeps the scheme from its own constructor`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val first = BraintreeClient(
+            context = context,
+            authorization = authorization.toString(),
+            returnUrlScheme = "custom-url-scheme"
+        )
+        BraintreeClient(context, authorization.toString())
+
+        assertEquals("custom-url-scheme", first.getReturnUrlScheme())
     }
 
     @Test
