@@ -32,12 +32,13 @@ class PayLaterButton @JvmOverloads constructor(
     internal var currentStyle: PayLaterButtonColor = PayLaterButtonColor.Blue
         private set
     private val renderer = PaymentButtonRenderer(this, currentStyle.toStyle())
+
     /**
      * The PayPal client used to create payment auth requests and tokenize results.
      * Must be initialized via [initialize] before use.
      */
-    private lateinit var payPalClient: PayPalClient
-    private lateinit var payPalLauncher: PayPalLauncher
+    internal lateinit var payPalClient: PayPalClient
+    internal lateinit var payPalLauncher: PayPalLauncher
 
     /**
      * Callback invoked when the PayPal payment authentication request is launched.
