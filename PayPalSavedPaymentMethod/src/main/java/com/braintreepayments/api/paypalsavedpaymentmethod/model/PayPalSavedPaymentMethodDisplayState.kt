@@ -27,8 +27,8 @@ internal sealed interface PayPalSavedPaymentMethodDisplayState {
     /**
      * The funding instrument could not be fetched because the device is offline. The PayPal logo stays visible.
      *
-     * Renders the same as [Error], like the single brand-only state on iOS. It is kept separate because the LLD
-     * (§11.2) defines a No Network state, so the two can diverge without changing the mapping.
+     * Renders the same as [Error] today. It is kept separate so the offline case can be shown differently later
+     * without changing how failures are mapped.
      */
     data object NoNetwork : PayPalSavedPaymentMethodDisplayState
 
