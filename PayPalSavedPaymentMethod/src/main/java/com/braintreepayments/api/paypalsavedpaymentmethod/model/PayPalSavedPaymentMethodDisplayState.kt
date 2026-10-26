@@ -24,7 +24,12 @@ internal sealed interface PayPalSavedPaymentMethodDisplayState {
         val isEditable: Boolean
     ) : PayPalSavedPaymentMethodDisplayState
 
-    /** The funding instrument could not be fetched because the device is offline. The PayPal logo stays visible. */
+    /**
+     * The funding instrument could not be fetched because the device is offline. The PayPal logo stays visible.
+     *
+     * Renders the same as [Error], like the single brand-only state on iOS. It is kept separate because the LLD
+     * (§11.2) defines a No Network state, so the two can diverge without changing the mapping.
+     */
     data object NoNetwork : PayPalSavedPaymentMethodDisplayState
 
     /** The funding instrument could not be fetched or there is nothing to display. The PayPal logo stays visible. */
@@ -43,7 +48,6 @@ internal sealed interface PayPalSavedPaymentMethodDisplayState {
  */
 internal fun PayPalSavedPaymentMethodSummary.toDisplayState(): PayPalSavedPaymentMethodDisplayState {
     val paymentMethod = paymentMethods.firstOrNull()
-    val payer = payer
     return when {
         paymentMethod != null -> PayPalSavedPaymentMethodDisplayState.Content(paymentMethod)
         payer != null -> PayPalSavedPaymentMethodDisplayState.NoFundingInstrument(payer.email, payer.isEditable)
@@ -66,6 +70,8 @@ internal fun Throwable.toDisplayState(): PayPalSavedPaymentMethodDisplayState =
         PayPalSavedPaymentMethodDisplayState.Error
     }
 
-// SocketException covers ConnectException, NoRouteToHostException and a reset connection.
+// Offline signals only. SocketException covers ConnectException, NoRouteToHostException and a reset connection.
+// SSLException is deliberately left out: it also covers certificate pinning and handshake failures, which reconnecting
+// won't fix, so they show as Error rather than as no network.
 private fun Throwable.isConnectionFailure(): Boolean =
     this is UnknownHostException || this is SocketException || this is SocketTimeoutException

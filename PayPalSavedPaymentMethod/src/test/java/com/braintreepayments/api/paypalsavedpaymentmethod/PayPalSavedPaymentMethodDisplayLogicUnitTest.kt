@@ -50,6 +50,11 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
     }
 
     @Test
+    fun `maskedLastDigitsOrNull returns null for an unknown type`() {
+        assertNull(card.copy(type = null).maskedLastDigitsOrNull())
+    }
+
+    @Test
     fun `maskedLastDigitsOrNull returns null when the last digits are missing or blank`() {
         assertNull(card.copy(lastDigits = null).maskedLastDigitsOrNull())
         assertNull(card.copy(lastDigits = " ").maskedLastDigitsOrNull())
@@ -94,6 +99,18 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
     }
 
     @Test
+    fun `accessibilityLabel is empty for states without a funding instrument chip`() {
+        listOf(
+            PayPalSavedPaymentMethodDisplayState.Loading,
+            PayPalSavedPaymentMethodDisplayState.NoNetwork,
+            PayPalSavedPaymentMethodDisplayState.Error,
+            PayPalSavedPaymentMethodDisplayState.Hidden
+        ).forEach { state ->
+            assertEquals("", state.accessibilityLabel(::endingIn))
+        }
+    }
+
+    @Test
     fun `the funding instrument row shows while loading, with content, or with an email`() {
         assertTrue(PayPalSavedPaymentMethodDisplayState.Loading.showsFundingInstrumentRow)
         assertTrue(PayPalSavedPaymentMethodDisplayState.Content(card).showsFundingInstrumentRow)
@@ -135,6 +152,18 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
             PayPalSavedPaymentMethodDisplayState.NoFundingInstrument("buyer@example.com", isEditable = false)
 
         assertFalse(emailOnly.isEditable)
+    }
+
+    @Test
+    fun `nothing is editable while loading, offline, failed or hidden`() {
+        listOf(
+            PayPalSavedPaymentMethodDisplayState.Loading,
+            PayPalSavedPaymentMethodDisplayState.NoNetwork,
+            PayPalSavedPaymentMethodDisplayState.Error,
+            PayPalSavedPaymentMethodDisplayState.Hidden
+        ).forEach { state ->
+            assertFalse(state.isEditable)
+        }
     }
 
     @Test
@@ -189,6 +218,31 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
             Hidden,
             loading.visibleWith(PayPalSavedPaymentMethodDisplayState.Content(card), isEditCompleted = false)
         )
+    }
+
+    @Test
+    fun `the Pay Later shimmer is hidden next to an email`() {
+        val editableEmail =
+            PayPalSavedPaymentMethodDisplayState.NoFundingInstrument("buyer@example.com", isEditable = true)
+
+        val loading = PayPalCreditMessagingDisplayState.Loading
+
+        assertEquals(Hidden, loading.visibleWith(editableEmail, isEditCompleted = false))
+    }
+
+    @Test
+    fun `the Pay Later shimmer is hidden after an edit`() {
+        val loading = PayPalCreditMessagingDisplayState.Loading
+
+        assertEquals(Hidden, loading.visibleWith(PayPalSavedPaymentMethodDisplayState.Loading, isEditCompleted = true))
+    }
+
+    @Test
+    fun `a hidden Pay Later message stays hidden next to a funding instrument`() {
+        val content = PayPalSavedPaymentMethodDisplayState.Content(card)
+
+        assertEquals(Hidden, Hidden.visibleWith(content, isEditCompleted = false))
+        assertEquals(Hidden, Hidden.visibleWith(PayPalSavedPaymentMethodDisplayState.Loading, isEditCompleted = false))
     }
 
     private fun endingIn(label: String, spokenDigits: String) = "$label, ending in $spokenDigits"

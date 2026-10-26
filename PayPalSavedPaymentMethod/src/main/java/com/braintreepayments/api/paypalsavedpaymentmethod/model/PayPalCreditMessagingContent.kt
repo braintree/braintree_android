@@ -1,5 +1,7 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.model
 
+import com.braintreepayments.api.paypalsavedpaymentmethod.asHttpsUrlOrNull
+
 /**
  * The Pay Later message ready to render. Shared by the XML and Compose views.
  *
@@ -24,12 +26,17 @@ internal data class PayPalCreditMessagingContent(
 /**
  * Maps a Pay Later message to [PayPalCreditMessagingContent]. The link is the first [PayPalCreditMessageItemType.LINK]
  * action with an https URL and text, or alternative text when it has no text.
+ *
+ * Parsing already drops non-https URLs, but [learnMoreUrl][PayPalCreditMessagingContent.learnMoreUrl] and
+ * [impressionUrl][PayPalCreditMessagingContent.impressionUrl] are validated again here with [asHttpsUrlOrNull], so
+ * the URLs the views open or fire are https however the result was built.
  */
 internal fun PayPalCreditMessagingResult.toContent(): PayPalCreditMessagingContent {
     val main = mainItems.displayText()
     val disclaimer = disclaimerItems.displayText()
     val link = actionItems.firstOrNull {
-        it.type == PayPalCreditMessageItemType.LINK && !it.linkText().isNullOrBlank() && it.clickUrl != null
+        it.type == PayPalCreditMessageItemType.LINK && !it.linkText().isNullOrBlank() &&
+            it.clickUrl.asHttpsUrlOrNull() != null
     }
     val message = if (main.isBlank()) {
         ""
@@ -40,10 +47,10 @@ internal fun PayPalCreditMessagingResult.toContent(): PayPalCreditMessagingConte
     return PayPalCreditMessagingContent(
         message = message,
         learnMoreText = link?.linkText(),
-        learnMoreUrl = link?.clickUrl,
+        learnMoreUrl = link?.clickUrl.asHttpsUrlOrNull(),
         messageId = messageId,
         messageType = messageType,
-        impressionUrl = impressionUrl
+        impressionUrl = impressionUrl.asHttpsUrlOrNull()
     )
 }
 

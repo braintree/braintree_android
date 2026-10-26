@@ -3,7 +3,11 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.model
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+// Robolectric: toContent validates URLs with android.net.Uri.
+@RunWith(RobolectricTestRunner::class)
 class PayPalCreditMessagingContentUnitTest {
 
     @Test
@@ -72,6 +76,27 @@ class PayPalCreditMessagingContentUnitTest {
 
         assertEquals("Learn more", content.learnMoreText)
         assertEquals("https://www.paypal.com/learn", content.learnMoreUrl)
+    }
+
+    @Test
+    fun `toContent skips a link whose url is not https`() {
+        val content = result(
+            actionItems = listOf(
+                link(text = "Insecure", clickUrl = "http://www.paypal.com/insecure"),
+                link(text = "Script", clickUrl = "javascript:alert(1)"),
+                link(text = "Learn more", clickUrl = "https://www.paypal.com/learn")
+            )
+        ).toContent()
+
+        assertEquals("Learn more", content.learnMoreText)
+        assertEquals("https://www.paypal.com/learn", content.learnMoreUrl)
+    }
+
+    @Test
+    fun `toContent drops an impression url that is not https`() {
+        val content = result().copy(impressionUrl = "http://www.paypal.com/impression").toContent()
+
+        assertNull(content.impressionUrl)
     }
 
     @Test

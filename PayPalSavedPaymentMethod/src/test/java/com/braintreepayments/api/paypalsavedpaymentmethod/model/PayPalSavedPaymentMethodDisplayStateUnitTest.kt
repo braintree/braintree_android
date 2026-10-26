@@ -11,6 +11,9 @@ import java.net.NoRouteToHostException
 import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import javax.net.ssl.SSLException
+import javax.net.ssl.SSLHandshakeException
+import javax.net.ssl.SSLPeerUnverifiedException
 
 class PayPalSavedPaymentMethodDisplayStateUnitTest {
 
@@ -87,6 +90,20 @@ class PayPalSavedPaymentMethodDisplayStateUnitTest {
         val error = ConfigurationException("Request for configuration has failed", UnknownHostException())
 
         assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, error.toDisplayState())
+    }
+
+    @Test
+    fun `TLS failures map to Error, not NoNetwork`() {
+        val errors = listOf(
+            SSLException("connection closed during handshake"),
+            SSLHandshakeException("handshake failed"),
+            SSLPeerUnverifiedException("certificate pin mismatch"),
+            IOException("request failed", SSLHandshakeException("handshake failed"))
+        )
+
+        errors.forEach { error ->
+            assertEquals(PayPalSavedPaymentMethodDisplayState.Error, error.toDisplayState())
+        }
     }
 
     @Test
