@@ -16,10 +16,21 @@ class AnalyticsClient internal constructor(
     private val analyticsEventRepository: AnalyticsEventRepository = AnalyticsEventRepository.instance,
     private val time: Time = Time(),
     private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
     private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
 ) {
+
+    @Deprecated("Kept for modules compiled against an earlier release. Pass the Authorization of the calling client.")
+    fun sendEvent(
+        eventName: String,
+        analyticsEventParams: AnalyticsEventParams = AnalyticsEventParams(),
+        sendImmediately: Boolean = true,
+    ) {
+        // Callers compiled before authorization was passed per event only: attributes the event to the newest client.
+        val authorization = merchantRepository.authorizationOrNull ?: return
+        sendEvent(eventName, authorization, analyticsEventParams, sendImmediately)
+    }
 
     fun sendEvent(
         eventName: String,
@@ -59,14 +70,6 @@ class AnalyticsClient internal constructor(
             analyticsEventRepository.addEvent(event, authorization)
         }
     }
-
-    // shortcut: reads the newest client's authorization for callers not yet migrated,
-    // remove once every caller passes its own authorization
-    fun sendEvent(
-        eventName: String,
-        analyticsEventParams: AnalyticsEventParams = AnalyticsEventParams(),
-        sendImmediately: Boolean = true,
-    ) = sendEvent(eventName, merchantRepository.authorization, analyticsEventParams, sendImmediately)
 
     fun reportCrash(authorization: Authorization) {
         val event = AnalyticsEvent(

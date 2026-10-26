@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.uicomponents.VenmoButtonColor.Companion.fromId
 import com.braintreepayments.api.venmo.VenmoClient
 import com.braintreepayments.api.venmo.VenmoLauncher
@@ -50,6 +51,7 @@ class VenmoButton @JvmOverloads constructor(
      */
     private lateinit var venmoClient: VenmoClient
     private lateinit var venmoLauncher: VenmoLauncher
+    private lateinit var analyticsAuthorization: Authorization
 
     /**
      * Callback invoked when the Venmo payment authentication request is launched.
@@ -105,6 +107,7 @@ class VenmoButton @JvmOverloads constructor(
         appLinkReturnUrl: Uri,
         deepLinkFallbackUrlScheme: String? = null
     ) {
+        analyticsAuthorization = Authorization.fromString(authorization)
         venmoLauncher = VenmoLauncher(activityResultCaller)
         venmoClient = VenmoClient(
             context = context,
@@ -116,6 +119,7 @@ class VenmoButton @JvmOverloads constructor(
         val analyticsClient = AnalyticsClient.lazyInstance.value
         analyticsClient.sendEvent(
             UIComponentsAnalytics.VENMO_BUTTON_PRESENTED,
+            analyticsAuthorization,
             AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
         )
     }
@@ -163,6 +167,7 @@ class VenmoButton @JvmOverloads constructor(
             val analyticsClient = AnalyticsClient.lazyInstance.value
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.VENMO_BUTTON_SELECTED,
+                analyticsAuthorization,
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
             )
             val venmoPendingRequest = venmoLauncher.launch(

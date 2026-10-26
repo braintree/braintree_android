@@ -33,7 +33,6 @@ class AnalyticsClientUnitTest {
     private val analyticsEventRepository: AnalyticsEventRepository = mockk(relaxed = true)
     private val analyticsParamRepository: AnalyticsParamRepository = mockk(relaxed = true)
     private val time: Time = mockk()
-    private val merchantRepository: MerchantRepository = mockk(relaxed = true)
 
     private val configuration: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
     private val otherConfiguration: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
@@ -104,15 +103,16 @@ class AnalyticsClientUnitTest {
         configurationLoader: ConfigurationLoader,
         dispatcher: CoroutineDispatcher,
         coroutineScope: CoroutineScope,
+        merchantRepository: MerchantRepository = MerchantRepository(),
     ) = AnalyticsClient(
         analyticsApi = analyticsApi,
         analyticsParamRepository = analyticsParamRepository,
         analyticsEventRepository = analyticsEventRepository,
         time = time,
         configurationLoader = configurationLoader,
-        merchantRepository = merchantRepository,
         dispatcher = dispatcher,
         coroutineScope = coroutineScope,
+        merchantRepository = merchantRepository,
     )
 
     @Test
@@ -132,23 +132,6 @@ class AnalyticsClientUnitTest {
         verify { analyticsEventRepository.addEvent(expectedAnalyticsEvent, authorization) }
         coVerify(exactly = 0) { configurationLoader.loadConfiguration(any()) }
         verify(exactly = 0) { analyticsApi.execute(any(), any(), any()) }
-    }
-
-    @Test
-    fun `when sendEvent is called without an authorization, the shim uses the merchantRepository authorization`() {
-        every { merchantRepository.authorization } returns authorization
-        val configurationLoader = MockkConfigurationLoaderBuilder()
-            .configuration(configuration)
-            .build()
-        val sut = createSut(configurationLoader, testDispatcher(), testScope())
-
-        sut.sendEvent(
-            eventName = eventName,
-            analyticsEventParams = analyticsEventParams,
-            sendImmediately = false
-        )
-
-        verify { analyticsEventRepository.addEvent(expectedAnalyticsEvent, authorization) }
     }
 
     @Test
@@ -508,6 +491,62 @@ class AnalyticsClientUnitTest {
                 authorization = authorization
             )
         }
+        verify(exactly = 0) { analyticsEventRepository.addEvent(any(), any()) }
+    }
+
+    @Test
+    @Suppress("DEPRECATION")
+    fun `deprecated sendEvent sends immediately under the newest client's authorization`() = runTest {
+        val merchantRepository = MerchantRepository().apply { authorization = otherAuthorization }
+        val sut = createSut(
+            MockkConfigurationLoaderBuilder().configuration(otherConfiguration).build(),
+            StandardTestDispatcher(testScheduler),
+            TestScope(StandardTestDispatcher(testScheduler)),
+            merchantRepository,
+        )
+
+        sut.sendEvent(eventName, analyticsEventParams)
+        advanceUntilIdle()
+
+        verify {
+            analyticsApi.execute(
+                events = listOf(expectedAnalyticsEvent),
+                configuration = otherConfiguration,
+                authorization = otherAuthorization
+            )
+        }
+    }
+
+    @Test
+    @Suppress("DEPRECATION")
+    fun `deprecated sendEvent queues under the newest client's authorization when not sending immediately`() {
+        val merchantRepository = MerchantRepository().apply { authorization = otherAuthorization }
+        val sut = createSut(
+            MockkConfigurationLoaderBuilder().configuration(configuration).build(),
+            testDispatcher(),
+            testScope(),
+            merchantRepository,
+        )
+
+        sut.sendEvent(eventName, analyticsEventParams, sendImmediately = false)
+
+        verify { analyticsEventRepository.addEvent(expectedAnalyticsEvent, otherAuthorization) }
+    }
+
+    @Test
+    @Suppress("DEPRECATION")
+    fun `deprecated sendEvent without an authorization sends nothing`() = runTest {
+        val sut = createSut(
+            MockkConfigurationLoaderBuilder().configuration(configuration).build(),
+            StandardTestDispatcher(testScheduler),
+            TestScope(StandardTestDispatcher(testScheduler)),
+        )
+
+        sut.sendEvent(eventName, analyticsEventParams)
+        sut.sendEvent(eventName, analyticsEventParams, sendImmediately = false)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { analyticsApi.execute(any(), any(), any()) }
         verify(exactly = 0) { analyticsEventRepository.addEvent(any(), any()) }
     }
 

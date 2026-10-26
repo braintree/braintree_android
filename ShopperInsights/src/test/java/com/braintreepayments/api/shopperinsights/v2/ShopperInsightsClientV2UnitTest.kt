@@ -1,7 +1,6 @@
 package com.braintreepayments.api.shopperinsights.v2
 
 import android.content.Context
-import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.DeviceInspector
@@ -42,7 +41,6 @@ class ShopperInsightsClientV2UnitTest {
 
     private val braintreeClient = mockk<BraintreeClient>(relaxed = true)
     private val deviceInspector = mockk<DeviceInspector>(relaxed = true)
-    private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
     private val createCustomerSessionApi = mockk<CreateCustomerSessionApi>(relaxed = true)
     private val updateCustomerSessionApi = mockk<UpdateCustomerSessionApi>(relaxed = true)
     private val generateCustomerRecommendationsApi = mockk<GenerateCustomerRecommendationsApi>(relaxed = true)
@@ -62,8 +60,7 @@ class ShopperInsightsClientV2UnitTest {
             createCustomerSessionApi = createCustomerSessionApi,
             updateCustomerSessionApi = updateCustomerSessionApi,
             generateCustomerRecommendationsApi = generateCustomerRecommendationsApi,
-            deviceInspector = deviceInspector,
-            lazy { analyticsClient }
+            deviceInspector = deviceInspector
         )
         Dispatchers.setMain(testDispatcher)
     }
@@ -86,7 +83,7 @@ class ShopperInsightsClientV2UnitTest {
         )
 
         verify {
-            analyticsClient.sendEvent(
+            braintreeClient.sendAnalyticsEvent(
                 BUTTON_PRESENTED,
                 AnalyticsEventParams(
                     experiment = ExperimentType.CONTROL.formattedExperiment(),
@@ -104,7 +101,7 @@ class ShopperInsightsClientV2UnitTest {
         subject.sendSelectedEvent(ButtonType.VENMO, sessionId)
 
         verify {
-            analyticsClient.sendEvent(
+            braintreeClient.sendAnalyticsEvent(
                 BUTTON_SELECTED,
                 AnalyticsEventParams(
                     shopperSessionId = sessionId,
@@ -275,8 +272,8 @@ class ShopperInsightsClientV2UnitTest {
         advanceUntilIdle()
 
         verifyOrder {
-            analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
-            analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_SUCCEEDED)
+            braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
+            braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_SUCCEEDED)
         }
     }
 
@@ -295,8 +292,8 @@ class ShopperInsightsClientV2UnitTest {
         advanceUntilIdle()
 
         verifyOrder {
-            analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
-            analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_FAILED)
+            braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
+            braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_FAILED)
         }
     }
 
@@ -315,8 +312,8 @@ class ShopperInsightsClientV2UnitTest {
         advanceUntilIdle()
 
         verifyOrder {
-            analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
-            analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_SUCCEEDED)
+            braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
+            braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_SUCCEEDED)
         }
     }
 
@@ -336,8 +333,8 @@ class ShopperInsightsClientV2UnitTest {
         advanceUntilIdle()
 
         verifyOrder {
-            analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
-            analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_FAILED)
+            braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
+            braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_FAILED)
         }
     }
 
@@ -357,8 +354,8 @@ class ShopperInsightsClientV2UnitTest {
         advanceUntilIdle()
 
         verifyOrder {
-            analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
-            analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED)
+            braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
+            braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED)
         }
     }
 
@@ -379,8 +376,8 @@ class ShopperInsightsClientV2UnitTest {
         advanceUntilIdle()
 
         verifyOrder {
-            analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
-            analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
+            braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
+            braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
         }
     }
 }

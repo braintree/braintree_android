@@ -15,6 +15,7 @@ data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
 ) {
 
     // body property: keeps the credential out of the data class generated toString/equals/copy
+    // copy() drops the authorization; analytics for the copied event fall back to the newest client
     internal var authorization: Authorization? = null
 
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
