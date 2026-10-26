@@ -2,8 +2,7 @@
 <resources>
     <!--
       XML attrs for PayPalSavedPaymentMethodView. Each maps to a PayPalSavedPaymentMethodViewStyle field; see that
-      class's KDoc for what each value controls. Unset attrs use the SDK default. A later programmatic style replaces
-      the style set by these attrs.
+      class's KDoc for what each value controls. Unset attrs use the SDK default.
 
       Attrs share one app-wide namespace even inside a declare-styleable, so every name carries the
       paypalSavedPaymentMethod prefix to avoid clashing with other libraries or the merchant's app.

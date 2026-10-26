@@ -40,7 +40,7 @@ class PayPalSavedPaymentMethodViewStyle @JvmOverloads constructor(
  * the SDK default.
  * @property baseFontSizeSp base font size, in sp, used for a text element whose own font size is not provided. If this
  * is also null, the SDK default font size for that element is used.
- * @property fontResId font used for text across the component. Null uses the SDK default font.
+ * @property fontResId font used for text across the component. Null uses the system font.
  */
 @ExperimentalBetaApi
 class PayPalSavedPaymentMethodAppearance @JvmOverloads constructor(
@@ -86,7 +86,8 @@ class PayPalSavedPaymentMethodContainerStyle @JvmOverloads constructor(
 /**
  * Sizing of the PayPal logo.
  *
- * @property widthDp width of the PayPal logo, in dp. Null uses the SDK default.
+ * @property widthDp side of the square box the PayPal logo is drawn in, in dp; the logo scales to fit and keeps its
+ * aspect ratio. Null uses the SDK default.
  */
 @ExperimentalBetaApi
 class PayPalLogoStyle @JvmOverloads constructor(
