@@ -5,8 +5,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -42,6 +43,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -85,6 +88,8 @@ internal fun PayPalSavedPaymentMethodContent(
     val showCreditMessaging = resolvedStyle.showPayPalCreditMessaging &&
         visibleCreditMessagingState != PayPalCreditMessagingDisplayState.Hidden
     val labelGap = resolvedStyle.labelMarginStartDp.dp
+    val showsBrandMark = resolvedStyle.showPayPalLogo || resolvedStyle.showPayPalLabel
+    val fundingInstrumentGap = resolvedStyle.fundingInstrumentMarginStartDp.dp
 
     Card(
         // The merchant's height is a minimum, so larger text never gets clipped.
@@ -106,49 +111,35 @@ internal fun PayPalSavedPaymentMethodContent(
                     vertical = resolvedStyle.verticalPaddingDp.dp
                 )
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (resolvedStyle.showPayPalLogo) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_paypal_brand_logo),
-                        // The label already reads "PayPal" when it's shown.
-                        contentDescription = if (resolvedStyle.showPayPalLabel) {
-                            null
-                        } else {
-                            stringResource(R.string.paypal_saved_payment_method_label)
-                        },
-                        // A square box; the artwork scales to fit inside it, keeping its aspect ratio.
-                        modifier = Modifier.size(resolvedStyle.logoWidthDp.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                }
-                if (resolvedStyle.showPayPalLabel) {
-                    Text(
-                        text = stringResource(R.string.paypal_saved_payment_method_label),
-                        color = Color(resolvedStyle.textColor),
-                        fontSize = resolvedStyle.labelFontSizeSp.sp,
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = resolvedStyle.fontFamily,
-                        // The gap only separates the label from the logo.
-                        modifier = Modifier.padding(start = if (resolvedStyle.showPayPalLogo) labelGap else 0.dp)
-                    )
-                }
-                if (fundingInstrumentState == PayPalSavedPaymentMethodDisplayState.Loading) {
+            val brandMark: @Composable () -> Unit = { PayPalBrandMark(resolvedStyle, labelGap) }
+            if (fundingInstrumentState == PayPalSavedPaymentMethodDisplayState.Loading) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    brandMark()
                     ShimmerPlaceholder(
                         contentDescription =
                             stringResource(R.string.paypal_saved_payment_method_loading_content_description),
                         modifier = Modifier
                             .weight(1f)
-                            .padding(start = resolvedStyle.fundingInstrumentMarginStartDp.dp)
-                    )
-                } else if (showFundingInstrument) {
-                    FundingInstrumentChip(
-                        state = fundingInstrumentState,
-                        resolvedStyle = resolvedStyle,
-                        editEnabled = editEnabled,
-                        onEditClick = onEditClick,
-                        modifier = Modifier.padding(start = resolvedStyle.fundingInstrumentMarginStartDp.dp)
+                            // The gap only separates the funding instrument from the PayPal logo and label.
+                            .padding(start = if (showsBrandMark) fundingInstrumentGap else 0.dp)
                     )
                 }
+            } else {
+                SideBySideOrStacked(
+                    gap = fundingInstrumentGap,
+                    stackedSpacing = dimensionResource(R.dimen.paypal_saved_payment_method_stacked_layout_spacing),
+                    brand = brandMark,
+                    fundingInstrument = {
+                        if (showFundingInstrument) {
+                            FundingInstrumentChip(
+                                state = fundingInstrumentState,
+                                resolvedStyle = resolvedStyle,
+                                editEnabled = editEnabled,
+                                onEditClick = onEditClick
+                            )
+                        }
+                    }
+                )
             }
             if (showCreditMessaging) {
                 CreditMessagingRow(
@@ -166,6 +157,86 @@ internal fun PayPalSavedPaymentMethodContent(
     }
 }
 
+/** The PayPal logo and label, either of which the merchant can hide. */
+@Composable
+private fun PayPalBrandMark(resolvedStyle: PayPalSavedPaymentMethodStyleResolver, labelGap: Dp) {
+    if (!resolvedStyle.showPayPalLogo && !resolvedStyle.showPayPalLabel) return
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        if (resolvedStyle.showPayPalLogo) {
+            Image(
+                painter = painterResource(R.drawable.ic_paypal_brand_logo),
+                // The label already reads "PayPal" when it's shown.
+                contentDescription = if (resolvedStyle.showPayPalLabel) {
+                    null
+                } else {
+                    stringResource(R.string.paypal_saved_payment_method_label)
+                },
+                // A square box; the artwork scales to fit inside it, keeping its aspect ratio.
+                modifier = Modifier.size(resolvedStyle.logoWidthDp.dp),
+                contentScale = ContentScale.Fit
+            )
+        }
+        if (resolvedStyle.showPayPalLabel) {
+            Text(
+                text = stringResource(R.string.paypal_saved_payment_method_label),
+                color = Color(resolvedStyle.textColor),
+                fontSize = resolvedStyle.labelFontSizeSp.sp,
+                fontWeight = FontWeight.Medium,
+                fontFamily = resolvedStyle.fontFamily,
+                // The gap only separates the label from the logo.
+                modifier = Modifier.padding(start = if (resolvedStyle.showPayPalLogo) labelGap else 0.dp)
+            )
+        }
+    }
+}
+
+/**
+ * Places [brand] and [fundingInstrument] side by side, [gap] apart and centered vertically, when the funding instrument
+ * fits at its full width. Otherwise, for example at large text sizes, it stacks them [stackedSpacing] apart, so the
+ * funding instrument stays legible instead of being cut off.
+ */
+@Composable
+private fun SideBySideOrStacked(
+    gap: Dp,
+    stackedSpacing: Dp,
+    brand: @Composable () -> Unit,
+    fundingInstrument: @Composable () -> Unit
+) {
+    Layout(contents = listOf(brand, fundingInstrument)) { measurables, constraints ->
+        val (brandMeasurables, fundingInstrumentMeasurables) = measurables
+        val looseConstraints = constraints.copy(minWidth = 0, minHeight = 0)
+        val brandPlaceable = brandMeasurables.firstOrNull()?.measure(looseConstraints)
+        val brandWidth = brandPlaceable?.width ?: 0
+        val brandHeight = brandPlaceable?.height ?: 0
+        val fundingInstrumentMeasurable = fundingInstrumentMeasurables.firstOrNull()
+            ?: return@Layout layout(brandWidth, brandHeight) { brandPlaceable?.place(0, 0) }
+
+        val gapPx = if (brandPlaceable != null) gap.roundToPx() else 0
+        val fullWidth = fundingInstrumentMeasurable.maxIntrinsicWidth(Constraints.Infinity)
+        val fitsSideBySide = !constraints.hasBoundedWidth || brandWidth + gapPx + fullWidth <= constraints.maxWidth
+        if (fitsSideBySide) {
+            val maxWidth = if (constraints.hasBoundedWidth) {
+                (constraints.maxWidth - brandWidth - gapPx).coerceAtLeast(0)
+            } else {
+                Constraints.Infinity
+            }
+            val placeable = fundingInstrumentMeasurable.measure(looseConstraints.copy(maxWidth = maxWidth))
+            val height = maxOf(brandHeight, placeable.height)
+            layout(brandWidth + gapPx + placeable.width, height) {
+                brandPlaceable?.placeRelative(0, (height - brandHeight) / 2)
+                placeable.placeRelative(brandWidth + gapPx, (height - placeable.height) / 2)
+            }
+        } else {
+            val placeable = fundingInstrumentMeasurable.measure(looseConstraints)
+            val spacing = stackedSpacing.roundToPx()
+            layout(maxOf(brandWidth, placeable.width), brandHeight + spacing + placeable.height) {
+                brandPlaceable?.placeRelative(0, 0)
+                placeable.placeRelative(0, brandHeight + spacing)
+            }
+        }
+    }
+}
+
 @Composable
 private fun FundingInstrumentChip(
     state: PayPalSavedPaymentMethodDisplayState,
@@ -177,7 +248,12 @@ private fun FundingInstrumentChip(
     val iconMargin = dimensionResource(R.dimen.paypal_saved_payment_method_funding_instrument_icon_margin)
     val editActionLabel = stringResource(R.string.paypal_saved_payment_method_edit_action_label)
     val context = LocalContext.current
-    val accessibilityLabel = state.accessibilityLabel { label, spokenDigits ->
+    val brandName = if (resolvedStyle.showPayPalLogo || resolvedStyle.showPayPalLabel) {
+        null
+    } else {
+        stringResource(R.string.paypal_saved_payment_method_label)
+    }
+    val accessibilityLabel = state.accessibilityLabel(brandName) { label, spokenDigits ->
         context.getString(R.string.paypal_saved_payment_method_funding_instrument_ending_in, label, spokenDigits)
     }
     val chipShape = RoundedCornerShape(
