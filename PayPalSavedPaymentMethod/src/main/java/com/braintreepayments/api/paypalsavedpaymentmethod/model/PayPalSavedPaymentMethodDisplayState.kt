@@ -4,45 +4,32 @@ import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-/**
- * What the saved payment method component renders. Shared by the XML and Compose views.
- */
+/** What the saved payment method component renders. */
 internal sealed interface PayPalSavedPaymentMethodDisplayState {
 
     /** The funding instrument is being fetched. */
     data object Loading : PayPalSavedPaymentMethodDisplayState
 
-    /** A funding instrument to display, with its icon, label or last digits, and the edit control. */
+    /** A funding instrument to display. */
     data class Content(val paymentMethod: PayPalSavedPaymentMethod) : PayPalSavedPaymentMethodDisplayState
 
-    /**
-     * PayPal returned no funding instrument but did return the buyer's email, which is displayed instead.
-     * [isEditable] is whether the buyer can change the funding instrument.
-     */
+    /** No funding instrument, so the buyer's email is shown instead. */
     data class NoFundingInstrument(
         val payerEmail: String,
         val isEditable: Boolean
     ) : PayPalSavedPaymentMethodDisplayState
 
-    /**
-     * The funding instrument could not be fetched because the device is offline. The PayPal logo stays visible.
-     *
-     * Renders the same as [Error] today. It is kept separate so the offline case can be shown differently later
-     * without changing how failures are mapped.
-     */
+    /** The fetch failed because the device is offline. Rendered the same as [Error] for now. */
     data object NoNetwork : PayPalSavedPaymentMethodDisplayState
 
-    /** The funding instrument could not be fetched or there is nothing to display. The PayPal logo stays visible. */
+    /** The fetch failed or there's nothing to show, so only the PayPal logo is shown. */
     data object Error : PayPalSavedPaymentMethodDisplayState
 
-    /** Nothing is rendered, not even the PayPal logo. Used when the component can't run in its host. */
+    /** Nothing is rendered, for example when the view isn't in an activity that can launch PayPal. */
     data object Hidden : PayPalSavedPaymentMethodDisplayState
 }
 
-/**
- * Maps a fetched summary to what the component renders: the first funding instrument, otherwise the buyer's email,
- * otherwise [PayPalSavedPaymentMethodDisplayState.Error].
- */
+/** Maps a fetched summary to the first funding instrument, otherwise the buyer's email, otherwise an error. */
 internal fun PayPalSavedPaymentMethodSummary.toDisplayState(): PayPalSavedPaymentMethodDisplayState {
     val paymentMethod = paymentMethods.firstOrNull()
     return when {
@@ -52,14 +39,7 @@ internal fun PayPalSavedPaymentMethodSummary.toDisplayState(): PayPalSavedPaymen
     }
 }
 
-/**
- * Maps a failed fetch to what the component renders. Only connection failures anywhere in the cause chain count as
- * [PayPalSavedPaymentMethodDisplayState.NoNetwork], including one wrapped in a `ConfigurationException` when the
- * configuration fetch fails first. Server and parsing errors, including a `BraintreeException`, which is an
- * `IOException`, map to [PayPalSavedPaymentMethodDisplayState.Error].
- *
- * Callers must re-throw a `CancellationException` instead of mapping it, so a cancelled fetch isn't shown as an error.
- */
+/** Maps a failed fetch to no network for a connection failure, otherwise an error. Callers re-throw cancellation. */
 internal fun Throwable.toDisplayState(): PayPalSavedPaymentMethodDisplayState =
     if (generateSequence(this) { it.cause }.any { it.isConnectionFailure() }) {
         PayPalSavedPaymentMethodDisplayState.NoNetwork
@@ -67,8 +47,6 @@ internal fun Throwable.toDisplayState(): PayPalSavedPaymentMethodDisplayState =
         PayPalSavedPaymentMethodDisplayState.Error
     }
 
-// Offline signals only. SocketException covers ConnectException, NoRouteToHostException and a reset connection.
-// SSLException is deliberately left out: it also covers certificate pinning and handshake failures, which reconnecting
-// won't fix, so they show as Error rather than as no network.
+// SSLException is left out: it also covers pinning failures, which aren't an offline case.
 private fun Throwable.isConnectionFailure(): Boolean =
     this is UnknownHostException || this is SocketException || this is SocketTimeoutException

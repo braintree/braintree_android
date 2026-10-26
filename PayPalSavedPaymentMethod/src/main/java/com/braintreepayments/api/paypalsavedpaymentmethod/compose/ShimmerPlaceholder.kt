@@ -26,13 +26,7 @@ import androidx.compose.ui.unit.Dp
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 
 /**
- * A rounded placeholder bar with a white highlight sweeping left to right, shown while the funding instrument or the
- * Pay Later message is loading. The bar fills the width it's given and stops short of the trailing edge.
- *
- * @param contentDescription What screen readers announce, for example a localized "Loading", or `null` to hide the
- * bar from screen readers, for a bar shown next to one that already announces loading.
- * @param height The height of the bar.
- * @param trailingGap The space left after the bar; `0.dp` for a placeholder that fills its box, such as card art.
+ * A loading placeholder bar with a sweeping highlight. A `null` [contentDescription] hides it from screen readers.
  */
 @Composable
 internal fun ShimmerPlaceholder(
@@ -64,7 +58,6 @@ internal fun ShimmerPlaceholder(
             .background(colorResource(R.color.paypal_saved_payment_method_placeholder))
             .drawWithContent {
                 drawContent()
-                // The highlight starts fully off the left edge and ends fully off the right edge.
                 val bandWidth = size.width * HIGHLIGHT_WIDTH_FRACTION
                 val start = -bandWidth + progress * (size.width + bandWidth)
                 drawRect(

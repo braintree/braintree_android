@@ -6,10 +6,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPayme
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
 
-/**
- * The generic icon for a card or bank funding instrument, or `null` for types that render their label only, such as
- * PayPal Credit. Shared by the XML and Compose views.
- */
+/** The generic card or bank icon, or `null` for types shown by their label only. */
 @DrawableRes
 internal fun PayPalSavedPaymentMethodType?.iconRes(): Int? = when (this) {
     PayPalSavedPaymentMethodType.CARD -> R.drawable.ic_fi_card_placeholder
@@ -17,28 +14,17 @@ internal fun PayPalSavedPaymentMethodType?.iconRes(): Int? = when (this) {
     PayPalSavedPaymentMethodType.PAYPAL_CREDIT, null -> null
 }
 
-/**
- * The last digits to show masked, or `null` when the label should be shown instead. Only cards and banks have real
- * last digits; PayPal Credit can come back with a placeholder such as `"0000"`.
- */
+/** The last digits of a card or bank, or `null` to show the label instead. */
 internal fun PayPalSavedPaymentMethod.maskedLastDigitsOrNull(): String? =
     lastDigits?.takeIf { type.iconRes() != null && it.isNotBlank() }
 
-/**
- * The last digits separated by spaces, so screen readers read each digit instead of one number, or `null` when the
- * label is read on its own. Shared by the XML and Compose views.
- */
+/** The last digits separated by spaces, so screen readers read each digit. */
 internal fun PayPalSavedPaymentMethod.spokenLastDigitsOrNull(): String? =
     maskedLastDigitsOrNull()?.toList()?.joinToString(" ")
 
 /**
- * What screen readers read for the funding instrument chip: for a card or bank, the label and spaced last digits
- * formatted by [endingIn], for example "Visa, ending in 1 2 3 4"; otherwise the label or the buyer's email. When the
- * merchant hides both the PayPal logo and label, a funding instrument is introduced with [brandName], for example
- * "PayPal, Visa, ending in 1 2 3 4", so it's still clear the payment method is PayPal. Shared by the XML and Compose
- * views.
- *
- * @param brandName "PayPal", or `null` when the logo or the label already names PayPal.
+ * What screen readers read for the funding instrument chip. [brandName] is "PayPal" when the logo and label are both
+ * hidden, otherwise `null`.
  */
 internal fun PayPalSavedPaymentMethodDisplayState.accessibilityLabel(
     brandName: String?,
@@ -56,20 +42,13 @@ internal fun PayPalSavedPaymentMethodDisplayState.accessibilityLabel(
     PayPalSavedPaymentMethodDisplayState.Hidden -> ""
 }
 
-/**
- * Whether the funding instrument row is shown. It is hidden when the fetch failed, leaving only the PayPal logo and
- * label, and when the whole component is hidden.
- */
+/** Whether the funding instrument row is shown. */
 internal val PayPalSavedPaymentMethodDisplayState.showsFundingInstrumentRow: Boolean
     get() = this !is PayPalSavedPaymentMethodDisplayState.NoNetwork &&
         this !is PayPalSavedPaymentMethodDisplayState.Error &&
         this !is PayPalSavedPaymentMethodDisplayState.Hidden
 
-/**
- * Whether the buyer can change the funding instrument, which shows the edit icon and makes the chip tappable. Always
- * `true` for a funding instrument; for an email, only when PayPal says the buyer can edit. Shared by the XML and
- * Compose views.
- */
+/** Whether the buyer can change the funding instrument. */
 internal val PayPalSavedPaymentMethodDisplayState.isEditable: Boolean
     get() = when (this) {
         is PayPalSavedPaymentMethodDisplayState.Content -> true
@@ -80,13 +59,7 @@ internal val PayPalSavedPaymentMethodDisplayState.isEditable: Boolean
         PayPalSavedPaymentMethodDisplayState.Hidden -> false
     }
 
-/**
- * What the Pay Later row renders next to [fundingInstrumentState]. The offer is quoted for the funding instrument
- * fetched before any edit and only helps if the buyer can change it, so the row shows while that funding instrument is
- * loading or shown, and next to an email only when the buyer can edit. It is hidden next to the PayPal logo alone and
- * after an edit. Its shimmer only shows while the funding instrument is loading, so the row never shimmers on its own.
- * Shared by the XML and Compose views.
- */
+/** What the Pay Later row shows next to [fundingInstrumentState]. It's hidden after an edit. */
 internal fun PayPalCreditMessagingDisplayState.visibleWith(
     fundingInstrumentState: PayPalSavedPaymentMethodDisplayState,
     isEditCompleted: Boolean

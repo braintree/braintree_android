@@ -22,10 +22,7 @@ import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.graphics.drawable.toDrawable
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 
-/**
- * Blocks the whole screen while the edit flow creates the PayPal order or tokenizes after the buyer returns, so the
- * buyer can't tap Edit twice or leave mid-request.
- */
+/** Blocks the screen while the edit flow runs, so the buyer can't tap Edit twice. */
 @Composable
 internal fun LoadingDialog() {
     Dialog(
@@ -36,8 +33,7 @@ internal fun LoadingDialog() {
             usePlatformDefaultWidth = false
         )
     ) {
-        // The dialog window dims the screen and has an opaque background by default; clear both so only the
-        // translucent background below controls how much of the screen shows through.
+        // Clears the dialog's default dim and background, so only the translucent background below shows.
         val dialogWindowProvider = LocalView.current.parent as? DialogWindowProvider
         SideEffect {
             dialogWindowProvider?.window?.let { window ->
@@ -45,8 +41,6 @@ internal fun LoadingDialog() {
                 window.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
             }
         }
-        // Spinner only: the same loader shows while the order is created and while tokenizing after the buyer
-        // returns, so no single message fits both.
         Box(
             modifier = Modifier
                 .fillMaxSize()

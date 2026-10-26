@@ -5,7 +5,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-// Robolectric: toContent validates URLs with android.net.Uri.
 @RunWith(RobolectricTestRunner::class)
 class PayPalCreditMessagingDisplayStateUnitTest {
 

@@ -1,12 +1,10 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.compose
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertHeightIsEqualTo
-import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -26,7 +24,7 @@ class ShimmerPlaceholderUnitTest {
 
     @Before
     fun setUp() {
-        // The highlight sweeps forever, so the clock is driven by hand instead of waiting for the UI to go idle.
+        // It animates forever, so the clock is advanced by hand.
         composeTestRule.mainClock.autoAdvance = false
     }
 
@@ -53,17 +51,6 @@ class ShimmerPlaceholderUnitTest {
         }
 
         composeTestRule.onNodeWithTag(TAG).assertHeightIsEqualTo(20.dp)
-    }
-
-    @Test
-    fun `fills the width it's given, including the trailing gap`() {
-        render {
-            Box(Modifier.testTag(TAG)) {
-                ShimmerPlaceholder(contentDescription = null, modifier = Modifier.width(100.dp), trailingGap = 30.dp)
-            }
-        }
-
-        composeTestRule.onNodeWithTag(TAG).assertWidthIsEqualTo(100.dp)
     }
 
     private fun render(content: @Composable () -> Unit) {

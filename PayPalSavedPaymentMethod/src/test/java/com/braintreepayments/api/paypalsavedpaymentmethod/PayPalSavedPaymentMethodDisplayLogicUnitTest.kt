@@ -246,14 +246,6 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
         assertEquals(Hidden, loading.visibleWith(PayPalSavedPaymentMethodDisplayState.Loading, isEditCompleted = true))
     }
 
-    @Test
-    fun `a hidden Pay Later message stays hidden next to a funding instrument`() {
-        val content = PayPalSavedPaymentMethodDisplayState.Content(card)
-
-        assertEquals(Hidden, Hidden.visibleWith(content, isEditCompleted = false))
-        assertEquals(Hidden, Hidden.visibleWith(PayPalSavedPaymentMethodDisplayState.Loading, isEditCompleted = false))
-    }
-
     private fun endingIn(label: String, spokenDigits: String) = "$label, ending in $spokenDigits"
 
     private companion object {

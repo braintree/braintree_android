@@ -19,7 +19,7 @@ class LoadingDialogUnitTest {
 
     @Before
     fun setUp() {
-        // The spinner animates forever, so the clock is driven by hand instead of waiting for the UI to go idle.
+        // It animates forever, so the clock is advanced by hand.
         composeTestRule.mainClock.autoAdvance = false
         composeTestRule.setContent { LoadingDialog() }
         composeTestRule.mainClock.advanceTimeByFrame()
