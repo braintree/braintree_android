@@ -65,6 +65,22 @@ class ShimmerPlaceholderViewUnitTest {
     }
 
     @Test
+    fun `leaves the trailing gap on the right in a left-to-right layout`() {
+        val sut = layOut(View.LAYOUT_DIRECTION_LTR)
+
+        assertEquals(0f, sut.barBounds.left)
+        assertEquals((WIDTH - trailingGap()).toFloat(), sut.barBounds.right)
+    }
+
+    @Test
+    fun `leaves the trailing gap on the left in a right-to-left layout`() {
+        val sut = layOut(View.LAYOUT_DIRECTION_RTL)
+
+        assertEquals(trailingGap().toFloat(), sut.barBounds.left)
+        assertEquals(WIDTH.toFloat(), sut.barBounds.right)
+    }
+
+    @Test
     fun `is hidden from screen readers unless it has a content description`() {
         val sut = ShimmerPlaceholderView(context)
         assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_NO, sut.importantForAccessibility)
@@ -74,5 +90,21 @@ class ShimmerPlaceholderViewUnitTest {
 
         sut.contentDescription = null
         assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_NO, sut.importantForAccessibility)
+    }
+
+    private fun layOut(direction: Int) = ShimmerPlaceholderView(context).apply {
+        layoutDirection = direction
+        measure(
+            MeasureSpec.makeMeasureSpec(WIDTH, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        )
+        layout(0, 0, measuredWidth, measuredHeight)
+    }
+
+    private fun trailingGap() =
+        context.resources.getDimensionPixelSize(R.dimen.paypal_saved_payment_method_placeholder_trailing_gap)
+
+    private companion object {
+        const val WIDTH = 300
     }
 }

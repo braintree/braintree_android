@@ -15,9 +15,9 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingContent
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingDisplayState
-import com.braintreepayments.api.paypalsavedpaymentmethod.styling.ComponentAppearance
-import com.braintreepayments.api.paypalsavedpaymentmethod.styling.ContainerStyle
-import com.braintreepayments.api.paypalsavedpaymentmethod.styling.CreditMessagingStyle
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodAppearance
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodContainerStyle
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodCreditMessagingStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
 import org.junit.Assert.assertEquals
@@ -91,8 +91,10 @@ class PayPalCreditMessagingViewUnitTest {
 
     private fun bind(state: PayPalCreditMessagingDisplayState, linkColor: Int? = null) {
         val style = PayPalSavedPaymentMethodViewStyle(
-            componentAppearance = ComponentAppearance(textColor = Color.RED),
-            container = ContainerStyle(creditMessaging = CreditMessagingStyle(linkColor = linkColor))
+            componentAppearance = PayPalSavedPaymentMethodAppearance(textColor = Color.RED),
+            container = PayPalSavedPaymentMethodContainerStyle(
+                creditMessaging = PayPalSavedPaymentMethodCreditMessagingStyle(linkColor = linkColor)
+            )
         )
         sut.bind(state, PayPalSavedPaymentMethodStyleResolver(context, style)) { openedUrls += it }
     }

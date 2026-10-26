@@ -6,5 +6,4 @@
     <string name="paypal_saved_payment_method_funding_instrument_ending_in">%1$s, ending in %2$s</string>
     <!-- Screen reader action for tapping the funding instrument. -->
     <string name="paypal_saved_payment_method_edit_action_label">Change payment method</string>
-    <string name="paypal_saved_payment_method_loading_content_description">Loading saved payment method</string>
 </resources>

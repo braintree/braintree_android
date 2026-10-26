@@ -11,6 +11,7 @@ import android.graphics.RectF
 import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.View
+import androidx.annotation.VisibleForTesting
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
@@ -55,6 +56,11 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
     private var isInitialized = false
     private var isWindowVisible = true
 
+    /** The bar's bounds within the view. */
+    @get:VisibleForTesting
+    internal val barBounds: RectF
+        get() = RectF(barRect)
+
     /** Whether the highlight is sweeping. */
     internal val isAnimating: Boolean
         get() = animator.isStarted
@@ -74,9 +80,14 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
         setMeasuredDimension(getDefaultSize(suggestedMinimumWidth, widthMeasureSpec), barHeight)
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        val barWidth = (w - trailingGap).coerceAtLeast(0).toFloat()
-        barRect.set(0f, 0f, barWidth, h.toFloat())
+    // Recomputed on every layout, not only on a size change, because changing the layout direction lays the view out
+    // again without resizing it. The trailing gap is on the end side, like padding(end) in the Compose
+    // ShimmerPlaceholder: the right in left-to-right layouts and the left in right-to-left ones.
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        val barWidth = (width - trailingGap).coerceAtLeast(0).toFloat()
+        val barLeft = if (layoutDirection == LAYOUT_DIRECTION_RTL) width - barWidth else 0f
+        barRect.set(barLeft, 0f, barLeft + barWidth, height.toFloat())
         highlightPaint.shader = LinearGradient(
             0f,
             0f,
@@ -96,7 +107,7 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
         canvas.drawRoundRect(barRect, cornerRadius, cornerRadius, barPaint)
         // The highlight starts fully off the left edge and ends fully off the right edge.
         val bandWidth = barRect.width() * HIGHLIGHT_WIDTH_FRACTION
-        highlightMatrix.setTranslate(-bandWidth + progress * (barRect.width() + bandWidth), 0f)
+        highlightMatrix.setTranslate(barRect.left - bandWidth + progress * (barRect.width() + bandWidth), 0f)
         highlightPaint.shader?.setLocalMatrix(highlightMatrix)
         canvas.drawRoundRect(barRect, cornerRadius, cornerRadius, highlightPaint)
     }
