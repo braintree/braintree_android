@@ -78,7 +78,7 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
     fun `accessibilityLabel reads the label and spaced last digits for a card`() {
         val content = PayPalSavedPaymentMethodDisplayState.Content(card)
 
-        assertEquals("Visa, ending in 1 2 3 4", content.accessibilityLabel(::endingIn))
+        assertEquals("Visa, ending in 1 2 3 4", content.accessibilityLabel(null, ::endingIn))
     }
 
     @Test
@@ -87,7 +87,16 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
             card.copy(type = PayPalSavedPaymentMethodType.PAYPAL_CREDIT, label = "PayPal Credit", lastDigits = "0000")
         )
 
-        assertEquals("PayPal Credit", payPalCredit.accessibilityLabel(::endingIn))
+        assertEquals("PayPal Credit", payPalCredit.accessibilityLabel(null, ::endingIn))
+    }
+
+    @Test
+    fun `accessibilityLabel introduces a funding instrument with the brand name when the brand is hidden`() {
+        val content = PayPalSavedPaymentMethodDisplayState.Content(card)
+        val emailOnly = PayPalSavedPaymentMethodDisplayState.NoFundingInstrument("buyer@example.com", isEditable = true)
+
+        assertEquals("PayPal, Visa, ending in 1 2 3 4", content.accessibilityLabel("PayPal", ::endingIn))
+        assertEquals("buyer@example.com", emailOnly.accessibilityLabel("PayPal", ::endingIn))
     }
 
     @Test
@@ -95,7 +104,7 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
         val emailOnly =
             PayPalSavedPaymentMethodDisplayState.NoFundingInstrument("buyer@example.com", isEditable = false)
 
-        assertEquals("buyer@example.com", emailOnly.accessibilityLabel(::endingIn))
+        assertEquals("buyer@example.com", emailOnly.accessibilityLabel(null, ::endingIn))
     }
 
     @Test
@@ -106,7 +115,7 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
             PayPalSavedPaymentMethodDisplayState.Error,
             PayPalSavedPaymentMethodDisplayState.Hidden
         ).forEach { state ->
-            assertEquals("", state.accessibilityLabel(::endingIn))
+            assertEquals("", state.accessibilityLabel(null, ::endingIn))
         }
     }
 

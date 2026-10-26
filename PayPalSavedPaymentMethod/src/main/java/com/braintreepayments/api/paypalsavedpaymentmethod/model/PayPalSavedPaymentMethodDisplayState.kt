@@ -35,10 +35,7 @@ internal sealed interface PayPalSavedPaymentMethodDisplayState {
     /** The funding instrument could not be fetched or there is nothing to display. The PayPal logo stays visible. */
     data object Error : PayPalSavedPaymentMethodDisplayState
 
-    /**
-     * Nothing is rendered, not even the PayPal logo. Used after an edit when the funding instrument the buyer picked
-     * can't be shown, since the one shown before the edit is no longer the one that will be charged.
-     */
+    /** Nothing is rendered, not even the PayPal logo. Used when the component can't run in its host. */
     data object Hidden : PayPalSavedPaymentMethodDisplayState
 }
 

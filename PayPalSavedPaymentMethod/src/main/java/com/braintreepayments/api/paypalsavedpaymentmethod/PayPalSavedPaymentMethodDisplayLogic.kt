@@ -33,14 +33,22 @@ internal fun PayPalSavedPaymentMethod.spokenLastDigitsOrNull(): String? =
 
 /**
  * What screen readers read for the funding instrument chip: for a card or bank, the label and spaced last digits
- * formatted by [endingIn], for example "Visa, ending in 1 2 3 4"; otherwise the label or the buyer's email. Shared by
- * the XML and Compose views.
+ * formatted by [endingIn], for example "Visa, ending in 1 2 3 4"; otherwise the label or the buyer's email. When the
+ * merchant hides both the PayPal logo and label, a funding instrument is introduced with [brandName], for example
+ * "PayPal, Visa, ending in 1 2 3 4", so it's still clear the payment method is PayPal. Shared by the XML and Compose
+ * views.
+ *
+ * @param brandName "PayPal", or `null` when the logo or the label already names PayPal.
  */
 internal fun PayPalSavedPaymentMethodDisplayState.accessibilityLabel(
+    brandName: String?,
     endingIn: (label: String, spokenDigits: String) -> String
 ): String = when (this) {
-    is PayPalSavedPaymentMethodDisplayState.Content ->
-        paymentMethod.spokenLastDigitsOrNull()?.let { endingIn(paymentMethod.label, it) } ?: paymentMethod.label
+    is PayPalSavedPaymentMethodDisplayState.Content -> {
+        val description =
+            paymentMethod.spokenLastDigitsOrNull()?.let { endingIn(paymentMethod.label, it) } ?: paymentMethod.label
+        listOfNotNull(brandName, description).joinToString(", ")
+    }
     is PayPalSavedPaymentMethodDisplayState.NoFundingInstrument -> payerEmail
     PayPalSavedPaymentMethodDisplayState.Loading,
     PayPalSavedPaymentMethodDisplayState.NoNetwork,
