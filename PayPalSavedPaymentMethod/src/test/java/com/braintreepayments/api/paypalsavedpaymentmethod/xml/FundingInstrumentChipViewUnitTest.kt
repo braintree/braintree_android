@@ -3,10 +3,12 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 
 import android.content.Context
+import android.graphics.Color
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
@@ -15,8 +17,9 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.R
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
-import com.braintreepayments.api.paypalsavedpaymentmethod.styling.ContainerStyle
-import com.braintreepayments.api.paypalsavedpaymentmethod.styling.FundingInstrumentStyle
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodAppearance
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodContainerStyle
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodFundingInstrumentStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
 import org.junit.Assert.assertEquals
@@ -125,6 +128,42 @@ class FundingInstrumentChipViewUnitTest {
     }
 
     @Test
+    fun `a disabled chip ignores programmatic and accessibility clicks`() {
+        bind(PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.CARD)), false)
+
+        sut.performClick()
+        ViewCompat.performAccessibilityAction(sut, AccessibilityNodeInfoCompat.ACTION_CLICK, null)
+
+        assertEquals(0, editClicks)
+    }
+
+    @Test
+    fun `a state without a funding instrument clears the previous one`() {
+        bind(PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.CARD)))
+
+        bind(PayPalSavedPaymentMethodDisplayState.Loading)
+
+        assertEquals("", text.text.toString())
+        assertFalse(icon.isVisible)
+        assertNull(icon.drawable)
+    }
+
+    @Test
+    fun `the text keeps its fixed color whatever the style's text color`() {
+        val style = PayPalSavedPaymentMethodViewStyle(
+            componentAppearance = PayPalSavedPaymentMethodAppearance(textColor = Color.WHITE)
+        )
+
+        val card = PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.CARD))
+        bind(card, style = style)
+
+        assertEquals(
+            ContextCompat.getColor(context, R.color.paypal_saved_payment_method_funding_instrument_chip_text),
+            text.currentTextColor
+        )
+    }
+
+    @Test
     fun `screen readers get a button with the change payment method action only when editable`() {
         bind(PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.CARD)))
         val editable = nodeInfo()
@@ -138,7 +177,9 @@ class FundingInstrumentChipViewUnitTest {
     @Test
     fun `the edit icon uses the style's size`() {
         val style = PayPalSavedPaymentMethodViewStyle(
-            container = ContainerStyle(fundingInstrument = FundingInstrumentStyle(editIconSizeDp = 20f))
+            container = PayPalSavedPaymentMethodContainerStyle(
+                fundingInstrument = PayPalSavedPaymentMethodFundingInstrumentStyle(editIconSizeDp = 20f)
+            )
         )
 
         val card = PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.CARD))

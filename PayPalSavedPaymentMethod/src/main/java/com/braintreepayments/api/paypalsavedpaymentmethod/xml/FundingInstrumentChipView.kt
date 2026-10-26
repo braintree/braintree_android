@@ -48,11 +48,13 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
     // The theme's touch feedback, clipped to the chip's rounded corners.
     private val clickFeedback = TypedValue().let { value ->
         if (context.theme.resolveAttribute(android.R.attr.selectableItemBackground, value, true)) {
-            ContextCompat.getDrawable(context, value.resourceId)
+            value.drawableOrNull(context)
         } else {
             null
         }
     }
+    private val chipTextColor =
+        ContextCompat.getColor(context, R.color.paypal_saved_payment_method_funding_instrument_chip_text)
 
     init {
         orientation = HORIZONTAL
@@ -86,7 +88,13 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
         })
     }
 
-    /** Shows [state], which must be a state with a funding instrument row. */
+    /**
+     * Shows [state]. Only [PayPalSavedPaymentMethodDisplayState.Content] and
+     * [PayPalSavedPaymentMethodDisplayState.NoFundingInstrument] have something to show; any other state clears the
+     * chip, so it never keeps a previous funding instrument.
+     *
+     * The text keeps a fixed color, not the style's text color, so it stays readable on the chip's fixed background.
+     */
     fun bind(
         state: PayPalSavedPaymentMethodDisplayState,
         resolvedStyle: PayPalSavedPaymentMethodStyleResolver,
@@ -98,7 +106,8 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
             context.getString(R.string.paypal_saved_payment_method_funding_instrument_ending_in, label, spokenDigits)
         }
         if (isEditable) {
-            setOnClickListener { onEditClick() }
+            // performClick() and accessibility clicks still reach the listener while the chip is disabled.
+            setOnClickListener { if (isEnabled) onEditClick() }
             ViewCompat.replaceAccessibilityAction(this, AccessibilityActionCompat.ACTION_CLICK, editActionLabel, null)
         } else {
             setOnClickListener(null)
@@ -108,7 +117,7 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
         isEnabled = editEnabled
         foreground = if (isEditable) clickFeedback else null
 
-        textView.applyTextStyle(resolvedStyle, resolvedStyle.fundingInstrumentTextFontSizeSp)
+        textView.applyTextStyle(resolvedStyle, resolvedStyle.fundingInstrumentTextFontSizeSp, textColor = chipTextColor)
         when (state) {
             is PayPalSavedPaymentMethodDisplayState.Content -> {
                 val paymentMethod = state.paymentMethod
@@ -124,7 +133,10 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
                 textView.text = state.payerEmail
                 bindIcon(null, null)
             }
-            else -> Unit
+            else -> {
+                textView.text = null
+                bindIcon(null, null)
+            }
         }
 
         editIconView.isVisible = isEditable
