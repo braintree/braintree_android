@@ -15,8 +15,11 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 
+// xhdpi (density 2), so a dp value that skipped its conversion would be off by 2x.
 @RunWith(RobolectricTestRunner::class)
+@Config(qualifiers = "xhdpi")
 class StyleAttrsParserUnitTest {
 
     private val context: Context = RuntimeEnvironment.getApplication()
@@ -28,12 +31,26 @@ class StyleAttrsParserUnitTest {
         assertTrue(style.showPayPalLogo)
         assertTrue(style.showPayPalLabel)
         assertTrue(style.showPayPalCreditMessaging)
-        assertNull(style.componentAppearance?.backgroundColor)
-        assertNull(style.componentAppearance?.baseFontSizeSp)
-        assertNull(style.componentAppearance?.fontResId)
-        assertNull(style.container?.heightDp)
-        assertNull(style.container?.horizontalPaddingDp)
-        assertNull(style.container?.logo?.widthDp)
+        val appearance = requireNotNull(style.componentAppearance)
+        assertNull(appearance.backgroundColor)
+        assertNull(appearance.textColor)
+        assertNull(appearance.baseFontSizeSp)
+        assertNull(appearance.fontResId)
+        val container = requireNotNull(style.container)
+        assertNull(container.heightDp)
+        assertNull(container.horizontalPaddingDp)
+        assertNull(container.verticalPaddingDp)
+        assertNull(container.cornerRadiusDp)
+        assertNull(container.borderColor)
+        assertNull(container.borderWidthDp)
+        assertNull(container.logo?.widthDp)
+        assertNull(container.label?.fontSizeSp)
+        assertNull(container.label?.marginStartDp)
+        assertNull(container.fundingInstrument?.textFontSizeSp)
+        assertNull(container.fundingInstrument?.editIconSizeDp)
+        assertNull(container.fundingInstrument?.marginStartDp)
+        assertNull(container.creditMessaging?.fontSizeSp)
+        assertNull(container.creditMessaging?.linkColor)
     }
 
     @Test
@@ -53,6 +70,7 @@ class StyleAttrsParserUnitTest {
 
     @Test
     fun `styleFromAttrs parses the component appearance attrs`() {
+        RuntimeEnvironment.setFontScale(LARGE_FONT_SCALE)
         val attrs = Robolectric.buildAttributeSet()
             .addAttribute(R.attr.paypalSavedPaymentMethodBackgroundColor, "#0000FF")
             .addAttribute(R.attr.paypalSavedPaymentMethodTextColor, "#FF0000")
@@ -101,6 +119,7 @@ class StyleAttrsParserUnitTest {
 
     @Test
     fun `styleFromAttrs parses the logo, label, funding instrument and credit messaging attrs`() {
+        RuntimeEnvironment.setFontScale(LARGE_FONT_SCALE)
         val attrs = Robolectric.buildAttributeSet()
             .addAttribute(R.attr.paypalSavedPaymentMethodLogoWidth, "32dp")
             .addAttribute(R.attr.paypalSavedPaymentMethodLabelFontSize, "18sp")
@@ -122,5 +141,9 @@ class StyleAttrsParserUnitTest {
         assertEquals(10f, container?.fundingInstrument?.marginStartDp)
         assertEquals(15f, container?.creditMessaging?.fontSizeSp)
         assertEquals(Color.MAGENTA, container?.creditMessaging?.linkColor)
+    }
+
+    private companion object {
+        const val LARGE_FONT_SCALE = 2f
     }
 }

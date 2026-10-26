@@ -9,21 +9,7 @@ import androidx.core.content.ContextCompat
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 
-/**
- * Resolves a merchant-supplied [PayPalSavedPaymentMethodViewStyle] against the SDK defaults, so the XML and Compose
- * renderers read concrete values instead of checking for null. SDK defaults live in `res/values/colors.xml` and
- * `res/values/dimens.xml` (`paypal_saved_payment_method_style_default_*`).
- *
- * Sizes and spacing are never negative: a negative merchant value resolves to 0. Element font sizes fall back to the
- * element's own value, then [PayPalSavedPaymentMethodAppearance.baseFontSizeSp] if the merchant set it, then the
- * element's SDK default.
- *
- * [heightDp], [fontResId] and [creditMessagingLinkColor] stay null when unset: null height wraps the content, a null
- * font uses the system font, and a null link color shows the link bold and underlined in the text color.
- *
- * All sizes are in dp or sp, which don't depend on screen density or font scale, so a resolver can be kept across
- * configuration changes. Renderers convert them to px when drawing.
- */
+/** Resolves the merchant's style against the SDK defaults, in dp and sp. Negative sizes resolve to 0. */
 @OptIn(ExperimentalBetaApi::class)
 internal class PayPalSavedPaymentMethodStyleResolver(context: Context, style: PayPalSavedPaymentMethodViewStyle) {
 

@@ -16,7 +16,9 @@ class DimensionExtensionsUnitTest {
 
     private val resources: Resources get() = RuntimeEnvironment.getApplication().resources
 
+    // xhdpi (density 2) and a font scale of 2, so a missing or wrong conversion changes the result.
     @Test
+    @Config(qualifiers = "xhdpi")
     fun `pxToDp converts pixels to dp using the display density`() {
         assertEquals(16f, resources.pxToDp(16f * resources.displayMetrics.density), DELTA)
     }
@@ -41,12 +43,15 @@ class DimensionExtensionsUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "xhdpi")
     fun `dimenDp reads a dp dimension resource in dp`() {
         assertEquals(10f, resources.dimenDp(R.dimen.paypal_saved_payment_method_style_default_vertical_padding), DELTA)
     }
 
     @Test
+    @Config(qualifiers = "xhdpi")
     fun `dimenSp reads an sp dimension resource in sp`() {
+        RuntimeEnvironment.setFontScale(LARGE_FONT_SCALE)
         assertEquals(20f, resources.dimenSp(R.dimen.paypal_saved_payment_method_style_default_label_font_size), DELTA)
     }
 

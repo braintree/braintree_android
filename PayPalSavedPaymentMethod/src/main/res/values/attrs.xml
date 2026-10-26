@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--
-      XML attrs for PayPalSavedPaymentMethodView. Each maps to a PayPalSavedPaymentMethodViewStyle field; see that
-      class's KDoc for what each value controls. Unset attrs use the SDK default.
-
-      Attrs share one app-wide namespace even inside a declare-styleable, so every name carries the
-      paypalSavedPaymentMethod prefix to avoid clashing with other libraries or the merchant's app.
-    -->
+    <!-- Attrs for PayPalSavedPaymentMethodView. Prefixed because attrs share one app-wide namespace. -->
     <declare-styleable name="PayPalSavedPaymentMethodView">
         <attr name="paypalSavedPaymentMethodShowLogo" format="boolean" />
         <attr name="paypalSavedPaymentMethodShowLabel" format="boolean" />
