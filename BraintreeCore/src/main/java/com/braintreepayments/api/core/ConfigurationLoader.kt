@@ -7,7 +7,6 @@ import java.io.IOException
 
 internal class ConfigurationLoader(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val configurationCache: ConfigurationCache = ConfigurationCacheProvider().configurationCache,
 
     /**
@@ -19,17 +18,6 @@ internal class ConfigurationLoader(
     },
 ) {
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
-
-    /**
-     * Loads configuration using the authorization of the most recently created client, from
-     * [MerchantRepository]. Used only by components without a [BraintreeClient] reference
-     * (e.g. analytics); clients must use [BraintreeClient.authorization] with the
-     * parameterized overloads instead.
-     * Sends analytics on successful API fetch.
-     */
-    suspend fun loadConfiguration(): ConfigurationLoaderResult {
-        return loadConfiguration(merchantRepository.authorization, sendAnalytics = true)
-    }
 
     /**
      * Loads configuration for a standalone [authorization], without sending analytics.
@@ -94,6 +82,7 @@ internal class ConfigurationLoader(
                 if (sendAnalytics) {
                     analyticsClient.sendEvent(
                         eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                        authorization = authorization,
                         analyticsEventParams = AnalyticsEventParams(
                             startTime = timing.startTime,
                             endTime = timing.endTime,

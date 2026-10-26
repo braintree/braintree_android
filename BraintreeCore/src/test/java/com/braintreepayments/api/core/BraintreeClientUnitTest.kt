@@ -7,15 +7,19 @@ import androidx.fragment.app.FragmentActivity
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.braintreepayments.api.BrowserSwitchClient
+import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
+import com.braintreepayments.api.sharedutils.Method
+import com.braintreepayments.api.sharedutils.OkHttpRequest
 import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -25,6 +29,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import kotlin.test.fail
 import org.junit.Before
 import org.junit.Test
@@ -49,6 +54,15 @@ class BraintreeClientUnitTest {
     private lateinit var merchantRepository: MerchantRepository
     private lateinit var testScope: TestScope
     private val testDispatcher = StandardTestDispatcher()
+
+    private val analyticsHttpClient = mockk<HttpClient>(relaxed = true)
+    private val analyticsRequests = mutableListOf<OkHttpRequest>()
+    private val authorizationA = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
+    private val authorizationB = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY)
+    private val configurationA = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
+    private val configurationB = Configuration.fromJson(
+        Fixtures.CONFIGURATION_WITH_ENVIRONMENT.replace("integration_merchant_id", "merchant_id_b")
+    )
 
     @Before
     fun beforeEach() {
@@ -544,7 +558,7 @@ class BraintreeClientUnitTest {
         sut.sendAnalyticsEvent("event.started")
 
         verify {
-            analyticsClient.sendEvent("event.started")
+            analyticsClient.sendEvent("event.started", authorization, AnalyticsEventParams(), true)
         }
     }
 
@@ -607,33 +621,169 @@ class BraintreeClientUnitTest {
         sut.reportCrash()
         advanceUntilIdle()
 
-        coVerify {
-            configurationLoader.loadConfiguration(any(), any())
-        }
-
-        verify { analyticsClient.reportCrash(any()) }
+        verify { analyticsClient.reportCrash(authorization) }
     }
 
     @Test
-    fun `when configuration loader throws CancellationException, reportCrash does not crash`() =
-    runTest(testDispatcher) {
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
-        val configurationLoader = MockkConfigurationLoaderBuilder()
-            .configuration(configuration)
-            .build()
-        coEvery {
-            configurationLoader.loadConfiguration(any(), any())
-        } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
+    fun `when client A queues an event and sends immediately after client B is created, the post uses A's credentials`() =
+        runTest(testDispatcher) {
+            val configurationLoader = MockkConfigurationLoaderBuilder()
+                .configurationsByAuthorization(
+                    mapOf(authorizationA to configurationA, authorizationB to configurationB)
+                )
+                .build()
+            val clients = createClientsWithRealAnalytics(
+                configurationLoader,
+                listOf(authorizationA, authorizationB)
+            )
+            val clientA = clients[0]
 
-        val sut = createBraintreeClient(
-            configurationLoader = configurationLoader,
-            testDispatcher = testDispatcher,
-            testScope = testScope
-        )
+            clientA.sendAnalyticsEvent("a.queued.event", sendImmediately = false)
+            clientA.sendAnalyticsEvent("a.immediate.event")
+            advanceUntilIdle()
 
-        sut.reportCrash()
-        advanceUntilIdle()
-    }
+            assertEquals(1, analyticsRequests.size)
+            assertAnalyticsPost(
+                request = analyticsRequests[0],
+                authorization = authorizationA,
+                merchantId = configurationA.merchantId,
+                eventNames = listOf("a.queued.event", "a.immediate.event")
+            )
+        }
+
+    @Test
+    fun `when client A queues an event and client B sends immediately, each post carries only its own client's events`() =
+        runTest(testDispatcher) {
+            val configurationLoader = MockkConfigurationLoaderBuilder()
+                .configurationsByAuthorization(
+                    mapOf(authorizationA to configurationA, authorizationB to configurationB)
+                )
+                .build()
+            val (clientA, clientB) = createClientsWithRealAnalytics(
+                configurationLoader,
+                listOf(authorizationA, authorizationB)
+            )
+
+            clientA.sendAnalyticsEvent("a.queued.event", sendImmediately = false)
+            clientB.sendAnalyticsEvent("b.immediate.event")
+            advanceUntilIdle()
+
+            assertEquals(2, analyticsRequests.size)
+            assertAnalyticsPost(
+                request = analyticsRequests[0],
+                authorization = authorizationB,
+                merchantId = configurationB.merchantId,
+                eventNames = listOf("b.immediate.event")
+            )
+            assertAnalyticsPost(
+                request = analyticsRequests[1],
+                authorization = authorizationA,
+                merchantId = configurationA.merchantId,
+                eventNames = listOf("a.queued.event")
+            )
+        }
+
+    @Test
+    fun `when client A reports a crash after client B is created, the crash post uses A's credentials`() =
+        runTest(testDispatcher) {
+            val configurationLoader = MockkConfigurationLoaderBuilder()
+                .configurationsByAuthorization(
+                    mapOf(authorizationA to configurationA, authorizationB to configurationB)
+                )
+                .build()
+            val clients = createClientsWithRealAnalytics(
+                configurationLoader,
+                listOf(authorizationA, authorizationB)
+            )
+            val clientA = clients[0]
+
+            clientA.reportCrash()
+            advanceUntilIdle()
+
+            assertEquals(1, analyticsRequests.size)
+            assertAnalyticsPost(
+                request = analyticsRequests[0],
+                authorization = authorizationA,
+                merchantId = configurationA.merchantId,
+                eventNames = listOf("crash")
+            )
+        }
+
+    @Test
+    fun `when client A's configuration load fails, queued events remain queued until a later successful send`() =
+        runTest(testDispatcher) {
+            val configurationLoader = MockkConfigurationLoaderBuilder()
+                .configurationError(Exception("config fetch error"))
+                .build()
+            val clientA = createClientsWithRealAnalytics(
+                configurationLoader,
+                listOf(authorizationA)
+            )[0]
+
+            clientA.sendAnalyticsEvent("a.queued.event", sendImmediately = false)
+            clientA.sendAnalyticsEvent("a.failed.immediate.event")
+            advanceUntilIdle()
+            assertEquals(0, analyticsRequests.size)
+
+            coEvery { configurationLoader.loadConfiguration(authorizationA) } returns
+                ConfigurationLoaderResult.Success(configurationA)
+            clientA.sendAnalyticsEvent("a.successful.immediate.event")
+            advanceUntilIdle()
+
+            assertEquals(1, analyticsRequests.size)
+            assertAnalyticsPost(
+                request = analyticsRequests[0],
+                authorization = authorizationA,
+                merchantId = configurationA.merchantId,
+                eventNames = listOf("a.queued.event", "a.successful.immediate.event")
+            )
+        }
+
+    @Test
+    fun `when two clients with separate analytics clients share one repository, each event is delivered once with its own client's credentials`() =
+        runTest(testDispatcher) {
+            val clientTokenAuthorization = authorization
+            val configurationLoader = MockkConfigurationLoaderBuilder()
+                .configurationsByAuthorization(
+                    mapOf(authorizationA to configurationA, clientTokenAuthorization to configurationB)
+                )
+                .build()
+            val (clientA, clientB) = createClientsWithSeparateAnalyticsClients(
+                configurationLoader,
+                listOf(authorizationA, clientTokenAuthorization)
+            )
+
+            clientA.sendAnalyticsEvent("a.queued.event", sendImmediately = false)
+            clientB.sendAnalyticsEvent("b.queued.event", sendImmediately = false)
+            clientA.sendAnalyticsEvent("a.immediate.event")
+            clientB.sendAnalyticsEvent("b.immediate.event")
+            advanceUntilIdle()
+
+            val posts = analyticsRequests.map { request ->
+                val container = JSONObject((request.method as Method.Post).body)
+                    .getJSONArray("events").getJSONObject(0)
+                val batchParams = container.getJSONObject("batch_params")
+                val eventParams = container.getJSONArray("event_params")
+                val names = (0 until eventParams.length()).map { eventParams.getJSONObject(it).getString("event_name") }
+                val isTokenizationKeyPost = request.headers.containsKey("Client-Key")
+                if (isTokenizationKeyPost) {
+                    assertEquals(authorizationA.bearer, request.headers["Client-Key"])
+                    assertEquals(authorizationA.bearer, batchParams.getString("tokenization_key"))
+                    assertEquals(configurationA.merchantId, batchParams.getString("merchant_id"))
+                } else {
+                    assertEquals("Bearer ${clientTokenAuthorization.bearer}", request.headers["Authorization"])
+                    assertEquals(clientTokenAuthorization.bearer, batchParams.getString("authorization_fingerprint"))
+                    assertEquals(configurationB.merchantId, batchParams.getString("merchant_id"))
+                }
+                assertTrue(names.all { it.startsWith(if (isTokenizationKeyPost) "a." else "b.") })
+                names
+            }
+
+            assertEquals(
+                listOf("a.immediate.event", "a.queued.event", "b.immediate.event", "b.queued.event"),
+                posts.flatten().sorted()
+            )
+        }
 
     @Test
     fun `when BraintreeClient is initialized, merchantRepository properties are set`() {
@@ -683,4 +833,119 @@ class BraintreeClientUnitTest {
         dispatcher = testDispatcher ?: kotlinx.coroutines.Dispatchers.Main,
         coroutineScope = testScope ?: kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main)
     )
+
+    private fun createClientsWithRealAnalytics(
+        configurationLoader: ConfigurationLoader,
+        authorizations: List<Authorization>
+    ): List<BraintreeClient> {
+        coEvery { analyticsHttpClient.sendRequest(any()) } coAnswers {
+            analyticsRequests.add(firstArg())
+            HttpResponse("{}", HttpResponseTiming(0, 0))
+        }
+
+        val analyticsMerchantRepository = MerchantRepository()
+        val analyticsParamRepository = AnalyticsParamRepository()
+        val analyticsApi = AnalyticsApi(
+            httpClient = BraintreeHttpClient(analyticsHttpClient),
+            deviceInspector = DeviceInspector(applicationContext),
+            analyticsParamRepository = analyticsParamRepository,
+            merchantRepository = analyticsMerchantRepository,
+            dispatcher = testDispatcher,
+            coroutineScope = testScope
+        )
+        val realAnalyticsClient = AnalyticsClient(
+            analyticsApi = analyticsApi,
+            analyticsParamRepository = analyticsParamRepository,
+            analyticsEventRepository = AnalyticsEventRepository(),
+            configurationLoader = configurationLoader,
+            merchantRepository = analyticsMerchantRepository,
+            dispatcher = testDispatcher,
+            coroutineScope = testScope
+        )
+        return authorizations.map { authorization ->
+            BraintreeClient(
+                applicationContext = applicationContext,
+                integrationType = IntegrationType.CUSTOM,
+                authorization = authorization,
+                returnUrlScheme = "sample-return-url-scheme",
+                appLinkReturnUri = null,
+                httpClient = braintreeHttpClient,
+                graphQLClient = braintreeGraphQLClient,
+                configurationLoader = configurationLoader,
+                manifestValidator = manifestValidator,
+                merchantRepository = analyticsMerchantRepository,
+                analyticsClient = realAnalyticsClient,
+                dispatcher = testDispatcher,
+                coroutineScope = testScope
+            )
+        }
+    }
+
+    private fun createClientsWithSeparateAnalyticsClients(
+        configurationLoader: ConfigurationLoader,
+        authorizations: List<Authorization>
+    ): List<BraintreeClient> {
+        coEvery { analyticsHttpClient.sendRequest(any()) } coAnswers {
+            analyticsRequests.add(firstArg())
+            HttpResponse("{}", HttpResponseTiming(0, 0))
+        }
+
+        val analyticsMerchantRepository = MerchantRepository()
+        val analyticsParamRepository = AnalyticsParamRepository()
+        val sharedEventRepository = AnalyticsEventRepository()
+        val analyticsApi = AnalyticsApi(
+            httpClient = BraintreeHttpClient(analyticsHttpClient),
+            deviceInspector = DeviceInspector(applicationContext),
+            analyticsParamRepository = analyticsParamRepository,
+            merchantRepository = analyticsMerchantRepository,
+            dispatcher = testDispatcher,
+            coroutineScope = CoroutineScope(testDispatcher)
+        )
+        return authorizations.map { authorization ->
+            BraintreeClient(
+                applicationContext = applicationContext,
+                integrationType = IntegrationType.CUSTOM,
+                authorization = authorization,
+                returnUrlScheme = "sample-return-url-scheme",
+                appLinkReturnUri = null,
+                httpClient = braintreeHttpClient,
+                graphQLClient = braintreeGraphQLClient,
+                configurationLoader = configurationLoader,
+                manifestValidator = manifestValidator,
+                merchantRepository = analyticsMerchantRepository,
+                analyticsClient = AnalyticsClient(
+                    analyticsApi = analyticsApi,
+                    analyticsParamRepository = analyticsParamRepository,
+                    analyticsEventRepository = sharedEventRepository,
+                    configurationLoader = configurationLoader,
+                    merchantRepository = analyticsMerchantRepository,
+                    dispatcher = testDispatcher,
+                    coroutineScope = CoroutineScope(testDispatcher)
+                ),
+                dispatcher = testDispatcher,
+                coroutineScope = testScope
+            )
+        }
+    }
+
+    private fun assertAnalyticsPost(
+        request: OkHttpRequest,
+        authorization: Authorization,
+        merchantId: String,
+        eventNames: List<String>
+    ) {
+        assertEquals("https://api-m.paypal.com/v1/tracking/batch/events", request.url)
+        assertTrue(request.method is Method.Post)
+        assertEquals(authorization.bearer, request.headers["Client-Key"])
+        val eventContainer = JSONObject((request.method as Method.Post).body)
+            .getJSONArray("events")
+            .getJSONObject(0)
+        assertEquals(authorization.bearer, eventContainer.getJSONObject("batch_params").getString("tokenization_key"))
+        assertEquals(merchantId, eventContainer.getJSONObject("batch_params").getString("merchant_id"))
+        val eventParams = eventContainer.getJSONArray("event_params")
+        val actualEventNames = (0 until eventParams.length()).map {
+            eventParams.getJSONObject(it).getString("event_name")
+        }
+        assertEquals(eventNames, actualEventNames)
+    }
 }

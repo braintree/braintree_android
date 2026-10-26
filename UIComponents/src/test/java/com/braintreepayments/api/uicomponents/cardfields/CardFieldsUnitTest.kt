@@ -523,7 +523,7 @@ class CardFieldsUnitTest {
         verify(exactly = 0) {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
-                any()
+                any<AnalyticsEventParams>()
             )
         }
     }
