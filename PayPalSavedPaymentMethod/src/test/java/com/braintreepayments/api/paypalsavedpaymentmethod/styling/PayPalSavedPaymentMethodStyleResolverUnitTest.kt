@@ -47,10 +47,10 @@ class PayPalSavedPaymentMethodStyleResolverUnitTest {
         assertEquals(10f, resolver.verticalPaddingDp, DELTA)
         assertEquals(0f, resolver.cornerRadiusDp, DELTA)
         assertEquals(0f, resolver.borderWidthDp, DELTA)
-        assertEquals(24f, resolver.logoWidthDp, DELTA)
-        assertEquals(6f, resolver.labelMarginStartDp, DELTA)
+        assertEquals(48f, resolver.logoWidthDp, DELTA)
+        assertEquals(12f, resolver.labelMarginStartDp, DELTA)
         assertEquals(16f, resolver.editIconSizeDp, DELTA)
-        assertEquals(12f, resolver.fundingInstrumentMarginStartDp, DELTA)
+        assertEquals(8f, resolver.fundingInstrumentMarginStartDp, DELTA)
     }
 
     @Test

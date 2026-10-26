@@ -5,11 +5,11 @@
     <dimen name="paypal_saved_payment_method_style_default_vertical_padding">10dp</dimen>
     <dimen name="paypal_saved_payment_method_style_default_corner_radius">0dp</dimen>
     <dimen name="paypal_saved_payment_method_style_default_border_width">0dp</dimen>
-    <dimen name="paypal_saved_payment_method_style_default_logo_width">24dp</dimen>
+    <dimen name="paypal_saved_payment_method_style_default_logo_width">48dp</dimen>
     <dimen name="paypal_saved_payment_method_style_default_label_font_size">20sp</dimen>
-    <dimen name="paypal_saved_payment_method_style_default_label_margin_start">6dp</dimen>
+    <dimen name="paypal_saved_payment_method_style_default_label_margin_start">12dp</dimen>
     <dimen name="paypal_saved_payment_method_style_default_funding_instrument_text_font_size">14sp</dimen>
     <dimen name="paypal_saved_payment_method_style_default_edit_icon_size">16dp</dimen>
-    <dimen name="paypal_saved_payment_method_style_default_funding_instrument_margin_start">12dp</dimen>
+    <dimen name="paypal_saved_payment_method_style_default_funding_instrument_margin_start">8dp</dimen>
     <dimen name="paypal_saved_payment_method_style_default_credit_messaging_font_size">16sp</dimen>
 </resources>
