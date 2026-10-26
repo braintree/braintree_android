@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -228,7 +229,8 @@ private fun SideBySideOrStacked(
             }
         } else {
             val placeable = fundingInstrumentMeasurable.measure(looseConstraints)
-            val spacing = stackedSpacing.roundToPx()
+            // The spacing only separates the funding instrument from the PayPal logo and label.
+            val spacing = if (brandPlaceable != null) stackedSpacing.roundToPx() else 0
             layout(maxOf(brandWidth, placeable.width), brandHeight + spacing + placeable.height) {
                 brandPlaceable?.placeRelative(0, 0)
                 placeable.placeRelative(0, brandHeight + spacing)
@@ -264,6 +266,8 @@ private fun FundingInstrumentChip(
         // The whole chip is the edit target, so it's larger than the edit icon alone. A buyer who can't edit gets a
         // display-only chip. Screen readers read the chip as one element, for example "Visa, ending in 1 2 3 4".
         modifier = modifier
+            // A chip the buyer can tap gets the minimum 48dp touch target, with the chip centered inside it.
+            .then(if (isEditable) Modifier.minimumInteractiveComponentSize() else Modifier)
             .clip(chipShape)
             .background(colorResource(R.color.paypal_saved_payment_method_funding_instrument_chip_background))
             .semantics { contentDescription = accessibilityLabel }
