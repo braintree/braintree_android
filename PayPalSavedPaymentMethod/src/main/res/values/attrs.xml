@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Attrs for PayPalSavedPaymentMethodView. Prefixed because attrs share one app-wide namespace. -->
+    <declare-styleable name="PayPalSavedPaymentMethodView">
+        <attr name="paypalSavedPaymentMethodShowLogo" format="boolean" />
+        <attr name="paypalSavedPaymentMethodShowLabel" format="boolean" />
+        <attr name="paypalSavedPaymentMethodShowCreditMessaging" format="boolean" />
+        <attr name="paypalSavedPaymentMethodBackgroundColor" format="color" />
+        <attr name="paypalSavedPaymentMethodTextColor" format="color" />
+        <attr name="paypalSavedPaymentMethodFontSize" format="dimension" />
+        <attr name="paypalSavedPaymentMethodFont" format="reference" />
+        <attr name="paypalSavedPaymentMethodHeight" format="dimension" />
+        <attr name="paypalSavedPaymentMethodHorizontalPadding" format="dimension" />
+        <attr name="paypalSavedPaymentMethodVerticalPadding" format="dimension" />
+        <attr name="paypalSavedPaymentMethodCornerRadius" format="dimension" />
+        <attr name="paypalSavedPaymentMethodBorderColor" format="color" />
+        <attr name="paypalSavedPaymentMethodBorderWidth" format="dimension" />
+        <attr name="paypalSavedPaymentMethodLogoWidth" format="dimension" />
+        <attr name="paypalSavedPaymentMethodLabelFontSize" format="dimension" />
+        <attr name="paypalSavedPaymentMethodLabelMarginStart" format="dimension" />
+        <attr name="paypalSavedPaymentMethodFundingInstrumentFontSize" format="dimension" />
+        <attr name="paypalSavedPaymentMethodEditIconSize" format="dimension" />
+        <attr name="paypalSavedPaymentMethodFundingInstrumentMarginStart" format="dimension" />
+        <attr name="paypalSavedPaymentMethodCreditMessagingFontSize" format="dimension" />
+        <attr name="paypalSavedPaymentMethodCreditMessagingLinkColor" format="color" />
+    </declare-styleable>
+</resources>

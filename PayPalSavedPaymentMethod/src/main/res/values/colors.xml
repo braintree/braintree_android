@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Defaults used by PayPalSavedPaymentMethodStyleResolver when a style field is unset. -->
+    <color name="paypal_saved_payment_method_style_default_background">#FFFFFF</color>
+    <color name="paypal_saved_payment_method_style_default_text_color">#222222</color>
+    <color name="paypal_saved_payment_method_style_default_border_color">#00000000</color>
+</resources>
