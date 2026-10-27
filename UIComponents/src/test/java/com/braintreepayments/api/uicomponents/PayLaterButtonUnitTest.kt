@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
@@ -18,6 +19,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.runs
 import io.mockk.slot
+import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -218,6 +220,40 @@ class PayLaterButtonUnitTest {
 
         assertTrue(button.isEnabled)
         assertEquals(1, launchResults.filterIsInstance<PayPalPendingRequest.Failure>().size)
+    }
+
+    // endregion
+
+    // region Analytics
+
+    @Test
+    fun `launching the flow sends the selected analytics event`() {
+        val button = buttonWith(activity())
+        every {
+            mockPayPalLauncher.launch(any(), any())
+        } returns PayPalPendingRequest.Started("pending-request")
+        button.performClick()
+
+        authCallback.captured.onPayPalPaymentAuthRequest(mockk<PayPalPaymentAuthRequest.ReadyToLaunch>())
+
+        verify(exactly = 1) {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+            )
+        }
+    }
+
+    @Test
+    fun `missing activity does not send the selected analytics event`() {
+        val button = buttonWith(context)
+        button.performClick()
+
+        authCallback.captured.onPayPalPaymentAuthRequest(mockk<PayPalPaymentAuthRequest.ReadyToLaunch>())
+
+        verify(exactly = 0) {
+            analyticsClient.sendEvent(UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED, any(), any())
+        }
     }
 
     // endregion
