@@ -5,6 +5,7 @@ import android.view.View.MeasureSpec
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
+import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
@@ -14,6 +15,7 @@ import com.braintreepayments.api.paypal.PayPalPendingRequest
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.runs
 import io.mockk.slot
 import org.junit.Assert.assertEquals
@@ -33,6 +35,7 @@ class PayLaterButtonUnitTest {
 
     private val mockPayPalClient = mockk<PayPalClient>()
     private val mockPayPalLauncher = mockk<PayPalLauncher>()
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val authCallback = slot<PayPalPaymentAuthCallback>()
     private val launchResults = mutableListOf<PayPalPendingRequest>()
 
@@ -40,6 +43,8 @@ class PayLaterButtonUnitTest {
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
         every { mockPayPalClient.createPaymentAuthRequest(any(), any(), capture(authCallback)) } just runs
+        mockkObject(AnalyticsClient.Companion)
+        every { AnalyticsClient.lazyInstance } returns lazyOf(analyticsClient)
     }
 
     // region PayLaterButtonColor
