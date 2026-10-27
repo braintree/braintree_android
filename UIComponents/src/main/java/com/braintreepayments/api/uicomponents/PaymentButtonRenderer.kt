@@ -70,7 +70,7 @@ internal class PaymentButtonRenderer(
         view.invalidate()
     }
 
-    /** Restores the logo. Call when the flow returns to the app. */
+    /** Re-enables the view and restores the logo. Call when the flow ends, successfully or not. */
     fun hideLoading() {
         view.isEnabled = true
         (logo as? Animatable)?.stop()

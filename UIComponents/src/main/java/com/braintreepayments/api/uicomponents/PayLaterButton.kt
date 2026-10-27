@@ -35,12 +35,13 @@ class PayLaterButton @JvmOverloads constructor(
     internal var currentStyle: PayLaterButtonColor = PayLaterButtonColor.Blue
         private set
     private val renderer = PaymentButtonRenderer(this, currentStyle.toStyle())
+
     /**
      * The PayPal client used to create payment auth requests and tokenize results.
      * Must be initialized via [initialize] before use.
      */
-    private lateinit var payPalClient: PayPalClient
-    private lateinit var payPalLauncher: PayPalLauncher
+    internal lateinit var payPalClient: PayPalClient
+    internal lateinit var payPalLauncher: PayPalLauncher
 
     /**
      * Callback invoked when the PayPal payment authentication request is launched.
@@ -139,6 +140,7 @@ class PayLaterButton @JvmOverloads constructor(
                     }
 
                     is PayPalPaymentAuthRequest.Failure -> {
+                        renderer.hideLoading()
                         payPalLaunchCallback?.onPayPalPaymentAuthRequest(
                             PayPalPendingRequest.Failure(paymentAuthRequest.error)
                         )
@@ -175,12 +177,14 @@ class PayLaterButton @JvmOverloads constructor(
                 }
 
                 is PayPalPendingRequest.Failure -> {
+                    renderer.hideLoading()
                     payPalLaunchCallback?.onPayPalPaymentAuthRequest(
                         PayPalPendingRequest.Failure(payPalPendingRequest.error)
                     )
                 }
             }
         } ?: run {
+            renderer.hideLoading()
             payPalLaunchCallback?.onPayPalPaymentAuthRequest(
                 PayPalPendingRequest.Failure(NullPointerException("Activity is null")))
         }
@@ -218,13 +222,16 @@ class PayLaterButton @JvmOverloads constructor(
         when (paymentAuthResult) {
             is PayPalPaymentAuthResult.Success -> {
                 payPalClient.tokenize(paymentAuthResult) { payPalResult ->
+                    renderer.hideLoading()
                     callback.onPayPalResult(payPalResult)
                 }
             }
             is PayPalPaymentAuthResult.NoResult -> {
+                renderer.hideLoading()
                 callback.onPayPalResult(PayPalResult.Cancel)
             }
             is PayPalPaymentAuthResult.Failure -> {
+                renderer.hideLoading()
                 callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
             }
         }

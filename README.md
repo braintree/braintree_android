@@ -85,6 +85,8 @@ The Braintree Android SDK now allows merchants to draw and render both PayPal an
 
 *Note:* Ensure you include the `UIComponents` module in your project to use this feature.
 
+### PayPal Button
+
 If you would like to draw a PayPal branded button in your mobile app, you can do so like this:
 
 ```xml
@@ -108,7 +110,7 @@ class ExampleFragment : Fragment() {
             appLinkReturnUrl = Uri.parse("https://merchant-app.com"),
             deepLinkFallbackUrlScheme = "com.merchant.app.payments"
         )
-        payPalButton.updatePayPalRequest(PayPalRequest(...))
+        payPalButton.setPayPalRequest(PayPalRequest(...))
         paypalButton.setLaunchCallback = { launchResult ->
             when (launchResult) {
                 is PayPalPendingRequest.Started-> {
@@ -146,6 +148,8 @@ class ExampleFragment : Fragment() {
     }
 }
 ```
+
+### Venmo Button
 
 Similarly, if you would like to draw a Venmo branded button in your mobile app, you can do so like this:
 
@@ -208,6 +212,33 @@ class ExampleFragment : Fragment() {
     }
 }
 ```
+
+### PayPal Pay Later Button
+
+If you would like to draw a PayPal Pay Later branded button in your mobile app, you can do so like this:
+
+```xml
+<com.braintreepayments.api.uicomponents.PayLaterButton
+    android:id="@+id/payLaterButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    custom:buttonColor="blue" />
+```
+
+`PayLaterButton` shares the same `initialize`, `setPayPalRequest`, `handleReturnToApp`, and `payPalLaunchCallback` API as `PayPalButton` above. The only difference is that `setPayPalRequest` sets `PayPalCheckoutRequest.shouldOfferPayLater` to `true` on your request before starting the PayPal Checkout flow:
+
+```kotlin
+payLaterButton.initialize(
+    activityResultCaller = this,
+    authorization = "[TOKENIZATION_KEY or CLIENT_TOKEN]",
+    appLinkReturnUrl = Uri.parse("https://merchant-app.com"),
+    deepLinkFallbackUrlScheme = "com.merchant.app.payments"
+)
+payLaterButton.setPayPalRequest(PayPalCheckoutRequest(...))
+```
+
+**Note:** PayPal Pay Later is only available with `PayPalCheckoutRequest`.
 
 ### Compose support for Buttons
 We now offer support for Jetpack Compose composable buttons.

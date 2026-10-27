@@ -2,9 +2,20 @@ package com.braintreepayments.api.uicomponents
 
 import android.content.Context
 import android.view.View.MeasureSpec
+import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
+import com.braintreepayments.api.paypal.PayPalClient
+import com.braintreepayments.api.paypal.PayPalLauncher
+import com.braintreepayments.api.paypal.PayPalPaymentAuthCallback
+import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
+import com.braintreepayments.api.paypal.PayPalPendingRequest
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.runs
+import io.mockk.slot
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -20,9 +31,15 @@ class PayLaterButtonUnitTest {
 
     private lateinit var context: Context
 
+    private val mockPayPalClient = mockk<PayPalClient>()
+    private val mockPayPalLauncher = mockk<PayPalLauncher>()
+    private val authCallback = slot<PayPalPaymentAuthCallback>()
+    private val launchResults = mutableListOf<PayPalPendingRequest>()
+
     @Before
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
+        every { mockPayPalClient.createPaymentAuthRequest(any(), any(), capture(authCallback)) } just runs
     }
 
     // region PayLaterButtonColor
@@ -156,6 +173,64 @@ class PayLaterButtonUnitTest {
     }
 
     // endregion
+
+    // region Re-enable after failure
+
+    @Test
+    fun `auth request failure re-enables the button`() {
+        val button = buttonWith(activity())
+        button.performClick()
+        assertFalse(button.isEnabled)
+
+        authCallback.captured.onPayPalPaymentAuthRequest(authRequestFailure(Exception("auth request failed")))
+
+        assertTrue(button.isEnabled)
+        assertEquals(1, launchResults.filterIsInstance<PayPalPendingRequest.Failure>().size)
+    }
+
+    @Test
+    fun `launch failure re-enables the button`() {
+        val button = buttonWith(activity())
+        every {
+            mockPayPalLauncher.launch(any(), any())
+        } returns PayPalPendingRequest.Failure(Exception("launch failed"))
+        button.performClick()
+        assertFalse(button.isEnabled)
+
+        authCallback.captured.onPayPalPaymentAuthRequest(mockk<PayPalPaymentAuthRequest.ReadyToLaunch>())
+
+        assertTrue(button.isEnabled)
+        assertEquals(1, launchResults.filterIsInstance<PayPalPendingRequest.Failure>().size)
+    }
+
+    @Test
+    fun `missing activity re-enables the button`() {
+        val button = buttonWith(context)
+        button.performClick()
+        assertFalse(button.isEnabled)
+
+        authCallback.captured.onPayPalPaymentAuthRequest(mockk<PayPalPaymentAuthRequest.ReadyToLaunch>())
+
+        assertTrue(button.isEnabled)
+        assertEquals(1, launchResults.filterIsInstance<PayPalPendingRequest.Failure>().size)
+    }
+
+    // endregion
+
+    private fun activity() = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
+
+    private fun buttonWith(buttonContext: Context) = PayLaterButton(buttonContext).apply {
+        payPalClient = mockPayPalClient
+        payPalLauncher = mockPayPalLauncher
+        payPalLaunchCallback = PayPalLaunchCallback { launchResults.add(it) }
+        setPayPalRequest(PayPalCheckoutRequest("10.00", true))
+    }
+
+    private fun authRequestFailure(error: Exception): PayPalPaymentAuthRequest.Failure {
+        val failure = mockk<PayPalPaymentAuthRequest.Failure>()
+        every { failure.error } returns error
+        return failure
+    }
 
     private fun dimen(id: Int) = context.resources.getDimension(id).toInt()
 
