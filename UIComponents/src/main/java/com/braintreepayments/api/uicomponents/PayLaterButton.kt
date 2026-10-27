@@ -235,7 +235,6 @@ class PayLaterButton @JvmOverloads constructor(
                 callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
             }
         }
-        renderer.hideLoading()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
