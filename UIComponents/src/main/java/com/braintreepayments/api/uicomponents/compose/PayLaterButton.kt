@@ -107,6 +107,7 @@ fun PayLaterButton(
                                 flowLaunched = true
                             } else {
                                 enabled = true
+                            }
                         }
                     } ?: run {
                         enabled = true
