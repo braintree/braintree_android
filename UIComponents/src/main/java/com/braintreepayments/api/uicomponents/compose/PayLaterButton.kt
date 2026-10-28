@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -60,7 +61,7 @@ fun PayLaterButton(
     val coroutineScope = rememberCoroutineScope()
 
     var enabled by remember { mutableStateOf(true) }
-    var flowLaunched by remember { mutableStateOf(false) }
+    var flowLaunched by rememberSaveable { mutableStateOf(false) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
     if (registry == null) {
