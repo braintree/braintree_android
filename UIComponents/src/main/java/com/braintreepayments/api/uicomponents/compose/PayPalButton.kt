@@ -163,25 +163,27 @@ internal suspend fun completePayPalFlow(
     activity: Activity,
     paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch,
     paypalTokenizeCallback: PayPalTokenizeCallback
-) {
+): Boolean {
     val componentActivity = activity as? ComponentActivity
         ?: run {
             paypalTokenizeCallback.onPayPalResult(
                 PayPalResult.Failure(Exception("Parent activity is expected to be a ComponentActivity"))
             )
-            return
+            return false
         }
     val payPalPendingRequest = payPalLauncher.launch(
         activity = componentActivity,
         paymentAuthRequest = paymentAuthRequest
     )
-    when (payPalPendingRequest) {
+    return when (payPalPendingRequest) {
         is PayPalPendingRequest.Started -> {
             pendingRequestRepository.storePendingRequest(payPalPendingRequest.pendingRequestString)
+            true
         }
 
         is PayPalPendingRequest.Failure -> {
             paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(payPalPendingRequest.error))
+            false
         }
     }
 }

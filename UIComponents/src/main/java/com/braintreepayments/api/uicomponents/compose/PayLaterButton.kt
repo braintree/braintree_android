@@ -96,14 +96,17 @@ fun PayLaterButton(
                 is PayPalPaymentAuthRequest.ReadyToLaunch -> {
                     activity?.let {
                         coroutineScope.launch {
-                            completePayPalFlow(
+                            val launched = completePayPalFlow(
                                 payPalLauncher,
                                 pendingRequestRepository,
                                 it,
                                 paymentAuthRequest,
                                 paypalTokenizeCallback
                             )
-                            flowLaunched = true
+                            if (launched) {
+                                flowLaunched = true
+                            } else {
+                                enabled = true
                         }
                     } ?: run {
                         enabled = true
