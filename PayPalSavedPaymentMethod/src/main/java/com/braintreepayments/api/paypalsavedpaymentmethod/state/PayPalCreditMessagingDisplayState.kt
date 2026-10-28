@@ -1,4 +1,6 @@
-package com.braintreepayments.api.paypalsavedpaymentmethod.model
+package com.braintreepayments.api.paypalsavedpaymentmethod.state
+
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingResult
 
 /** What the Pay Later row renders. Fetched separately from the funding instrument. */
 internal sealed interface PayPalCreditMessagingDisplayState {

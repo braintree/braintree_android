@@ -8,6 +8,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,10 +49,14 @@ internal fun ShimmerPlaceholder(
     val shape = RoundedCornerShape(dimensionResource(R.dimen.paypal_saved_payment_method_placeholder_corner_radius))
 
     Spacer(
-        modifier = modifier
+        // Our semantics come before the caller's modifier, so they replace any description the caller set.
+        modifier = Modifier
             .clearAndSetSemantics {
                 if (contentDescription != null) this.contentDescription = contentDescription
             }
+            .then(modifier)
+            // A Spacer has no width of its own; this fills whatever width the caller's modifier allows.
+            .fillMaxWidth()
             .padding(end = trailingGap)
             .height(height)
             .clip(shape)

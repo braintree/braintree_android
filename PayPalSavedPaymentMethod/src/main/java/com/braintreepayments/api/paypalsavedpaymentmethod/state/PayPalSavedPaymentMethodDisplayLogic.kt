@@ -1,35 +1,38 @@
-package com.braintreepayments.api.paypalsavedpaymentmethod
+package com.braintreepayments.api.paypalsavedpaymentmethod.state
 
 import androidx.annotation.DrawableRes
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.R
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
 
-/** The generic card or bank icon, or `null` for types shown by their label only. */
+// Like iOS: PayPal products that come as a card or bank (e.g. PayPal Debit) carry a subtype and show their label.
+private val PayPalSavedPaymentMethod.showsLastDigits: Boolean
+    get() = (type == PayPalSavedPaymentMethodType.CARD || type == PayPalSavedPaymentMethodType.BANK) &&
+        subtype == null && !lastDigits.isNullOrBlank()
+
+/** The generic card or bank icon, or `null` when the label is shown instead. */
 @DrawableRes
-internal fun PayPalSavedPaymentMethodType?.iconRes(): Int? = when (this) {
-    PayPalSavedPaymentMethodType.CARD -> R.drawable.ic_fi_card_placeholder
-    PayPalSavedPaymentMethodType.BANK -> R.drawable.ic_fi_bank_placeholder
-    PayPalSavedPaymentMethodType.PAYPAL_CREDIT, null -> null
+internal fun PayPalSavedPaymentMethod.iconRes(): Int? = when {
+    !showsLastDigits -> null
+    type == PayPalSavedPaymentMethodType.BANK -> R.drawable.ic_fi_bank_placeholder
+    else -> R.drawable.ic_fi_card_placeholder
 }
 
 /** The last digits of a card or bank, or `null` to show the label instead. */
-internal fun PayPalSavedPaymentMethod.maskedLastDigitsOrNull(): String? =
-    lastDigits?.takeIf { type.iconRes() != null && it.isNotBlank() }
+internal fun PayPalSavedPaymentMethod.lastDigitsOrNull(): String? = lastDigits.takeIf { showsLastDigits }
 
 /** The last digits separated by spaces, so screen readers read each digit. */
 internal fun PayPalSavedPaymentMethod.spokenLastDigitsOrNull(): String? =
-    maskedLastDigitsOrNull()?.toList()?.joinToString(" ")
+    lastDigitsOrNull()?.toList()?.joinToString(" ")
 
 /**
- * What screen readers read for the funding instrument chip. [brandName] is "PayPal" when the logo and label are both
- * hidden, otherwise `null`.
+ * What screen readers read for the funding instrument chip, or `null` for states that show no chip. [brandName] is
+ * "PayPal" when the logo and label are both hidden, otherwise `null`.
  */
 internal fun PayPalSavedPaymentMethodDisplayState.accessibilityLabel(
     brandName: String?,
     endingIn: (label: String, spokenDigits: String) -> String
-): String = when (this) {
+): String? = when (this) {
     is PayPalSavedPaymentMethodDisplayState.Content -> {
         val description =
             paymentMethod.spokenLastDigitsOrNull()?.let { endingIn(paymentMethod.label, it) } ?: paymentMethod.label
@@ -39,7 +42,7 @@ internal fun PayPalSavedPaymentMethodDisplayState.accessibilityLabel(
     PayPalSavedPaymentMethodDisplayState.Loading,
     PayPalSavedPaymentMethodDisplayState.NoNetwork,
     PayPalSavedPaymentMethodDisplayState.Error,
-    PayPalSavedPaymentMethodDisplayState.Hidden -> ""
+    PayPalSavedPaymentMethodDisplayState.Hidden -> null
 }
 
 /** Whether the funding instrument row is shown. */
@@ -47,17 +50,6 @@ internal val PayPalSavedPaymentMethodDisplayState.showsFundingInstrumentRow: Boo
     get() = this !is PayPalSavedPaymentMethodDisplayState.NoNetwork &&
         this !is PayPalSavedPaymentMethodDisplayState.Error &&
         this !is PayPalSavedPaymentMethodDisplayState.Hidden
-
-/** Whether the buyer can change the funding instrument. */
-internal val PayPalSavedPaymentMethodDisplayState.isEditable: Boolean
-    get() = when (this) {
-        is PayPalSavedPaymentMethodDisplayState.Content -> true
-        is PayPalSavedPaymentMethodDisplayState.NoFundingInstrument -> isEditable
-        PayPalSavedPaymentMethodDisplayState.Loading,
-        PayPalSavedPaymentMethodDisplayState.NoNetwork,
-        PayPalSavedPaymentMethodDisplayState.Error,
-        PayPalSavedPaymentMethodDisplayState.Hidden -> false
-    }
 
 /** What the Pay Later row shows next to [fundingInstrumentState]. It's hidden after an edit. */
 internal fun PayPalCreditMessagingDisplayState.visibleWith(

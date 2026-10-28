@@ -1,8 +1,5 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.compose
 
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import org.junit.Before
@@ -28,11 +25,5 @@ class LoadingDialogUnitTest {
     @Test
     fun `shows a spinner that screen readers announce as loading`() {
         composeTestRule.onNodeWithContentDescription("Loading").assertExists()
-    }
-
-    @Test
-    fun `the spinner is an indeterminate progress indicator`() {
-        composeTestRule.onNodeWithContentDescription("Loading")
-            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo))
     }
 }

@@ -1,5 +1,8 @@
-package com.braintreepayments.api.paypalsavedpaymentmethod.model
+package com.braintreepayments.api.paypalsavedpaymentmethod.state
 
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessageItem
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessageItemType
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingResult
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -50,7 +53,7 @@ class PayPalCreditMessagingContentUnitTest {
     }
 
     @Test
-    fun `toContent uses the first link action for learn more`() {
+    fun `toContent uses the first action item with text and a url for learn more`() {
         val content = result(
             actionItems = listOf(
                 text("Not a link"),
@@ -59,8 +62,8 @@ class PayPalCreditMessagingContentUnitTest {
             )
         ).toContent()
 
-        assertEquals("Learn more", content.learnMoreText)
-        assertEquals("https://www.paypal.com/learn", content.learnMoreUrl)
+        assertEquals("Learn more", content.learnMore?.text)
+        assertEquals("https://www.paypal.com/learn", content.learnMore?.url)
     }
 
     @Test
@@ -73,8 +76,8 @@ class PayPalCreditMessagingContentUnitTest {
             )
         ).toContent()
 
-        assertEquals("Learn more", content.learnMoreText)
-        assertEquals("https://www.paypal.com/learn", content.learnMoreUrl)
+        assertEquals("Learn more", content.learnMore?.text)
+        assertEquals("https://www.paypal.com/learn", content.learnMore?.url)
     }
 
     @Test
@@ -87,8 +90,8 @@ class PayPalCreditMessagingContentUnitTest {
             )
         ).toContent()
 
-        assertEquals("Learn more", content.learnMoreText)
-        assertEquals("https://www.paypal.com/learn", content.learnMoreUrl)
+        assertEquals("Learn more", content.learnMore?.text)
+        assertEquals("https://www.paypal.com/learn", content.learnMore?.url)
     }
 
     @Test
@@ -108,8 +111,8 @@ class PayPalCreditMessagingContentUnitTest {
 
         val content = result(actionItems = listOf(link)).toContent()
 
-        assertEquals("Learn more about Pay in 4", content.learnMoreText)
-        assertEquals("https://www.paypal.com/learn", content.learnMoreUrl)
+        assertEquals("Learn more about Pay in 4", content.learnMore?.text)
+        assertEquals("https://www.paypal.com/learn", content.learnMore?.url)
     }
 
     @Test
@@ -123,7 +126,7 @@ class PayPalCreditMessagingContentUnitTest {
 
         val content = result(actionItems = listOf(link)).toContent()
 
-        assertEquals("Learn more about Pay in 4", content.learnMoreText)
+        assertEquals("Learn more about Pay in 4", content.learnMore?.text)
     }
 
     @Test
@@ -137,7 +140,46 @@ class PayPalCreditMessagingContentUnitTest {
 
         val content = result(actionItems = listOf(link)).toContent()
 
-        assertEquals("Learn more", content.learnMoreText)
+        assertEquals("Learn more", content.learnMore?.text)
+    }
+
+    @Test
+    fun `toContent uses an action item of any type that has text and a url`() {
+        val action =
+            item(PayPalCreditMessageItemType.TEXT, text = "Learn more", clickUrl = "https://www.paypal.com/learn")
+
+        val content = result(actionItems = listOf(action)).toContent()
+
+        assertEquals("Learn more", content.learnMore?.text)
+        assertEquals("https://www.paypal.com/learn", content.learnMore?.url)
+    }
+
+    @Test
+    fun `toContent carries whether the link may open in the app`() {
+        val embeddable = item(
+            PayPalCreditMessageItemType.LINK,
+            text = "Learn more",
+            clickUrl = "https://www.paypal.com/learn",
+            isEmbeddable = true
+        )
+
+        assertEquals(true, result(actionItems = listOf(embeddable)).toContent().learnMore?.isEmbeddable)
+        assertEquals(
+            false,
+            result(actionItems = listOf(embeddable.copy(isEmbeddable = null))).toContent().learnMore?.isEmbeddable
+        )
+    }
+
+    @Test
+    fun `toContent falls back to the alternative text of a text block, and the text of an image block`() {
+        val content = result(
+            mainItems = listOf(
+                item(PayPalCreditMessageItemType.TEXT, alternativeText = "Pay in 4 with "),
+                item(PayPalCreditMessageItemType.IMAGE, text = "PayPal")
+            )
+        ).toContent()
+
+        assertEquals("Pay in 4 with PayPal", content.message)
     }
 
     @Test
@@ -153,8 +195,7 @@ class PayPalCreditMessagingContentUnitTest {
     fun `toContent leaves learn more null when there is no link`() {
         val content = result(actionItems = emptyList()).toContent()
 
-        assertNull(content.learnMoreText)
-        assertNull(content.learnMoreUrl)
+        assertNull(content.learnMore)
     }
 
     private fun result(
@@ -182,7 +223,8 @@ class PayPalCreditMessagingContentUnitTest {
         type: PayPalCreditMessageItemType,
         text: String? = null,
         alternativeText: String? = null,
-        clickUrl: String? = null
+        clickUrl: String? = null,
+        isEmbeddable: Boolean? = null
     ) = PayPalCreditMessageItem(
         type = type,
         text = text,
@@ -190,6 +232,6 @@ class PayPalCreditMessagingContentUnitTest {
         clickUrl = clickUrl,
         sourceUrl = null,
         name = null,
-        isEmbeddable = null
+        isEmbeddable = isEmbeddable
     )
 }

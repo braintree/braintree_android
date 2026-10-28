@@ -30,7 +30,9 @@ internal fun LoadingDialog() {
         properties = DialogProperties(
             dismissOnBackPress = false,
             dismissOnClickOutside = false,
-            usePlatformDefaultWidth = false
+            usePlatformDefaultWidth = false,
+            // Draws behind the status and navigation bars, so the scrim covers the whole screen with edge-to-edge.
+            decorFitsSystemWindows = false
         )
     ) {
         // Clears the dialog's default dim and background, so only the translucent background below shows.

@@ -1,5 +1,8 @@
-package com.braintreepayments.api.paypalsavedpaymentmethod.model
+package com.braintreepayments.api.paypalsavedpaymentmethod.state
 
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessageItem
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessageItemType
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingResult
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,37 +19,7 @@ class PayPalCreditMessagingDisplayStateUnitTest {
             PayPalCreditMessagingDisplayState.Content(
                 PayPalCreditMessagingContent(
                     message = "Pay in 4 with PayPal.",
-                    learnMoreText = null,
-                    learnMoreUrl = null
-                )
-            ),
-            result.toDisplayState()
-        )
-    }
-
-    @Test
-    fun `a message with a link and analytics carries them into Content`() {
-        val result = result(mainText = "Pay in 4 with PayPal.").copy(
-            actionItems = listOf(
-                textItem("Learn more").copy(
-                    type = PayPalCreditMessageItemType.LINK,
-                    clickUrl = "https://www.paypal.com/learn-more"
-                )
-            ),
-            messageId = "message-1",
-            messageType = "PLST_SQ",
-            impressionUrl = "https://www.paypal.com/impression"
-        )
-
-        assertEquals(
-            PayPalCreditMessagingDisplayState.Content(
-                PayPalCreditMessagingContent(
-                    message = "Pay in 4 with PayPal.",
-                    learnMoreText = "Learn more",
-                    learnMoreUrl = "https://www.paypal.com/learn-more",
-                    messageId = "message-1",
-                    messageType = "PLST_SQ",
-                    impressionUrl = "https://www.paypal.com/impression"
+                    learnMore = null
                 )
             ),
             result.toDisplayState()

@@ -1,10 +1,11 @@
-package com.braintreepayments.api.paypalsavedpaymentmethod.model
+package com.braintreepayments.api.paypalsavedpaymentmethod.state
 
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ConfigurationException
-import org.json.JSONException
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalPayer
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodSummary
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
 import java.io.IOException
 import java.net.ConnectException
 import java.net.NoRouteToHostException
@@ -14,6 +15,9 @@ import java.net.UnknownHostException
 import javax.net.ssl.SSLException
 import javax.net.ssl.SSLHandshakeException
 import javax.net.ssl.SSLPeerUnverifiedException
+import org.json.JSONException
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class PayPalSavedPaymentMethodDisplayStateUnitTest {
 
@@ -107,11 +111,36 @@ class PayPalSavedPaymentMethodDisplayStateUnitTest {
     }
 
     @Test
+    fun `a TLS error caused by a dropped connection maps to NoNetwork`() {
+        val error = SSLException("connection closed during handshake", SocketException("Connection reset"))
+
+        assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, error.toDisplayState())
+    }
+
+    @Test
     fun `server and parsing errors map to Error`() {
         val errors = listOf(BraintreeException("GraphQL error"), IOException("HTTP 500"), JSONException("bad json"))
 
         errors.forEach { error ->
             assertEquals(PayPalSavedPaymentMethodDisplayState.Error, error.toDisplayState())
         }
+    }
+
+    @Test(timeout = 5_000)
+    fun `a cause chain that loops maps to Error instead of looping forever`() {
+        val first = IOException("first")
+        val second = IOException("second", first)
+        first.initCause(second)
+
+        assertEquals(PayPalSavedPaymentMethodDisplayState.Error, first.toDisplayState())
+    }
+
+    @Test
+    fun `a connection failure deep in the cause chain still maps to NoNetwork`() {
+        val error = (1..5).fold<Int, Throwable>(UnknownHostException()) { cause, depth ->
+            IOException("level $depth", cause)
+        }
+
+        assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, error.toDisplayState())
     }
 }

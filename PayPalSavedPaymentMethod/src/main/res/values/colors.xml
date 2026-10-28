@@ -6,7 +6,6 @@
     <color name="paypal_saved_payment_method_style_default_border_color">#00000000</color>
 
     <!-- Fixed component colors, not merchant-configurable. -->
-    <!-- Loading skeleton bar. -->
     <color name="paypal_saved_payment_method_placeholder">#E5E5EA</color>
     <color name="paypal_saved_payment_method_loading_dialog_background">#E6FFFFFF</color>
     <color name="paypal_saved_payment_method_loading_dialog_content">#000000</color>
