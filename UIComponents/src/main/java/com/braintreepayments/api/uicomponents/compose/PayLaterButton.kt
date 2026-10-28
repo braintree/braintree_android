@@ -3,6 +3,7 @@ package com.braintreepayments.api.uicomponents.compose
 import android.net.Uri
 import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,13 +66,15 @@ fun PayLaterButton(
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
     if (registry == null) {
-        paypalTokenizeCallback.onPayPalResult(
-            PayPalResult.Failure(
-                Exception(
-                    "ActivityResultRegistry is null. ActivityResultRegistry cannot be null for this flow."
+        LaunchedEffect(Unit) {
+            paypalTokenizeCallback.onPayPalResult(
+                PayPalResult.Failure(
+                    Exception(
+                        "ActivityResultRegistry is null. ActivityResultRegistry cannot be null for this flow."
+                    )
                 )
             )
-        )
+        }
         return
     }
 
