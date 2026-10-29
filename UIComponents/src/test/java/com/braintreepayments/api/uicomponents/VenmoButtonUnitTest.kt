@@ -1,6 +1,7 @@
 package com.braintreepayments.api.uicomponents
 
 import android.content.Intent
+import androidx.activity.ComponentActivity
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.venmo.VenmoClient
@@ -16,12 +17,14 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.slot
 import io.mockk.unmockkObject
+import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -92,6 +95,41 @@ class VenmoButtonUnitTest {
         callbackSlot.captured.onVenmoPaymentAuthRequest(readyToLaunch)
 
         // Button should be re-enabled after Activity null failure
+        assertTrue(button.isEnabled)
+    }
+
+    @Test
+    fun `setVenmoRequest when launcher returns Failure re-enables button`() {
+        val callbackSlot = slot<VenmoPaymentAuthRequestCallback>()
+        every {
+            mockVenmoClient.createPaymentAuthRequest(any(), any(), capture(callbackSlot))
+        } answers {}
+
+        val launchError = Exception("launch failed")
+        every {
+            mockVenmoLauncher.launch(any(), any())
+        } returns VenmoPendingRequest.Failure(launchError)
+
+        // Using a ComponentActivity context so getActivity() returns non-null
+        val activity = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
+        val button = VenmoButton(activity, mockVenmoClient, mockVenmoLauncher)
+        val launchCallback = mockk<VenmoLaunchCallback>(relaxed = true)
+        button.venmoLaunchCallback = launchCallback
+        button.setVenmoRequest(venmoRequest)
+        button.performClick()
+
+        assertFalse(button.isEnabled)
+
+        // Simulate ReadyToLaunch callback; launcher.launch() then returns Failure
+        val readyToLaunch = mockk<VenmoPaymentAuthRequest.ReadyToLaunch>(relaxed = true)
+        callbackSlot.captured.onVenmoPaymentAuthRequest(readyToLaunch)
+
+        verify { mockVenmoLauncher.launch(activity, readyToLaunch) }
+        verify {
+            launchCallback.onVenmoPaymentAuthRequest(
+                match { it is VenmoPendingRequest.Failure && it.error === launchError }
+            )
+        }
         assertTrue(button.isEnabled)
     }
 
