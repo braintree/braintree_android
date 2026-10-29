@@ -146,14 +146,20 @@ class FundingInstrumentChipViewUnitTest {
 
     @Test
     fun `the chip is disabled while an edit is in progress`() {
-        bind(PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.CARD)), false)
+        bind(
+            PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.CARD)),
+            editEnabled = false
+        )
 
         assertFalse(sut.isEnabled)
     }
 
     @Test
     fun `a disabled chip ignores programmatic and accessibility clicks`() {
-        bind(PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.CARD)), false)
+        bind(
+            PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.CARD)),
+            editEnabled = false
+        )
 
         sut.performClick()
         ViewCompat.performAccessibilityAction(sut, AccessibilityNodeInfoCompat.ACTION_CLICK, null)

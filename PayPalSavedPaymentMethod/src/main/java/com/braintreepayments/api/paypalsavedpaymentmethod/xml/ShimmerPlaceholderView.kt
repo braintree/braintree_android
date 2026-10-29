@@ -11,19 +11,13 @@ import android.graphics.RectF
 import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.View
-import androidx.annotation.VisibleForTesting
 import android.view.animation.LinearInterpolator
+import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 
-/**
- * A rounded placeholder bar with a white highlight sweeping left to right, shown while the funding instrument or the
- * Pay Later message is loading. The bar fills the width it's given and stops short of the trailing edge.
- *
- * Set [setContentDescription] for what screen readers announce, or leave it `null` to hide the bar from screen readers,
- * for a bar shown next to one that already announces loading.
- */
+/** The loading bar with a sweeping highlight. Hidden from screen readers unless it has a content description. */
 internal class ShimmerPlaceholderView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
@@ -56,12 +50,11 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
     private var isInitialized = false
     private var isWindowVisible = true
 
-    /** The bar's bounds within the view. */
     @get:VisibleForTesting
     internal val barBounds: RectF
         get() = RectF(barRect)
 
-    /** Whether the highlight is sweeping. */
+    @get:VisibleForTesting
     internal val isAnimating: Boolean
         get() = animator.isStarted
 

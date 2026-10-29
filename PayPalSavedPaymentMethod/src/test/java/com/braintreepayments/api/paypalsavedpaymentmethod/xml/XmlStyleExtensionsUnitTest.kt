@@ -40,6 +40,11 @@ class XmlStyleExtensionsUnitTest {
         )
     )
 
+    @After
+    fun tearDown() {
+        unmockkStatic(ResourcesCompat::class)
+    }
+
     @Test
     @Config(qualifiers = "xhdpi")
     fun `dpToPx converts dp to whole pixels for the screen density`() {
@@ -70,12 +75,7 @@ class XmlStyleExtensionsUnitTest {
 
         textView.applyTextStyle(resolvedStyle, sizeSp = 20f, medium = true)
 
-        assertNotEquals(Typeface.DEFAULT, textView.typeface)
-    }
-
-    @After
-    fun tearDown() {
-        unmockkStatic(ResourcesCompat::class)
+        assertEquals(Typeface.create("sans-serif-medium", Typeface.NORMAL), textView.typeface)
     }
 
     @Test
@@ -169,6 +169,7 @@ class XmlStyleExtensionsUnitTest {
     )
 
     private companion object {
+        // Any resource ID: ResourcesCompat.getFont is mocked to return a font for it.
         const val FONT_RES = 0x7f0b0001
         const val DELTA = 0.01f
     }

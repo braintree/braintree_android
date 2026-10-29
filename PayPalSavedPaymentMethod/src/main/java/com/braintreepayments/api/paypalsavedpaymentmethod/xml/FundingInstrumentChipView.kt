@@ -26,11 +26,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.state.iconRes
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.lastDigitsOrNull
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 
-/**
- * The funding instrument chip: the card art or generic icon, the label or masked last digits (or the buyer's email),
- * and the edit icon. The whole chip is the edit target, so it's larger than the edit icon alone. A buyer who can't
- * edit gets a display-only chip. Screen readers read the chip as one element, for example "Visa, ending in 1 2 3 4".
- */
+/** The funding instrument chip: icon, masked digits or label (or the buyer's email), and the edit icon. */
 internal class FundingInstrumentChipView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
@@ -87,13 +83,7 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
         })
     }
 
-    /**
-     * Shows [state]. Only [PayPalSavedPaymentMethodDisplayState.Content] and
-     * [PayPalSavedPaymentMethodDisplayState.NoFundingInstrument] have something to show; any other state clears the
-     * chip, so it never keeps a previous funding instrument.
-     *
-     * The text keeps a fixed color, not the style's text color, so it stays readable on the chip's fixed background.
-     */
+    /** Shows [state]; states without a funding instrument clear the chip. The text color is fixed, as on iOS. */
     fun bind(
         state: PayPalSavedPaymentMethodDisplayState,
         resolvedStyle: PayPalSavedPaymentMethodStyleResolver,
