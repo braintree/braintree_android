@@ -72,13 +72,19 @@ class PayPalCreditMessagingViewUnitTest {
     }
 
     @Test
-    fun `the link uses the style's link color, otherwise the text color, and is underlined`() {
+    fun `the link uses the style's link color without an underline`() {
         bind(PayPalCreditMessagingDisplayState.Content(CONTENT), linkColor = Color.BLUE)
-        assertEquals(Color.BLUE, drawnLink().color)
-        assertTrue(drawnLink().isUnderlineText)
 
+        assertEquals(Color.BLUE, drawnLink().color)
+        assertFalse(drawnLink().isUnderlineText)
+    }
+
+    @Test
+    fun `without a link color the link is underlined in the text color`() {
         bind(PayPalCreditMessagingDisplayState.Content(CONTENT))
+
         assertEquals(Color.RED, drawnLink().color)
+        assertTrue(drawnLink().isUnderlineText)
     }
 
     @Test
