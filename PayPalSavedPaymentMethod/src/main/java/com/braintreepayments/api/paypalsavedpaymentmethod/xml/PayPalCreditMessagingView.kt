@@ -17,8 +17,8 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.view.isVisible
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingContent
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 
 /** The Pay Later row: a shimmer while the message loads, then the message followed by its "Learn more" link. */
@@ -62,14 +62,13 @@ private fun PayPalCreditMessagingContent.toSpannable(
     onLearnMoreClick: (String) -> Unit
 ): CharSequence {
     val builder = SpannableStringBuilder(message)
-    val text = learnMoreText
-    val url = learnMoreUrl
-    if (text != null && url != null) {
+    val link = learnMore
+    if (link != null) {
         builder.append(" ")
         val start = builder.length
-        builder.append(text)
+        builder.append(link.text)
         val linkSpan = object : ClickableSpan() {
-            override fun onClick(widget: View) = onLearnMoreClick(url)
+            override fun onClick(widget: View) = onLearnMoreClick(link.url)
 
             override fun updateDrawState(textPaint: TextPaint) {
                 textPaint.color = linkColor

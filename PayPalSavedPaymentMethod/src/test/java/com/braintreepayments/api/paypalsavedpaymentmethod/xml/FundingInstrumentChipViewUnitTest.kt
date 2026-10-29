@@ -15,8 +15,8 @@ import androidx.core.view.isVisible
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodAppearance
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodContainerStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodFundingInstrumentStyle
@@ -51,6 +51,30 @@ class FundingInstrumentChipViewUnitTest {
         assertEquals("Visa, ending in 1 2 3 4", sut.contentDescription)
         assertTrue(icon.isVisible)
         assertTrue(editIcon.isVisible)
+    }
+
+    @Test
+    fun `screen readers hear PayPal named first when the logo and label are both hidden`() {
+        val style = PayPalSavedPaymentMethodViewStyle(showPayPalLogo = false, showPayPalLabel = false)
+
+        bind(
+            PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.CARD)),
+            style = style
+        )
+
+        assertEquals("PayPal, Visa, ending in 1 2 3 4", sut.contentDescription)
+    }
+
+    @Test
+    fun `screen readers don't hear PayPal again when the label still names it`() {
+        val style = PayPalSavedPaymentMethodViewStyle(showPayPalLogo = false, showPayPalLabel = true)
+
+        bind(
+            PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.CARD)),
+            style = style
+        )
+
+        assertEquals("Visa, ending in 1 2 3 4", sut.contentDescription)
     }
 
     @Test
