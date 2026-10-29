@@ -241,23 +241,22 @@ class UIComponentsFragment : BaseFragment() {
         super.onResume()
 
         // PayPal or PayPal Pay Later flow after returning to app
-        val callback = PayPalTokenizeCallback { payPalResult ->
-            when (payPalResult) {
-                is PayPalResult.Success -> handlePayPalResult(payPalResult.nonce)
-                is PayPalResult.Cancel ->
-                    handleError(Exception("User did not complete payment flow"))
-                is PayPalResult.Failure -> handleError(payPalResult.error)
-            }
-        }
-
         getPayPalPendingRequest()?.let { pending ->
-            payPalButton.handleReturnToApp(pending, requireActivity().intent, callback)
+            payPalButton.handleReturnToApp(
+                pending,
+                requireActivity().intent,
+                createPayPalCallback(isPayLaterSelected = false)
+            )
             clearPayPalPendingRequest()
             requireActivity().intent.data = null
         }
 
         getPayLaterPendingRequest()?.let { pending ->
-            payLaterButton.handleReturnToApp(pending, requireActivity().intent, callback)
+            payLaterButton.handleReturnToApp(
+                pending,
+                requireActivity().intent,
+                createPayPalCallback(isPayLaterSelected = true)
+            )
             clearPayLaterPendingRequest()
             requireActivity().intent.data = null
         }
@@ -289,11 +288,21 @@ class UIComponentsFragment : BaseFragment() {
         NavHostFragment.findNavController(this).navigate(action)
     }
 
-    private fun handlePayPalResult(paymentMethodNonce: PaymentMethodNonce?) {
+    private fun createPayPalCallback(isPayLaterSelected: Boolean) = PayPalTokenizeCallback { payPalResult ->
+        when (payPalResult) {
+            is PayPalResult.Success -> handlePayPalResult(payPalResult.nonce, isPayLaterSelected)
+            is PayPalResult.Cancel ->
+                handleError(Exception("User did not complete payment flow"))
+            is PayPalResult.Failure -> handleError(payPalResult.error)
+        }
+    }
+
+    private fun handlePayPalResult(paymentMethodNonce: PaymentMethodNonce?, isPayLaterSelected: Boolean) {
         if (paymentMethodNonce != null) {
             onPaymentMethodNonceCreated(paymentMethodNonce)
             val action = UIComponentsFragmentDirections
                 .actionUiComponentsFragmentToDisplayNonceFragment(paymentMethodNonce)
+                .setIsPayLaterSelected(isPayLaterSelected)
             NavHostFragment.findNavController(this).navigate(action)
         }
     }

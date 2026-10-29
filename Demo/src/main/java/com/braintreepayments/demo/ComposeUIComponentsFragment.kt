@@ -186,7 +186,7 @@ class ComposeUIComponentsFragment : BaseFragment() {
                                 authorization = authStringArg,
                                 appLinkReturnUrl = APP_LINK_RETURN_URL.toUri(),
                                 deepLinkFallbackUrlScheme = DEEP_LINK_FALLBACK_SCHEME,
-                                paypalTokenizeCallback = paypalTokenizeCallback
+                                paypalTokenizeCallback = payLaterTokenizeCallback
                             )
                         }
                     }
@@ -290,10 +290,11 @@ class ComposeUIComponentsFragment : BaseFragment() {
         )
     }
 
-    private fun handleNonce(nonce: PaymentMethodNonce) {
+    private fun handleNonce(nonce: PaymentMethodNonce, isPayLaterSelected: Boolean = false) {
         onPaymentMethodNonceCreated(nonce)
         val action = ComposeUIComponentsFragmentDirections
             .actionComposeUiComponentsFragmentToDisplayNonceFragment(nonce)
+            .setIsPayLaterSelected(isPayLaterSelected)
         NavHostFragment.findNavController(this).navigate(action)
     }
 
@@ -311,9 +312,12 @@ class ComposeUIComponentsFragment : BaseFragment() {
         null
     )
 
-    private val paypalTokenizeCallback = PayPalTokenizeCallback { payPalResult ->
+    private val paypalTokenizeCallback = createPayPalCallback(isPayLaterSelected = false)
+    private val payLaterTokenizeCallback = createPayPalCallback(isPayLaterSelected = true)
+
+    private fun createPayPalCallback(isPayLaterSelected: Boolean) = PayPalTokenizeCallback { payPalResult ->
         when (payPalResult) {
-            is PayPalResult.Success -> handleNonce(payPalResult.nonce)
+            is PayPalResult.Success -> handleNonce(payPalResult.nonce, isPayLaterSelected)
             is PayPalResult.Cancel ->
                 handleError(Exception("User did not complete PayPal payment flow"))
             is PayPalResult.Failure -> handleError(payPalResult.error)

@@ -1,26 +1,11 @@
 package com.braintreepayments.api.uicomponents.compose
 
 import android.net.Uri
-import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.compose.LifecycleResumeEffect
-import androidx.lifecycle.coroutineScope
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
-import com.braintreepayments.api.paypal.PayPalClient
-import com.braintreepayments.api.paypal.PayPalLauncher
-import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
-import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayLaterButtonColor
-import kotlinx.coroutines.launch
 
 /**
  * A composable that displays a PayPal Pay Later branded button and handles the PayPal Pay Later flow.
@@ -57,94 +42,15 @@ fun PayLaterButton(
     pendingRequestRepository: PendingRequestRepository = PendingRequestRepository(LocalContext.current, "paylater"),
     paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
-    val context = LocalContext.current
-    val activity = context.findActivity()
-    val coroutineScope = rememberCoroutineScope()
-
-    var enabled by remember { mutableStateOf(true) }
-    var flowLaunched by rememberSaveable { mutableStateOf(false) }
-
-    val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
-    if (registry == null) {
-        LaunchedEffect(Unit) {
-            paypalTokenizeCallback.onPayPalResult(
-                PayPalResult.Failure(
-                    Exception(
-                        "ActivityResultRegistry is null. ActivityResultRegistry cannot be null for this flow."
-                    )
-                )
-            )
-        }
-        return
-    }
-
-    val payPalLauncher = remember { PayPalLauncher(registry) }
-    val payPalClient = remember {
-        PayPalClient(
-            context = context,
-            authorization = authorization,
-            appLinkReturnUrl = appLinkReturnUrl,
-            deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
-        )
-    }
-
-    PayLaterButtonView(style = style, enabled = enabled) {
-        enabled = false
-        payPalRequest.shouldOfferPayLater = true
-        payPalClient.createPaymentAuthRequest(
-            context = context,
-            payPalRequest = payPalRequest
-        ) { paymentAuthRequest: PayPalPaymentAuthRequest ->
-            when (paymentAuthRequest) {
-                is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-                    activity?.let {
-                        coroutineScope.launch {
-                            val launched = completePayPalFlow(
-                                payPalLauncher,
-                                pendingRequestRepository,
-                                it,
-                                paymentAuthRequest,
-                                paypalTokenizeCallback
-                            )
-                            if (launched) {
-                                flowLaunched = true
-                            } else {
-                                enabled = true
-                            }
-                        }
-                    } ?: run {
-                        enabled = true
-                        paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(Exception("Activity is null")))
-                    }
-                }
-
-                is PayPalPaymentAuthRequest.Failure -> {
-                    paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(paymentAuthRequest.error))
-                    enabled = true
-                }
-            }
-        }
-    }
-
-    LifecycleResumeEffect(Unit) {
-        if (flowLaunched) {
-            flowLaunched = false
-            lifecycle.coroutineScope.launch {
-                val pendingRequestStr = pendingRequestRepository.getPendingRequest()
-
-                activity?.intent?.let { intent ->
-                    handleReturnToApp(payPalLauncher, payPalClient, pendingRequestStr, intent, paypalTokenizeCallback)
-                    enabled = true
-                    pendingRequestRepository.clearPendingRequest()
-                } ?: run {
-                    enabled = true
-                    paypalTokenizeCallback.onPayPalResult(
-                        PayPalResult.Failure(Exception("Activity or Intent is null. Unable to restore state."))
-                    )
-                }
-            }
-        }
-
-        onPauseOrDispose { lifecycle }
+    PayPalButtonFlow(
+        payPalRequest = payPalRequest,
+        authorization = authorization,
+        appLinkReturnUrl = appLinkReturnUrl,
+        deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme,
+        pendingRequestRepository = pendingRequestRepository,
+        paypalTokenizeCallback = paypalTokenizeCallback,
+        onButtonSelected = { payPalRequest.shouldOfferPayLater = true }
+    ) { enabled, onClick ->
+        PayLaterButtonView(style = style, enabled = enabled, onClick = onClick)
     }
 }
