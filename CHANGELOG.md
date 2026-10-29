@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.34.0 (2026-10-29)
 
 * GooglePay
   * Add optional `resultKey` parameter to `GooglePayLauncher` constructors, allowing a unique registration key per launcher instance
