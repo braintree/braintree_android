@@ -356,7 +356,7 @@ private fun FundingInstrumentText(
     Text(
         text = text,
         modifier = modifier,
-        color = Color(resolvedStyle.textColor),
+        color = colorResource(R.color.paypal_saved_payment_method_funding_instrument_chip_text),
         fontSize = resolvedStyle.fundingInstrumentTextFontSizeSp.sp,
         fontFamily = resolvedStyle.fontFamily,
         maxLines = 1,
@@ -379,9 +379,13 @@ private fun CreditMessagingRow(
         )
         is PayPalCreditMessagingDisplayState.Content -> {
             val textColor = Color(resolvedStyle.textColor)
-            val linkColor = resolvedStyle.creditMessagingLinkColor?.let { Color(it) } ?: textColor
+            val linkColor = resolvedStyle.creditMessagingLinkColor?.let { Color(it) }
             Text(
-                text = state.content.toAnnotatedString(linkColor, onLearnMoreClick),
+                text = state.content.toAnnotatedString(
+                    linkColor = linkColor ?: textColor,
+                    underline = linkColor == null,
+                    onLearnMoreClick = onLearnMoreClick
+                ),
                 color = textColor,
                 fontSize = resolvedStyle.creditMessagingFontSizeSp.sp,
                 fontFamily = resolvedStyle.fontFamily,
@@ -392,8 +396,12 @@ private fun CreditMessagingRow(
     }
 }
 
-/** The message followed by the "Learn more" link, shown bold and underlined so it stands out in any color. */
-private fun PayPalCreditMessagingContent.toAnnotatedString(linkColor: Color, onLearnMoreClick: (String) -> Unit) =
+// The "Learn more" link is bold, and underlined only without a merchant link color, as on iOS.
+private fun PayPalCreditMessagingContent.toAnnotatedString(
+    linkColor: Color,
+    underline: Boolean,
+    onLearnMoreClick: (String) -> Unit
+) =
     buildAnnotatedString {
         append(message)
         val link = learnMore
@@ -402,7 +410,7 @@ private fun PayPalCreditMessagingContent.toAnnotatedString(linkColor: Color, onL
             val linkStyle = SpanStyle(
                 color = linkColor,
                 fontWeight = FontWeight.Bold,
-                textDecoration = TextDecoration.Underline
+                textDecoration = if (underline) TextDecoration.Underline else null
             )
             withLink(
                 LinkAnnotation.Clickable(
