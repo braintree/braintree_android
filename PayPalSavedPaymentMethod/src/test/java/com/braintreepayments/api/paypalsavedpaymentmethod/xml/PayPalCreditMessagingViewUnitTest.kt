@@ -13,8 +13,8 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingContent
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodAppearance
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodContainerStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodCreditMessagingStyle
@@ -83,7 +83,7 @@ class PayPalCreditMessagingViewUnitTest {
 
     @Test
     fun `a message without a link shows the message only`() {
-        bind(PayPalCreditMessagingDisplayState.Content(PayPalCreditMessagingContent("Pay in 4.", null, null)))
+        bind(PayPalCreditMessagingDisplayState.Content(PayPalCreditMessagingContent("Pay in 4.", learnMore = null)))
 
         assertEquals("Pay in 4.", text.text.toString())
         assertEquals(0, (text.text as Spanned).getSpans(0, text.text.length, ClickableSpan::class.java).size)
@@ -107,6 +107,9 @@ class PayPalCreditMessagingViewUnitTest {
 
     private companion object {
         const val URL = "https://www.paypal.com/learn-more"
-        val CONTENT = PayPalCreditMessagingContent("Pay in 4.", "Learn more", URL)
+        val CONTENT = PayPalCreditMessagingContent(
+            "Pay in 4.",
+            PayPalCreditMessagingContent.LearnMore("Learn more", URL, isEmbeddable = false)
+        )
     }
 }

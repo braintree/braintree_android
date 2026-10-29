@@ -19,12 +19,11 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Accessibilit
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
-import com.braintreepayments.api.paypalsavedpaymentmethod.accessibilityLabel
-import com.braintreepayments.api.paypalsavedpaymentmethod.iconRes
 import com.braintreepayments.api.paypalsavedpaymentmethod.imageloader.ImageLoader
-import com.braintreepayments.api.paypalsavedpaymentmethod.isEditable
-import com.braintreepayments.api.paypalsavedpaymentmethod.maskedLastDigitsOrNull
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.accessibilityLabel
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.iconRes
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.lastDigitsOrNull
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 
 /**
@@ -102,7 +101,12 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
         onEditClick: () -> Unit
     ) {
         isEditable = state.isEditable
-        contentDescription = state.accessibilityLabel { label, spokenDigits ->
+        val brandName = if (resolvedStyle.showPayPalLogo || resolvedStyle.showPayPalLabel) {
+            null
+        } else {
+            context.getString(R.string.paypal_saved_payment_method_label)
+        }
+        contentDescription = state.accessibilityLabel(brandName) { label, spokenDigits ->
             context.getString(R.string.paypal_saved_payment_method_funding_instrument_ending_in, label, spokenDigits)
         }
         if (isEditable) {
@@ -121,13 +125,13 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
         when (state) {
             is PayPalSavedPaymentMethodDisplayState.Content -> {
                 val paymentMethod = state.paymentMethod
-                textView.text = paymentMethod.maskedLastDigitsOrNull()?.let {
+                textView.text = paymentMethod.lastDigitsOrNull()?.let {
                     context.getString(
                         R.string.paypal_saved_payment_method_label_funding_instrument_card_masked_number,
                         it
                     )
                 } ?: paymentMethod.label
-                bindIcon(paymentMethod.imageUrl, paymentMethod.type.iconRes())
+                bindIcon(paymentMethod.imageUrl, paymentMethod.iconRes())
             }
             is PayPalSavedPaymentMethodDisplayState.NoFundingInstrument -> {
                 textView.text = state.payerEmail
