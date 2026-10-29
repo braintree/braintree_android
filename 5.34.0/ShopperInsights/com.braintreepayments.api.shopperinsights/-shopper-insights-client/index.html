@@ -1,0 +1,239 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ShopperInsightsClient</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    braintree_android
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">5.34.1-SNAPSHOT
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":ShopperInsights/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":ShopperInsights/main" data-filter=":ShopperInsights/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    braintree_android
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="ShopperInsights::com.braintreepayments.api.shopperinsights/ShopperInsightsClient///PointingToDeclaration//-108492999">
+  <div class="breadcrumbs"><a href="../../index.html">ShopperInsights</a><span class="delimiter">/</span><a href="../index.html">com.braintreepayments.api.shopperinsights</a><span class="delimiter">/</span><span class="current">ShopperInsightsClient</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Shopper</span><wbr><span>Insights</span><wbr><span><span>Client</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html"><strike>ShopperInsightsClient</strike></a></div><div class="deprecation-content"><h3 class="">Deprecated</h3><p class="paragraph">Use ShopperInsightsClientV2 instead</p></div><p class="paragraph">Use <a href="index.html">ShopperInsightsClient</a> to optimize your checkout experience by prioritizing the customer’s preferred payment methods in your UI. By customizing each customer’s checkout experience, you can improve conversion, increase sales/repeat buys and boost user retention/loyalty.</p><p class="paragraph">Note: <strong>This feature is in beta. It's public API may change in future releases.</strong></p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="-1040420577%2FConstructors%2F-108492999" anchor-label="ShopperInsightsClient" id="-1040420577%2FConstructors%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-shopper-insights-client.html"><span>Shopper</span><wbr><span>Insights</span><wbr><span><span>Client</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1040420577%2FConstructors%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">authorization<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">shopperSessionId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="-1615285183%2FClasslikes%2F-108492999" anchor-label="Companion" id="-1615285183%2FClasslikes%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1615285183%2FClasslikes%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="1897356236%2FFunctions%2F-108492999" anchor-label="getRecommendedPaymentMethods" id="1897356236%2FFunctions%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-recommended-payment-methods.html"><span>get</span><wbr><span>Recommended</span><wbr><span>Payment</span><wbr><span><span>Methods</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1897356236%2FFunctions%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-recommended-payment-methods.html"><span class="token function">getRecommendedPaymentMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../-shopper-insights-request/index.html">ShopperInsightsRequest</a><span class="token punctuation">, </span></span><span class="parameter ">experiment<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">callback<span class="token operator">: </span><a href="../-shopper-insights-callback/index.html">ShopperInsightsCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Retrieves recommended payment methods based on the provided shopper insights request.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="624424061%2FFunctions%2F-108492999" anchor-label="isPayPalAppInstalled" id="624424061%2FFunctions%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-pay-pal-app-installed.html"><span>is</span><wbr><span>Pay</span><wbr><span>Pal</span><wbr><span>App</span><wbr><span><span>Installed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="624424061%2FFunctions%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="is-pay-pal-app-installed.html"><span class="token function">isPayPalAppInstalled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Indicates whether the PayPal App is installed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="353668029%2FFunctions%2F-108492999" anchor-label="isVenmoAppInstalled" id="353668029%2FFunctions%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-venmo-app-installed.html"><span>is</span><wbr><span>Venmo</span><wbr><span>App</span><wbr><span><span>Installed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="353668029%2FFunctions%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="is-venmo-app-installed.html"><span class="token function">isVenmoAppInstalled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Indicates whether the Venmo App is installed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1696368790%2FFunctions%2F-108492999" anchor-label="sendPresentedEvent" id="-1696368790%2FFunctions%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="send-presented-event.html"><span>send</span><wbr><span>Presented</span><wbr><span><span>Event</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1696368790%2FFunctions%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="send-presented-event.html"><span class="token function">sendPresentedEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">buttonType<span class="token operator">: </span><a href="../-button-type/index.html">ButtonType</a><span class="token punctuation">, </span></span><span class="parameter ">presentmentDetails<span class="token operator">: </span><a href="../-presentment-details/index.html">PresentmentDetails</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Call this method when the PayPal, Venmo or Other button has been successfully displayed to the buyer. This method sends analytics to help improve the Shopper Insights feature experience.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1891601859%2FFunctions%2F-108492999" anchor-label="sendSelectedEvent" id="-1891601859%2FFunctions%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="send-selected-event.html"><span>send</span><wbr><span>Selected</span><wbr><span><span>Event</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1891601859%2FFunctions%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="send-selected-event.html"><span class="token function">sendSelectedEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">buttonType<span class="token operator">: </span><a href="../-button-type/index.html">ButtonType</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Call this method when the PayPal, Venmo or Other button has been selected/tapped by the buyer. This method sends analytics to help improve the Shopper Insights feature experience.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

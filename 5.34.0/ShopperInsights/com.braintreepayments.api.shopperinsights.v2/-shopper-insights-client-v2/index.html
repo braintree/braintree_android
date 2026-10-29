@@ -1,0 +1,250 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ShopperInsightsClientV2</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    braintree_android
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">5.34.1-SNAPSHOT
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":ShopperInsights/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":ShopperInsights/main" data-filter=":ShopperInsights/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    braintree_android
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="ShopperInsights::com.braintreepayments.api.shopperinsights.v2/ShopperInsightsClientV2///PointingToDeclaration//-108492999">
+  <div class="breadcrumbs"><a href="../../index.html">ShopperInsights</a><span class="delimiter">/</span><a href="../index.html">com.braintreepayments.api.shopperinsights.v2</a><span class="delimiter">/</span><span class="current">ShopperInsightsClientV2</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Shopper</span><wbr><span>Insights</span><wbr><span>Client</span><wbr><span><span>V2</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">ShopperInsightsClientV2</a></div><p class="paragraph">Use <a href="index.html">ShopperInsightsClientV2</a> to optimize your checkout experience by prioritizing the customer’s preferred payment methods in your UI.</p><p class="paragraph">By customizing each customer’s checkout experience, you can improve conversion, increase sales/repeat buys and boost user retention/loyalty.</p><p class="paragraph">The use of this client is a completely separate integration path from the deprecated <a href="../../com.braintreepayments.api.shopperinsights/-shopper-insights-client/index.html">com.braintreepayments.api.shopperinsights.ShopperInsightsClient</a>.</p><p class="paragraph">Note: <strong>This feature is in beta. It's public API may change in future releases.</strong></p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="-750298791%2FConstructors%2F-108492999" anchor-label="ShopperInsightsClientV2" id="-750298791%2FConstructors%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-shopper-insights-client-v2.html"><span>Shopper</span><wbr><span>Insights</span><wbr><span>Client</span><wbr><span><span>V2</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-750298791%2FConstructors%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">authorization<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="-242651321%2FFunctions%2F-108492999" anchor-label="createCustomerSession" id="-242651321%2FFunctions%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create-customer-session.html"><span>create</span><wbr><span>Customer</span><wbr><span><span>Session</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-242651321%2FFunctions%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="create-customer-session.html"><span class="token function">createCustomerSession</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">customerSessionRequest<span class="token operator">: </span><a href="../-customer-session-request/index.html">CustomerSessionRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-customer-session-result/index.html">CustomerSessionResult</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="create-customer-session.html"><span class="token function">createCustomerSession</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">customerSessionRequest<span class="token operator">: </span><a href="../-customer-session-request/index.html">CustomerSessionRequest</a><span class="token punctuation">, </span></span><span class="parameter ">customerSessionCallback<span class="token operator">: </span><span class="token punctuation">(</span>customerSessionResult<span class="token operator">: </span><a href="../-customer-session-result/index.html">CustomerSessionResult</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Creates a new customer session.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1190456779%2FFunctions%2F-108492999" anchor-label="generateCustomerRecommendations" id="1190456779%2FFunctions%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="generate-customer-recommendations.html"><span>generate</span><wbr><span>Customer</span><wbr><span><span>Recommendations</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1190456779%2FFunctions%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="generate-customer-recommendations.html"><span class="token function">generateCustomerRecommendations</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">customerSessionRequest<span class="token operator">: </span><a href="../-customer-session-request/index.html">CustomerSessionRequest</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">sessionId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-customer-recommendations-result/index.html">CustomerRecommendationsResult</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="generate-customer-recommendations.html"><span class="token function">generateCustomerRecommendations</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">customerSessionRequest<span class="token operator">: </span><a href="../-customer-session-request/index.html">CustomerSessionRequest</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">sessionId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">customerRecommendationsCallback<span class="token operator">: </span><span class="token punctuation">(</span>customerRecommendationsResult<span class="token operator">: </span><a href="../-customer-recommendations-result/index.html">CustomerRecommendationsResult</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Generates customer payment option recommendations.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-9955416%2FFunctions%2F-108492999" anchor-label="isPayPalAppInstalled" id="-9955416%2FFunctions%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-pay-pal-app-installed.html"><span>is</span><wbr><span>Pay</span><wbr><span>Pal</span><wbr><span>App</span><wbr><span><span>Installed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-9955416%2FFunctions%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="is-pay-pal-app-installed.html"><span class="token function">isPayPalAppInstalled</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Indicates whether the PayPal App is installed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1708690597%2FFunctions%2F-108492999" anchor-label="isVenmoAppInstalled" id="-1708690597%2FFunctions%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-venmo-app-installed.html"><span>is</span><wbr><span>Venmo</span><wbr><span>App</span><wbr><span><span>Installed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1708690597%2FFunctions%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="is-venmo-app-installed.html"><span class="token function">isVenmoAppInstalled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Indicates whether the Venmo App is installed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1548904817%2FFunctions%2F-108492999" anchor-label="sendPresentedEvent" id="1548904817%2FFunctions%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="send-presented-event.html"><span>send</span><wbr><span>Presented</span><wbr><span><span>Event</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1548904817%2FFunctions%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="send-presented-event.html"><span class="token function">sendPresentedEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">buttonType<span class="token operator">: </span><a href="../../com.braintreepayments.api.shopperinsights/-button-type/index.html">ButtonType</a><span class="token punctuation">, </span></span><span class="parameter ">presentmentDetails<span class="token operator">: </span><a href="../../com.braintreepayments.api.shopperinsights/-presentment-details/index.html">PresentmentDetails</a><span class="token punctuation">, </span></span><span class="parameter ">sessionId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Call this method when the PayPal, Venmo or Other button has been successfully displayed to the buyer. This method sends analytics to help improve the Shopper Insights feature experience.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1229088388%2FFunctions%2F-108492999" anchor-label="sendSelectedEvent" id="1229088388%2FFunctions%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="send-selected-event.html"><span>send</span><wbr><span>Selected</span><wbr><span><span>Event</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1229088388%2FFunctions%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="send-selected-event.html"><span class="token function">sendSelectedEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">buttonType<span class="token operator">: </span><a href="../../com.braintreepayments.api.shopperinsights/-button-type/index.html">ButtonType</a><span class="token punctuation">, </span></span><span class="parameter ">sessionId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Call this method when the PayPal, Venmo or Other button has been selected/tapped by the buyer. This method sends analytics to help improve the Shopper Insights feature experience.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1838650695%2FFunctions%2F-108492999" anchor-label="updateCustomerSession" id="1838650695%2FFunctions%2F-108492999" data-filterable-set=":ShopperInsights/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":ShopperInsights/main" data-filterable-set=":ShopperInsights/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-customer-session.html"><span>update</span><wbr><span>Customer</span><wbr><span><span>Session</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1838650695%2FFunctions%2F-108492999"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ShopperInsights/main"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="update-customer-session.html"><span class="token function">updateCustomerSession</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">customerSessionRequest<span class="token operator">: </span><a href="../-customer-session-request/index.html">CustomerSessionRequest</a><span class="token punctuation">, </span></span><span class="parameter ">sessionId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-customer-session-result/index.html">CustomerSessionResult</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="update-customer-session.html"><span class="token function">updateCustomerSession</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">customerSessionRequest<span class="token operator">: </span><a href="../-customer-session-request/index.html">CustomerSessionRequest</a><span class="token punctuation">, </span></span><span class="parameter ">sessionId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">customerSessionCallback<span class="token operator">: </span><span class="token punctuation">(</span>customerSessionResult<span class="token operator">: </span><a href="../-customer-session-result/index.html">CustomerSessionResult</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Updates an existing customer session.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

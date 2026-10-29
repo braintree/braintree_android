@@ -1,0 +1,224 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>GooglePayClient</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    braintree_android
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">5.34.1-SNAPSHOT
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":GooglePay/main">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":GooglePay/main" data-filter=":GooglePay/main">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    braintree_android
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="GooglePay::com.braintreepayments.api.googlepay/GooglePayClient///PointingToDeclaration//1686336780">
+  <div class="breadcrumbs"><a href="../../index.html">GooglePay</a><span class="delimiter">/</span><a href="../index.html">com.braintreepayments.api.googlepay</a><span class="delimiter">/</span><span class="current">GooglePayClient</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Google</span><wbr><span>Pay</span><wbr><span><span>Client</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":GooglePay/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">GooglePayClient</a></div><p class="paragraph">Used to create and tokenize Google Pay payment methods. For more information see the <a href="https://developer.paypal.com/braintree/docs/guides/google-pay/overview">documentation</a></p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="-311891834%2FConstructors%2F1686336780" anchor-label="GooglePayClient" id="-311891834%2FConstructors%2F1686336780" data-filterable-set=":GooglePay/main"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":GooglePay/main" data-filterable-set=":GooglePay/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-google-pay-client.html"><span>Google</span><wbr><span>Pay</span><wbr><span><span>Client</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-311891834%2FConstructors%2F1686336780"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":GooglePay/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">authorization<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Initializes a new <a href="index.html">GooglePayClient</a> instance</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="-771497049%2FClasslikes%2F1686336780" anchor-label="Companion" id="-771497049%2FClasslikes%2F1686336780" data-filterable-set=":GooglePay/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":GooglePay/main" data-filterable-set=":GooglePay/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-771497049%2FClasslikes%2F1686336780"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":GooglePay/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="1864338993%2FFunctions%2F1686336780" anchor-label="createPaymentAuthRequest" id="1864338993%2FFunctions%2F1686336780" data-filterable-set=":GooglePay/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":GooglePay/main" data-filterable-set=":GooglePay/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create-payment-auth-request.html"><span>create</span><wbr><span>Payment</span><wbr><span>Auth</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1864338993%2FFunctions%2F1686336780"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":GooglePay/main"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="create-payment-auth-request.html"><span class="token function">createPaymentAuthRequest</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../-google-pay-request/index.html">GooglePayRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-google-pay-payment-auth-request/index.html">GooglePayPaymentAuthRequest</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="create-payment-auth-request.html"><span class="token function">createPaymentAuthRequest</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../-google-pay-request/index.html">GooglePayRequest</a><span class="token punctuation">, </span></span><span class="parameter ">callback<span class="token operator">: </span><a href="../-google-pay-payment-auth-request-callback/index.html">GooglePayPaymentAuthRequestCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Start the Google Pay payment flow. This will return <a href="../../../GooglePay/com.braintreepayments.api.googlepay/-google-pay-payment-auth-request-params/index.html">GooglePayPaymentAuthRequestParams</a> that are used to present Google Pay payment sheet in <a href="../-google-pay-launcher/launch.html">GooglePayLauncher.launch</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-834594224%2FFunctions%2F1686336780" anchor-label="getTokenizationParameters" id="-834594224%2FFunctions%2F1686336780" data-filterable-set=":GooglePay/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":GooglePay/main" data-filterable-set=":GooglePay/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-tokenization-parameters.html"><span>get</span><wbr><span>Tokenization</span><wbr><span><span>Parameters</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-834594224%2FFunctions%2F1686336780"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":GooglePay/main"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="get-tokenization-parameters.html"><span class="token function">getTokenizationParameters</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-google-pay-tokenization-parameters/index.html">GooglePayTokenizationParameters</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-tokenization-parameters.html"><span class="token function">getTokenizationParameters</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">callback<span class="token operator">: </span><a href="../-google-pay-get-tokenization-parameters-callback/index.html">GooglePayGetTokenizationParametersCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Get Braintree specific tokenization parameters for a Google Pay. Useful for when full control over the <span data-unresolved-link="com.google.android.gms.wallet/PaymentDataRequest///PointingToDeclaration/">PaymentDataRequest</span> is required.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1210721481%2FFunctions%2F1686336780" anchor-label="isReadyToPay" id="1210721481%2FFunctions%2F1686336780" data-filterable-set=":GooglePay/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":GooglePay/main" data-filterable-set=":GooglePay/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-ready-to-pay.html"><span>is</span><wbr><span>Ready</span><wbr><span>To</span><wbr><span><span>Pay</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1210721481%2FFunctions%2F1686336780"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":GooglePay/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="is-ready-to-pay.html"><span class="token function">isReadyToPay</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">callback<span class="token operator">: </span><a href="../-google-pay-is-ready-to-pay-callback/index.html">GooglePayIsReadyToPayCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Before starting the Google Pay flow, use this method to check whether the Google Pay API is supported and set up on the device. When the callback is called with <code class="lang-kotlin">true</code>, show the Google Pay button. When it is called with <code class="lang-kotlin">false</code>, display other checkout options.</p></div><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="is-ready-to-pay.html"><span class="token function">isReadyToPay</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">request<span class="token operator">: </span><a href="../-ready-for-google-pay-request/index.html">ReadyForGooglePayRequest</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-google-pay-readiness-result/index.html">GooglePayReadinessResult</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="is-ready-to-pay.html"><span class="token function">isReadyToPay</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">request<span class="token operator">: </span><a href="../-ready-for-google-pay-request/index.html">ReadyForGooglePayRequest</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">callback<span class="token operator">: </span><a href="../-google-pay-is-ready-to-pay-callback/index.html">GooglePayIsReadyToPayCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Before starting the Google Pay flow, use this method to check whether the Google Pay API is supported and set up on the device.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-225542612%2FFunctions%2F1686336780" anchor-label="tokenize" id="-225542612%2FFunctions%2F1686336780" data-filterable-set=":GooglePay/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":GooglePay/main" data-filterable-set=":GooglePay/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="tokenize.html"><span><span>tokenize</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-225542612%2FFunctions%2F1686336780"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":GooglePay/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="tokenize.html"><span class="token function">tokenize</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">paymentAuthResult<span class="token operator">: </span><a href="../-google-pay-payment-auth-result/index.html">GooglePayPaymentAuthResult</a><span class="token punctuation">, </span></span><span class="parameter ">callback<span class="token operator">: </span><a href="../-google-pay-tokenize-callback/index.html">GooglePayTokenizeCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">After a user successfully authorizes Google Pay payment via <a href="create-payment-auth-request.html">GooglePayClient.createPaymentAuthRequest</a>, this method should be invoked to tokenize the payment method to retrieve a <a href="../../../BraintreeCore/com.braintreepayments.api.core/-payment-method-nonce/index.html">com.braintreepayments.api.core.PaymentMethodNonce</a></p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="tokenize.html"><span class="token function">tokenize</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">paymentData<span class="token operator">: </span><span data-unresolved-link="com.google.android.gms.wallet/PaymentData///PointingToDeclaration/">PaymentData</span><span class="token punctuation">, </span></span><span class="parameter ">callback<span class="token operator">: </span><a href="../-google-pay-tokenize-callback/index.html">GooglePayTokenizeCallback</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Call this method when you've received a successful <span data-unresolved-link="com.google.android.gms.wallet/PaymentData///PointingToDeclaration/">PaymentData</span> response from a direct Google Play Services integration to get a <a href="../-google-pay-card-nonce/index.html">GooglePayCardNonce</a> or <a href="../../../PayPal/com.braintreepayments.api.paypal/-pay-pal-account-nonce/index.html">com.braintreepayments.api.paypal.PayPalAccountNonce</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
