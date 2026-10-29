@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:orientation="horizontal"
+    tools:parentTag="android.widget.LinearLayout">
+
+    <ImageView
+        android:id="@+id/paypal_saved_payment_method_funding_instrument_icon"
+        android:layout_width="@dimen/paypal_saved_payment_method_funding_instrument_icon_width"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/paypal_saved_payment_method_funding_instrument_icon_margin"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter" />
+
+    <!-- Shrinks a long label so the edit icon after it keeps its space. -->
+    <TextView
+        android:id="@+id/paypal_saved_payment_method_funding_instrument_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:importantForAccessibility="no"
+        android:maxLines="1" />
+
+    <ImageView
+        android:id="@+id/paypal_saved_payment_method_edit_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/paypal_saved_payment_method_funding_instrument_icon_margin"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_edit_pencil" />
+</merge>
