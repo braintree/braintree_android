@@ -50,19 +50,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
-import com.braintreepayments.api.paypalsavedpaymentmethod.accessibilityLabel
-import com.braintreepayments.api.paypalsavedpaymentmethod.iconRes
 import com.braintreepayments.api.paypalsavedpaymentmethod.imageloader.LoaderImage
-import com.braintreepayments.api.paypalsavedpaymentmethod.isEditable
-import com.braintreepayments.api.paypalsavedpaymentmethod.maskedLastDigitsOrNull
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingContent
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodDisplayState
-import com.braintreepayments.api.paypalsavedpaymentmethod.showsFundingInstrumentRow
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.accessibilityLabel
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.iconRes
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.lastDigitsOrNull
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.showsFundingInstrumentRow
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.visibleWith
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
-import com.braintreepayments.api.paypalsavedpaymentmethod.visibleWith
 
 /**
  * Renders the component from its two display states: the PayPal logo and label, the funding instrument chip with its
@@ -270,7 +269,7 @@ private fun FundingInstrumentChip(
             .then(if (isEditable) Modifier.minimumInteractiveComponentSize() else Modifier)
             .clip(chipShape)
             .background(colorResource(R.color.paypal_saved_payment_method_funding_instrument_chip_background))
-            .semantics { contentDescription = accessibilityLabel }
+            .semantics { accessibilityLabel?.let { contentDescription = it } }
             .then(
                 if (isEditable) {
                     Modifier.clickable(
@@ -296,7 +295,7 @@ private fun FundingInstrumentChip(
         when (state) {
             is PayPalSavedPaymentMethodDisplayState.Content -> {
                 val paymentMethod = state.paymentMethod
-                val fallbackIcon = paymentMethod.type.iconRes()
+                val fallbackIcon = paymentMethod.iconRes()
                 // Card art from PayPal, with a shimmer while it loads and the generic card or bank icon if it can't be
                 // loaded.
                 if (paymentMethod.imageUrl != null || fallbackIcon != null) {
@@ -397,9 +396,8 @@ private fun CreditMessagingRow(
 private fun PayPalCreditMessagingContent.toAnnotatedString(linkColor: Color, onLearnMoreClick: (String) -> Unit) =
     buildAnnotatedString {
         append(message)
-        val text = learnMoreText
-        val url = learnMoreUrl
-        if (text != null && url != null) {
+        val link = learnMore
+        if (link != null) {
             append(" ")
             val linkStyle = SpanStyle(
                 color = linkColor,
@@ -410,17 +408,17 @@ private fun PayPalCreditMessagingContent.toAnnotatedString(linkColor: Color, onL
                 LinkAnnotation.Clickable(
                     tag = LEARN_MORE_LINK_TAG,
                     styles = TextLinkStyles(style = linkStyle),
-                    linkInteractionListener = { onLearnMoreClick(url) }
+                    linkInteractionListener = { onLearnMoreClick(link.url) }
                 )
             ) {
-                append(text)
+                append(link.text)
             }
         }
     }
 
 @Composable
 private fun PayPalSavedPaymentMethod.displayText(): String =
-    maskedLastDigitsOrNull()?.let {
+    lastDigitsOrNull()?.let {
         stringResource(R.string.paypal_saved_payment_method_label_funding_instrument_card_masked_number, it)
     } ?: label
 
