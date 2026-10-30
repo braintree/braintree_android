@@ -183,6 +183,40 @@ class PayPalCreditMessagingContentUnitTest {
     }
 
     @Test
+    fun `toContent falls back to the alternative text when the text of a text block is empty`() {
+        val content = result(
+            mainItems = listOf(item(PayPalCreditMessageItemType.TEXT, text = "", alternativeText = "Pay in 4"))
+        ).toContent()
+
+        assertEquals("Pay in 4", content.message)
+    }
+
+    @Test
+    fun `toContent falls back to the text when the alternative text of an image block is empty`() {
+        val content = result(
+            mainItems = listOf(
+                text("Pay in 4 with "),
+                item(PayPalCreditMessageItemType.IMAGE, text = "PayPal", alternativeText = "")
+            )
+        ).toContent()
+
+        assertEquals("Pay in 4 with PayPal", content.message)
+    }
+
+    @Test
+    fun `toContent keeps a blank block as the space between two blocks instead of falling back`() {
+        val content = result(
+            mainItems = listOf(
+                text("Pay in 4"),
+                item(PayPalCreditMessageItemType.TEXT, text = " ", alternativeText = "ignored"),
+                text("now")
+            )
+        ).toContent()
+
+        assertEquals("Pay in 4 now", content.message)
+    }
+
+    @Test
     fun `toContent carries the message id, message type and impression url for analytics`() {
         val content = result().copy(impressionUrl = "https://www.paypal.com/impression").toContent()
 
