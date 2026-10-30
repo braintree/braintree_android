@@ -107,10 +107,14 @@ class CreditCard(
 
 /**
  * Type that models the shape of a payment action response.
+ *
+ * @property version server-assigned revision of the Payment Action, used to detect stale or
+ *   out-of-order responses during the [NextActionHandler] drive loop. `null` when not returned.
  */
 internal data class PaymentAction(
     val id: String,
     val status: PaymentActionStatus,
+    val version: Int? = null,
     val nextAction: NextAction? = null,
 )
 

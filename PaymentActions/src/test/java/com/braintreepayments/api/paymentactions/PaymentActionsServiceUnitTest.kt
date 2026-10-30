@@ -724,6 +724,68 @@ class PaymentActionsServiceUnitTest {
             assertEquals(error, (result as PaymentActionServiceResult.Failure).error)
         }
 
+    @Test
+    fun `when getPaymentAction is called, the query requests the version field`() =
+        runTest(testDispatcher) {
+            val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+            val service = PaymentActionsService(braintreeClient)
+
+            service.getPaymentAction()
+            advanceUntilIdle()
+
+            coVerify {
+                braintreeClient.sendGraphQLPOST(withArg { actualRequestBody ->
+                    assertTrue(
+                        actualRequestBody.getString("query").normalizeWhitespace().contains("id status version")
+                    )
+                })
+            }
+        }
+
+    @Test
+    fun `when getPaymentAction returns a version, Success parses it`() =
+        runTest(testDispatcher) {
+            val result = getPaymentActionWithVersionJson(""""version": 7,""")
+
+            assertEquals(7, (result as PaymentActionServiceResult.Success).paymentAction.version)
+        }
+
+    @Test
+    fun `when getPaymentAction returns no version, Success returns a null version`() =
+        runTest(testDispatcher) {
+            val result = getPaymentActionWithVersionJson("")
+
+            assertEquals(null, (result as PaymentActionServiceResult.Success).paymentAction.version)
+        }
+
+    @Test
+    fun `when getPaymentAction returns a null version, Success returns a null version`() =
+        runTest(testDispatcher) {
+            val result = getPaymentActionWithVersionJson(""""version": null,""")
+
+            assertEquals(null, (result as PaymentActionServiceResult.Success).paymentAction.version)
+        }
+
+    private suspend fun getPaymentActionWithVersionJson(versionField: String): PaymentActionServiceResult {
+        val responseBody = """
+            {
+                "data": {
+                    "paymentAction": {
+                        $versionField
+                        "id": "pa123",
+                        "status": "processing"
+                    }
+                }
+            }
+        """.trimIndent()
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .sendGraphQLPostSuccessfulResponse(responseBody)
+            .build()
+
+        return PaymentActionsService(braintreeClient).getPaymentAction()
+    }
+
     // MARK: - signalCustomerActionComplete
 
     @Test

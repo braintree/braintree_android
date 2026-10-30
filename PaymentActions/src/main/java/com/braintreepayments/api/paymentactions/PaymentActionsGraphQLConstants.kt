@@ -44,6 +44,7 @@ internal object PaymentActionsGraphQLConstants {
     const val PAYMENT_ACTION_SELECTION_SET = """
         id
         status
+        version
         nextAction {
             __typename
             ... on PaymentActionThreeDSecureAuthentication {
