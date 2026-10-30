@@ -5,8 +5,5 @@
     <color name="paypal_saved_payment_method_style_default_text_color">#222222</color>
     <color name="paypal_saved_payment_method_style_default_border_color">#00000000</color>
 
-    <!-- Fixed component colors, not merchant-configurable. -->
     <color name="paypal_saved_payment_method_funding_instrument_chip_background">#F0F2F9</color>
-    <!-- Fixed, like iOS, so the text stays readable on the chip whatever the merchant's text color. -->
-    <color name="paypal_saved_payment_method_funding_instrument_chip_text">#000000</color>
 </resources>

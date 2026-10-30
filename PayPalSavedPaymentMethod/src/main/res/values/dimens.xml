@@ -13,15 +13,12 @@
     <dimen name="paypal_saved_payment_method_style_default_funding_instrument_margin_start">8dp</dimen>
     <dimen name="paypal_saved_payment_method_style_default_credit_messaging_font_size">16sp</dimen>
 
-    <!-- Fixed component dimensions, not merchant-configurable. -->
     <dimen name="paypal_saved_payment_method_funding_instrument_chip_corner_radius">6dp</dimen>
     <dimen name="paypal_saved_payment_method_funding_instrument_chip_horizontal_padding">8dp</dimen>
     <dimen name="paypal_saved_payment_method_funding_instrument_chip_vertical_padding">4dp</dimen>
     <dimen name="paypal_saved_payment_method_funding_instrument_icon_width">28dp</dimen>
     <dimen name="paypal_saved_payment_method_funding_instrument_icon_margin">8dp</dimen>
-    <!-- The shimmer shown while the card art loads, sized like typical card art (96 x 60) at the icon width. -->
     <dimen name="paypal_saved_payment_method_funding_instrument_icon_loading_height">18dp</dimen>
     <dimen name="paypal_saved_payment_method_credit_messaging_top_spacing">6dp</dimen>
-    <!-- Gap between the PayPal logo and label and the funding instrument once they stack at large text sizes. -->
     <dimen name="paypal_saved_payment_method_stacked_layout_spacing">6dp</dimen>
 </resources>

@@ -2,9 +2,8 @@
 <resources>
     <string name="paypal_saved_payment_method_label">PayPal</string>
     <string name="paypal_saved_payment_method_label_funding_instrument_card_masked_number">••%1$s</string>
-    <!-- Screen reader text for a card or bank funding instrument, for example "Visa, ending in 1 2 3 4". -->
+
     <string name="paypal_saved_payment_method_funding_instrument_ending_in">%1$s, ending in %2$s</string>
-    <!-- Screen reader action for tapping the funding instrument. -->
     <string name="paypal_saved_payment_method_edit_action_label">Change payment method</string>
     <string name="paypal_saved_payment_method_loading_content_description">Loading saved payment method</string>
 </resources>
