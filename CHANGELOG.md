@@ -10,6 +10,9 @@
     * Add Compose constructor for `SEPADirectDebitLauncher`
 * SharedUtils
     * Add `sendRequestForBytes` to `HttpClient` for fetching binary payloads
+* PayPalSavedPaymentMethod (BETA)
+  * Add `PayPalSavedPaymentMethodView` Compose component that shows the buyer's saved PayPal funding instrument, with an optional Pay Later message, and lets the buyer change it in the PayPal paysheet
+    * **Note:** This feature is currently in beta and may change or be removed in future releases.
 
 ## 5.33.0 (2026-09-16)
 
