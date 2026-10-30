@@ -58,6 +58,7 @@ dependencies {
     implementation libs.androidx.ui.tooling.preview
     implementation libs.android.compose
     implementation libs.androidx.compose.viewModel
+    implementation libs.androidx.datastore.preferences
 
     def composeBom = platform(libs.androidx.compose.bom)
     implementation composeBom
