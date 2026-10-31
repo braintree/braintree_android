@@ -1,10 +1,12 @@
 package com.braintreepayments.api.uicomponents.compose
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivityResultRegistryOwner
+import androidx.activity.result.ActivityResultRegistry
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -63,6 +65,36 @@ fun PayPalButton(
     paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
     val context = LocalContext.current
+    PayPalButtonContent(
+        style = style,
+        payPalRequest = payPalRequest,
+        pendingRequestRepository = pendingRequestRepository,
+        paypalTokenizeCallback = paypalTokenizeCallback,
+        launcherFactory = { PayPalLauncher(it) },
+        clientFactory = {
+            PayPalClient(
+                context = it,
+                authorization = authorization,
+                appLinkReturnUrl = appLinkReturnUrl,
+                deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
+            )
+        },
+        analyticsClientProvider = { AnalyticsClient.lazyInstance.value }
+    )
+}
+
+@Suppress("LongParameterList", "LongMethod")
+@Composable
+internal fun PayPalButtonContent(
+    style: PayPalButtonColor,
+    payPalRequest: PayPalRequest,
+    pendingRequestRepository: PendingRequestRepository,
+    paypalTokenizeCallback: PayPalTokenizeCallback,
+    launcherFactory: (ActivityResultRegistry) -> PayPalLauncher,
+    clientFactory: (Context) -> PayPalClient,
+    analyticsClientProvider: () -> AnalyticsClient
+) {
+    val context = LocalContext.current
     val activity = context.findActivity()
     val coroutineScope = rememberCoroutineScope()
 
@@ -82,16 +114,9 @@ fun PayPalButton(
         return
     }
 
-    val payPalLauncher = remember { PayPalLauncher(registry) }
-    val payPalClient = remember {
-        PayPalClient(
-            context = context,
-            authorization = authorization,
-            appLinkReturnUrl = appLinkReturnUrl,
-            deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
-        )
-    }
-    val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
+    val payPalLauncher = remember { launcherFactory(registry) }
+    val payPalClient = remember { clientFactory(context) }
+    val analyticsClient = remember { analyticsClientProvider() }
 
     PayPalButtonView(style = style, enabled = enabled) {
         enabled = false

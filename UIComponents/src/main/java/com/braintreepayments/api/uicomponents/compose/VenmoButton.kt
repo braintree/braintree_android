@@ -1,10 +1,12 @@
 package com.braintreepayments.api.uicomponents.compose
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivityResultRegistryOwner
+import androidx.activity.result.ActivityResultRegistry
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -64,6 +66,36 @@ fun VenmoButton(
     venmoTokenizeCallback: VenmoTokenizeCallback
 ) {
     val context = LocalContext.current
+    VenmoButtonContent(
+        style = style,
+        venmoRequest = venmoRequest,
+        pendingRequestRepository = pendingRequestRepository,
+        venmoTokenizeCallback = venmoTokenizeCallback,
+        launcherFactory = { VenmoLauncher(it) },
+        clientFactory = {
+            VenmoClient(
+                context = it,
+                authorization = authorization,
+                appLinkReturnUrl = appLinkReturnUrl,
+                deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
+            )
+        },
+        analyticsClientProvider = { AnalyticsClient.lazyInstance.value }
+    )
+}
+
+@Suppress("LongParameterList", "LongMethod")
+@Composable
+internal fun VenmoButtonContent(
+    style: VenmoButtonColor,
+    venmoRequest: VenmoRequest,
+    pendingRequestRepository: PendingRequestRepository,
+    venmoTokenizeCallback: VenmoTokenizeCallback,
+    launcherFactory: (ActivityResultRegistry) -> VenmoLauncher,
+    clientFactory: (Context) -> VenmoClient,
+    analyticsClientProvider: () -> AnalyticsClient
+) {
+    val context = LocalContext.current
     val activity = context.findActivity()
     val coroutineScope = rememberCoroutineScope()
 
@@ -83,16 +115,9 @@ fun VenmoButton(
         return
     }
 
-    val venmoLauncher = remember { VenmoLauncher(registry) }
-    val venmoClient = remember {
-        VenmoClient(
-            context = context,
-            authorization = authorization,
-            appLinkReturnUrl = appLinkReturnUrl,
-            deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
-        )
-    }
-    val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
+    val venmoLauncher = remember { launcherFactory(registry) }
+    val venmoClient = remember { clientFactory(context) }
+    val analyticsClient = remember { analyticsClientProvider() }
 
     VenmoButtonView(style = style, enabled = enabled) {
         enabled = false
