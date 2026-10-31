@@ -55,6 +55,18 @@ class PayPalButton @JvmOverloads constructor(
     private lateinit var payPalLauncher: PayPalLauncher
 
     /**
+     * Internal constructor for testing with injected dependencies.
+     */
+    internal constructor(
+        context: Context,
+        payPalClient: PayPalClient,
+        payPalLauncher: PayPalLauncher
+    ) : this(context) {
+        this.payPalClient = payPalClient
+        this.payPalLauncher = payPalLauncher
+    }
+
+    /**
      * Callback invoked when the PayPal payment authentication request is launched.
      *
      * This callback is used to receive notifications about the launch status, such as

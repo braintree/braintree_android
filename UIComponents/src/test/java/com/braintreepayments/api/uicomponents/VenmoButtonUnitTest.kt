@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.venmo.VenmoClient
 import com.braintreepayments.api.venmo.VenmoLauncher
 import com.braintreepayments.api.venmo.VenmoPaymentAuthRequest
@@ -12,6 +13,8 @@ import com.braintreepayments.api.venmo.VenmoPaymentAuthResult
 import com.braintreepayments.api.venmo.VenmoPendingRequest
 import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage
 import com.braintreepayments.api.venmo.VenmoRequest
+import com.braintreepayments.api.venmo.VenmoResult
+import com.braintreepayments.api.venmo.VenmoTokenizeCallback
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -19,7 +22,9 @@ import io.mockk.slot
 import io.mockk.unmockkObject
 import io.mockk.verify
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -32,12 +37,13 @@ class VenmoButtonUnitTest {
 
     private val mockVenmoClient: VenmoClient = mockk(relaxed = true)
     private val mockVenmoLauncher: VenmoLauncher = mockk(relaxed = true)
+    private val mockAnalyticsClient: AnalyticsClient = mockk(relaxed = true)
     private val venmoRequest = VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE)
 
     @Before
     fun setUp() {
         mockkObject(AnalyticsClient.Companion)
-        every { AnalyticsClient.lazyInstance } returns lazyOf(mockk(relaxed = true))
+        every { AnalyticsClient.lazyInstance } returns lazyOf(mockAnalyticsClient)
     }
 
     @After
@@ -215,5 +221,129 @@ class VenmoButtonUnitTest {
 
         // Button should be re-enabled after handleReturnToApp (for all result types)
         assertTrue(button.isEnabled)
+    }
+
+    @Test
+    fun `setVenmoRequest when launcher returns Started notifies callback and sends selected event`() {
+        val callbackSlot = slot<VenmoPaymentAuthRequestCallback>()
+        every {
+            mockVenmoClient.createPaymentAuthRequest(any(), any(), capture(callbackSlot))
+        } answers {}
+        every {
+            mockVenmoLauncher.launch(any(), any())
+        } returns VenmoPendingRequest.Started("pending-request")
+
+        val activity = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
+        val button = VenmoButton(activity, mockVenmoClient, mockVenmoLauncher)
+        val launchCallback = mockk<VenmoLaunchCallback>(relaxed = true)
+        button.venmoLaunchCallback = launchCallback
+        button.setVenmoRequest(venmoRequest)
+        button.performClick()
+
+        callbackSlot.captured.onVenmoPaymentAuthRequest(
+            mockk<VenmoPaymentAuthRequest.ReadyToLaunch>(relaxed = true)
+        )
+
+        verify {
+            launchCallback.onVenmoPaymentAuthRequest(
+                match { it is VenmoPendingRequest.Started && it.pendingRequestString == "pending-request" }
+            )
+        }
+        verify {
+            mockAnalyticsClient.sendEvent(
+                UIComponentsAnalytics.VENMO_BUTTON_SELECTED,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+            )
+        }
+        // Started keeps the button in its loading state until the flow returns
+        assertFalse(button.isEnabled)
+    }
+
+    @Test
+    fun `setVenmoRequest when createPaymentAuthRequest returns Failure notifies callback with error`() {
+        val callbackSlot = slot<VenmoPaymentAuthRequestCallback>()
+        every {
+            mockVenmoClient.createPaymentAuthRequest(any(), any(), capture(callbackSlot))
+        } answers {}
+
+        val button = VenmoButton(
+            ApplicationProvider.getApplicationContext(),
+            mockVenmoClient,
+            mockVenmoLauncher
+        )
+        val launchCallback = mockk<VenmoLaunchCallback>(relaxed = true)
+        button.venmoLaunchCallback = launchCallback
+        button.setVenmoRequest(venmoRequest)
+        button.performClick()
+
+        val error = Exception("createPaymentAuthRequest failed")
+        val failure = mockk<VenmoPaymentAuthRequest.Failure>(relaxed = true)
+        every { failure.error } returns error
+        callbackSlot.captured.onVenmoPaymentAuthRequest(failure)
+
+        verify {
+            launchCallback.onVenmoPaymentAuthRequest(
+                match { it is VenmoPendingRequest.Failure && it.error === error }
+            )
+        }
+    }
+
+    @Test
+    fun `handleReturnToApp on Success tokenizes and forwards result`() {
+        val paymentAuthSuccess = mockk<VenmoPaymentAuthResult.Success>(relaxed = true)
+        every { mockVenmoLauncher.handleReturnToApp(any(), any()) } returns paymentAuthSuccess
+        val tokenizeResult = mockk<VenmoResult.Success>(relaxed = true)
+        every { mockVenmoClient.tokenize(paymentAuthSuccess, any()) } answers {
+            secondArg<VenmoTokenizeCallback>().onVenmoResult(tokenizeResult)
+        }
+        val callback = mockk<VenmoTokenizeCallback>(relaxed = true)
+        val button = VenmoButton(
+            ApplicationProvider.getApplicationContext(),
+            mockVenmoClient,
+            mockVenmoLauncher
+        )
+
+        button.handleReturnToApp(VenmoPendingRequest.Started("pending"), Intent(), callback)
+
+        verify { callback.onVenmoResult(tokenizeResult) }
+    }
+
+    @Test
+    fun `handleReturnToApp on NoResult returns Cancel`() {
+        every { mockVenmoLauncher.handleReturnToApp(any(), any()) } returns VenmoPaymentAuthResult.NoResult
+        val resultSlot = slot<VenmoResult>()
+        val button = VenmoButton(
+            ApplicationProvider.getApplicationContext(),
+            mockVenmoClient,
+            mockVenmoLauncher
+        )
+
+        button.handleReturnToApp(
+            VenmoPendingRequest.Started("pending"),
+            Intent()
+        ) { resultSlot.captured = it }
+
+        assertSame(VenmoResult.Cancel, resultSlot.captured)
+    }
+
+    @Test
+    fun `handleReturnToApp on Failure returns Failure with error`() {
+        val error = Exception("return to app error")
+        val paymentAuthFailure = mockk<VenmoPaymentAuthResult.Failure>(relaxed = true)
+        every { paymentAuthFailure.error } returns error
+        every { mockVenmoLauncher.handleReturnToApp(any(), any()) } returns paymentAuthFailure
+        val resultSlot = slot<VenmoResult>()
+        val button = VenmoButton(
+            ApplicationProvider.getApplicationContext(),
+            mockVenmoClient,
+            mockVenmoLauncher
+        )
+
+        button.handleReturnToApp(
+            VenmoPendingRequest.Started("pending"),
+            Intent()
+        ) { resultSlot.captured = it }
+
+        assertEquals(error, (resultSlot.captured as VenmoResult.Failure).error)
     }
 }
