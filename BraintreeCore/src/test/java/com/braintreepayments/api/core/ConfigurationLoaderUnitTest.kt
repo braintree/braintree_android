@@ -5,6 +5,7 @@ import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -186,6 +187,101 @@ class ConfigurationLoaderUnitTest {
         }
 
         assertTrue(configResult is ConfigurationLoaderResult.Success)
+    }
+
+    @Test
+    fun `when loadConfiguration is called with sendAnalytics true and the configuration is fetched from the API, an API_REQUEST_LATENCY event is sent`() =
+        runTest {
+        every { authorization.configUrl } returns "https://example.com/config"
+        every { merchantRepository.authorization } returns authorization
+
+        val mockResponse = HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 10))
+        coEvery {
+            braintreeHttpClient.get(
+                "https://example.com/config?configVersion=3",
+                null,
+                authorization
+            )
+        } returns mockResponse
+
+        sut = createConfigurationLoader()
+        val configResult = sut.loadConfiguration(authorization, sendAnalytics = true)
+
+        verify {
+            analyticsClient.sendEvent(
+                eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                analyticsEventParams = AnalyticsEventParams(
+                    startTime = 0,
+                    endTime = 10,
+                    endpoint = "/v1/configuration"
+                ),
+                sendImmediately = false
+            )
+        }
+
+        assertTrue(configResult is ConfigurationLoaderResult.Success)
+    }
+
+    @Test
+    fun `when loadConfiguration is called with an authorization only and the configuration is fetched from the API, no analytics event is sent`() =
+        runTest {
+        every { authorization.configUrl } returns "https://example.com/config"
+        every { merchantRepository.authorization } returns authorization
+
+        val mockResponse = HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 10))
+        coEvery {
+            braintreeHttpClient.get(
+                "https://example.com/config?configVersion=3",
+                null,
+                authorization
+            )
+        } returns mockResponse
+
+        sut = createConfigurationLoader()
+        val configResult = sut.loadConfiguration(authorization)
+
+        verify(exactly = 0) {
+            analyticsClient.sendEvent(any(), any(), any())
+        }
+
+        assertTrue(configResult is ConfigurationLoaderResult.Success)
+    }
+
+    @Test
+    fun `when loadConfiguration is called with an explicit authorization, the request uses it instead of the MerchantRepository authorization`() =
+        runTest {
+        val repoAuth = mockk<Authorization>(relaxed = true)
+        val explicitAuth = mockk<Authorization>(relaxed = true)
+        every { repoAuth.configUrl } returns "https://example.com/repo-config"
+        every { explicitAuth.configUrl } returns "https://example.com/explicit-config"
+        every { merchantRepository.authorization } returns repoAuth
+
+        val mockResponse = HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
+        coEvery {
+            braintreeHttpClient.get(
+                "https://example.com/explicit-config?configVersion=3",
+                null,
+                explicitAuth
+            )
+        } returns mockResponse
+
+        sut = createConfigurationLoader()
+        sut.loadConfiguration(explicitAuth, sendAnalytics = true)
+
+        coVerify {
+            braintreeHttpClient.get(
+                "https://example.com/explicit-config?configVersion=3",
+                null,
+                explicitAuth
+            )
+        }
+        coVerify(exactly = 0) {
+            braintreeHttpClient.get(
+                "https://example.com/repo-config?configVersion=3",
+                null,
+                repoAuth
+            )
+        }
     }
 
     @Test
