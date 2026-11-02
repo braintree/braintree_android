@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:orientation="vertical"
+    tools:parentTag="android.widget.LinearLayout">
+
+    <!-- Stacks the funding instrument below the brand when they don't fit side by side. -->
+    <com.braintreepayments.api.paypalsavedpaymentmethod.xml.FundingInstrumentRowLayout
+        android:id="@+id/paypal_saved_payment_method_funding_instrument_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/paypal_saved_payment_method_brand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!--
+              Square box; the artwork fits inside it. The content description is set in code: "PayPal" only when the label is hidden.
+            -->
+            <ImageView
+                android:id="@+id/paypal_saved_payment_method_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_paypal_brand_logo"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/paypal_saved_payment_method_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/paypal_saved_payment_method_label" />
+        </LinearLayout>
+
+        <com.braintreepayments.api.paypalsavedpaymentmethod.xml.ShimmerPlaceholderView
+            android:id="@+id/paypal_saved_payment_method_funding_instrument_shimmer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/paypal_saved_payment_method_loading_content_description" />
+
+        <com.braintreepayments.api.paypalsavedpaymentmethod.xml.FundingInstrumentChipView
+            android:id="@+id/paypal_saved_payment_method_funding_instrument_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </com.braintreepayments.api.paypalsavedpaymentmethod.xml.FundingInstrumentRowLayout>
+
+    <com.braintreepayments.api.paypalsavedpaymentmethod.xml.PayPalCreditMessagingView
+        android:id="@+id/paypal_saved_payment_method_credit_messaging"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/paypal_saved_payment_method_credit_messaging_top_spacing" />
+</merge>
