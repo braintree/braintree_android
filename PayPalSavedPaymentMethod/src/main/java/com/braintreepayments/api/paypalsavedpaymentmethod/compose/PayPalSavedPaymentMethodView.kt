@@ -160,7 +160,11 @@ internal fun PayPalSavedPaymentMethodView(
     LifecycleResumeEffect(payPalLauncher, viewModel, pendingRequestRepository) {
         coroutineScope.launch {
             val pendingRequest = launchedPendingRequest ?: pendingRequestRepository.get() ?: return@launch
-            viewModel.handleReturnToApp(pendingRequest, payPalLauncher, context.findActivity()?.intent)
+            // The view model remembers a handled return, so the stored copy isn't needed any more.
+            if (viewModel.handleReturnToApp(pendingRequest, payPalLauncher, context.findActivity()?.intent)) {
+                launchedPendingRequest = null
+                pendingRequestRepository.clear()
+            }
         }
         onPauseOrDispose { }
     }
