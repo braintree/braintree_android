@@ -29,46 +29,121 @@ class NextActionHandlerUnitTest {
         PaymentAction(id = "pa123", status = status, version = version, nextAction = nextAction)
     )
 
-    private fun PaymentActionServiceResult.status() =
-        assertIs<PaymentActionServiceResult.Success>(this).paymentAction.status
+    @Test
+    fun `toPaymentActionResult with REQUIRES_PAYMENT_METHOD returns PaymentMethodRequired`() {
+        val result = sut.toPaymentActionResult(success(PaymentActionStatus.REQUIRES_PAYMENT_METHOD))
+
+        assertEquals("pa123", assertIs<PaymentActionResult.PaymentMethodRequired>(result).id)
+    }
 
     @Test
-    fun `drive with a non-PROCESSING status returns immediately after one fetch`() = runTest(testDispatcher) {
+    fun `toPaymentActionResult with REQUIRES_CUSTOMER_ACTION returns CustomerActionRequired`() {
+        val result = sut.toPaymentActionResult(success(PaymentActionStatus.REQUIRES_CUSTOMER_ACTION))
+
+        assertEquals("pa123", assertIs<PaymentActionResult.CustomerActionRequired>(result).id)
+    }
+
+    @Test
+    fun `toPaymentActionResult with READY_FOR_CONFIRMATION returns ServerActionRequired CONFIRM`() {
+        val result = sut.toPaymentActionResult(success(PaymentActionStatus.READY_FOR_CONFIRMATION))
+
+        val outcome = assertIs<PaymentActionResult.ServerActionRequired>(result)
+        assertEquals("pa123", outcome.id)
+        assertEquals(ServerAction.CONFIRM, outcome.serverAction)
+    }
+
+    @Test
+    fun `toPaymentActionResult with REQUIRES_CAPTURE returns ServerActionRequired CAPTURE`() {
+        val result = sut.toPaymentActionResult(success(PaymentActionStatus.REQUIRES_CAPTURE))
+
+        val outcome = assertIs<PaymentActionResult.ServerActionRequired>(result)
+        assertEquals("pa123", outcome.id)
+        assertEquals(ServerAction.CAPTURE, outcome.serverAction)
+    }
+
+    @Test
+    fun `toPaymentActionResult with SUCCEEDED returns Completed`() {
+        val result = sut.toPaymentActionResult(success(PaymentActionStatus.SUCCEEDED))
+
+        assertEquals("pa123", assertIs<PaymentActionResult.Completed>(result).id)
+    }
+
+    @Test
+    fun `toPaymentActionResult with CANCELLED returns Canceled`() {
+        val result = sut.toPaymentActionResult(success(PaymentActionStatus.CANCELLED))
+
+        assertEquals("pa123", assertIs<PaymentActionResult.Canceled>(result).id)
+    }
+
+    @Test
+    fun `toPaymentActionResult with EXPIRED returns Expired`() {
+        val result = sut.toPaymentActionResult(success(PaymentActionStatus.EXPIRED))
+
+        assertEquals("pa123", assertIs<PaymentActionResult.Expired>(result).id)
+    }
+
+    @Test
+    fun `toPaymentActionResult with PROCESSING returns Processing`() {
+        val result = sut.toPaymentActionResult(success(PaymentActionStatus.PROCESSING))
+
+        assertEquals("pa123", assertIs<PaymentActionResult.Processing>(result).id)
+    }
+
+    @Test
+    fun `toPaymentActionResult with UNKNOWN returns Unknown`() {
+        val result = sut.toPaymentActionResult(success(PaymentActionStatus.UNKNOWN))
+
+        assertEquals("pa123", assertIs<PaymentActionResult.Unknown>(result).id)
+    }
+
+    @Test
+    fun `toPaymentActionResult with a service Failure returns Failure with the same error`() {
+        val error = IOException("Network error")
+
+        val result = sut.toPaymentActionResult(PaymentActionServiceResult.Failure(error))
+
+        assertSame(error, assertIs<PaymentActionResult.Failure>(result).error)
+    }
+
+    @Test
+    fun `handle with a non-PROCESSING status returns its mapped result after one fetch`() = runTest(testDispatcher) {
         val nonProcessingStatuses = PaymentActionStatus.entries - PaymentActionStatus.PROCESSING
         nonProcessingStatuses.forEach { status ->
             val service = mockk<PaymentActionsService>()
-            coEvery { service.getPaymentAction() } returns success(status)
+            val serviceResult = success(status)
+            coEvery { service.getPaymentAction() } returns serviceResult
+            val handler = NextActionHandler(service)
 
-            val result = NextActionHandler(service).drive()
+            val result = handler.handle()
 
-            assertEquals(status, result.status())
+            assertEquals(handler.toPaymentActionResult(serviceResult)::class, result::class)
             coVerify(exactly = 1) { service.getPaymentAction() }
         }
         assertEquals(0, currentTime)
     }
 
     @Test
-    fun `drive with PROCESSING then SUCCEEDED re-fetches and returns the resolved status`() = runTest(testDispatcher) {
+    fun `handle with PROCESSING then SUCCEEDED re-fetches and returns Completed`() = runTest(testDispatcher) {
         coEvery { service.getPaymentAction() } returnsMany listOf(
             success(PaymentActionStatus.PROCESSING),
             success(PaymentActionStatus.SUCCEEDED),
         )
 
-        val result = sut.drive()
+        val result = sut.handle()
 
-        assertEquals(PaymentActionStatus.SUCCEEDED, result.status())
+        assertEquals("pa123", assertIs<PaymentActionResult.Completed>(result).id)
         coVerify(exactly = 2) { service.getPaymentAction() }
         assertEquals(NextActionHandler.PROCESSING_RETRY_DELAY.inWholeMilliseconds, currentTime)
     }
 
     @Test
-    fun `drive with PROCESSING that never resolves returns PROCESSING after the max attempts`() =
+    fun `handle with PROCESSING that never resolves returns Processing after the max attempts`() =
         runTest(testDispatcher) {
             coEvery { service.getPaymentAction() } returns success(PaymentActionStatus.PROCESSING)
 
-            val result = sut.drive()
+            val result = sut.handle()
 
-            assertEquals(PaymentActionStatus.PROCESSING, result.status())
+            assertEquals("pa123", assertIs<PaymentActionResult.Processing>(result).id)
             coVerify(exactly = NextActionHandler.MAX_PROCESSING_ATTEMPTS) { service.getPaymentAction() }
             // One delay between each pair of fetches, none after the last.
             val expectedDelay =
@@ -77,58 +152,58 @@ class NextActionHandlerUnitTest {
         }
 
     @Test
-    fun `drive with an increasing version across fetches does not fail`() = runTest(testDispatcher) {
+    fun `handle with an increasing version across fetches does not fail`() = runTest(testDispatcher) {
         coEvery { service.getPaymentAction() } returnsMany listOf(
             success(PaymentActionStatus.PROCESSING, version = 1),
             success(PaymentActionStatus.SUCCEEDED, version = 2),
         )
 
-        val result = sut.drive()
+        val result = sut.handle()
 
-        assertEquals(PaymentActionStatus.SUCCEEDED, result.status())
+        assertIs<PaymentActionResult.Completed>(result)
     }
 
     @Test
-    fun `drive with an unchanged version across PROCESSING fetches does not fail`() = runTest(testDispatcher) {
+    fun `handle with an unchanged version across PROCESSING fetches does not fail`() = runTest(testDispatcher) {
         coEvery { service.getPaymentAction() } returnsMany listOf(
             success(PaymentActionStatus.PROCESSING, version = 3),
             success(PaymentActionStatus.PROCESSING, version = 3),
             success(PaymentActionStatus.SUCCEEDED, version = 3),
         )
 
-        val result = sut.drive()
+        val result = sut.handle()
 
-        assertEquals(PaymentActionStatus.SUCCEEDED, result.status())
+        assertIs<PaymentActionResult.Completed>(result)
     }
 
     @Test
-    fun `drive with a missing version does not fail`() = runTest(testDispatcher) {
+    fun `handle with a missing version does not fail`() = runTest(testDispatcher) {
         coEvery { service.getPaymentAction() } returnsMany listOf(
             success(PaymentActionStatus.PROCESSING, version = 2),
             success(PaymentActionStatus.SUCCEEDED, version = null),
         )
 
-        val result = sut.drive()
+        val result = sut.handle()
 
-        assertEquals(PaymentActionStatus.SUCCEEDED, result.status())
+        assertIs<PaymentActionResult.Completed>(result)
     }
 
     @Test
-    fun `drive with a decreasing version returns Failure with a BraintreeException`() = runTest(testDispatcher) {
+    fun `handle with a decreasing version returns Failure with a BraintreeException`() = runTest(testDispatcher) {
         coEvery { service.getPaymentAction() } returnsMany listOf(
             success(PaymentActionStatus.PROCESSING, version = 2),
             success(PaymentActionStatus.SUCCEEDED, version = 1),
         )
 
-        val result = sut.drive()
+        val result = sut.handle()
 
-        val failure = assertIs<PaymentActionServiceResult.Failure>(result)
+        val failure = assertIs<PaymentActionResult.Failure>(result)
         val error = assertIs<BraintreeException>(failure.error)
         assertEquals(NextActionHandler.VERSION_ANOMALY_MESSAGE, error.message)
     }
 
     @Test
-    fun `drive compares against the last known version when an intermediate version is missing`() =
+    fun `handle compares against the last known version when an intermediate version is missing`() =
         runTest(testDispatcher) {
             coEvery { service.getPaymentAction() } returnsMany listOf(
                 success(PaymentActionStatus.PROCESSING, version = 2),
@@ -136,13 +211,13 @@ class NextActionHandlerUnitTest {
                 success(PaymentActionStatus.SUCCEEDED, version = 1),
             )
 
-            val result = sut.drive()
+            val result = sut.handle()
 
-            assertIs<PaymentActionServiceResult.Failure>(result)
+            assertIs<PaymentActionResult.Failure>(result)
         }
 
     @Test
-    fun `drive with REQUIRES_CUSTOMER_ACTION stops at the boundary for every nextAction type`() =
+    fun `handle with REQUIRES_CUSTOMER_ACTION stops at the boundary for every nextAction type`() =
         runTest(testDispatcher) {
             val nextActions = listOf(
                 NextAction.ThreeDSecureAuthentication(bin = "401288"),
@@ -159,38 +234,36 @@ class NextActionHandlerUnitTest {
                 coEvery { service.getPaymentAction() } returns
                     success(PaymentActionStatus.REQUIRES_CUSTOMER_ACTION, nextAction = nextAction)
 
-                val result = NextActionHandler(service).drive()
+                val result = NextActionHandler(service).handle()
 
-                val success = assertIs<PaymentActionServiceResult.Success>(result)
-                assertEquals(PaymentActionStatus.REQUIRES_CUSTOMER_ACTION, success.paymentAction.status)
-                assertEquals(nextAction, success.paymentAction.nextAction)
+                assertEquals("pa123", assertIs<PaymentActionResult.CustomerActionRequired>(result).id)
                 coVerify(exactly = 1) { service.getPaymentAction() }
                 coVerify(exactly = 0) { service.signalCustomerActionComplete(any()) }
             }
         }
 
     @Test
-    fun `drive returns a service Failure as-is without retrying`() = runTest(testDispatcher) {
-        val failure = PaymentActionServiceResult.Failure(IOException("Network error"))
-        coEvery { service.getPaymentAction() } returns failure
+    fun `handle returns a service Failure as a Failure result without retrying`() = runTest(testDispatcher) {
+        val error = IOException("Network error")
+        coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Failure(error)
 
-        val result = sut.drive()
+        val result = sut.handle()
 
-        assertSame(failure, result)
+        assertSame(error, assertIs<PaymentActionResult.Failure>(result).error)
         coVerify(exactly = 1) { service.getPaymentAction() }
     }
 
     @Test
-    fun `drive returns a Failure that occurs while re-checking PROCESSING`() = runTest(testDispatcher) {
-        val failure = PaymentActionServiceResult.Failure(IOException("Network error"))
+    fun `handle returns a Failure that occurs while re-checking PROCESSING`() = runTest(testDispatcher) {
+        val error = IOException("Network error")
         coEvery { service.getPaymentAction() } returnsMany listOf(
             success(PaymentActionStatus.PROCESSING),
-            failure,
+            PaymentActionServiceResult.Failure(error),
         )
 
-        val result = sut.drive()
+        val result = sut.handle()
 
-        assertSame(failure, result)
+        assertSame(error, assertIs<PaymentActionResult.Failure>(result).error)
         coVerify(exactly = 2) { service.getPaymentAction() }
     }
 }
