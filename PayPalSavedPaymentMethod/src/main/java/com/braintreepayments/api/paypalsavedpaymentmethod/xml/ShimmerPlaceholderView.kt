@@ -17,7 +17,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 
-/** The loading bar with a sweeping highlight. Hidden from screen readers unless it has a content description. */
+/**
+ * The loading bar with a sweeping highlight. Hidden from screen readers unless it has a content description.
+ * [showsTrailingGap] `false` fills the whole width, for example for card art.
+ */
 internal class ShimmerPlaceholderView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
@@ -50,6 +53,14 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
     private var isInitialized = false
     private var isWindowVisible = true
 
+    /** Whether the bar stops short of the trailing edge. */
+    internal var showsTrailingGap = true
+        set(value) {
+            field = value
+            requestLayout()
+            invalidate()
+        }
+
     @get:VisibleForTesting
     internal val barBounds: RectF
         get() = RectF(barRect)
@@ -70,7 +81,12 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(getDefaultSize(suggestedMinimumWidth, widthMeasureSpec), barHeight)
+        val height = if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
+            MeasureSpec.getSize(heightMeasureSpec)
+        } else {
+            barHeight
+        }
+        setMeasuredDimension(getDefaultSize(suggestedMinimumWidth, widthMeasureSpec), height)
     }
 
     // Recomputed on every layout, not only on a size change, because changing the layout direction lays the view out
@@ -78,7 +94,7 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
     // ShimmerPlaceholder: the right in left-to-right layouts and the left in right-to-left ones.
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
-        val barWidth = (width - trailingGap).coerceAtLeast(0).toFloat()
+        val barWidth = (width - if (showsTrailingGap) trailingGap else 0).coerceAtLeast(0).toFloat()
         val barLeft = if (layoutDirection == LAYOUT_DIRECTION_RTL) width - barWidth else 0f
         barRect.set(barLeft, 0f, barLeft + barWidth, height.toFloat())
         highlightPaint.shader = LinearGradient(

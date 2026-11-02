@@ -4,16 +4,30 @@
     tools:orientation="horizontal"
     tools:parentTag="android.widget.LinearLayout">
 
-    <ImageView
-        android:id="@+id/paypal_saved_payment_method_funding_instrument_icon"
+    <FrameLayout
+        android:id="@+id/paypal_saved_payment_method_funding_instrument_icon_container"
         android:layout_width="@dimen/paypal_saved_payment_method_funding_instrument_icon_width"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/paypal_saved_payment_method_funding_instrument_icon_margin"
-        android:adjustViewBounds="true"
-        android:importantForAccessibility="no"
-        android:scaleType="fitCenter" />
+        android:layout_marginEnd="@dimen/paypal_saved_payment_method_funding_instrument_icon_margin">
 
-    <!-- Shrinks a long label so the edit icon after it keeps its space. -->
+        <!-- Shown while the card art loads. Decorative: the chip is read as one element. -->
+        <com.braintreepayments.api.paypalsavedpaymentmethod.xml.ShimmerPlaceholderView
+            android:id="@+id/paypal_saved_payment_method_funding_instrument_icon_shimmer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/paypal_saved_payment_method_funding_instrument_icon_loading_height"
+            android:layout_gravity="center_vertical"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/paypal_saved_payment_method_funding_instrument_icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:importantForAccessibility="no"
+            android:scaleType="fitCenter" />
+    </FrameLayout>
+
+    <!-- Shrinks a long label so the edit icon keeps its space. -->
     <TextView
         android:id="@+id/paypal_saved_payment_method_funding_instrument_text"
         android:layout_width="wrap_content"

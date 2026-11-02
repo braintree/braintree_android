@@ -81,6 +81,19 @@ class ShimmerPlaceholderViewUnitTest {
     }
 
     @Test
+    fun `an exact height from the layout replaces the bar height`() {
+        val sut = ShimmerPlaceholderView(context)
+
+        sut.measure(
+            MeasureSpec.makeMeasureSpec(28, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(18, MeasureSpec.EXACTLY)
+        )
+
+        assertEquals(28, sut.measuredWidth)
+        assertEquals(18, sut.measuredHeight)
+    }
+
+    @Test
     fun `is hidden from screen readers unless it has a content description`() {
         val sut = ShimmerPlaceholderView(context)
         assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_NO, sut.importantForAccessibility)
