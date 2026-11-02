@@ -13,7 +13,7 @@ internal data class PayPalCreditMessagingContent(
     val messageType: String? = null,
     val impressionUrl: String? = null
 ) {
-    /** The "Learn more" link. Text and URL always come together, as on iOS. */
+    /** The "Learn more" link; text and URL always come together. */
     internal data class LearnMore(val text: String, val url: String, val isEmbeddable: Boolean)
 }
 
@@ -40,8 +40,8 @@ internal fun PayPalCreditMessagingResult.toContent(): PayPalCreditMessagingConte
 
 private fun List<PayPalCreditMessageItem>.displayText(): String = joinToString("") { it.displayText() }
 
-// Like iOS: image blocks read their alternative text, other blocks their text, each falling back to the other.
-// Unlike iOS, an empty string counts as missing too. A blank string doesn't: it can be the space between two blocks.
+// Image blocks read their alternative text, other blocks their text; each falls back to the other. An empty string
+// counts as missing, a blank one doesn't: it can be the space between two blocks.
 private fun PayPalCreditMessageItem.displayText(): String {
     val isImage = type == PayPalCreditMessageItemType.IMAGE
     val preferred = if (isImage) alternativeText else text
@@ -49,7 +49,7 @@ private fun PayPalCreditMessageItem.displayText(): String {
     return preferred?.takeIf { it.isNotEmpty() } ?: fallback.orEmpty()
 }
 
-// Like iOS: the first action item of any type with text and a URL. Android only accepts https URLs.
+// The first action item of any type that has text and an https URL.
 private fun PayPalCreditMessageItem.toLearnMore(): PayPalCreditMessagingContent.LearnMore? {
     val linkText = text?.takeIf { it.isNotBlank() } ?: alternativeText?.takeIf { it.isNotBlank() } ?: return null
     val url = clickUrl.asHttpsUrlOrNull() ?: return null

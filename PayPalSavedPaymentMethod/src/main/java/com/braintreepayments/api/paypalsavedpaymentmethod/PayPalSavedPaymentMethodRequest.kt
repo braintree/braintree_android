@@ -22,7 +22,7 @@ class PayPalSavedPaymentMethodRequest @JvmOverloads constructor(
     internal val merchantAccountId: String? = null
 ) {
 
-    // Compared by value, like iOS's Equatable, so a request rebuilt with the same values doesn't count as a change.
+    // Compared by value, so a request rebuilt with the same values isn't a change.
     override fun equals(other: Any?): Boolean =
         other is PayPalSavedPaymentMethodRequest &&
             amount == other.amount &&

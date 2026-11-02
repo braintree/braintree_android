@@ -5,7 +5,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.R
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
 
-// Like iOS: PayPal products that come as a card or bank (e.g. PayPal Debit) carry a subtype and show their label.
+// Card and bank products with a subtype (e.g. PayPal Debit) show their label, not the last digits.
 private val PayPalSavedPaymentMethod.showsLastDigits: Boolean
     get() = (type == PayPalSavedPaymentMethodType.CARD || type == PayPalSavedPaymentMethodType.BANK) &&
         subtype == null && !lastDigits.isNullOrBlank()
