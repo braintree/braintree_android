@@ -20,6 +20,7 @@
     <string name="cards">Credit or Debit Cards</string>
     <string name="paypal_messaging_button">PayPal Messaging</string>
     <string name="paypal_saved_payment_method_compose_button">PayPal Saved Payment Method Compose</string>
+    <string name="paypal_saved_payment_method_xml_button">PayPal Saved Payment Method XML</string>
     <string name="paypal_saved_payment_method_client_token_label">Client token with a paymentMethodIdJwt</string>
     <string name="paypal_saved_payment_method_amount_label">Amount</string>
     <string name="paypal_saved_payment_method_edit_style">Edit Style</string>

@@ -46,6 +46,9 @@
         <action
             android:id="@+id/action_mainFragment_to_payPalSavedPaymentMethodComposeFragment"
             app:destination="@id/payPalSavedPaymentMethodComposeFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_payPalSavedPaymentMethodXmlFragment"
+            app:destination="@id/payPalSavedPaymentMethodXmlFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -256,6 +259,13 @@
         android:name="com.braintreepayments.demo.PayPalSavedPaymentMethodComposeFragment">
         <action
             android:id="@+id/action_payPalSavedPaymentMethodComposeFragment_to_createTransactionFragment"
+            app:destination="@id/createTransactionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/payPalSavedPaymentMethodXmlFragment"
+        android:name="com.braintreepayments.demo.PayPalSavedPaymentMethodXmlFragment">
+        <action
+            android:id="@+id/action_payPalSavedPaymentMethodXmlFragment_to_createTransactionFragment"
             app:destination="@id/createTransactionFragment" />
     </fragment>
 </navigation>

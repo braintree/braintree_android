@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/client_token"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/paypal_saved_payment_method_client_token_label"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:maxLines="4" />
+
+        <EditText
+            android:id="@+id/amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/paypal_saved_payment_method_amount_label"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal" />
+
+        <Button
+            android:id="@+id/edit_style"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paypal_saved_payment_method_edit_style" />
+
+        <Button
+            android:id="@+id/load"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paypal_saved_payment_method_load" />
+
+        <!-- The id lets the result of an edit survive the activity being recreated. -->
+        <com.braintreepayments.api.paypalsavedpaymentmethod.xml.PayPalSavedPaymentMethodView
+            android:id="@+id/saved_payment_method_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:paypalSavedPaymentMethodLogoWidth="48dp" />
+
+        <TextView
+            android:id="@+id/nonce"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/create_transaction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/create_transaction"
+            android:visibility="gone" />
+
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/style_editor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</ScrollView>

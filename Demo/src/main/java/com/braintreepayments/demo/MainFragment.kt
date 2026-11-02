@@ -61,6 +61,9 @@ class MainFragment : BaseFragment() {
                                 PaymentModuleButton(R.string.paypal_saved_payment_method_compose_button) {
                                     launchPayPalSavedPaymentMethodCompose()
                                 }
+                                PaymentModuleButton(R.string.paypal_saved_payment_method_xml_button) {
+                                    launchPayPalSavedPaymentMethodXml()
+                                }
                                 Spacer(modifier = Modifier.height(4.dp))
                             }
 
@@ -224,6 +227,11 @@ class MainFragment : BaseFragment() {
     private fun launchPayPalSavedPaymentMethodCompose() {
         // The component needs a client token with the buyer's payment method ID, which the screen asks for.
         val action = MainFragmentDirections.actionMainFragmentToPayPalSavedPaymentMethodComposeFragment()
+        findNavController().navigate(action)
+    }
+
+    private fun launchPayPalSavedPaymentMethodXml() {
+        val action = MainFragmentDirections.actionMainFragmentToPayPalSavedPaymentMethodXmlFragment()
         findNavController().navigate(action)
     }
 
