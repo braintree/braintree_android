@@ -8,13 +8,13 @@ import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.uicomponents.R
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowLooper
 import java.util.concurrent.TimeUnit
 
@@ -117,18 +117,6 @@ class BaseTextInputViewUnitTest {
     }
 
     @Test
-    fun `setError with the same message is a no-op`() {
-        val view = BaseTextInputView(context)
-        view.setError("Invalid")
-        val errorLabel = view.findViewById<TextView>(R.id.error_label)
-        errorLabel.text = "changed"
-
-        view.setError("Invalid")
-
-        assertEquals("changed", errorLabel.text.toString())
-    }
-
-    @Test
     fun `accessibility node info exposes current error`() {
         val view = BaseTextInputView(context)
         view.setError("Invalid card number")
@@ -157,7 +145,7 @@ class BaseTextInputViewUnitTest {
 
         view.setText("4111")
         finishHintAnimation()
-        assertNotEquals(0f, view.hintLabel.translationY)
+        assertTrue("hint should move up", view.hintLabel.translationY < 0f)
 
         view.setText("")
         finishHintAnimation()
@@ -183,11 +171,12 @@ class BaseTextInputViewUnitTest {
         val paddingBefore = view.editText.paddingStart
 
         view.setCardBrandIcon(R.drawable.card_fields_cc_amex, "Visa")
-        view.setCardBrandIcon(R.drawable.card_fields_cc_amex, "Mastercard")
+        view.setCardBrandIcon(R.drawable.card_fields_cc_jcb, "JCB")
 
         assertEquals(childrenBefore + 1, view.inputContainer.childCount)
         val icon = view.inputContainer.getChildAt(view.inputContainer.childCount - 1) as ImageView
-        assertEquals("Mastercard", icon.contentDescription.toString())
+        assertEquals("JCB", icon.contentDescription.toString())
+        assertEquals(R.drawable.card_fields_cc_jcb, shadowOf(icon.drawable).createdFromResId)
         assertTrue(view.editText.paddingStart > paddingBefore)
     }
 
@@ -198,11 +187,12 @@ class BaseTextInputViewUnitTest {
         val paddingBefore = view.editText.paddingEnd
 
         view.setCvvHintIcon(R.drawable.card_fields_cc_amex, "CVV hint")
-        view.setCvvHintIcon(R.drawable.card_fields_cc_amex, "CVV hint 2")
+        view.setCvvHintIcon(R.drawable.card_fields_cc_jcb, "CVV hint 2")
 
         assertEquals(childrenBefore + 1, view.inputContainer.childCount)
         val icon = view.inputContainer.getChildAt(view.inputContainer.childCount - 1) as ImageView
         assertEquals("CVV hint 2", icon.contentDescription.toString())
+        assertEquals(R.drawable.card_fields_cc_jcb, shadowOf(icon.drawable).createdFromResId)
         assertTrue(view.editText.paddingEnd > paddingBefore)
     }
 

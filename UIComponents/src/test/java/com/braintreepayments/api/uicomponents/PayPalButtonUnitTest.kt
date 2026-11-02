@@ -70,13 +70,14 @@ class PayPalButtonUnitTest {
     }
 
     @Test
-    fun `click disables button`() {
+    fun `click disables button and creates a payment auth request with the request`() {
         captureAuthRequestCallback()
         val button = buttonWithActivity()
 
         button.performClick()
 
         assertFalse(button.isEnabled)
+        verify { mockPayPalClient.createPaymentAuthRequest(any(), payPalRequest, any()) }
     }
 
     @Test
@@ -88,7 +89,8 @@ class PayPalButtonUnitTest {
         )
         button.setPayPalRequest(payPalRequest)
 
-        assertThrows(NullPointerException::class.java) { button.performClick() }
+        val exception = assertThrows(NullPointerException::class.java) { button.performClick() }
+        assertEquals("PayPalLaunchCallback must be initialized first", exception.message)
     }
 
     @Test

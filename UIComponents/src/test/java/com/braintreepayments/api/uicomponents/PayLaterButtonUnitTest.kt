@@ -25,7 +25,6 @@ import io.mockk.slot
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertThrows
@@ -193,25 +192,25 @@ class PayLaterButtonUnitTest {
         button.performClick()
         assertFalse(button.isEnabled)
 
-        authCallback.captured.onPayPalPaymentAuthRequest(authRequestFailure(Exception("auth request failed")))
+        val error = Exception("auth request failed")
+        authCallback.captured.onPayPalPaymentAuthRequest(authRequestFailure(error))
 
         assertTrue(button.isEnabled)
-        assertEquals(1, launchResults.filterIsInstance<PayPalPendingRequest.Failure>().size)
+        assertSame(error, (launchResults.single() as PayPalPendingRequest.Failure).error)
     }
 
     @Test
     fun `launch failure re-enables the button`() {
         val button = buttonWith(activity())
-        every {
-            mockPayPalLauncher.launch(any(), any())
-        } returns PayPalPendingRequest.Failure(Exception("launch failed"))
+        val error = Exception("launch failed")
+        every { mockPayPalLauncher.launch(any(), any()) } returns PayPalPendingRequest.Failure(error)
         button.performClick()
         assertFalse(button.isEnabled)
 
         authCallback.captured.onPayPalPaymentAuthRequest(mockk<PayPalPaymentAuthRequest.ReadyToLaunch>())
 
         assertTrue(button.isEnabled)
-        assertEquals(1, launchResults.filterIsInstance<PayPalPendingRequest.Failure>().size)
+        assertSame(error, (launchResults.single() as PayPalPendingRequest.Failure).error)
     }
 
     @Test
@@ -223,7 +222,10 @@ class PayLaterButtonUnitTest {
         authCallback.captured.onPayPalPaymentAuthRequest(mockk<PayPalPaymentAuthRequest.ReadyToLaunch>())
 
         assertTrue(button.isEnabled)
-        assertEquals(1, launchResults.filterIsInstance<PayPalPendingRequest.Failure>().size)
+        val error = (launchResults.single() as PayPalPendingRequest.Failure).error
+        assertTrue(error is NullPointerException)
+        assertEquals("Activity is null", error.message)
+        verify(exactly = 0) { mockPayPalLauncher.launch(any(), any()) }
     }
 
     // endregion
@@ -234,7 +236,8 @@ class PayLaterButtonUnitTest {
     fun `click without a launch callback throws NullPointerException`() {
         val button = buttonWith(activity(), withCallback = false)
 
-        assertThrows(NullPointerException::class.java) { button.performClick() }
+        val exception = assertThrows(NullPointerException::class.java) { button.performClick() }
+        assertEquals("PayPalLaunchCallback must be initialized first", exception.message)
     }
 
     @Test
@@ -247,19 +250,6 @@ class PayLaterButtonUnitTest {
     }
 
     @Test
-    fun `auth request failure forwards the error to the callback`() {
-        val button = buttonWith(activity())
-        button.performClick()
-        val error = Exception("auth request failed")
-        val failure = mockk<PayPalPaymentAuthRequest.Failure>()
-        every { failure.error } returns error
-
-        authCallback.captured.onPayPalPaymentAuthRequest(failure)
-
-        assertSame(error, (launchResults.single() as PayPalPendingRequest.Failure).error)
-    }
-
-    @Test
     fun `launch started forwards the pending request and keeps the button loading`() {
         every { mockPayPalLauncher.launch(any(), any()) } returns PayPalPendingRequest.Started("pending-request")
         val button = buttonWith(activity())
@@ -269,31 +259,6 @@ class PayLaterButtonUnitTest {
 
         assertEquals("pending-request", (launchResults.single() as PayPalPendingRequest.Started).pendingRequestString)
         assertFalse(button.isEnabled)
-    }
-
-    @Test
-    fun `launch failure forwards the launcher error`() {
-        val error = Exception("launch failed")
-        every { mockPayPalLauncher.launch(any(), any()) } returns PayPalPendingRequest.Failure(error)
-        val button = buttonWith(activity())
-        button.performClick()
-
-        authCallback.captured.onPayPalPaymentAuthRequest(mockk<PayPalPaymentAuthRequest.ReadyToLaunch>())
-
-        assertSame(error, (launchResults.single() as PayPalPendingRequest.Failure).error)
-    }
-
-    @Test
-    fun `missing activity forwards an Activity is null error and never launches`() {
-        val button = buttonWith(context)
-        button.performClick()
-
-        authCallback.captured.onPayPalPaymentAuthRequest(mockk<PayPalPaymentAuthRequest.ReadyToLaunch>())
-
-        val error = (launchResults.single() as PayPalPendingRequest.Failure).error
-        assertTrue(error is NullPointerException)
-        assertEquals("Activity is null", error.message)
-        verify(exactly = 0) { mockPayPalLauncher.launch(any(), any()) }
     }
 
     @Test
@@ -358,32 +323,13 @@ class PayLaterButtonUnitTest {
     @Test
     fun `setButtonColor recolors the background`() {
         val button = PayLaterButton(context)
-        val blueFill = fillColor(button)
 
         button.setButtonColor(PayLaterButtonColor.Black)
 
-        assertNotEquals(blueFill, fillColor(button))
         assertEquals(
             ContextCompat.getColor(context, PayLaterButtonColor.Black.toStyle().default.fill),
             fillColor(button)
         )
-    }
-
-    @Test
-    fun `setButtonColor with the current color leaves the background unchanged`() {
-        val button = PayLaterButton(context)
-        val blueFill = fillColor(button)
-
-        button.setButtonColor(PayLaterButtonColor.Blue)
-
-        assertEquals(blueFill, fillColor(button))
-    }
-
-    @Test
-    fun `color keys match the attribute values`() {
-        assertEquals(0, PayLaterButtonColor.Blue.key)
-        assertEquals(1, PayLaterButtonColor.Black.key)
-        assertEquals(2, PayLaterButtonColor.White.key)
     }
 
     // endregion

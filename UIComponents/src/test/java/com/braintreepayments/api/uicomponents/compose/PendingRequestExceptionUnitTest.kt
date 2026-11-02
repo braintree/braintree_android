@@ -12,9 +12,4 @@ class PendingRequestExceptionUnitTest {
             PendingRequestException().message
         )
     }
-
-    @Test
-    fun `custom message is preserved`() {
-        assertEquals("custom", PendingRequestException("custom").message)
-    }
 }

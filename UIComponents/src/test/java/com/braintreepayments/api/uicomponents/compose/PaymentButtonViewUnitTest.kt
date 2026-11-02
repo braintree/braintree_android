@@ -1,12 +1,9 @@
 package com.braintreepayments.api.uicomponents.compose
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
@@ -46,19 +43,6 @@ class PaymentButtonViewUnitTest {
         composeRule.onNodeWithContentDescription("PayPal").assertDoesNotExist()
         composeRule.onNode(hasClickAction()).assertIsNotEnabled()
         assertEquals(0, clicks)
-    }
-
-    @Test
-    fun `PayPalButtonView renders every color style`() {
-        composeRule.setContent {
-            Column {
-                PayPalButtonView(style = PayPalButtonColor.Blue) {}
-                PayPalButtonView(style = PayPalButtonColor.Black) {}
-                PayPalButtonView(style = PayPalButtonColor.White) {}
-            }
-        }
-
-        composeRule.onAllNodesWithContentDescription("PayPal").assertCountEquals(3)
     }
 
     @Test

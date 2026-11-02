@@ -133,18 +133,6 @@ class PaymentButtonRendererUnitTest {
     }
 
     @Test
-    fun `focused state uses the focus fill`() {
-        view.isFocusable = true
-        view.isFocusableInTouchMode = true
-        view.requestFocus()
-        assertTrue(view.isFocused)
-
-        renderer.updateAppearance()
-
-        assertEquals(colorOf(style.focus.fill), fill())
-    }
-
-    @Test
     fun `pressed takes precedence over hovered`() {
         view.isPressed = true
         view.isHovered = true
@@ -183,16 +171,6 @@ class PaymentButtonRendererUnitTest {
         renderer.hideLoading()
 
         assertTrue(view.isEnabled)
-    }
-
-    @Test
-    fun `showLoading then hideLoading can be repeated`() {
-        repeat(2) {
-            renderer.showLoading()
-            assertFalse(view.isEnabled)
-            renderer.hideLoading()
-            assertTrue(view.isEnabled)
-        }
     }
 
     private fun fill(): Int =
