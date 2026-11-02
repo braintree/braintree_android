@@ -370,18 +370,83 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `a return whose result wasn't delivered before the process died is completed again`() = runTest(dispatcher) {
+    fun `a return whose result wasn't delivered before the process died isn't completed again`() =
+        runTest(dispatcher) {
+            givenReturn(tokenized = success("order-1"))
+            sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
+            advanceUntilIdle()
+
+            newViewModel().handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
+            advanceUntilIdle()
+
+            verify(exactly = 1) { launcher.handleReturnToApp(any(), any()) }
+            coVerify(exactly = 1) { client.tokenize(any<PayPalPaymentAuthResult.Success>()) }
+        }
+
+    @Test
+    fun `a repeat of a completed return clears its return URL without tokenizing`() = runTest(dispatcher) {
         givenReturn(tokenized = success("order-1"))
         sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
         advanceUntilIdle()
-        sut.handleReturnToApp("pending", launcher, intentWith(null))
+
+        val restored = intentWith(appLinkReturnUrl)
+        newViewModel().handleReturnToApp("pending", launcher, restored)
         advanceUntilIdle()
-        verify(exactly = 1) { launcher.handleReturnToApp(any(), any()) }
+
+        verify { restored.data = null }
+        coVerify(exactly = 1) { client.tokenize(any<PayPalPaymentAuthResult.Success>()) }
+    }
+
+    @Test
+    fun `a return cancelled on the PayPal page can still be completed`() = runTest(dispatcher) {
+        givenReturn(tokenized = PayPalResult.Cancel)
+        sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
+        advanceUntilIdle()
+        assertSame(PayPalResult.Cancel, sut.results.first())
+
+        val success = givenReturn(tokenized = success("order-1"))
+        sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
+        advanceUntilIdle()
+
+        assertSame(success, sut.results.first())
+    }
+
+    @Test
+    fun `handleReturnToApp tells the caller to clear its pending request once handled or already completed`() =
+        runTest(dispatcher) {
+            givenReturn(tokenized = success("order-1"))
+
+            assertTrue(sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl)))
+            advanceUntilIdle()
+
+            assertTrue(sut.handleReturnToApp("pending", launcher, intentWith(null)))
+        }
+
+    @Test
+    fun `a return dropped while an edit step runs tells the caller to keep its pending request`() =
+        runTest(dispatcher) {
+            val created = CompletableDeferred<PayPalSavedPaymentMethodAuthRequest>()
+            coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } coAnswers { created.await() }
+            val first = async { sut.startEdit(activity, launcher, CHECKOUT) }
+            runCurrent()
+
+            assertFalse(sut.handleReturnToApp("pending", launcher, intentWith(null)))
+            created.complete(PayPalSavedPaymentMethodAuthRequest.Failure(BraintreeException("failed")))
+            first.await()
+        }
+
+    @Test
+    fun `a return interrupted while tokenizing isn't completed again`() = runTest(dispatcher) {
+        val authResult = mockk<PayPalPaymentAuthResult.Success>()
+        every { launcher.handleReturnToApp(any(), any()) } returns authResult
+        coEvery { client.tokenize(authResult) } coAnswers { CompletableDeferred<PayPalResult>().await() }
+        sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
+        runCurrent()
 
         newViewModel().handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
-        advanceUntilIdle()
+        runCurrent()
 
-        verify(exactly = 2) { launcher.handleReturnToApp(any(), any()) }
+        verify(exactly = 1) { launcher.handleReturnToApp(any(), any()) }
     }
 
     @Test

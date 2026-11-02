@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -40,7 +39,8 @@ internal typealias PayPalSavedPaymentMethodClientFactory =
 /**
  * State and edit flow shared by the XML and Compose views. Created for one authorization and its return URLs.
  * The state survives configuration changes, and the completed edit survives process death. Each result reaches the
- * merchant once, even if the view is recreated while tokenizing.
+ * merchant once, even if the view is recreated while tokenizing. A result lost with the process is not delivered
+ * again, because its PayPal return can't be completed twice; the edited funding instrument is still restored.
  *
  * The launcher, activity and intent are passed per call and never kept. Main thread only.
  */
@@ -64,17 +64,9 @@ internal class PayPalSavedPaymentMethodViewModel(
     )
     val state: StateFlow<PayPalSavedPaymentMethodUiState> = mutableState.asStateFlow()
 
-    // Buffered, so a result sent while no view collects waits for the next one. Paired with the pending request it
-    // completed.
-    private val resultChannel = Channel<Pair<String?, PayPalResult>>(Channel.BUFFERED)
-    val results: Flow<PayPalResult> = resultChannel.receiveAsFlow().map { (completedPendingRequest, result) ->
-        // Saved on delivery, so a return whose result was lost with the process is completed again.
-        completedPendingRequest?.let { savedState[COMPLETED_PENDING_REQUEST_KEY] = it }
-        result
-    }
-
-    // Blocks a repeat of the pending request until its result is delivered.
-    private var sentPendingRequest: String? = null
+    // Buffered, so a result sent while no view collects waits for the next one.
+    private val resultChannel = Channel<PayPalResult>(Channel.BUFFERED)
+    val results: Flow<PayPalResult> = resultChannel.receiveAsFlow()
 
     private var request: PayPalSavedPaymentMethodRequest? = null
     private var showCreditMessaging = true
@@ -157,14 +149,22 @@ internal class PayPalSavedPaymentMethodViewModel(
     /**
      * Completes the return from PayPal in [intent], tokenizes and delivers the result through [results]. A return
      * with no result is a [PayPalResult.Cancel]. Runs in the view model's scope, so recreating the view mid-tokenize
-     * neither cancels nor repeats it. Ignored while an edit step is running or when [pendingRequest] was already
-     * completed; a cancel doesn't count, so the buyer can still return with the same pending request. After a
-     * success the funding instrument the buyer picked is loaded, and the Pay Later message is not.
+     * neither cancels nor repeats it. A [pendingRequest] that was already completed is ignored and its return URL is
+     * removed from [intent]; a cancel doesn't count, so the buyer can still return with the same pending request.
+     * After a success the funding instrument the buyer picked is loaded, and the Pay Later message is not.
+     *
+     * Returns `false` if the return was dropped because an edit step is running, so the caller keeps [pendingRequest]
+     * and passes it again. Otherwise returns `true`: the return is being handled or was already completed, and the
+     * caller can clear its stored copy. A result lost to process death after that is not delivered again.
      */
-    fun handleReturnToApp(pendingRequest: String, payPalLauncher: PayPalLauncher, intent: Intent?) {
-        if (pendingRequest == sentPendingRequest || pendingRequest == savedState[COMPLETED_PENDING_REQUEST_KEY]) return
+    fun handleReturnToApp(pendingRequest: String, payPalLauncher: PayPalLauncher, intent: Intent?): Boolean {
+        if (pendingRequest == savedState[COMPLETED_PENDING_REQUEST_KEY]) {
+            // The restored intent still carries its return URL, which a later edit mustn't read.
+            intent?.clearReturnUrl()
+            return true
+        }
         // One edit step at a time.
-        if (state.value.isEditing) return
+        if (state.value.isEditing) return false
         mutableState.update { it.copy(isEditing = true) }
         viewModelScope.launch {
             val result = try {
@@ -172,16 +172,14 @@ internal class PayPalSavedPaymentMethodViewModel(
             } finally {
                 mutableState.update { it.copy(isEditing = false) }
             }
-            // Not recorded for a cancel or a missing intent, so the merchant can retry.
-            val completedPendingRequest = pendingRequest.takeIf { intent != null && result !is PayPalResult.Cancel }
-            completedPendingRequest?.let { sentPendingRequest = it }
             if (result is PayPalResult.Success) {
                 creditMessagingJob?.cancel()
                 saveEdit(editedOrderId = result.nonce.paymentId)
                 loadBuyerUpdatedBillingAgreement()
             }
-            resultChannel.send(completedPendingRequest to result)
+            resultChannel.send(result)
         }
+        return true
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -196,19 +194,35 @@ internal class PayPalSavedPaymentMethodViewModel(
             payPalLauncher.restorePendingRequest(pendingRequest)
             val started = PayPalPendingRequest.Started(pendingRequest)
             when (val authResult = payPalLauncher.handleReturnToApp(started, intent)) {
-                // Cleared after tokenizing, so an interrupted return is retried.
-                is PayPalPaymentAuthResult.Success -> client.tokenize(authResult).also { intent.clearReturnUrl() }
+                is PayPalPaymentAuthResult.Success -> {
+                    // Recorded before tokenizing, which uses up the PayPal approval; a return interrupted after this
+                    // point is not repeated.
+                    markCompleted(pendingRequest)
+                    client.tokenize(authResult).also {
+                        intent.clearReturnUrl()
+                        // A cancel on the PayPal page doesn't count, so the buyer can still return with this request.
+                        if (it is PayPalResult.Cancel) savedState.remove<String>(COMPLETED_PENDING_REQUEST_KEY)
+                    }
+                }
                 // Cleared too, so a later edit doesn't read the same return URL.
-                is PayPalPaymentAuthResult.Failure ->
+                is PayPalPaymentAuthResult.Failure -> {
+                    markCompleted(pendingRequest)
                     PayPalResult.Failure(authResult.error).also { intent.clearReturnUrl() }
+                }
+                // Not recorded for a cancel, so the buyer can still return with the same pending request.
                 PayPalPaymentAuthResult.NoResult -> PayPalResult.Cancel
             }
         } catch (e: Exception) {
             if (e is CancellationException) throw e
+            markCompleted(pendingRequest)
             // Cleared here as well.
             intent.clearReturnUrl()
             PayPalResult.Failure(e)
         }
+    }
+
+    private fun markCompleted(pendingRequest: String) {
+        savedState[COMPLETED_PENDING_REQUEST_KEY] = pendingRequest
     }
 
     private fun saveEdit(editedOrderId: String?) {
