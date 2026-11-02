@@ -52,6 +52,18 @@ class VenmoButton @JvmOverloads constructor(
     private lateinit var venmoLauncher: VenmoLauncher
 
     /**
+     * Internal constructor for testing with injected dependencies.
+     */
+    internal constructor(
+        context: Context,
+        venmoClient: VenmoClient,
+        venmoLauncher: VenmoLauncher
+    ) : this(context) {
+        this.venmoClient = venmoClient
+        this.venmoLauncher = venmoLauncher
+    }
+
+    /**
      * Callback invoked when the Venmo payment authentication request is launched.
      *
      * This callback is used to receive notifications about the launch status, such as
