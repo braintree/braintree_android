@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_mainFragment_to_composeUiComponentsFragment"
             app:destination="@id/composeUiComponentsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_payPalSavedPaymentMethodComposeFragment"
+            app:destination="@id/payPalSavedPaymentMethodComposeFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -247,5 +250,12 @@
             app:destination="@id/displayNonceFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/payPalSavedPaymentMethodComposeFragment"
+        android:name="com.braintreepayments.demo.PayPalSavedPaymentMethodComposeFragment">
+        <action
+            android:id="@+id/action_payPalSavedPaymentMethodComposeFragment_to_createTransactionFragment"
+            app:destination="@id/createTransactionFragment" />
     </fragment>
 </navigation>

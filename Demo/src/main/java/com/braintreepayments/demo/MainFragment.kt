@@ -58,6 +58,9 @@ class MainFragment : BaseFragment() {
                                 PaymentModuleButton(R.string.shopper_insights_button) { launchShopperInsights() }
                                 PaymentModuleButton(R.string.shopper_insights_v2_button) { launchShopperInsightsV2() }
                                 PaymentModuleButton(R.string.paypal_messaging_button) { launchPayPalMessaging() }
+                                PaymentModuleButton(R.string.paypal_saved_payment_method_compose_button) {
+                                    launchPayPalSavedPaymentMethodCompose()
+                                }
                                 Spacer(modifier = Modifier.height(4.dp))
                             }
 
@@ -216,6 +219,12 @@ class MainFragment : BaseFragment() {
             action.setAuthString(authString)
             findNavController().navigate(action)
         }
+    }
+
+    private fun launchPayPalSavedPaymentMethodCompose() {
+        // The component needs a client token with the buyer's payment method ID, which the screen asks for.
+        val action = MainFragmentDirections.actionMainFragmentToPayPalSavedPaymentMethodComposeFragment()
+        findNavController().navigate(action)
     }
 
     private fun launchComposeUIComponents() {
