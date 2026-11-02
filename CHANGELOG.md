@@ -7,6 +7,7 @@
 * PayPalSavedPaymentMethod (BETA)
   * Add `PayPalSavedPaymentMethodView` Compose component that shows the buyer's saved PayPal funding instrument, with an optional Pay Later message, and lets the buyer change it in the PayPal paysheet
     * Requires the host activity to call `setIntent(intent)` in `onNewIntent`, so a return from PayPal isn't reported as a cancel (see [App Link setup](APP_LINK_SETUP.md#receive-the-return-in-a-running-activity))
+  * Add `PayPalSavedPaymentMethodView` XML view that shows the buyer's saved PayPal funding instrument, with an optional Pay Later message, and lets the buyer change it in the PayPal paysheet. Configurable with `paypalSavedPaymentMethod*` XML attributes
     * **Note:** This feature is currently in beta and may change or be removed in future releases.
 
 ## 5.35.0 (2026-11-10)
