@@ -219,10 +219,10 @@ class PayPalButton @JvmOverloads constructor(
         intent: Intent,
         callback: PayPalTokenizeCallback
     ) {
-        restorePendingRequest(payPalLauncher, pendingRequest.pendingRequestString)?.let { error ->   // add
-            callback.onPayPalResult(PayPalResult.Failure(error))                                       // add
-            setButtonReEnabled()                                                                       // add
-            return                                                                                     // add
+        restorePendingRequest(payPalLauncher, pendingRequest.pendingRequestString)?.let { error ->
+            callback.onPayPalResult(PayPalResult.Failure(error))
+            setButtonReEnabled()
+            return
         }
 
         val paymentAuthResult = payPalLauncher.handleReturnToApp(
