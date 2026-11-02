@@ -3,7 +3,10 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.os.Looper
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -14,6 +17,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
+import com.braintreepayments.api.paypalsavedpaymentmethod.imageloader.ImageLoader
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
@@ -22,6 +26,10 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPay
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodFundingInstrumentStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -32,6 +40,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
+import kotlinx.coroutines.CompletableDeferred
+import java.io.IOException
 
 @RunWith(RobolectricTestRunner::class)
 class FundingInstrumentChipViewUnitTest {
@@ -40,6 +51,10 @@ class FundingInstrumentChipViewUnitTest {
     private val sut = FundingInstrumentChipView(context)
     private val text: TextView = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_text)
     private val icon: ImageView = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon)
+    private val iconContainer: View =
+        sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon_container)
+    private val iconShimmer: View =
+        sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon_shimmer)
     private val editIcon: ImageView = sut.findViewById(R.id.paypal_saved_payment_method_edit_icon)
     private var editClicks = 0
 
@@ -49,7 +64,7 @@ class FundingInstrumentChipViewUnitTest {
 
         assertEquals("••1234", text.text.toString())
         assertEquals("Visa, ending in 1 2 3 4", sut.contentDescription)
-        assertTrue(icon.isVisible)
+        assertTrue(iconContainer.isVisible)
         assertTrue(editIcon.isVisible)
     }
 
@@ -83,7 +98,7 @@ class FundingInstrumentChipViewUnitTest {
 
         assertEquals("Visa", text.text.toString())
         assertEquals("Visa", sut.contentDescription)
-        assertFalse(icon.isVisible)
+        assertFalse(iconContainer.isVisible)
     }
 
     @Test
@@ -93,6 +108,49 @@ class FundingInstrumentChipViewUnitTest {
         assertNotNull(sut.foreground)
         assertTrue(sut.performClick())
         assertEquals(1, editClicks)
+    }
+
+    @Test
+    fun `card art shows a shimmer while it loads, then the image`() {
+        val image = CompletableDeferred<Bitmap>()
+        sut.imageLoader = imageLoader { image.await() }
+
+        bind(PayPalSavedPaymentMethodDisplayState.Content(cardWithArt()))
+        idle()
+        assertTrue(iconShimmer.isVisible)
+        assertNull(icon.drawable)
+
+        image.complete(Bitmap.createBitmap(96, 60, Bitmap.Config.ARGB_8888))
+        idle()
+        assertFalse(iconShimmer.isVisible)
+        assertTrue(icon.drawable is BitmapDrawable)
+    }
+
+    @Test
+    fun `card art that can't be loaded shows the generic card icon`() {
+        sut.imageLoader = imageLoader { throw IOException("Unexpected code 404") }
+
+        bind(PayPalSavedPaymentMethodDisplayState.Content(cardWithArt()))
+        idle()
+
+        assertFalse(iconShimmer.isVisible)
+        assertEquals(
+            R.drawable.ic_fi_card_placeholder,
+            shadowOf(icon.drawable).createdFromResId
+        )
+    }
+
+    @Test
+    fun `cached card art shows on the first frame without a shimmer or a request`() {
+        val loader = imageLoader { error("not expected") }
+        every { loader.peek(ART_URL) } returns Bitmap.createBitmap(96, 60, Bitmap.Config.ARGB_8888)
+        sut.imageLoader = loader
+
+        bind(PayPalSavedPaymentMethodDisplayState.Content(cardWithArt()))
+
+        assertFalse(iconShimmer.isVisible)
+        assertTrue(icon.drawable is BitmapDrawable)
+        coVerify(exactly = 0) { loader.load(any()) }
     }
 
     @Test
@@ -128,7 +186,7 @@ class FundingInstrumentChipViewUnitTest {
 
         assertEquals("buyer@example.com", text.text.toString())
         assertEquals("buyer@example.com", sut.contentDescription)
-        assertFalse(icon.isVisible)
+        assertFalse(iconContainer.isVisible)
         assertFalse(editIcon.isVisible)
         assertNull(sut.foreground)
         assertFalse(sut.isClickable)
@@ -174,7 +232,7 @@ class FundingInstrumentChipViewUnitTest {
         bind(PayPalSavedPaymentMethodDisplayState.Loading)
 
         assertEquals("", text.text.toString())
-        assertFalse(icon.isVisible)
+        assertFalse(iconContainer.isVisible)
         assertNull(icon.drawable)
     }
 
@@ -232,8 +290,18 @@ class FundingInstrumentChipViewUnitTest {
     private fun clickActionLabel(info: AccessibilityNodeInfoCompat): CharSequence? =
         info.actionList.firstOrNull { it.id == AccessibilityNodeInfoCompat.ACTION_CLICK && it.label != null }?.label
 
+    private fun idle() = shadowOf(Looper.getMainLooper()).idle()
+
+    private fun imageLoader(load: suspend () -> Bitmap): ImageLoader = mockk {
+        every { peek(any()) } returns null
+        coEvery { load(ART_URL) } coAnswers { load() }
+    }
+
+    private fun cardWithArt() = paymentMethod(PayPalSavedPaymentMethodType.CARD).copy(imageUrl = ART_URL)
+
     private companion object {
         const val CHIP_WIDTH = 300
+        const val ART_URL = "https://www.paypalobjects.com/images/visa.png"
     }
 
     private fun paymentMethod(type: PayPalSavedPaymentMethodType) = PayPalSavedPaymentMethod(

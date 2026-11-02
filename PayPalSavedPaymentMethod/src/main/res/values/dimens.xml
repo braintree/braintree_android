@@ -25,4 +25,5 @@
     <dimen name="paypal_saved_payment_method_funding_instrument_chip_vertical_padding">4dp</dimen>
     <dimen name="paypal_saved_payment_method_funding_instrument_icon_width">28dp</dimen>
     <dimen name="paypal_saved_payment_method_funding_instrument_icon_margin">8dp</dimen>
+    <dimen name="paypal_saved_payment_method_funding_instrument_icon_loading_height">18dp</dimen>
 </resources>
