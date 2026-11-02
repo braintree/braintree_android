@@ -2,4 +2,6 @@
 <resources>
     <string name="paypal_saved_payment_method_label">PayPal</string>
     <string name="paypal_saved_payment_method_label_funding_instrument_card_masked_number">••%1$s</string>
+    <!-- Screen reader text for the full-screen edit loading dialog. -->
+    <string name="paypal_saved_payment_method_loading_dialog_content_description">Loading</string>
 </resources>

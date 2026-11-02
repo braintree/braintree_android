@@ -4,4 +4,9 @@
     <color name="paypal_saved_payment_method_style_default_background">#FFFFFF</color>
     <color name="paypal_saved_payment_method_style_default_text_color">#222222</color>
     <color name="paypal_saved_payment_method_style_default_border_color">#00000000</color>
+
+    <!-- Fixed component colors, not merchant-configurable. -->
+    <color name="paypal_saved_payment_method_placeholder">#E5E5EA</color>
+    <color name="paypal_saved_payment_method_loading_dialog_background">#E6FFFFFF</color>
+    <color name="paypal_saved_payment_method_loading_dialog_content">#000000</color>
 </resources>
