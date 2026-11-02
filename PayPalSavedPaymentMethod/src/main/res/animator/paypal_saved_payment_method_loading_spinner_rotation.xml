@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Turns 443 degrees per cycle. With the 277 degrees the tail travels, each cycle adds up to two full turns, so a restart continues where the last cycle ended.
+-->
+<objectAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="1332"
+    android:interpolator="@android:anim/linear_interpolator"
+    android:propertyName="rotation"
+    android:repeatCount="infinite"
+    android:valueFrom="0"
+    android:valueTo="443"
+    android:valueType="floatType" />
