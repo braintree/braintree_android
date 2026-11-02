@@ -7,13 +7,14 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Owns the Payment Action status state machine for the [PaymentActionsClient.handleNextAction]
- * drive loop.
+ * Owns the Payment Action status state machine: both how the [PaymentActionsClient.handleNextAction]
+ * drive loop reacts to each [PaymentActionStatus], and how each status maps to the
+ * [PaymentActionResult] the merchant acts on.
  *
- * Repeatedly fetches the current Payment Action and dispatches on its status until reaching a
- * terminal outcome or a handoff boundary (a server action or a customer action is required). The
- * only status this loop re-polls internally is [PaymentActionStatus.PROCESSING], bounded by
- * [MAX_PROCESSING_ATTEMPTS]; on exhaustion the last `PROCESSING` Payment Action is returned.
+ * The drive loop repeatedly fetches the current Payment Action and dispatches on its status until
+ * reaching a terminal outcome or a handoff boundary (a server action or a customer action is
+ * required). The only status it re-polls internally is [PaymentActionStatus.PROCESSING], bounded by
+ * [MAX_PROCESSING_ATTEMPTS]; on exhaustion it returns [PaymentActionResult.Processing].
  *
  * [PaymentActionStatus.REQUIRES_CUSTOMER_ACTION] is returned immediately without further looping.
  * This is what enforces the customer-action boundary: this handler never inspects
@@ -24,32 +25,75 @@ internal class NextActionHandler(
 ) {
 
     /**
-     * Drives the Payment Action until it leaves [PaymentActionStatus.PROCESSING] or the retry cap
-     * is reached.
+     * Handles the Payment Action until it reaches a terminal status or a handoff boundary, or the
+     * [PaymentActionStatus.PROCESSING] retry cap is reached.
      *
-     * @return the last fetched [PaymentActionServiceResult], or a [PaymentActionServiceResult.Failure]
-     *   if a fetch fails or the Payment Action's version decreases between fetches.
+     * @return the [PaymentActionResult] for the last fetched Payment Action, or a
+     *   [PaymentActionResult.Failure] if a fetch fails or the Payment Action's version decreases
+     *   between fetches.
      */
-    suspend fun drive(): PaymentActionServiceResult {
+    @Suppress("ReturnCount")
+    suspend fun handle(): PaymentActionResult {
         var lastVersion: Int? = null
         var processingAttempts = 0
         while (true) {
-            val result = service.getPaymentAction()
-            if (result !is PaymentActionServiceResult.Success) return result
+            val paymentAction = when (val result = service.getPaymentAction()) {
+                is PaymentActionServiceResult.Success -> result.paymentAction
+                is PaymentActionServiceResult.Failure -> return PaymentActionResult.Failure(result.error)
+            }
 
-            val paymentAction = result.paymentAction
             if (isVersionAnomaly(lastVersion, paymentAction.version)) {
-                return PaymentActionServiceResult.Failure(BraintreeException(VERSION_ANOMALY_MESSAGE))
+                return PaymentActionResult.Failure(BraintreeException(VERSION_ANOMALY_MESSAGE))
             }
             lastVersion = paymentAction.version ?: lastVersion
 
-            processingAttempts++
-            if (paymentAction.status != PaymentActionStatus.PROCESSING ||
-                processingAttempts >= MAX_PROCESSING_ATTEMPTS
-            ) {
-                return result
+            val id = paymentAction.id
+            when (paymentAction.status) {
+                PaymentActionStatus.PROCESSING -> {
+                    processingAttempts++
+                    if (processingAttempts >= MAX_PROCESSING_ATTEMPTS) return PaymentActionResult.Processing(id)
+                    delay(PROCESSING_RETRY_DELAY)
+                }
+
+                PaymentActionStatus.REQUIRES_CUSTOMER_ACTION -> return PaymentActionResult.CustomerActionRequired(id)
+
+                PaymentActionStatus.REQUIRES_PAYMENT_METHOD -> return PaymentActionResult.PaymentMethodRequired(id)
+                PaymentActionStatus.READY_FOR_CONFIRMATION ->
+                    return PaymentActionResult.ServerActionRequired(id, ServerAction.CONFIRM)
+                PaymentActionStatus.REQUIRES_CAPTURE ->
+                    return PaymentActionResult.ServerActionRequired(id, ServerAction.CAPTURE)
+                PaymentActionStatus.SUCCEEDED -> return PaymentActionResult.Completed(id)
+                PaymentActionStatus.CANCELLED -> return PaymentActionResult.Canceled(id)
+                PaymentActionStatus.EXPIRED -> return PaymentActionResult.Expired(id)
+                PaymentActionStatus.UNKNOWN -> return PaymentActionResult.Unknown(id)
             }
-            delay(PROCESSING_RETRY_DELAY)
+        }
+    }
+
+    /**
+     * Maps a single service response to the [PaymentActionResult] the merchant acts on, without
+     * handling it further. Used by [PaymentActionsClient.submitForPaymentAction], which reports the
+     * submitted Payment Action as-is rather than polling it.
+     */
+    fun toPaymentActionResult(serviceResult: PaymentActionServiceResult): PaymentActionResult =
+        when (serviceResult) {
+            is PaymentActionServiceResult.Success -> toPaymentActionResult(serviceResult.paymentAction)
+            is PaymentActionServiceResult.Failure -> PaymentActionResult.Failure(serviceResult.error)
+        }
+
+    private fun toPaymentActionResult(paymentAction: PaymentAction): PaymentActionResult {
+        val id = paymentAction.id
+        return when (paymentAction.status) {
+            PaymentActionStatus.REQUIRES_PAYMENT_METHOD -> PaymentActionResult.PaymentMethodRequired(id)
+            PaymentActionStatus.REQUIRES_CUSTOMER_ACTION -> PaymentActionResult.CustomerActionRequired(id)
+            PaymentActionStatus.READY_FOR_CONFIRMATION ->
+                PaymentActionResult.ServerActionRequired(id, ServerAction.CONFIRM)
+            PaymentActionStatus.REQUIRES_CAPTURE -> PaymentActionResult.ServerActionRequired(id, ServerAction.CAPTURE)
+            PaymentActionStatus.SUCCEEDED -> PaymentActionResult.Completed(id)
+            PaymentActionStatus.CANCELLED -> PaymentActionResult.Canceled(id)
+            PaymentActionStatus.EXPIRED -> PaymentActionResult.Expired(id)
+            PaymentActionStatus.PROCESSING -> PaymentActionResult.Processing(id)
+            PaymentActionStatus.UNKNOWN -> PaymentActionResult.Unknown(id)
         }
     }
 

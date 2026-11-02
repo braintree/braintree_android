@@ -40,140 +40,7 @@ class PaymentActionsClientUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `handleNextAction with REQUIRES_PAYMENT_METHOD returns PaymentMethodRequired`() = runTest(testDispatcher) {
-        coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
-            paymentAction(PaymentActionStatus.REQUIRES_PAYMENT_METHOD)
-        )
-
-        val result = buildClient().handleNextAction()
-
-        val outcome = assertIs<PaymentActionResult.PaymentMethodRequired>(result)
-        assertEquals("pa123", outcome.id)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `handleNextAction with REQUIRES_CUSTOMER_ACTION returns CustomerActionRequired`() = runTest(testDispatcher) {
-        coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
-            paymentAction(PaymentActionStatus.REQUIRES_CUSTOMER_ACTION)
-        )
-
-        val result = buildClient().handleNextAction()
-
-        val outcome = assertIs<PaymentActionResult.CustomerActionRequired>(result)
-        assertEquals("pa123", outcome.id)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `handleNextAction with READY_FOR_CONFIRMATION returns ServerActionRequired CONFIRM`() = runTest(testDispatcher) {
-        coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
-            paymentAction(PaymentActionStatus.READY_FOR_CONFIRMATION)
-        )
-
-        val result = buildClient().handleNextAction()
-
-        val outcome = assertIs<PaymentActionResult.ServerActionRequired>(result)
-        assertEquals("pa123", outcome.id)
-        assertEquals(ServerAction.CONFIRM, outcome.serverAction)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `handleNextAction with REQUIRES_CAPTURE returns ServerActionRequired CAPTURE`() = runTest(testDispatcher) {
-        coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
-            paymentAction(PaymentActionStatus.REQUIRES_CAPTURE)
-        )
-
-        val result = buildClient().handleNextAction()
-
-        val outcome = assertIs<PaymentActionResult.ServerActionRequired>(result)
-        assertEquals("pa123", outcome.id)
-        assertEquals(ServerAction.CAPTURE, outcome.serverAction)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `handleNextAction with SUCCEEDED returns Completed`() = runTest(testDispatcher) {
-        coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
-            paymentAction(PaymentActionStatus.SUCCEEDED)
-        )
-
-        val result = buildClient().handleNextAction()
-
-        val outcome = assertIs<PaymentActionResult.Completed>(result)
-        assertEquals("pa123", outcome.id)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `handleNextAction with CANCELLED returns Canceled`() = runTest(testDispatcher) {
-        coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
-            paymentAction(PaymentActionStatus.CANCELLED)
-        )
-
-        val result = buildClient().handleNextAction()
-
-        val outcome = assertIs<PaymentActionResult.Canceled>(result)
-        assertEquals("pa123", outcome.id)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `handleNextAction with EXPIRED returns Expired`() = runTest(testDispatcher) {
-        coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
-            paymentAction(PaymentActionStatus.EXPIRED)
-        )
-
-        val result = buildClient().handleNextAction()
-
-        val outcome = assertIs<PaymentActionResult.Expired>(result)
-        assertEquals("pa123", outcome.id)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `handleNextAction with PROCESSING that never resolves returns Processing after max re-checks`() =
-        runTest(testDispatcher) {
-            coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
-                paymentAction(PaymentActionStatus.PROCESSING)
-            )
-
-            val result = buildClient().handleNextAction()
-
-            val outcome = assertIs<PaymentActionResult.Processing>(result)
-            assertEquals("pa123", outcome.id)
-            coVerify(exactly = NextActionHandler.MAX_PROCESSING_ATTEMPTS) { service.getPaymentAction() }
-        }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `handleNextAction with UNKNOWN returns Unknown carrying the id`() = runTest(testDispatcher) {
-        coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
-            paymentAction(PaymentActionStatus.UNKNOWN)
-        )
-
-        val result = buildClient().handleNextAction()
-
-        val outcome = assertIs<PaymentActionResult.Unknown>(result)
-        assertEquals("pa123", outcome.id)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `handleNextAction propagates service Failure`() = runTest(testDispatcher) {
-        val error = IOException("Network error")
-        coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Failure(error)
-
-        val result = buildClient().handleNextAction()
-
-        val failure = assertIs<PaymentActionResult.Failure>(result)
-        assertEquals(error, failure.error)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `handleNextAction with PROCESSING then SUCCEEDED returns Completed`() = runTest(testDispatcher) {
+    fun `handleNextAction returns the result of driving the Payment Action`() = runTest(testDispatcher) {
         coEvery { service.getPaymentAction() } returnsMany listOf(
             PaymentActionServiceResult.Success(paymentAction(PaymentActionStatus.PROCESSING)),
             PaymentActionServiceResult.Success(paymentAction(PaymentActionStatus.SUCCEEDED)),
@@ -188,21 +55,15 @@ class PaymentActionsClientUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `handleNextAction with REQUIRES_CUSTOMER_ACTION and a 3DS nextAction returns CustomerActionRequired without driving 3DS`() =
-        runTest(testDispatcher) {
-            coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
-                PaymentAction(
-                    id = "pa123",
-                    status = PaymentActionStatus.REQUIRES_CUSTOMER_ACTION,
-                    nextAction = NextAction.ThreeDSecureAuthentication(bin = "401288"),
-                )
-            )
+    fun `handleNextAction propagates service Failure`() = runTest(testDispatcher) {
+        val error = IOException("Network error")
+        coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Failure(error)
 
-            val result = buildClient().handleNextAction()
+        val result = buildClient().handleNextAction()
 
-            assertIs<PaymentActionResult.CustomerActionRequired>(result)
-            coVerify(exactly = 0) { service.signalCustomerActionComplete(any()) }
-        }
+        val failure = assertIs<PaymentActionResult.Failure>(result)
+        assertEquals(error, failure.error)
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test

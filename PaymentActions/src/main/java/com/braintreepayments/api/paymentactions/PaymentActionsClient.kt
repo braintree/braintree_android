@@ -80,7 +80,8 @@ class PaymentActionsClient internal constructor(
      */
     suspend fun submitForPaymentAction(request: PaymentActionRequest): PaymentActionResult {
         braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_STARTED)
-        return service.setPaymentActionPaymentMethod(request).toPaymentActionResult().also { result ->
+        val serviceResult = service.setPaymentActionPaymentMethod(request)
+        return nextActionHandler.toPaymentActionResult(serviceResult).also { result ->
             if (result is PaymentActionResult.Failure) {
                 braintreeClient.sendAnalyticsEvent(
                     PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_FAILED,
@@ -123,39 +124,12 @@ class PaymentActionsClient internal constructor(
             return PaymentActionResult.Failure(BraintreeException(HANDLE_NEXT_ACTION_IN_PROGRESS_MESSAGE))
         }
         return try {
-            nextActionHandler.drive().toPaymentActionResult()
+            nextActionHandler.handle()
         } catch (error: Throwable) {
             if (error is CancellationException) throw error
             PaymentActionResult.Failure(error)
         } finally {
             isHandlingNextAction.set(false)
-        }
-    }
-
-    /**
-     * Maps the raw [PaymentActionServiceResult] from the service into the [PaymentActionResult]
-     * the merchant acts on.
-     */
-    private fun PaymentActionServiceResult.toPaymentActionResult(): PaymentActionResult {
-        return when (this) {
-            is PaymentActionServiceResult.Success -> when (paymentAction.status) {
-                PaymentActionStatus.REQUIRES_PAYMENT_METHOD ->
-                    PaymentActionResult.PaymentMethodRequired(paymentAction.id)
-                PaymentActionStatus.REQUIRES_CUSTOMER_ACTION -> PaymentActionResult.CustomerActionRequired(
-                    paymentAction.id,
-                )
-                PaymentActionStatus.READY_FOR_CONFIRMATION ->
-                    PaymentActionResult.ServerActionRequired(paymentAction.id, ServerAction.CONFIRM)
-                PaymentActionStatus.REQUIRES_CAPTURE ->
-                    PaymentActionResult.ServerActionRequired(paymentAction.id, ServerAction.CAPTURE)
-                PaymentActionStatus.SUCCEEDED -> PaymentActionResult.Completed(paymentAction.id)
-                PaymentActionStatus.CANCELLED -> PaymentActionResult.Canceled(paymentAction.id)
-                PaymentActionStatus.EXPIRED -> PaymentActionResult.Expired(paymentAction.id)
-                PaymentActionStatus.PROCESSING -> PaymentActionResult.Processing(paymentAction.id)
-                PaymentActionStatus.UNKNOWN ->
-                    PaymentActionResult.Unknown(paymentAction.id)
-            }
-            is PaymentActionServiceResult.Failure -> PaymentActionResult.Failure(error)
         }
     }
 
