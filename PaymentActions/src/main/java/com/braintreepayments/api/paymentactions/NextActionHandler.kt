@@ -65,7 +65,7 @@ internal class NextActionHandler(
                 PaymentActionStatus.SUCCEEDED -> return PaymentActionResult.Completed(id)
                 PaymentActionStatus.CANCELLED -> return PaymentActionResult.Canceled(id)
                 PaymentActionStatus.EXPIRED -> return PaymentActionResult.Expired(id)
-                PaymentActionStatus.UNKNOWN -> return PaymentActionResult.Unknown(id)
+                PaymentActionStatus.UNKNOWN -> return PaymentActionResult.Unrecognized(id)
             }
         }
     }
@@ -93,7 +93,7 @@ internal class NextActionHandler(
             PaymentActionStatus.CANCELLED -> PaymentActionResult.Canceled(id)
             PaymentActionStatus.EXPIRED -> PaymentActionResult.Expired(id)
             PaymentActionStatus.PROCESSING -> PaymentActionResult.Processing(id)
-            PaymentActionStatus.UNKNOWN -> PaymentActionResult.Unknown(id)
+            PaymentActionStatus.UNKNOWN -> PaymentActionResult.Unrecognized(id)
         }
     }
 
