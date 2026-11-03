@@ -29,73 +29,51 @@ internal class NextActionHandler(
      * [PaymentActionStatus.PROCESSING] retry cap is reached.
      *
      * @return the [PaymentActionResult] for the last fetched Payment Action, or a
-     *   [PaymentActionResult.Failure] if a fetch fails or the Payment Action's version decreases
-     *   between fetches.
+     * [PaymentActionResult.Failure] if a fetch fails or the Payment Action's version decreases
+     * between fetches.
      */
     @Suppress("ReturnCount")
-    suspend fun handle(): PaymentActionResult {
+    suspend fun handle(serviceResult: PaymentActionServiceResult? = null): PaymentActionResult {
         var lastVersion: Int? = null
         var processingAttempts = 0
+        var passedInResult: PaymentActionServiceResult? = serviceResult
+
         while (true) {
-            val paymentAction = when (val result = service.getPaymentAction()) {
+            val paymentAction = when (val result = passedInResult ?: service.getPaymentAction()) {
                 is PaymentActionServiceResult.Success -> result.paymentAction
                 is PaymentActionServiceResult.Failure -> return PaymentActionResult.Failure(result.error)
             }
 
+            // last version increases when modified on the backend, or stays the same if unchanged, it should never decrease
             if (isVersionAnomaly(lastVersion, paymentAction.version)) {
                 return PaymentActionResult.Failure(BraintreeException(VERSION_ANOMALY_MESSAGE))
             }
+
             lastVersion = paymentAction.version ?: lastVersion
 
-            val id = paymentAction.id
             when (paymentAction.status) {
                 PaymentActionStatus.PROCESSING -> {
                     processingAttempts++
-                    if (processingAttempts >= MAX_PROCESSING_ATTEMPTS) return PaymentActionResult.Processing(id)
+                    if (processingAttempts >= MAX_PROCESSING_ATTEMPTS) return PaymentActionResult.Processing(paymentAction.id)
+                    passedInResult = null
                     delay(PROCESSING_RETRY_DELAY)
                 }
 
-                PaymentActionStatus.REQUIRES_CUSTOMER_ACTION -> return PaymentActionResult.CustomerActionRequired(id)
+                PaymentActionStatus.REQUIRES_CUSTOMER_ACTION -> return PaymentActionResult.CustomerActionRequired(paymentAction.id)
 
-                PaymentActionStatus.REQUIRES_PAYMENT_METHOD -> return PaymentActionResult.PaymentMethodRequired(id)
+                PaymentActionStatus.REQUIRES_PAYMENT_METHOD -> return PaymentActionResult.PaymentMethodRequired(paymentAction.id)
                 PaymentActionStatus.READY_FOR_CONFIRMATION ->
-                    return PaymentActionResult.ServerActionRequired(id, ServerAction.CONFIRM)
+                    return PaymentActionResult.ServerActionRequired(paymentAction.id, ServerAction.CONFIRM)
                 PaymentActionStatus.REQUIRES_CAPTURE ->
-                    return PaymentActionResult.ServerActionRequired(id, ServerAction.CAPTURE)
-                PaymentActionStatus.SUCCEEDED -> return PaymentActionResult.Completed(id)
-                PaymentActionStatus.CANCELLED -> return PaymentActionResult.Canceled(id)
-                PaymentActionStatus.EXPIRED -> return PaymentActionResult.Expired(id)
-                PaymentActionStatus.UNKNOWN -> return PaymentActionResult.Unrecognized(id)
+                    return PaymentActionResult.ServerActionRequired(paymentAction.id, ServerAction.CAPTURE)
+                PaymentActionStatus.SUCCEEDED -> return PaymentActionResult.Completed(paymentAction.id)
+                PaymentActionStatus.CANCELLED -> return PaymentActionResult.Canceled(paymentAction.id)
+                PaymentActionStatus.EXPIRED -> return PaymentActionResult.Expired(paymentAction.id)
+                PaymentActionStatus.UNKNOWN -> return PaymentActionResult.Unrecognized(paymentAction.id)
             }
         }
     }
 
-    /**
-     * Maps a single service response to the [PaymentActionResult] the merchant acts on, without
-     * handling it further. Used by [PaymentActionsClient.submitForPaymentAction], which reports the
-     * submitted Payment Action as-is rather than polling it.
-     */
-    fun toPaymentActionResult(serviceResult: PaymentActionServiceResult): PaymentActionResult =
-        when (serviceResult) {
-            is PaymentActionServiceResult.Success -> toPaymentActionResult(serviceResult.paymentAction)
-            is PaymentActionServiceResult.Failure -> PaymentActionResult.Failure(serviceResult.error)
-        }
-
-    private fun toPaymentActionResult(paymentAction: PaymentAction): PaymentActionResult {
-        val id = paymentAction.id
-        return when (paymentAction.status) {
-            PaymentActionStatus.REQUIRES_PAYMENT_METHOD -> PaymentActionResult.PaymentMethodRequired(id)
-            PaymentActionStatus.REQUIRES_CUSTOMER_ACTION -> PaymentActionResult.CustomerActionRequired(id)
-            PaymentActionStatus.READY_FOR_CONFIRMATION ->
-                PaymentActionResult.ServerActionRequired(id, ServerAction.CONFIRM)
-            PaymentActionStatus.REQUIRES_CAPTURE -> PaymentActionResult.ServerActionRequired(id, ServerAction.CAPTURE)
-            PaymentActionStatus.SUCCEEDED -> PaymentActionResult.Completed(id)
-            PaymentActionStatus.CANCELLED -> PaymentActionResult.Canceled(id)
-            PaymentActionStatus.EXPIRED -> PaymentActionResult.Expired(id)
-            PaymentActionStatus.PROCESSING -> PaymentActionResult.Processing(id)
-            PaymentActionStatus.UNKNOWN -> PaymentActionResult.Unrecognized(id)
-        }
-    }
 
     /**
      * A version should never decrease within a single drive loop; if it does, the response is stale

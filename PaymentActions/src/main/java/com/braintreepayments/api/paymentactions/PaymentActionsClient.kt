@@ -39,7 +39,8 @@ class PaymentActionsClient internal constructor(
     private val nextActionHandler = NextActionHandler(service)
 
     /**
-     * Tracks whether a [handleNextAction] drive loop is already in flight on this client instance.
+     * Tracks whether a [submitForPaymentAction] or [handleNextAction] call is already in flight on
+     * this client instance. Shared by both, since both drive the same Payment Action.
      */
     private val isHandlingNextAction = AtomicBoolean(false)
 
@@ -76,21 +77,35 @@ class PaymentActionsClient internal constructor(
      * On failure [PaymentActionResult.Failure] containing an exception is returned.
      *
      * @param request [PaymentActionRequest]
-     * @return [PaymentActionResult]
+     * @return [PaymentActionResult], or a [PaymentActionResult.Failure] with a [BraintreeException]
+     *   if called while a previous [submitForPaymentAction] or [handleNextAction] call on this
+     *   client hasn't completed.
      */
     suspend fun submitForPaymentAction(request: PaymentActionRequest): PaymentActionResult {
-        braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_STARTED)
-        val serviceResult = service.setPaymentActionPaymentMethod(request)
-        return nextActionHandler.toPaymentActionResult(serviceResult).also { result ->
-            if (result is PaymentActionResult.Failure) {
-                braintreeClient.sendAnalyticsEvent(
-                    PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_FAILED,
-                    AnalyticsEventParams(errorDescription = result.error.message),
-                )
-            } else {
-                braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_SUCCEEDED)
-            }
+        if (!isHandlingNextAction.compareAndSet(false, true)) {
+            return PaymentActionResult.Failure(BraintreeException(SUBMIT_FOR_PAYMENT_ACTION_IN_PROGRESS_MESSAGE))
         }
+        val result = try {
+            braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_STARTED)
+            val serviceResult = service.setPaymentActionPaymentMethod(request)
+            nextActionHandler.handle(serviceResult)
+        } catch (error: Throwable) {
+            if (error is CancellationException) throw error
+            PaymentActionResult.Failure(error)
+        } finally {
+            isHandlingNextAction.set(false)
+        }
+
+        // Sent after the try/catch so a wrapped unexpected Throwable is reported as FAILED too.
+        if (result is PaymentActionResult.Failure) {
+            braintreeClient.sendAnalyticsEvent(
+                PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_FAILED,
+                AnalyticsEventParams(errorDescription = result.error.message),
+            )
+        } else {
+            braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_SUCCEEDED)
+        }
+        return result
     }
 
     /**
@@ -136,5 +151,7 @@ class PaymentActionsClient internal constructor(
     companion object {
         internal const val HANDLE_NEXT_ACTION_IN_PROGRESS_MESSAGE =
             "handleNextAction was called while a previous invocation on this client was still in flight."
+        internal const val SUBMIT_FOR_PAYMENT_ACTION_IN_PROGRESS_MESSAGE =
+            "submitForPaymentAction was called while a previous invocation on this client was still in flight."
     }
 }
