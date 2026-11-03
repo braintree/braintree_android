@@ -90,8 +90,12 @@ internal class PayPalSavedPaymentMethodViewModel(
 
     private var request: PayPalSavedPaymentMethodRequest? = null
     private var showCreditMessaging = true
+    private var defaultFundingInstrumentJob: Job? = null
     private var updatedFundingInstrumentJob: Job? = null
     private var creditMessagingJob: Job? = null
+
+    // The request the shown Pay Later message was quoted for, so a failed refresh for it keeps the message.
+    private var creditMessagingRequest: PayPalSavedPaymentMethodRequest? = null
 
     // The XML view showing this view model, so two views with the same id can't share it.
     private var attachedViewId: String? = null
@@ -113,14 +117,21 @@ internal class PayPalSavedPaymentMethodViewModel(
     }
 
     /**
-     * Loads the default funding instrument and, if shown, the Pay Later message. Only the first call loads. After an
-     * edit restored from [savedState], loads the funding instrument the buyer picked and no message.
+     * Loads the default funding instrument and, if shown, the Pay Later message. Called each time a view attaches, so
+     * a failed load is retried and a shown one refreshed; a failed refresh keeps what's shown. After an edit restored
+     * from [savedState], the first call loads the funding instrument the buyer picked and no message.
      */
     fun load(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
-        if (this.request != null) return
+        val isFirstLoad = this.request == null
         this.request = request
         this.showCreditMessaging = showCreditMessaging
-        if (state.value.isEditCompleted) loadBuyerUpdatedBillingAgreement() else loadBuyerDefaultBillingAgreement()
+        if (state.value.isEditCompleted) {
+            // Refreshing would replace the funding instrument the buyer picked with the one from before the edit,
+            // which the API still returns.
+            if (isFirstLoad) loadBuyerUpdatedBillingAgreement()
+        } else {
+            loadBuyerDefaultBillingAgreement()
+        }
         startCreditFetch()
     }
 
@@ -265,15 +276,24 @@ internal class PayPalSavedPaymentMethodViewModel(
         }
     }
 
-    // The funding instrument PayPal charges unless the buyer changes it.
+    // The funding instrument PayPal charges unless the buyer changes it. A failed refresh keeps what's shown; only a
+    // failed first load shows the error.
+    @Suppress("TooGenericExceptionCaught")
     private fun loadBuyerDefaultBillingAgreement() {
         val merchantAccountId = request?.merchantAccountId
-        viewModelScope.launch {
-            val fundingInstrument = fetchFundingInstrument(
-                PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT,
-                null,
-                merchantAccountId
-            )
+        defaultFundingInstrumentJob?.cancel()
+        defaultFundingInstrumentJob = viewModelScope.launch {
+            val fundingInstrument = try {
+                client.fetchPaymentMethod(
+                    PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT,
+                    null,
+                    merchantAccountId
+                ).toDisplayState()
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                if (state.value.fundingInstrument != PayPalSavedPaymentMethodDisplayState.Loading) return@launch
+                e.toDisplayState()
+            }
             // An edit completed meanwhile; its funding instrument wins.
             if (state.value.isEditCompleted) return@launch
             mutableState.update { it.copy(fundingInstrument = fundingInstrument) }
@@ -327,9 +347,11 @@ internal class PayPalSavedPaymentMethodViewModel(
                     client.fetchCreditPresentmentMessages(request.amount, request.currencyCode).toDisplayState()
                 } catch (e: Exception) {
                     if (e is CancellationException) throw e
-                    // A failure only hides the row.
+                    // A failed refresh for the same request keeps the message; otherwise a failure only hides the row.
+                    if (request == creditMessagingRequest) return@launch
                     PayPalCreditMessagingDisplayState.Hidden
                 }
+                creditMessagingRequest = request
                 mutableState.update { it.copy(creditMessaging = creditMessaging) }
             }
         }

@@ -109,6 +109,65 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
+    fun `a failed load is retried when a view attaches again`() = runTest(dispatcher) {
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws UnknownHostException()
+        sut.load(request("55.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+        assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, sut.state.value.fundingInstrument)
+
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } returns summary(CARD)
+        sut.load(request("55.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        assertEquals(PayPalSavedPaymentMethodDisplayState.Content(CARD), sut.state.value.fundingInstrument)
+    }
+
+    @Test
+    fun `a failed refresh keeps the funding instrument and message shown`() = runTest(dispatcher) {
+        sut.load(request("55.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws UnknownHostException()
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } throws UnknownHostException()
+        sut.load(request("55.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        assertEquals(PayPalSavedPaymentMethodDisplayState.Content(CARD), sut.state.value.fundingInstrument)
+        assertEquals(MESSAGE, sut.state.value.creditMessaging)
+        coVerify(exactly = 2) { client.fetchPaymentMethod(BUYER_DEFAULT, null, "ma-1") }
+    }
+
+    @Test
+    fun `a failed Pay Later load for a new amount hides the message`() = runTest(dispatcher) {
+        sut.load(request("10.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } throws UnknownHostException()
+        sut.onRequestChanged(request("20.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        assertEquals(PayPalCreditMessagingDisplayState.Hidden, sut.state.value.creditMessaging)
+    }
+
+    @Test
+    fun `attaching again after an edit doesn't load the funding instrument from before it`() = runTest(dispatcher) {
+        sut.load(request("55.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+        givenReturn(tokenized = success("order-1"))
+        coEvery { client.fetchPaymentMethod(any(), "order-1", any()) } returns summary(EDITED)
+        sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
+        advanceUntilIdle()
+
+        sut.load(request("55.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        assertEquals(PayPalSavedPaymentMethodDisplayState.Content(EDITED), sut.state.value.fundingInstrument)
+        assertEquals(PayPalCreditMessagingDisplayState.Hidden, sut.state.value.creditMessaging)
+        coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_DEFAULT, any(), any()) }
+        coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_UPDATED, any(), any()) }
+    }
+
+    @Test
     fun `a failed Pay Later load only hides its row`() = runTest(dispatcher) {
         coEvery { client.fetchCreditPresentmentMessages(any(), any()) } throws IllegalStateException("boom")
 
