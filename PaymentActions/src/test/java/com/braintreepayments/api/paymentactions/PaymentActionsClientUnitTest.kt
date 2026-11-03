@@ -145,18 +145,43 @@ class PaymentActionsClientUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `submitForPaymentAction with PROCESSING returns Processing without re-checking`() = runTest(testDispatcher) {
-        val creditCard = CreditCard(number = "4111111111111111", expirationMonth = "12", expirationYear = "2028")
-        coEvery { service.setPaymentActionPaymentMethod(creditCard) } returns PaymentActionServiceResult.Success(
-            paymentAction(PaymentActionStatus.PROCESSING)
-        )
+    fun `submitForPaymentAction with PROCESSING re-checks until the Payment Action resolves`() =
+        runTest(testDispatcher) {
+            val creditCard = CreditCard(number = "4111111111111111", expirationMonth = "12", expirationYear = "2028")
+            coEvery { service.setPaymentActionPaymentMethod(creditCard) } returns PaymentActionServiceResult.Success(
+                paymentAction(PaymentActionStatus.PROCESSING)
+            )
+            coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
+                paymentAction(PaymentActionStatus.SUCCEEDED)
+            )
 
-        val result = buildClient().submitForPaymentAction(creditCard)
+            val result = buildClient().submitForPaymentAction(creditCard)
 
-        assertIs<PaymentActionResult.Processing>(result)
-        coVerify(exactly = 1) { service.setPaymentActionPaymentMethod(creditCard) }
-        coVerify(exactly = 0) { service.getPaymentAction() }
-    }
+            assertEquals("pa123", assertIs<PaymentActionResult.Completed>(result).id)
+            coVerify(exactly = 1) { service.setPaymentActionPaymentMethod(creditCard) }
+            coVerify(exactly = 1) { service.getPaymentAction() }
+            verify {
+                braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_SUCCEEDED)
+            }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `submitForPaymentAction with PROCESSING that never resolves counts the submit response as the first attempt`() =
+        runTest(testDispatcher) {
+            val creditCard = CreditCard(number = "4111111111111111", expirationMonth = "12", expirationYear = "2028")
+            coEvery { service.setPaymentActionPaymentMethod(creditCard) } returns PaymentActionServiceResult.Success(
+                paymentAction(PaymentActionStatus.PROCESSING)
+            )
+            coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
+                paymentAction(PaymentActionStatus.PROCESSING)
+            )
+
+            val result = buildClient().submitForPaymentAction(creditCard)
+
+            assertIs<PaymentActionResult.Processing>(result)
+            coVerify(exactly = NextActionHandler.MAX_PROCESSING_ATTEMPTS - 1) { service.getPaymentAction() }
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
@@ -195,5 +220,94 @@ class PaymentActionsClientUnitTest {
                 any(),
             )
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `submitForPaymentAction called while handleNextAction is in flight returns Failure`() =
+        runTest(testDispatcher) {
+            val creditCard = CreditCard(number = "4111111111111111", expirationMonth = "12", expirationYear = "2028")
+            val firstFetch = CompletableDeferred<PaymentActionServiceResult>()
+            coEvery { service.getPaymentAction() } coAnswers { firstFetch.await() }
+            val client = buildClient()
+
+            val first = async { client.handleNextAction() }
+            runCurrent() // handleNextAction is now suspended inside the loop, holding the guard
+
+            val second = client.submitForPaymentAction(creditCard)
+
+            val failure = assertIs<PaymentActionResult.Failure>(second)
+            val error = assertIs<BraintreeException>(failure.error)
+            assertEquals(PaymentActionsClient.SUBMIT_FOR_PAYMENT_ACTION_IN_PROGRESS_MESSAGE, error.message)
+            coVerify(exactly = 0) { service.setPaymentActionPaymentMethod(any()) }
+            // A rejected call never started, so it sends no analytics.
+            verify(exactly = 0) { braintreeClient.sendAnalyticsEvent(any(), any(), any()) }
+
+            firstFetch.complete(PaymentActionServiceResult.Success(paymentAction(PaymentActionStatus.SUCCEEDED)))
+            assertIs<PaymentActionResult.Completed>(first.await())
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `handleNextAction called while submitForPaymentAction is in flight returns Failure`() =
+        runTest(testDispatcher) {
+            val creditCard = CreditCard(number = "4111111111111111", expirationMonth = "12", expirationYear = "2028")
+            val submitResponse = CompletableDeferred<PaymentActionServiceResult>()
+            coEvery { service.setPaymentActionPaymentMethod(creditCard) } coAnswers { submitResponse.await() }
+            val client = buildClient()
+
+            val first = async { client.submitForPaymentAction(creditCard) }
+            runCurrent() // submit is now suspended waiting on the mutation, holding the guard
+
+            val second = client.handleNextAction()
+
+            val failure = assertIs<PaymentActionResult.Failure>(second)
+            val error = assertIs<BraintreeException>(failure.error)
+            assertEquals(PaymentActionsClient.HANDLE_NEXT_ACTION_IN_PROGRESS_MESSAGE, error.message)
+            coVerify(exactly = 0) { service.getPaymentAction() }
+
+            submitResponse.complete(PaymentActionServiceResult.Success(paymentAction(PaymentActionStatus.SUCCEEDED)))
+            assertIs<PaymentActionResult.Completed>(first.await())
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `submitForPaymentAction wraps an unexpected throwable in Failure and sends FAILED analytics`() =
+        runTest(testDispatcher) {
+            val creditCard = CreditCard(number = "4111111111111111", expirationMonth = "12", expirationYear = "2028")
+            val error = IllegalStateException("unexpected")
+            coEvery { service.setPaymentActionPaymentMethod(creditCard) } throws error
+
+            val result = buildClient().submitForPaymentAction(creditCard)
+
+            assertSame(error, assertIs<PaymentActionResult.Failure>(result).error)
+            verify {
+                braintreeClient.sendAnalyticsEvent(
+                    PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_FAILED,
+                    AnalyticsEventParams(errorDescription = error.message),
+                    any(),
+                )
+            }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `submitForPaymentAction rethrows CancellationException instead of wrapping it`() = runTest(testDispatcher) {
+        val creditCard = CreditCard(number = "4111111111111111", expirationMonth = "12", expirationYear = "2028")
+        coEvery { service.setPaymentActionPaymentMethod(creditCard) } throws CancellationException("cancelled")
+
+        assertFailsWith<CancellationException> { buildClient().submitForPaymentAction(creditCard) }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `submitForPaymentAction can be called again after a previous call fails`() = runTest(testDispatcher) {
+        val creditCard = CreditCard(number = "4111111111111111", expirationMonth = "12", expirationYear = "2028")
+        coEvery { service.setPaymentActionPaymentMethod(creditCard) } throws IllegalStateException("unexpected") andThen
+            PaymentActionServiceResult.Success(paymentAction(PaymentActionStatus.SUCCEEDED))
+        val client = buildClient()
+
+        assertIs<PaymentActionResult.Failure>(client.submitForPaymentAction(creditCard))
+        assertIs<PaymentActionResult.Completed>(client.submitForPaymentAction(creditCard))
     }
 }
