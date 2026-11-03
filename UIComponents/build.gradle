@@ -76,6 +76,9 @@ dependencies {
     testImplementation libs.coroutines.test
     testImplementation libs.kotlin.test
     testImplementation project(':TestUtils')
+    testImplementation composeBom
+    testImplementation libs.androidx.compose.ui.test.junit4
+    testImplementation libs.androidx.compose.ui.test.manifest
     debugImplementation libs.androidx.ui.tooling
     debugImplementation libs.androidx.compose.ui.test.manifest
 

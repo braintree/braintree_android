@@ -1,6 +1,7 @@
 package com.braintreepayments.api.uicomponents
 
 import android.content.Context
+import android.net.Uri
 import android.view.View.MeasureSpec
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
@@ -225,6 +226,23 @@ class PayLaterButtonUnitTest {
     // endregion
 
     // region Analytics
+
+    @Test
+    fun `initialize sends the presented analytics event`() {
+        PayLaterButton(context).initialize(
+            activityResultCaller = Robolectric.buildActivity(ComponentActivity::class.java).create().get(),
+            authorization = "sandbox_tokenization_key",
+            appLinkReturnUrl = Uri.parse("https://example.com/return"),
+            deepLinkFallbackUrlScheme = "com.braintreepayments.demo"
+        )
+
+        verify(exactly = 1) {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.PAY_LATER_BUTTON_PRESENTED,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+            )
+        }
+    }
 
     @Test
     fun `launching the flow sends the selected analytics event`() {

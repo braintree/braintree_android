@@ -2,10 +2,20 @@ package com.braintreepayments.api.uicomponents.compose
 
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayLaterButtonColor
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_COMPOSE
 
 /**
  * A composable that displays a PayPal Pay Later branded button and handles the PayPal Pay Later flow.
@@ -42,6 +52,9 @@ fun PayLaterButton(
     pendingRequestRepository: PendingRequestRepository = PendingRequestRepository(LocalContext.current, "paylater"),
     paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
+    var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
+    val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
+
     PayPalButtonFlow(
         payPalRequest = payPalRequest,
         authorization = authorization,
@@ -49,8 +62,32 @@ fun PayLaterButton(
         deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme,
         pendingRequestRepository = pendingRequestRepository,
         paypalTokenizeCallback = paypalTokenizeCallback,
-        onButtonSelected = { payPalRequest.shouldOfferPayLater = true }
+        onButtonSelected = {
+            payPalRequest.shouldOfferPayLater = true
+            logButtonSelected(analyticsClient)
+        }
     ) { enabled, onClick ->
         PayLaterButtonView(style = style, enabled = enabled, onClick = onClick)
+
+        LaunchedEffect(Unit) {
+            if (shouldLogButtonPresentment) {
+                shouldLogButtonPresentment = false
+                logButtonPresented(analyticsClient)
+            }
+        }
     }
+}
+
+private fun logButtonPresented(analyticsClient: AnalyticsClient) {
+    analyticsClient.sendEvent(
+        UIComponentsAnalytics.PAY_LATER_BUTTON_PRESENTED,
+        AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
+    )
+}
+
+private fun logButtonSelected(analyticsClient: AnalyticsClient) {
+    analyticsClient.sendEvent(
+        UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+        AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
+    )
 }
