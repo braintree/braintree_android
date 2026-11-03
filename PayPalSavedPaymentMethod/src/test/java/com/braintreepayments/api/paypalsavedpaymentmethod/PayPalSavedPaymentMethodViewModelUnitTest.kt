@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypal.PayPalAccountNonce
@@ -201,6 +202,22 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
+    fun `an older amount's message can't land after the current one`() = runTest(dispatcher) {
+        val olderResponse = CompletableDeferred<PayPalCreditMessagingResult>()
+        coEvery { client.fetchCreditPresentmentMessages("10.00", any()) } coAnswers { olderResponse.await() }
+        coEvery { client.fetchCreditPresentmentMessages("20.00", any()) } returns messageResult("Pay in 4 of $5")
+        sut.load(request("10.00"), showCreditMessaging = true)
+        runCurrent()
+
+        sut.onRequestChanged(request("20.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+        olderResponse.complete(messageResult("Pay in 4 of $2.50"))
+        advanceUntilIdle()
+
+        assertEquals(message("Pay in 4 of $5"), sut.state.value.creditMessaging)
+    }
+
+    @Test
     fun `turning the message off hides it, and turning it back on loads it`() = runTest(dispatcher) {
         sut.load(request("10.00"), showCreditMessaging = false)
         advanceUntilIdle()
@@ -343,6 +360,22 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
 
         assertEquals(PayPalCreditMessagingDisplayState.Hidden, sut.state.value.creditMessaging)
         coVerify(exactly = 1) { client.fetchCreditPresentmentMessages(any(), any()) }
+    }
+
+    @Test
+    fun `a Pay Later message still loading when an edit completes stays hidden`() = runTest(dispatcher) {
+        val inFlight = CompletableDeferred<PayPalCreditMessagingResult>()
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } coAnswers { inFlight.await() }
+        sut.load(request("55.00"), showCreditMessaging = true)
+        runCurrent()
+        givenReturn(tokenized = success("order-1"))
+
+        sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
+        advanceUntilIdle()
+        inFlight.complete(MESSAGE_RESULT)
+        advanceUntilIdle()
+
+        assertEquals(PayPalCreditMessagingDisplayState.Hidden, sut.state.value.creditMessaging)
     }
 
     @Test
@@ -630,6 +663,23 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         coVerify(exactly = 0) { client.fetchCreditPresentmentMessages(any(), any()) }
     }
 
+    @Test
+    fun `the factory works without a saved state owner, keeping nothing across process death`() =
+        runTest(dispatcher) {
+            val factory = PayPalSavedPaymentMethodViewModel.Factory(
+                "client-token",
+                appLinkReturnUrl,
+                DEEP_LINK_SCHEME
+            ) { _, _, _ -> client }
+
+            sut = factory.create(PayPalSavedPaymentMethodViewModel::class.java, CreationExtras.Empty)
+            sut.load(request("55.00"), showCreditMessaging = true)
+            advanceUntilIdle()
+
+            assertFalse(sut.state.value.isEditCompleted)
+            assertEquals(PayPalSavedPaymentMethodDisplayState.Content(CARD), sut.state.value.fundingInstrument)
+        }
+
     private fun newViewModel() =
         PayPalSavedPaymentMethodViewModel(savedState, "client-token", appLinkReturnUrl, DEEP_LINK_SCHEME) { _, _, _ ->
             client
@@ -673,15 +723,19 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         val CHECKOUT = PayPalCheckoutRequest(amount = "55.00", hasUserLocationConsent = true)
         val CARD = PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD, "Visa", null, "1234", null)
         val EDITED = PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.BANK, "Chase", null, "9876", null)
-        val MESSAGE_RESULT = PayPalCreditMessagingResult(
-            mainItems = listOf(PayPalCreditMessageItem(null, "Pay in 4", null, null, null, null, null)),
+        val MESSAGE_RESULT = messageResult("Pay in 4")
+        val MESSAGE = message("Pay in 4")
+
+        fun messageResult(text: String) = PayPalCreditMessagingResult(
+            mainItems = listOf(PayPalCreditMessageItem(null, text, null, null, null, null, null)),
             disclaimerItems = emptyList(),
             actionItems = emptyList(),
             messageId = null,
             messageType = null,
             impressionUrl = null
         )
-        val MESSAGE =
-            PayPalCreditMessagingDisplayState.Content(PayPalCreditMessagingContent("Pay in 4", learnMore = null))
+
+        fun message(text: String) =
+            PayPalCreditMessagingDisplayState.Content(PayPalCreditMessagingContent(text, learnMore = null))
     }
 }
