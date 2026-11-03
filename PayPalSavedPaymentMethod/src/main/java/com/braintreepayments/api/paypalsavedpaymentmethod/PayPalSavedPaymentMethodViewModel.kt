@@ -138,7 +138,8 @@ internal class PayPalSavedPaymentMethodViewModel(
 
     /**
      * Opens the PayPal paysheet. Runs in the caller's scope because it launches from [context]'s activity. Returns the
-     * pending request to keep, a failure to report, or `null` if an edit step is already running.
+     * pending request to keep, a failure to report, or `null` if an edit step is already running or the activity
+     * closed while the auth request was created.
      */
     @Suppress("TooGenericExceptionCaught")
     suspend fun startEdit(
@@ -155,7 +156,13 @@ internal class PayPalSavedPaymentMethodViewModel(
                 ?: return PayPalPendingRequest.Failure(BraintreeException(NO_COMPONENT_ACTIVITY_MESSAGE))
             when (val authRequest = client.createEditFundingInstrumentAuthRequest(context, payPalCheckoutRequest)) {
                 is PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch ->
-                    payPalLauncher.launch(activity, authRequest.paymentAuthRequest)
+                    // The activity may have started closing while the auth request was created; no view is left to
+                    // return to.
+                    if (activity.isFinishing || activity.isDestroyed) {
+                        null
+                    } else {
+                        payPalLauncher.launch(activity, authRequest.paymentAuthRequest)
+                    }
                 is PayPalSavedPaymentMethodAuthRequest.Failure -> PayPalPendingRequest.Failure(authRequest.error)
             }
         } catch (e: Exception) {

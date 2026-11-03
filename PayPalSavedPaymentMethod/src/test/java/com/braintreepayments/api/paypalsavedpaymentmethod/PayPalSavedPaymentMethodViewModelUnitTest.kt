@@ -71,6 +71,8 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         Dispatchers.setMain(dispatcher)
         coEvery { client.fetchPaymentMethod(any(), any(), any()) } returns summary(CARD)
         coEvery { client.fetchCreditPresentmentMessages(any(), any()) } returns MESSAGE_RESULT
+        every { activity.isFinishing } returns false
+        every { activity.isDestroyed } returns false
         sut = newViewModel()
     }
 
@@ -181,6 +183,23 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } throws thrown
         assertSame(thrown, (sut.startEdit(activity, launcher, CHECKOUT) as PayPalPendingRequest.Failure).error)
     }
+
+    @Test
+    fun `startEdit doesn't launch when the activity closed while the auth request was created`() =
+        runTest(dispatcher) {
+            coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } returns
+                PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch(mockk())
+
+            every { activity.isFinishing } returns true
+            assertNull(sut.startEdit(activity, launcher, CHECKOUT))
+
+            every { activity.isFinishing } returns false
+            every { activity.isDestroyed } returns true
+            assertNull(sut.startEdit(activity, launcher, CHECKOUT))
+
+            verify(exactly = 0) { launcher.launch(any(), any()) }
+            assertFalse(sut.state.value.isEditing)
+        }
 
     @Test
     fun `startEdit fails without a request when not hosted in a ComponentActivity`() = runTest(dispatcher) {
