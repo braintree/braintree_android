@@ -154,6 +154,7 @@ class VenmoButton @JvmOverloads constructor(
                         venmoLaunchCallback?.onVenmoPaymentAuthRequest(
                             VenmoPendingRequest.Failure(venmoPaymentAuthRequest.error)
                         )
+                        setButtonReEnabled()
                     }
                 }
             }
@@ -191,12 +192,14 @@ class VenmoButton @JvmOverloads constructor(
                     venmoLaunchCallback?.onVenmoPaymentAuthRequest(
                         VenmoPendingRequest.Failure(venmoPendingRequest.error)
                     )
+                    setButtonReEnabled()
                 }
             }
         } ?: run {
             venmoLaunchCallback?.onVenmoPaymentAuthRequest(
                 VenmoPendingRequest.Failure(NullPointerException("Activity is null"))
             )
+            setButtonReEnabled()
         }
     }
 
