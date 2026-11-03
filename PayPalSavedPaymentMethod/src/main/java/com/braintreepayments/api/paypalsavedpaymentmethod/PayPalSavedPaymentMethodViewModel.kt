@@ -23,13 +23,14 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPayme
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.toDisplayState
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /** Builds the client for an authorization and its return URLs. */
@@ -39,8 +40,9 @@ internal typealias PayPalSavedPaymentMethodClientFactory =
 /**
  * State and edit flow shared by the XML and Compose views. Created for one authorization and its return URLs.
  * The state survives configuration changes, and the completed edit survives process death. Each result reaches the
- * merchant once, even if the view is recreated while tokenizing. A result lost with the process is not delivered
- * again, because its PayPal return can't be completed twice; the edited funding instrument is still restored.
+ * merchant once: it's kept until a view has handled it, so it still arrives if the view is recreated while tokenizing
+ * or while the result is being delivered. A result lost with the process is not delivered again, because its PayPal
+ * return can't be completed twice; the edited funding instrument is still restored.
  *
  * The launcher, activity and intent are passed per call and never kept. Main thread only.
  */
@@ -64,9 +66,27 @@ internal class PayPalSavedPaymentMethodViewModel(
     )
     val state: StateFlow<PayPalSavedPaymentMethodUiState> = mutableState.asStateFlow()
 
-    // Buffered, so a result sent while no view collects waits for the next one.
-    private val resultChannel = Channel<PayPalResult>(Channel.BUFFERED)
-    val results: Flow<PayPalResult> = resultChannel.receiveAsFlow()
+    // Results not yet handled by a view, oldest first. A result sent while no view collects waits for the next one.
+    private val pendingResults = MutableStateFlow<List<PayPalResult>>(emptyList())
+
+    /**
+     * Delivers each result once. A result is removed only after the collector has handled it, or has stopped after
+     * taking it (for example with `first()`); if the collector is cancelled mid-delivery, for example on rotation, the
+     * next one receives it.
+     */
+    val results: Flow<PayPalResult> = flow {
+        pendingResults.collect { pending ->
+            val result = pending.firstOrNull() ?: return@collect
+            try {
+                emit(result)
+            } finally {
+                // Inactive only when cancelled, so the result wasn't handled.
+                if (currentCoroutineContext().isActive) {
+                    pendingResults.update { if (it.firstOrNull() === result) it.drop(1) else it }
+                }
+            }
+        }
+    }
 
     private var request: PayPalSavedPaymentMethodRequest? = null
     private var showCreditMessaging = true
@@ -177,7 +197,7 @@ internal class PayPalSavedPaymentMethodViewModel(
                 saveEdit(editedOrderId = result.nonce.paymentId)
                 loadBuyerUpdatedBillingAgreement()
             }
-            resultChannel.send(result)
+            pendingResults.update { it + result }
         }
         return true
     }

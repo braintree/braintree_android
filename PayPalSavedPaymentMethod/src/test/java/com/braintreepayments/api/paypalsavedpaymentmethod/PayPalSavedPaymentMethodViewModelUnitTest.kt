@@ -36,6 +36,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -461,6 +463,47 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         advanceUntilIdle()
 
         assertSame(success, sut.results.first())
+    }
+
+    @Test
+    fun `a result whose delivery is cancelled reaches the next view`() = runTest(dispatcher) {
+        val success = givenReturn(tokenized = success("order-1"))
+        sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
+        advanceUntilIdle()
+        val handling = CompletableDeferred<Unit>()
+        val rotatedView = launch { sut.results.collect { handling.await() } }
+        runCurrent()
+
+        rotatedView.cancel()
+        runCurrent()
+
+        assertSame(success, sut.results.first())
+    }
+
+    @Test
+    fun `a handled result isn't delivered again`() = runTest(dispatcher) {
+        givenReturn(tokenized = success("order-1"))
+        sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
+        advanceUntilIdle()
+        sut.results.first()
+
+        val next = async { sut.results.first() }
+        runCurrent()
+
+        assertFalse(next.isCompleted)
+        next.cancel()
+    }
+
+    @Test
+    fun `results sent while no view collects are delivered in order`() = runTest(dispatcher) {
+        givenReturn(tokenized = PayPalResult.Cancel)
+        sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
+        advanceUntilIdle()
+        val success = givenReturn(tokenized = success("order-1"))
+        sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
+        advanceUntilIdle()
+
+        assertEquals(listOf(PayPalResult.Cancel, success), sut.results.take(2).toList())
     }
 
     @Test
