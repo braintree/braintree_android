@@ -222,7 +222,11 @@ sealed class PaymentActionResult {
     class CustomerActionRequired(val id: String, ) : PaymentActionResult()
     class Failure(val error: Throwable) : PaymentActionResult()
     class Processing(val id: String): PaymentActionResult()
-    class Unknown(val id: String): PaymentActionResult()
+
+    /**
+     * The Payment Action's status was not recognized by this SDK version.
+     */
+    class Unrecognized(val id: String) : PaymentActionResult()
 }
 
 /**

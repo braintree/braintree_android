@@ -90,10 +90,10 @@ class NextActionHandlerUnitTest {
     }
 
     @Test
-    fun `toPaymentActionResult with UNKNOWN returns Unknown`() {
+    fun `toPaymentActionResult with UNKNOWN returns Unrecognized`() {
         val result = sut.toPaymentActionResult(success(PaymentActionStatus.UNKNOWN))
 
-        assertEquals("pa123", assertIs<PaymentActionResult.Unknown>(result).id)
+        assertEquals("pa123", assertIs<PaymentActionResult.Unrecognized>(result).id)
     }
 
     @Test
