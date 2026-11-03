@@ -178,6 +178,7 @@ internal class PaymentActionsService(
         return PaymentAction(
             id = getString(ID_KEY),
             status = getString(STATUS_KEY).toPaymentActionStatus(),
+            version = if (has(VERSION_KEY) && !isNull(VERSION_KEY)) getInt(VERSION_KEY) else null,
             nextAction = optJSONObject(NEXT_ACTION_KEY)?.toNextAction(),
         )
     }
@@ -213,6 +214,7 @@ internal class PaymentActionsService(
         private const val PAYMENT_ACTION_KEY = "paymentAction"
         private const val ID_KEY = "id"
         private const val STATUS_KEY = "status"
+        private const val VERSION_KEY = "version"
         private const val NEXT_ACTION_KEY = "nextAction"
         private const val TYPENAME_KEY = "__typename"
         private const val BIN_KEY = "bin"

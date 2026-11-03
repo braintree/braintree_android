@@ -3,10 +3,13 @@ package com.braintreepayments.api.paymentactions
 import android.content.Context
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.BraintreeException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Callback for receiving a [PaymentActionResult] from a [PaymentActionsClient] operation.
@@ -32,6 +35,14 @@ class PaymentActionsClient internal constructor(
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
     private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
 ) {
+
+    private val nextActionHandler = NextActionHandler(service)
+
+    /**
+     * Tracks whether a [submitForPaymentAction] or [handleNextAction] call is already in flight on
+     * this client instance. Shared by both, since both drive the same Payment Action.
+     */
+    private val isHandlingNextAction = AtomicBoolean(false)
 
     /**
      * Initializes a new [PaymentActionsClient] instance.
@@ -66,73 +77,81 @@ class PaymentActionsClient internal constructor(
      * On failure [PaymentActionResult.Failure] containing an exception is returned.
      *
      * @param request [PaymentActionRequest]
-     * @return [PaymentActionResult]
+     * @return [PaymentActionResult], or a [PaymentActionResult.Failure] with a [BraintreeException]
+     *   if called while a previous [submitForPaymentAction] or [handleNextAction] call on this
+     *   client hasn't completed.
      */
     suspend fun submitForPaymentAction(request: PaymentActionRequest): PaymentActionResult {
-        braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_STARTED)
-        return service.setPaymentActionPaymentMethod(request).handleNextAction().also { result ->
-            if (result is PaymentActionResult.Failure) {
-                braintreeClient.sendAnalyticsEvent(
-                    PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_FAILED,
-                    AnalyticsEventParams(errorDescription = result.error.message),
-                )
-            } else {
-                braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_SUCCEEDED)
-            }
+        if (!isHandlingNextAction.compareAndSet(false, true)) {
+            return PaymentActionResult.Failure(BraintreeException(SUBMIT_FOR_PAYMENT_ACTION_IN_PROGRESS_MESSAGE))
         }
+        val result = try {
+            braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_STARTED)
+            val serviceResult = service.setPaymentActionPaymentMethod(request)
+            nextActionHandler.handle(serviceResult)
+        } catch (error: Throwable) {
+            if (error is CancellationException) throw error
+            PaymentActionResult.Failure(error)
+        } finally {
+            isHandlingNextAction.set(false)
+        }
+
+        // Sent after the try/catch so a wrapped unexpected Throwable is reported as FAILED too.
+        if (result is PaymentActionResult.Failure) {
+            braintreeClient.sendAnalyticsEvent(
+                PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_FAILED,
+                AnalyticsEventParams(errorDescription = result.error.message),
+            )
+        } else {
+            braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_SUCCEEDED)
+        }
+        return result
     }
 
     /**
-     * Drives a payment action towards completion by fetching its current state.
+     * Drives the Payment Action forward from its current server state until a terminal outcome or
+     * a handoff boundary is reached. See the suspending overload of `handleNextAction` for details.
      *
-     * On success the [PaymentActionCallback.onResult] method will be invoked with a
-     * [PaymentActionResult] variant describing the next required step.
-     *
-     * On failure the [PaymentActionCallback.onResult] method will be invoked with a
-     * [PaymentActionResult.Failure] containing an exception.
-     *
-     * @param callback [PaymentActionCallback]
+     * @param callback [PaymentActionCallback] invoked exactly once with the resulting
+     *   [PaymentActionResult], or a [PaymentActionResult.Failure] describing the failure.
      */
     fun handleNextAction(callback: PaymentActionCallback) =
         coroutineScope.launch { callback.onResult(handleNextAction()) }
 
     /**
-     * Drives a payment action towards completion by fetching its current state.
+     * Drives the Payment Action forward from its current server state until a terminal outcome or
+     * a handoff boundary is reached.
      *
-     * On success a [PaymentActionResult] variant describing the next required step is returned.
+     * This never starts device data collection or a 3D Secure challenge itself — if the Payment
+     * Action requires a customer action, this returns [PaymentActionResult.CustomerActionRequired]
+     * rather than driving the customer action, since that boundary is owned by a separate flow.
      *
-     * On failure [PaymentActionResult.Failure] containing an exception is returned.
+     * A [PaymentActionResult.Processing] result means the SDK's own bounded internal retries were
+     * exhausted while the Payment Action was still settling server-side — wait briefly, then call
+     * `handleNextAction` again.
      *
-     * @return [PaymentActionResult]
+     * @return the resulting [PaymentActionResult], or a [PaymentActionResult.Failure] wrapping the
+     *   underlying fetch/parsing error, or a [BraintreeException] if called while a previous
+     *   invocation on this client hasn't completed.
      */
     suspend fun handleNextAction(): PaymentActionResult {
-        return service.getPaymentAction().handleNextAction()
+        if (!isHandlingNextAction.compareAndSet(false, true)) {
+            return PaymentActionResult.Failure(BraintreeException(HANDLE_NEXT_ACTION_IN_PROGRESS_MESSAGE))
+        }
+        return try {
+            nextActionHandler.handle()
+        } catch (error: Throwable) {
+            if (error is CancellationException) throw error
+            PaymentActionResult.Failure(error)
+        } finally {
+            isHandlingNextAction.set(false)
+        }
     }
 
-    /**
-     * This function is the brains of the client, which will take in the current Payment Action and
-     * then perform action(s) based on what is required to push the payment towards completion.
-     */
-    private fun PaymentActionServiceResult.handleNextAction(): PaymentActionResult {
-        return when (this) {
-            is PaymentActionServiceResult.Success -> when (paymentAction.status) {
-                PaymentActionStatus.REQUIRES_PAYMENT_METHOD ->
-                    PaymentActionResult.PaymentMethodRequired(paymentAction.id)
-                PaymentActionStatus.REQUIRES_CUSTOMER_ACTION -> PaymentActionResult.CustomerActionRequired(
-                    paymentAction.id,
-                )
-                PaymentActionStatus.READY_FOR_CONFIRMATION ->
-                    PaymentActionResult.ServerActionRequired(paymentAction.id, ServerAction.CONFIRM)
-                PaymentActionStatus.REQUIRES_CAPTURE ->
-                    PaymentActionResult.ServerActionRequired(paymentAction.id, ServerAction.CAPTURE)
-                PaymentActionStatus.SUCCEEDED -> PaymentActionResult.Completed(paymentAction.id)
-                PaymentActionStatus.CANCELLED -> PaymentActionResult.Canceled(paymentAction.id)
-                PaymentActionStatus.EXPIRED -> PaymentActionResult.Expired(paymentAction.id)
-                PaymentActionStatus.PROCESSING -> PaymentActionResult.Processing(paymentAction.id)
-                PaymentActionStatus.UNKNOWN ->
-                    PaymentActionResult.Unknown(paymentAction.id)
-            }
-            is PaymentActionServiceResult.Failure -> PaymentActionResult.Failure(error)
-        }
+    companion object {
+        internal const val HANDLE_NEXT_ACTION_IN_PROGRESS_MESSAGE =
+            "handleNextAction was called while a previous invocation on this client was still in flight."
+        internal const val SUBMIT_FOR_PAYMENT_ACTION_IN_PROGRESS_MESSAGE =
+            "submitForPaymentAction was called while a previous invocation on this client was still in flight."
     }
 }
