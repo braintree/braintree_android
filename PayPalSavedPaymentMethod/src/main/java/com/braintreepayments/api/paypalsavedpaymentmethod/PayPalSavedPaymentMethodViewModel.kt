@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.security.MessageDigest
 
 /** Builds the client for an authorization and its return URLs. */
 internal typealias PayPalSavedPaymentMethodClientFactory =
@@ -196,7 +197,7 @@ internal class PayPalSavedPaymentMethodViewModel(
      * caller can clear its stored copy. A result lost to process death after that is not delivered again.
      */
     fun handleReturnToApp(pendingRequest: String, payPalLauncher: PayPalLauncher, intent: Intent?): Boolean {
-        if (pendingRequest == savedState[COMPLETED_PENDING_REQUEST_KEY]) {
+        if (pendingRequest.digest() == savedState[COMPLETED_PENDING_REQUEST_KEY]) {
             // The restored intent still carries its return URL, which a later edit mustn't read.
             intent?.clearReturnUrl()
             return true
@@ -259,9 +260,15 @@ internal class PayPalSavedPaymentMethodViewModel(
         }
     }
 
+    // Only compared for equality, so a digest is kept rather than the pending request itself.
     private fun markCompleted(pendingRequest: String) {
-        savedState[COMPLETED_PENDING_REQUEST_KEY] = pendingRequest
+        savedState[COMPLETED_PENDING_REQUEST_KEY] = pendingRequest.digest()
     }
+
+    private fun String.digest(): String =
+        MessageDigest.getInstance("SHA-256")
+            .digest(toByteArray(Charsets.UTF_8))
+            .joinToString("") { "%02x".format(it) }
 
     private fun saveEdit(editedOrderId: String?) {
         savedState[IS_EDIT_COMPLETED_KEY] = true

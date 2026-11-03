@@ -48,6 +48,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
@@ -462,6 +463,18 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
             verify(exactly = 1) { launcher.handleReturnToApp(any(), any()) }
             coVerify(exactly = 1) { client.tokenize(any<PayPalPaymentAuthResult.Success>()) }
         }
+
+    @Test
+    fun `a completed return is saved as a digest, not the pending request itself`() = runTest(dispatcher) {
+        givenReturn(tokenized = success("order-1"))
+        sut.handleReturnToApp("pending", launcher, intentWith(appLinkReturnUrl))
+        advanceUntilIdle()
+
+        val saved = savedState.get<String>("completed_pending_request")
+        assertNotEquals("pending", saved)
+        assertTrue(saved.orEmpty().matches(Regex("[0-9a-f]{64}")))
+        assertFalse(savedState.keys().any { savedState.get<Any>(it) == "pending" })
+    }
 
     @Test
     fun `a repeat of a completed return clears its return URL without tokenizing`() = runTest(dispatcher) {
