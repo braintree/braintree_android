@@ -6,6 +6,8 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
+import com.braintreepayments.api.uicomponents.PayPalButtonColor
+import androidx.compose.ui.test.hasClickAction
 import androidx.test.platform.app.InstrumentationRegistry
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.testutils.Fixtures
@@ -100,4 +102,23 @@ class PayLaterButtonTest {
     }
 
     // endregion
+
+    @Test
+    fun clickingPayPalButton_doesNotSetShouldOfferPayLater() {
+        val request = PayPalCheckoutRequest("10.00", true)
+        composeTestRule.setContent {
+            PayPalButton(
+                style = PayPalButtonColor.Blue,
+                payPalRequest = request,
+                authorization = Fixtures.TOKENIZATION_KEY,
+                appLinkReturnUrl = Uri.parse("https://example.com/return"),
+                deepLinkFallbackUrlScheme = "com.braintreepayments.demo",
+                paypalTokenizeCallback = {}
+            )
+        }
+
+        composeTestRule.onNode(hasClickAction()).performClick()
+
+        assertFalse(request.shouldOfferPayLater)
+    }
 }
