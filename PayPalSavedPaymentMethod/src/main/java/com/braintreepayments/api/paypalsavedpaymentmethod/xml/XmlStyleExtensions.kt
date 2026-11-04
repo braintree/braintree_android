@@ -14,9 +14,14 @@ import androidx.core.content.res.ResourcesCompat
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 import kotlin.math.roundToInt
 
-/** Converts a dp value from the style resolver to whole pixels, rounded so a thin border never disappears. */
-internal fun Float.dpToPx(resources: Resources): Int =
-    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, resources.displayMetrics).roundToInt()
+/**
+ * Converts a dp value from the style resolver to whole pixels. A positive value is at least 1 pixel, so a thin border
+ * never disappears on a low density screen.
+ */
+internal fun Float.dpToPx(resources: Resources): Int {
+    val px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, resources.displayMetrics).roundToInt()
+    return if (this > 0f) px.coerceAtLeast(1) else px
+}
 
 /**
  * The drawable a resolved theme attribute points to, or `null` when it has no resource ID. A theme can set an attribute

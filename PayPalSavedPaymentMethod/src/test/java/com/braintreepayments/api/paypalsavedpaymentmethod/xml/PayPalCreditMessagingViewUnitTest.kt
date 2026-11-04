@@ -10,6 +10,8 @@ import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.text.style.StyleSpan
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
@@ -22,11 +24,13 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPay
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class PayPalCreditMessagingViewUnitTest {
@@ -56,12 +60,12 @@ class PayPalCreditMessagingViewUnitTest {
 
     @Test
     fun `a message with a link shows the link bold and opens its url when tapped`() {
-        bind(PayPalCreditMessagingDisplayState.Content(CONTENT))
+        bindMessage()
 
         assertFalse(shimmer.isVisible)
         assertEquals("Pay in 4. Learn more", text.text.toString())
         val spanned = text.text as Spanned
-        val link = spanned.getSpans(0, spanned.length, ClickableSpan::class.java).single()
+        val link = spanned.link()
         assertEquals(10, spanned.getSpanStart(link))
         assertEquals(
             Typeface.BOLD,
@@ -72,8 +76,46 @@ class PayPalCreditMessagingViewUnitTest {
     }
 
     @Test
+    @Config(sdk = [23])
+    fun `screen readers can open the link before Android 8`() {
+        bindMessage()
+
+        // Before Android 8 only androidx's wrapper span is exposed to TalkBack, not the link's own ClickableSpan.
+        val spanned = text.nodeInfo().text as Spanned
+        val link = spanned.link()
+        assertEquals("AccessibilityClickableSpanCompat", link.javaClass.simpleName)
+        val linkText = spanned.subSequence(spanned.getSpanStart(link), spanned.getSpanEnd(link))
+        assertEquals("Learn more", linkText.toString())
+    }
+
+    @Test
+    fun `a TalkBack double tap on the message opens the link`() {
+        bindMessage()
+
+        assertTrue(text.isClickable)
+        assertFalse(text.isLongClickable)
+        assertEquals("Learn more", text.clickActionLabel())
+        assertTrue(ViewCompat.performAccessibilityAction(text, AccessibilityNodeInfoCompat.ACTION_CLICK, null))
+        assertEquals(listOf(URL), openedUrls)
+    }
+
+    @Test
+    fun `a message without a link shows the message only and isn't a TalkBack double tap target`() {
+        bindMessage()
+
+        bindMessage(MESSAGE_ONLY)
+
+        assertEquals("Pay in 4.", text.text.toString())
+        assertEquals(0, (text.text as Spanned).getSpans(0, text.text.length, ClickableSpan::class.java).size)
+        assertFalse(text.isClickable)
+        assertNull(text.clickActionLabel())
+        ViewCompat.performAccessibilityAction(text, AccessibilityNodeInfoCompat.ACTION_CLICK, null)
+        assertTrue(openedUrls.isEmpty())
+    }
+
+    @Test
     fun `the link uses the style's link color without an underline`() {
-        bind(PayPalCreditMessagingDisplayState.Content(CONTENT), linkColor = Color.BLUE)
+        bindMessage(linkColor = Color.BLUE)
 
         assertEquals(Color.BLUE, drawnLink().color)
         assertFalse(drawnLink().isUnderlineText)
@@ -81,19 +123,14 @@ class PayPalCreditMessagingViewUnitTest {
 
     @Test
     fun `without a link color the link is underlined in the text color`() {
-        bind(PayPalCreditMessagingDisplayState.Content(CONTENT))
+        bindMessage()
 
         assertEquals(Color.RED, drawnLink().color)
         assertTrue(drawnLink().isUnderlineText)
     }
 
-    @Test
-    fun `a message without a link shows the message only`() {
-        bind(PayPalCreditMessagingDisplayState.Content(PayPalCreditMessagingContent("Pay in 4.", learnMore = null)))
-
-        assertEquals("Pay in 4.", text.text.toString())
-        assertEquals(0, (text.text as Spanned).getSpans(0, text.text.length, ClickableSpan::class.java).size)
-    }
+    private fun bindMessage(content: PayPalCreditMessagingContent = CONTENT, linkColor: Int? = null) =
+        bind(PayPalCreditMessagingDisplayState.Content(content), linkColor)
 
     private fun bind(state: PayPalCreditMessagingDisplayState, linkColor: Int? = null) {
         val style = PayPalSavedPaymentMethodViewStyle(
@@ -105,11 +142,9 @@ class PayPalCreditMessagingViewUnitTest {
         sut.bind(state, PayPalSavedPaymentMethodStyleResolver(context, style)) { openedUrls += it }
     }
 
-    private fun drawnLink(): TextPaint {
-        val spanned = text.text as Spanned
-        val link = spanned.getSpans(0, spanned.length, ClickableSpan::class.java).single()
-        return TextPaint().also { link.updateDrawState(it) }
-    }
+    private fun Spanned.link(): ClickableSpan = getSpans(0, length, ClickableSpan::class.java).single()
+
+    private fun drawnLink(): TextPaint = TextPaint().also { (text.text as Spanned).link().updateDrawState(it) }
 
     private companion object {
         const val URL = "https://www.paypal.com/learn-more"
@@ -117,5 +152,6 @@ class PayPalCreditMessagingViewUnitTest {
             "Pay in 4.",
             PayPalCreditMessagingContent.LearnMore("Learn more", URL, isEmbeddable = false)
         )
+        val MESSAGE_ONLY = PayPalCreditMessagingContent("Pay in 4.", learnMore = null)
     }
 }
