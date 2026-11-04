@@ -40,6 +40,10 @@ import java.util.Locale
  * @property displayItems Optional list of cart items shown in the payment sheet
  * (e.g. subtotals, sales taxes, shipping charges, discounts etc.). If you pass non-empty list of display items
  * be sure to also set the value for [totalPriceLabel].
+ * @property transactionId Optional. A unique ID that identifies a transaction attempt. Merchants
+ * may use an existing ID or generate a specific one for Google Pay transactions. This field is
+ * optional, but merchants are strongly encouraged to add it for the best troubleshooting
+ * experience with Google.
  */
 @Suppress("TooManyFunctions")
 @Parcelize
@@ -61,6 +65,7 @@ class GooglePayRequest @JvmOverloads constructor(
     var allowCreditCards: Boolean = true,
     var displayItems: MutableList<GooglePayDisplayItem> = ArrayList(),
     var checkoutOption: GooglePayCheckoutOption? = GooglePayCheckoutOption.DEFAULT,
+    var transactionId: String? = null,
     private var environment: String? = null,
     private val allowedPaymentMethods: MutableMap<String, String> = HashMap(),
     private val tokenizationSpecifications: MutableMap<String, String> = HashMap(),
@@ -155,6 +160,7 @@ class GooglePayRequest @JvmOverloads constructor(
         }
         transactionInfoJson.putOpt("totalPriceLabel", totalPriceLabel)
         transactionInfoJson.putOpt("checkoutOption", checkoutOption?.stringValue)
+        transactionInfoJson.putOpt("transactionId", transactionId)
 
         for ((key, value) in this.allowedPaymentMethods) {
             try {

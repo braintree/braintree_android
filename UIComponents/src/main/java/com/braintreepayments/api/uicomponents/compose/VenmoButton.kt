@@ -105,14 +105,18 @@ fun VenmoButton(
                 is VenmoPaymentAuthRequest.ReadyToLaunch -> {
                     activity?.let {
                         coroutineScope.launch {
-                            completeVenmoFlow(
+                            val started = completeVenmoFlow(
                                 venmoLauncher,
                                 pendingRequestRepository,
                                 it,
                                 paymentAuthRequest,
                                 venmoTokenizeCallback
                             )
-                            flowLaunched = true
+                            if (started) {
+                                flowLaunched = true
+                            } else {
+                                enabled = true
+                            }
                         }
                     } ?: run {
                         enabled = true
@@ -164,25 +168,27 @@ private suspend fun completeVenmoFlow(
     activity: Activity,
     paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch,
     venmoTokenizeCallback: VenmoTokenizeCallback
-) {
+): Boolean {
     val componentActivity = activity as? ComponentActivity
         ?: run {
             venmoTokenizeCallback.onVenmoResult(
                 VenmoResult.Failure(Exception("Parent activity is expected to be a ComponentActivity"))
             )
-            return
+            return false
         }
     val venmoPendingRequest = venmoLauncher.launch(
         activity = componentActivity,
         paymentAuthRequest = paymentAuthRequest
     )
-    when (venmoPendingRequest) {
+    return when (venmoPendingRequest) {
         is VenmoPendingRequest.Started -> {
             pendingRequestRepository.storePendingRequest(venmoPendingRequest.pendingRequestString)
+            true
         }
 
         is VenmoPendingRequest.Failure -> {
             venmoTokenizeCallback.onVenmoResult(VenmoResult.Failure(venmoPendingRequest.error))
+            false
         }
     }
 }

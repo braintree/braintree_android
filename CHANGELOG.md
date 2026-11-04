@@ -2,8 +2,14 @@
 
 ## unreleased
 
+* UIComponents
+    * Fix `VenmoButton` not re-enabling after failure in `createPaymentAuthRequest`, `venmoLauncher.launch()`, or when the hosting Activity is null
+
+## 5.34.0 (2026-10-29)
+
 * GooglePay
   * Add optional `resultKey` parameter to `GooglePayLauncher` constructors, allowing a unique registration key per launcher instance
+  * Add optional `transactionId` property to `GooglePayRequest` to pass a merchant-defined transaction identifier to Google Pay's `TransactionInfo`
 * ThreeDSecure
   * Add optional `resultKey` parameter to `ThreeDSecureLauncher` constructors, allowing a unique registration key per launcher instance
 * SEPADirectDebit
