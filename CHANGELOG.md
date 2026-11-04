@@ -4,6 +4,7 @@
 
 * UIComponents
     * Fix `VenmoButton` not re-enabling after failure in `createPaymentAuthRequest`, `venmoLauncher.launch()`, or when the hosting Activity is null
+    * Fix `PayPalButton` returning a cancel instead of a result when the Activity is recreated while the browser is open
 
 ## 5.34.0 (2026-10-29)
 
