@@ -1,2 +1,2 @@
-* @team-sdk/sdk
 * @braintree/team-sdk-android
+/.github/CODEOWNERS @mzlangreder @jaxdesmarais

@@ -53,7 +53,8 @@ class GooglePayRequestTest {
             totalPriceLabel = "Total",
             allowCreditCards = false,
             displayItems = displayItems,
-            checkoutOption = GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE
+            checkoutOption = GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE,
+            transactionId = "transaction-id-123"
         )
         request.setEnvironment("production")
 
@@ -83,6 +84,7 @@ class GooglePayRequestTest {
         assertEquals("Subtotal", parceled.displayItems[0].label)
         assertEquals("Tax", parceled.displayItems[1].label)
         assertEquals(GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE, parceled.checkoutOption)
+        assertEquals("transaction-id-123", parceled.transactionId)
         assertEquals("PRODUCTION", parceled.getEnvironment())
 
         parcel.recycle()
@@ -119,6 +121,7 @@ class GooglePayRequestTest {
         assertTrue(parceled.allowCreditCards)
         assertTrue(parceled.displayItems.isEmpty())
         assertEquals(GooglePayCheckoutOption.DEFAULT, parceled.checkoutOption)
+        assertNull(parceled.transactionId)
         assertNull(parceled.getEnvironment())
 
         parcel.recycle()

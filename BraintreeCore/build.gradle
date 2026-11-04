@@ -113,8 +113,8 @@ dependencies {
     testImplementation project(':Venmo')
     testImplementation project(':Card')
 
-    // Ref: https://kotlin.github.io/dokka/1.8.0-SNAPSHOT/user_guide/applying/gradle/#applying-plugins
-    dokkaHtmlPartialPlugin libs.dokka.android.documentation.plugin
+    // Ref: https://kotlinlang.org/docs/dokka-plugins.html#apply-dokka-plugins
+    dokkaPlugin libs.dokka.android.documentation.plugin
 }
 
 android.buildTypes.each { type ->
