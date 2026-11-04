@@ -1,6 +1,14 @@
 package com.braintreepayments.api.uicomponents.compose
 
 import android.net.Uri
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -10,9 +18,11 @@ import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import androidx.compose.ui.test.hasClickAction
 import androidx.test.platform.app.InstrumentationRegistry
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
+import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.uicomponents.PayLaterButtonColor
 import com.braintreepayments.api.uicomponents.R
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -58,15 +68,118 @@ class PayLaterButtonTest {
 
     @Test
     fun payLaterButton_rendersForEachColor() {
-        listOf(PayLaterButtonColor.Blue, PayLaterButtonColor.Black, PayLaterButtonColor.White).forEach { color ->
-            setPayLaterButton(style = color)
-            payLaterButton().assertIsEnabled()
-            // setContent can only be called once per rule, so stop after the first for this test
-            return
+        val color = mutableStateOf<PayLaterButtonColor>(PayLaterButtonColor.Blue)
+        composeTestRule.setContent {
+            PayLaterButton(
+                style = color.value,
+                payPalRequest = payLaterRequest(),
+                authorization = Fixtures.TOKENIZATION_KEY,
+                appLinkReturnUrl = Uri.parse("https://example.com/return"),
+                deepLinkFallbackUrlScheme = "com.braintreepayments.demo",
+                paypalTokenizeCallback = {}
+            )
+        }
+
+        listOf(PayLaterButtonColor.Blue, PayLaterButtonColor.Black, PayLaterButtonColor.White).forEach {
+            color.value = it
+            composeTestRule.waitForIdle()
+            payLaterButton().assertIsDisplayed().assertIsEnabled()
         }
     }
 
+    @Test
+    fun payLaterButton_hasButtonRole() {
+        setPayLaterButton()
+
+        payLaterButton().assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button))
+    }
+
+    @Test
+    fun payLaterButton_hasClickAction() {
+        setPayLaterButton()
+
+        payLaterButton().assertHasClickAction()
+    }
+
     // endregion
+
+    // region PayLaterButtonView
+
+    @Test
+    fun payLaterButtonView_isDisplayedAndEnabled_forEachColor() {
+        val color = mutableStateOf<PayLaterButtonColor>(PayLaterButtonColor.Blue)
+        composeTestRule.setContent { PayLaterButtonView(style = color.value, onClick = {}) }
+
+        listOf(PayLaterButtonColor.Blue, PayLaterButtonColor.Black, PayLaterButtonColor.White).forEach {
+            color.value = it
+            composeTestRule.waitForIdle()
+            payLaterButton().assertIsDisplayed().assertIsEnabled()
+        }
+    }
+
+    @Test
+    fun payLaterButtonView_click_invokesOnClick() {
+        var clicks = 0
+        composeTestRule.setContent { PayLaterButtonView(style = PayLaterButtonColor.Blue, onClick = { clicks++ }) }
+
+        payLaterButton().performClick()
+
+        assertEquals(1, clicks)
+    }
+
+    @Test
+    fun payLaterButtonView_disabled_isNotEnabledAndIgnoresClicks() {
+        var clicks = 0
+        composeTestRule.setContent {
+            PayLaterButtonView(style = PayLaterButtonColor.Blue, enabled = false, onClick = { clicks++ })
+        }
+
+        payLaterButton().assertIsNotEnabled().performClick()
+
+        assertEquals(0, clicks)
+    }
+
+    @Test
+    fun payLaterButtonView_disabled_showsLoadingIndicatorInPlaceOfLogo() {
+        composeTestRule.setContent {
+            PayLaterButtonView(style = PayLaterButtonColor.Black, enabled = false, onClick = {})
+        }
+
+        composeTestRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo))
+            .assertExists()
+    }
+
+    @Test
+    fun payLaterButtonView_enabled_doesNotShowLoadingIndicator() {
+        composeTestRule.setContent { PayLaterButtonView(style = PayLaterButtonColor.Black, onClick = {}) }
+
+        composeTestRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo))
+            .assertDoesNotExist()
+    }
+
+    @Test
+    fun payLaterButtonView_togglingEnabled_updatesState() {
+        val enabled = mutableStateOf(true)
+        composeTestRule.setContent {
+            PayLaterButtonView(style = PayLaterButtonColor.White, enabled = enabled.value, onClick = {})
+        }
+        payLaterButton().assertIsEnabled()
+
+        enabled.value = false
+        composeTestRule.waitForIdle()
+        payLaterButton().assertIsNotEnabled()
+
+        enabled.value = true
+        composeTestRule.waitForIdle()
+        payLaterButton().assertIsEnabled()
+    }
+
+    @Test
+    fun payLaterButtonView_hasContentDescription() {
+        composeTestRule.setContent { PayLaterButtonView(style = PayLaterButtonColor.Blue, onClick = {}) }
+
+        payLaterButton().assertContentDescriptionEquals(str(R.string.pay_later_button_content_description))
+    }
 
     // region Request
 
@@ -101,6 +214,27 @@ class PayLaterButtonTest {
         payLaterButton().assertIsNotEnabled()
     }
 
+    @Test
+    fun clickingPayLaterButton_withInvalidAuthorization_reportsFailureAndReenablesButton() {
+        var result: PayPalResult? = null
+        composeTestRule.setContent {
+            PayLaterButton(
+                style = PayLaterButtonColor.Blue,
+                payPalRequest = payLaterRequest(),
+                authorization = "invalid",
+                appLinkReturnUrl = Uri.parse("https://example.com/return"),
+                deepLinkFallbackUrlScheme = "com.braintreepayments.demo",
+                paypalTokenizeCallback = { result = it }
+            )
+        }
+
+        payLaterButton().performClick()
+
+        composeTestRule.waitUntil(CLICK_TIMEOUT_MS) { result != null }
+        assertTrue(result is PayPalResult.Failure)
+        payLaterButton().assertIsEnabled()
+    }
+
     // endregion
 
     @Test
@@ -120,5 +254,9 @@ class PayLaterButtonTest {
         composeTestRule.onNode(hasClickAction()).performClick()
 
         assertFalse(request.shouldOfferPayLater)
+    }
+
+    private companion object {
+        const val CLICK_TIMEOUT_MS = 5_000L
     }
 }
