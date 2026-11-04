@@ -209,6 +209,8 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
 
     private fun showIcon(bitmap: Bitmap?, @DrawableRes fallbackIcon: Int?) {
         iconShimmer.isVisible = false
+        // Art that fails to load with no generic icon to fall back to leaves no empty space, as on iOS.
+        iconContainer.isVisible = bitmap != null || fallbackIcon != null
         when {
             bitmap != null -> iconView.setImageBitmap(bitmap)
             fallbackIcon != null -> iconView.setImageResource(fallbackIcon)

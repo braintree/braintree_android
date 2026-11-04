@@ -2,7 +2,6 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 
 import android.app.Activity
 import android.content.Context
-import android.os.Looper
 import android.view.View
 import android.view.View.MeasureSpec
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
@@ -14,7 +13,6 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
 class ShimmerPlaceholderViewUnitTest {
@@ -44,7 +42,7 @@ class ShimmerPlaceholderViewUnitTest {
         assertFalse(sut.isAnimating)
 
         activity.setContentView(sut)
-        shadowOf(Looper.getMainLooper()).idle()
+        idle()
         // Robolectric reports the activity window as gone; a device reports it visible once the view is attached.
         sut.dispatchWindowVisibilityChanged(View.VISIBLE)
         assertTrue(sut.isAnimating)
@@ -60,7 +58,7 @@ class ShimmerPlaceholderViewUnitTest {
 
         sut.dispatchWindowVisibilityChanged(View.VISIBLE)
         activity.setContentView(View(activity))
-        shadowOf(Looper.getMainLooper()).idle()
+        idle()
         assertFalse(sut.isAnimating)
     }
 
