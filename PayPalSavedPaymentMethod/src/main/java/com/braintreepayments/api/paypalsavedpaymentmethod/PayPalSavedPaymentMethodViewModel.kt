@@ -40,10 +40,12 @@ internal typealias PayPalSavedPaymentMethodClientFactory =
 
 /**
  * State and edit flow shared by the XML and Compose views. Created for one authorization and its return URLs.
- * The state survives configuration changes, and the completed edit survives process death. Each result reaches the
- * merchant once: it's kept until a view has handled it, so it still arrives if the view is recreated while tokenizing
- * or while the result is being delivered. A result lost with the process is not delivered again, because its PayPal
- * return can't be completed twice; the edited funding instrument is still restored.
+ * The state survives configuration changes, and the completed edit survives process death. Each result is kept until a
+ * view has handled it, so it still arrives if the view is recreated while tokenizing or while the result is being
+ * delivered. A result lost with the process is not delivered again, because its PayPal return can't be completed
+ * twice; the edited funding instrument is still restored. An edit interrupted by process death while tokenizing isn't
+ * recovered: its PayPal approval is already used, so the buyer's original funding instrument shows and they can edit
+ * again.
  *
  * The launcher, activity and intent are passed per call and never kept. Main thread only.
  */
@@ -71,9 +73,7 @@ internal class PayPalSavedPaymentMethodViewModel(
     private val pendingResults = MutableStateFlow<List<PayPalResult>>(emptyList())
 
     /**
-     * Delivers each result once. A result is removed only after the collector has handled it, or has stopped after
-     * taking it (for example with `first()`); if the collector is cancelled mid-delivery, for example on rotation, the
-     * next one receives it.
+     * Delivers each result at least once: if the collector is cancelled while handling it, the next one receives it.
      */
     val results: Flow<PayPalResult> = flow {
         pendingResults.collect { pending ->

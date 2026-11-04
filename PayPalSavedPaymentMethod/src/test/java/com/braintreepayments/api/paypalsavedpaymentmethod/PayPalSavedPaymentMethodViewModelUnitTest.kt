@@ -495,6 +495,27 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
+    fun `an edit interrupted by process death shows the original funding instrument and can be started again`() =
+        runTest(dispatcher) {
+            val authResult = mockk<PayPalPaymentAuthResult.Success>()
+            every { launcher.handleReturnToApp(any(), any()) } returns authResult
+            coEvery { client.tokenize(authResult) } coAnswers { CompletableDeferred<PayPalResult>().await() }
+            sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+            runCurrent()
+
+            sut = newViewModel()
+            loadAndSettle()
+            val pending = PayPalPendingRequest.Started("another-pending")
+            coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } returns
+                PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch(mockk())
+            every { launcher.launch(any(), any()) } returns pending
+
+            assertFalse(sut.state.value.isEditCompleted)
+            assertEquals(PayPalSavedPaymentMethodDisplayState.Content(CARD), sut.state.value.fundingInstrument)
+            assertSame(pending, sut.startEdit(activity, launcher, CHECKOUT))
+        }
+
+    @Test
     fun `a cancelled return can still be completed`() = runTest(dispatcher) {
         every { launcher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
         sut.handleReturnToApp(PENDING, launcher, intentWith(null))
