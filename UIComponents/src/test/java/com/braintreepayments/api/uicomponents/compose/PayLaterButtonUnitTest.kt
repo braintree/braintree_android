@@ -7,6 +7,8 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
+import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
@@ -17,9 +19,11 @@ import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayLaterButtonColor
 import com.braintreepayments.api.uicomponents.R
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
+import io.mockk.mockkObject
 import io.mockk.slot
 import io.mockk.unmockkAll
 import io.mockk.verify
@@ -48,6 +52,7 @@ class PayLaterButtonUnitTest {
     private val authCallbackSlot = slot<PayPalPaymentAuthCallback>()
     private val requestSlot = slot<PayPalRequest>()
     private var shouldOfferPayLaterAtCreate: Boolean? = null
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
 
     @Before
     fun setUp() {
@@ -59,6 +64,8 @@ class PayLaterButtonUnitTest {
         } answers {
             shouldOfferPayLaterAtCreate = (requestSlot.captured as PayPalCheckoutRequest).shouldOfferPayLater
         }
+        mockkObject(AnalyticsClient.Companion)
+        every { AnalyticsClient.lazyInstance } returns lazyOf(analyticsClient)
     }
 
     @After
@@ -142,5 +149,44 @@ class PayLaterButtonUnitTest {
         click()
 
         assertTrue(results.isEmpty())
+    }
+
+    // region Analytics
+
+    @Test
+    fun `sends presented event once when shown`() {
+        setPayLaterButton()
+        composeRule.waitForIdle()
+        composeRule.waitForIdle()
+
+        verify(exactly = 1) {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.PAY_LATER_BUTTON_PRESENTED,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
+            )
+        }
+        verify(exactly = 0) { analyticsClient.sendEvent(UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED, any(), any()) }
+    }
+
+    @Test
+    fun `sends selected event when clicked`() {
+        setPayLaterButton()
+
+        composeRule
+            .onNodeWithContentDescription(composeRule.activity.getString(R.string.pay_later_button_content_description))
+            .performClick()
+
+        verify(exactly = 1) {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
+            )
+        }
+    }
+
+    // endregion
+
+    private fun setPayLaterButton() {
+        setContent(PayPalCheckoutRequest("10.00", true))
     }
 }
