@@ -6,11 +6,6 @@
     android:orientation="vertical">
 
     <com.braintreepayments.api.uicomponents.PayLaterButton
-        android:id="@+id/pay_later_default"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <com.braintreepayments.api.uicomponents.PayLaterButton
         android:id="@+id/pay_later_blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

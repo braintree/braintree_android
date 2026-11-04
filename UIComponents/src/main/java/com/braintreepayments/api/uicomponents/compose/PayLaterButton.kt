@@ -53,7 +53,9 @@ fun PayLaterButton(
     paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
     var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
-    val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
+    // Resolve lazily: AnalyticsClient needs SdkComponent, which is only created once PayPalButtonFlow builds
+    // the PayPalClient (BraintreeClient). Resolving here would crash if this button is the first SDK use.
+    val analyticsClient = remember { AnalyticsClient.lazyInstance }
 
     PayPalButtonFlow(
         payPalRequest = payPalRequest,
@@ -64,7 +66,7 @@ fun PayLaterButton(
         paypalTokenizeCallback = paypalTokenizeCallback,
         onButtonSelected = {
             payPalRequest.shouldOfferPayLater = true
-            logButtonSelected(analyticsClient)
+            logButtonSelected(analyticsClient.value)
         }
     ) { enabled, onClick ->
         PayLaterButtonView(style = style, enabled = enabled, onClick = onClick)
@@ -72,7 +74,7 @@ fun PayLaterButton(
         LaunchedEffect(Unit) {
             if (shouldLogButtonPresentment) {
                 shouldLogButtonPresentment = false
-                logButtonPresented(analyticsClient)
+                logButtonPresented(analyticsClient.value)
             }
         }
     }

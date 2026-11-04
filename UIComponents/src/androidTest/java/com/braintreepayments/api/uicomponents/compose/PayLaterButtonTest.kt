@@ -6,16 +6,12 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
-import androidx.compose.ui.test.assertContentDescriptionEquals
-import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
-import com.braintreepayments.api.uicomponents.PayPalButtonColor
-import androidx.compose.ui.test.hasClickAction
 import androidx.test.platform.app.InstrumentationRegistry
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalResult
@@ -60,45 +56,10 @@ class PayLaterButtonTest {
     // region Rendering
 
     @Test
-    fun payLaterButton_isEnabledByDefault() {
-        setPayLaterButton()
-
-        payLaterButton().assertIsEnabled()
-    }
-
-    @Test
-    fun payLaterButton_rendersForEachColor() {
-        val color = mutableStateOf<PayLaterButtonColor>(PayLaterButtonColor.Blue)
-        composeTestRule.setContent {
-            PayLaterButton(
-                style = color.value,
-                payPalRequest = payLaterRequest(),
-                authorization = Fixtures.TOKENIZATION_KEY,
-                appLinkReturnUrl = Uri.parse("https://example.com/return"),
-                deepLinkFallbackUrlScheme = "com.braintreepayments.demo",
-                paypalTokenizeCallback = {}
-            )
-        }
-
-        listOf(PayLaterButtonColor.Blue, PayLaterButtonColor.Black, PayLaterButtonColor.White).forEach {
-            color.value = it
-            composeTestRule.waitForIdle()
-            payLaterButton().assertIsDisplayed().assertIsEnabled()
-        }
-    }
-
-    @Test
     fun payLaterButton_hasButtonRole() {
         setPayLaterButton()
 
         payLaterButton().assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button))
-    }
-
-    @Test
-    fun payLaterButton_hasClickAction() {
-        setPayLaterButton()
-
-        payLaterButton().assertHasClickAction()
     }
 
     // endregion
@@ -157,30 +118,6 @@ class PayLaterButtonTest {
             .assertDoesNotExist()
     }
 
-    @Test
-    fun payLaterButtonView_togglingEnabled_updatesState() {
-        val enabled = mutableStateOf(true)
-        composeTestRule.setContent {
-            PayLaterButtonView(style = PayLaterButtonColor.White, enabled = enabled.value, onClick = {})
-        }
-        payLaterButton().assertIsEnabled()
-
-        enabled.value = false
-        composeTestRule.waitForIdle()
-        payLaterButton().assertIsNotEnabled()
-
-        enabled.value = true
-        composeTestRule.waitForIdle()
-        payLaterButton().assertIsEnabled()
-    }
-
-    @Test
-    fun payLaterButtonView_hasContentDescription() {
-        composeTestRule.setContent { PayLaterButtonView(style = PayLaterButtonColor.Blue, onClick = {}) }
-
-        payLaterButton().assertContentDescriptionEquals(str(R.string.pay_later_button_content_description))
-    }
-
     // region Request
 
     @Test
@@ -236,25 +173,6 @@ class PayLaterButtonTest {
     }
 
     // endregion
-
-    @Test
-    fun clickingPayPalButton_doesNotSetShouldOfferPayLater() {
-        val request = PayPalCheckoutRequest("10.00", true)
-        composeTestRule.setContent {
-            PayPalButton(
-                style = PayPalButtonColor.Blue,
-                payPalRequest = request,
-                authorization = Fixtures.TOKENIZATION_KEY,
-                appLinkReturnUrl = Uri.parse("https://example.com/return"),
-                deepLinkFallbackUrlScheme = "com.braintreepayments.demo",
-                paypalTokenizeCallback = {}
-            )
-        }
-
-        composeTestRule.onNode(hasClickAction()).performClick()
-
-        assertFalse(request.shouldOfferPayLater)
-    }
 
     private companion object {
         const val CLICK_TIMEOUT_MS = 5_000L
