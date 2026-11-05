@@ -44,6 +44,14 @@ class BraintreeClient internal constructor(
         "${getAppPackageNameWithoutUnderscores(applicationContext)}.braintree.deeplinkhandler"
 
     /**
+     * The authorization this client uses for requests.
+     *
+     * @suppress
+     */
+    val authorization: Authorization
+        get() = merchantRepository.authorization
+
+    /**
      * @suppress
      */
     constructor (
@@ -107,7 +115,7 @@ class BraintreeClient internal constructor(
      * @param callback [ConfigurationCallback]
      */
     suspend fun getConfiguration(): Configuration {
-        val configResult = configurationLoader.loadConfiguration()
+        val configResult = configurationLoader.loadConfiguration(authorization, sendAnalytics = true)
         when (configResult) {
             is ConfigurationLoaderResult.Success -> {
                 configResult.timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
@@ -137,7 +145,7 @@ class BraintreeClient internal constructor(
         val response = httpClient.get(
             path = url,
             configuration = configuration,
-            authorization = merchantRepository.authorization
+            authorization = authorization
         )
 
         sendAnalyticsTimingEvent(url, response.timing)
@@ -158,7 +166,7 @@ class BraintreeClient internal constructor(
             path = url,
             data = data,
             configuration = configuration,
-            authorization = merchantRepository.authorization,
+            authorization = authorization,
             additionalHeaders = additionalHeaders
         )
         sendAnalyticsTimingEvent(url, response.timing)
@@ -173,7 +181,7 @@ class BraintreeClient internal constructor(
         val response = graphQLClient.post(
             data = json.toString(),
             configuration = configuration,
-            authorization = merchantRepository.authorization
+            authorization = authorization
         )
 
         val query = json.optString(GraphQLConstants.Keys.QUERY)
