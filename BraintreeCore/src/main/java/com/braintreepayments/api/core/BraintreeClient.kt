@@ -22,8 +22,13 @@ import kotlin.coroutines.cancellation.CancellationException
 class BraintreeClient internal constructor(
     applicationContext: Context,
     integrationType: IntegrationType,
-    authorization: Authorization,
-    returnUrlScheme: String,
+    /**
+     * The authorization this client uses for requests.
+     *
+     * @suppress
+     */
+    val authorization: Authorization,
+    private val returnUrlScheme: String,
     appLinkReturnUri: Uri?,
     deepLinkFallbackUrlScheme: String? = null,
     sdkComponent: SdkComponent = SdkComponent.create(applicationContext),
@@ -42,14 +47,6 @@ class BraintreeClient internal constructor(
 
     private val braintreeDeepLinkReturnUrlScheme: String =
         "${getAppPackageNameWithoutUnderscores(applicationContext)}.braintree.deeplinkhandler"
-
-    /**
-     * The authorization this client uses for requests.
-     *
-     * @suppress
-     */
-    val authorization: Authorization
-        get() = merchantRepository.authorization
 
     /**
      * @suppress
@@ -83,6 +80,8 @@ class BraintreeClient internal constructor(
         merchantRepository.let {
             it.applicationContext = applicationContext
             it.integrationType = integrationType
+            // shortcut: analytics still read this shared value, so events from older clients go out
+            // with the newest client's authorization; fix by partitioning flushed events per authorization.
             it.authorization = authorization
             it.returnUrlScheme = returnUrlScheme
             if (appLinkReturnUri != null) {
@@ -209,7 +208,7 @@ class BraintreeClient internal constructor(
         return if (launchesBrowserSwitchAsNewTask) {
             braintreeDeepLinkReturnUrlScheme
         } else {
-            merchantRepository.returnUrlScheme
+            returnUrlScheme
         }
     }
 
