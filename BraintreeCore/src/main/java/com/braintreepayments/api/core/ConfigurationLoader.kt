@@ -37,7 +37,11 @@ internal class ConfigurationLoader(
         return loadConfiguration(authorization, sendAnalytics = false)
     }
 
-    private suspend fun loadConfiguration(
+    /**
+     * Loads configuration for the given [authorization], optionally sending analytics
+     * on successful API fetch.
+     */
+    suspend fun loadConfiguration(
         authorization: Authorization,
         sendAnalytics: Boolean
     ): ConfigurationLoaderResult {

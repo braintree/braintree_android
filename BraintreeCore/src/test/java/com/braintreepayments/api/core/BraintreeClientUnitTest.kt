@@ -77,6 +77,33 @@ class BraintreeClientUnitTest {
     }
 
     @Test
+    fun `when getConfiguration is called, configuration is loaded with the client authorization and analytics enabled`() = runTest(testDispatcher) {
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configuration(configuration)
+            .build()
+
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
+
+        sut.getConfiguration()
+
+        coVerify {
+            configurationLoader.loadConfiguration(authorization, sendAnalytics = true)
+        }
+    }
+
+    @Test
+    fun `when BraintreeClient is created, authorization returns the constructor authorization`() {
+        val sut = createBraintreeClient()
+
+        assertSame(authorization, sut.authorization)
+    }
+
+    @Test
     @Throws(JSONException::class)
     fun `when configuration load succeeds, getConfiguration returns the loaded configuration`() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
@@ -528,7 +555,7 @@ class BraintreeClientUnitTest {
         advanceUntilIdle()
 
         coVerify {
-            configurationLoader.loadConfiguration()
+            configurationLoader.loadConfiguration(any(), any())
         }
 
         verify { analyticsClient.reportCrash(any()) }
@@ -542,7 +569,7 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
         coEvery {
-            configurationLoader.loadConfiguration()
+            configurationLoader.loadConfiguration(any(), any())
         } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
 
         val sut = createBraintreeClient(

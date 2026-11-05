@@ -95,6 +95,11 @@ class MockkBraintreeClientBuilder {
 
         every { braintreeClient.launchesBrowserSwitchAsNewTask() } returns launchesBrowserSwitchAsNewTask
 
+        // lazy: Authorization.fromString needs android.util.Base64, unavailable in non-Robolectric tests
+        every { braintreeClient.authorization } answers {
+            authorizationSuccess ?: Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN)
+        }
+
         coEvery { braintreeClient.getConfiguration() } answers {
             configurationSuccess ?: throw (configurationException ?: IOException("No configuration configured"))
         }

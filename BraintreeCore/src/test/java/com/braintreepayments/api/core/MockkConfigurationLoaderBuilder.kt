@@ -25,6 +25,11 @@ internal class MockkConfigurationLoaderBuilder {
                 ConfigurationLoaderResult.Success(it)
             } ?: ConfigurationLoaderResult.Failure(configurationError)
         }
+        coEvery { configurationLoader.loadConfiguration(any(), any()) } answers {
+            configuration?.let {
+                ConfigurationLoaderResult.Success(it)
+            } ?: ConfigurationLoaderResult.Failure(configurationError)
+        }
         return configurationLoader
     }
 }
