@@ -215,6 +215,30 @@ class PayPalSavedPaymentMethodStyleResolverUnitTest {
     }
 
     @Test
+    fun `NaN and infinite sizes are treated as unset`() {
+        val resolver = resolve(
+            PayPalSavedPaymentMethodViewStyle(
+                componentAppearance = PayPalSavedPaymentMethodAppearance(baseFontSizeSp = Float.NaN),
+                container = PayPalSavedPaymentMethodContainerStyle(
+                    heightDp = Float.NaN,
+                    verticalPaddingDp = Float.POSITIVE_INFINITY,
+                    label = PayPalLabelStyle(fontSizeSp = Float.NaN),
+                    fundingInstrument = PayPalSavedPaymentMethodFundingInstrumentStyle(
+                        editIconSizeDp = Float.NaN,
+                        textFontSizeSp = Float.NEGATIVE_INFINITY
+                    )
+                )
+            )
+        )
+
+        assertNull(resolver.heightDp)
+        assertEquals(10f, resolver.verticalPaddingDp, DELTA)
+        assertEquals(16f, resolver.editIconSizeDp, DELTA)
+        assertEquals(20f, resolver.labelFontSizeSp, DELTA)
+        assertEquals(14f, resolver.fundingInstrumentTextFontSizeSp, DELTA)
+    }
+
+    @Test
     fun `zero values are kept instead of falling back to the default`() {
         val resolver = resolve(
             PayPalSavedPaymentMethodViewStyle(

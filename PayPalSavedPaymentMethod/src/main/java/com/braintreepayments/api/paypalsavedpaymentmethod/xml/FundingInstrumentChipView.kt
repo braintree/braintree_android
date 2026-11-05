@@ -1,0 +1,220 @@
+package com.braintreepayments.api.paypalsavedpaymentmethod.xml
+
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.GradientDrawable
+import android.util.AttributeSet
+import android.util.TypedValue
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
+import androidx.core.view.AccessibilityDelegateCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import com.braintreepayments.api.paypalsavedpaymentmethod.R
+import com.braintreepayments.api.paypalsavedpaymentmethod.asHttpsUrlOrNull
+import com.braintreepayments.api.paypalsavedpaymentmethod.imageloader.ImageLoader
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.accessibilityLabel
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.iconRes
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.lastDigitsOrNull
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+
+/** The funding instrument chip: icon, masked digits or label (or the buyer's email), and the edit icon. */
+internal class FundingInstrumentChipView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : LinearLayout(context, attrs) {
+
+    private val iconContainer: View
+    private val iconShimmer: ShimmerPlaceholderView
+    private val iconView: ImageView
+    private val textView: TextView
+    private val editIconView: ImageView
+    private var isEditable = false
+    private var boundIcon: Pair<String?, Int?>? = null
+
+    // Replaced in tests.
+    internal var imageLoader: ImageLoader = ImageLoader.getInstance()
+
+    // Not tied to attach, so card art bound before the view is attached still loads. Cancelled on detach.
+    private var iconScope: CoroutineScope? = null
+    private var iconJob: Job? = null
+    private val editActionLabel = context.getString(R.string.paypal_saved_payment_method_edit_action_label)
+
+    // The theme's touch feedback, clipped to the chip's rounded corners.
+    private val clickFeedback = TypedValue().let { value ->
+        if (context.theme.resolveAttribute(android.R.attr.selectableItemBackground, value, true)) {
+            value.drawableOrNull(context)
+        } else {
+            null
+        }
+    }
+    private val chipTextColor =
+        ContextCompat.getColor(context, R.color.paypal_saved_payment_method_funding_instrument_chip_text)
+
+    init {
+        orientation = HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        LayoutInflater.from(context).inflate(R.layout.paypal_saved_payment_method_funding_instrument_chip, this)
+        iconContainer = findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon_container)
+        iconShimmer = findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon_shimmer)
+        iconShimmer.showsTrailingGap = false
+        iconView = findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon)
+        textView = findViewById(R.id.paypal_saved_payment_method_funding_instrument_text)
+        editIconView = findViewById(R.id.paypal_saved_payment_method_edit_icon)
+
+        background = GradientDrawable().apply {
+            cornerRadius =
+                resources.getDimension(R.dimen.paypal_saved_payment_method_funding_instrument_chip_corner_radius)
+            setColor(
+                ContextCompat.getColor(context, R.color.paypal_saved_payment_method_funding_instrument_chip_background)
+            )
+        }
+        clipToOutline = true
+        val horizontalPadding = resources.getDimensionPixelSize(
+            R.dimen.paypal_saved_payment_method_funding_instrument_chip_horizontal_padding
+        )
+        val verticalPadding = resources.getDimensionPixelSize(
+            R.dimen.paypal_saved_payment_method_funding_instrument_chip_vertical_padding
+        )
+        setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
+
+        ViewCompat.setAccessibilityDelegate(this, object : AccessibilityDelegateCompat() {
+            override fun onInitializeAccessibilityNodeInfo(host: View, info: AccessibilityNodeInfoCompat) {
+                super.onInitializeAccessibilityNodeInfo(host, info)
+                if (isEditable) info.className = Button::class.java.name
+            }
+        })
+    }
+
+    /** Shows [state]; states without a funding instrument clear the chip. The text color is fixed, as on iOS. */
+    fun bind(
+        state: PayPalSavedPaymentMethodDisplayState,
+        resolvedStyle: PayPalSavedPaymentMethodStyleResolver,
+        editEnabled: Boolean,
+        onEditClick: () -> Unit
+    ) {
+        isEditable = state.isEditable
+        val brandName = if (resolvedStyle.showPayPalLogo || resolvedStyle.showPayPalLabel) {
+            null
+        } else {
+            context.getString(R.string.paypal_saved_payment_method_label)
+        }
+        contentDescription = state.accessibilityLabel(brandName) { label, spokenDigits ->
+            context.getString(R.string.paypal_saved_payment_method_funding_instrument_ending_in, label, spokenDigits)
+        }
+        if (isEditable) {
+            // performClick() and accessibility clicks still reach the listener while the chip is disabled.
+            setOnClickListener { if (isEnabled) onEditClick() }
+            ViewCompat.replaceAccessibilityAction(this, AccessibilityActionCompat.ACTION_CLICK, editActionLabel, null)
+        } else {
+            setOnClickListener(null)
+            ViewCompat.removeAccessibilityAction(this, AccessibilityNodeInfoCompat.ACTION_CLICK)
+        }
+        isClickable = isEditable
+        isEnabled = editEnabled
+        foreground = if (isEditable) clickFeedback else null
+
+        textView.applyTextStyle(resolvedStyle, resolvedStyle.fundingInstrumentTextFontSizeSp, textColor = chipTextColor)
+        when (state) {
+            is PayPalSavedPaymentMethodDisplayState.Content -> {
+                val paymentMethod = state.paymentMethod
+                textView.text = paymentMethod.lastDigitsOrNull()?.let {
+                    context.getString(
+                        R.string.paypal_saved_payment_method_label_funding_instrument_card_masked_number,
+                        it
+                    )
+                } ?: paymentMethod.label
+                bindIcon(paymentMethod.imageUrl, paymentMethod.iconRes())
+            }
+            is PayPalSavedPaymentMethodDisplayState.NoFundingInstrument -> {
+                textView.text = state.payerEmail
+                bindIcon(null, null)
+            }
+            else -> {
+                textView.text = null
+                bindIcon(null, null)
+            }
+        }
+
+        editIconView.isVisible = isEditable
+        val editIconSize = resolvedStyle.editIconSizeDp.dpToPx(resources)
+        editIconView.updateLayoutParams {
+            width = editIconSize
+            height = editIconSize
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        // Card art whose load was cancelled by an earlier detach is loaded again.
+        val (url, fallbackIcon) = boundIcon ?: return
+        val validUrl = url.asHttpsUrlOrNull()
+        if (validUrl != null && iconShimmer.isVisible && iconJob?.isActive != true) loadIcon(validUrl, fallbackIcon)
+    }
+
+    override fun onDetachedFromWindow() {
+        iconScope?.cancel()
+        iconScope = null
+        super.onDetachedFromWindow()
+    }
+
+    // Card art with a shimmer while it loads, and the generic icon if it fails to load. A cached image shows at once.
+    private fun bindIcon(url: String?, @DrawableRes fallbackIcon: Int?) {
+        // Re-rendering with the same icon keeps the current image instead of reloading it.
+        if (boundIcon == url to fallbackIcon) return
+        boundIcon = url to fallbackIcon
+        iconJob?.cancel()
+        val validUrl = url.asHttpsUrlOrNull()
+        iconContainer.isVisible = validUrl != null || fallbackIcon != null
+        val cached = validUrl?.let { imageLoader.peek(it) }
+        when {
+            cached != null -> showIcon(cached, fallbackIcon)
+            validUrl != null -> loadIcon(validUrl, fallbackIcon)
+            else -> showIcon(null, fallbackIcon)
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private fun loadIcon(url: String, @DrawableRes fallbackIcon: Int?) {
+        iconShimmer.isVisible = true
+        iconView.setImageDrawable(null)
+        val scope = iconScope ?: MainScope().also { iconScope = it }
+        iconJob = scope.launch {
+            val bitmap = try {
+                imageLoader.load(url)
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                null
+            }
+            showIcon(bitmap, fallbackIcon)
+        }
+    }
+
+    private fun showIcon(bitmap: Bitmap?, @DrawableRes fallbackIcon: Int?) {
+        iconShimmer.isVisible = false
+        // Art that fails to load with no generic icon to fall back to leaves no empty space, as on iOS.
+        iconContainer.isVisible = bitmap != null || fallbackIcon != null
+        when {
+            bitmap != null -> iconView.setImageBitmap(bitmap)
+            fallbackIcon != null -> iconView.setImageResource(fallbackIcon)
+            else -> iconView.setImageDrawable(null)
+        }
+    }
+}
