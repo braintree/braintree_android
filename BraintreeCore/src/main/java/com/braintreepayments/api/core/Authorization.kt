@@ -16,6 +16,16 @@ abstract class Authorization internal constructor(private val rawValue: String) 
     abstract val configUrl: String?
     abstract val bearer: String?
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Authorization) return false
+        return rawValue == other.rawValue && javaClass == other.javaClass
+    }
+
+    override fun hashCode(): Int {
+        return rawValue.hashCode()
+    }
+
     /**
      * @return The original Client token or Tokenization Key string, which can be used for serialization
      */
