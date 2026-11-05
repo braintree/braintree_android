@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod
 
 import android.content.Context
+import android.net.Uri
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ClientToken
@@ -32,6 +33,22 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
     private val payPalClient: PayPalClient,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
+
+    /**
+     * @param context an Android Context.
+     * @param authorization a client token generated with the buyer's payment method ID.
+     * @param appLinkReturnUrl the Android App Link used to return to the app from the PayPal paysheet.
+     * @param deepLinkFallbackUrlScheme a return URL scheme used when the App Link is not available.
+     */
+    constructor(
+        context: Context,
+        authorization: String,
+        appLinkReturnUrl: Uri,
+        deepLinkFallbackUrlScheme: String? = null
+    ) : this(
+        braintreeClient = BraintreeClient(context, authorization),
+        payPalClient = PayPalClient(context, authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
+    )
 
     /**
      * Starts the edit flow by creating the PayPal auth request, seeded with the buyer's billing agreement. Launch it
