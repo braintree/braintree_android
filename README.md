@@ -223,7 +223,7 @@ If you would like to draw a PayPal Pay Later branded button in your mobile app, 
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    custom:buttonColor="blue" />
+    custom:paymentButtonColor="blue" />
 ```
 
 `PayLaterButton` shares the same `initialize`, `setPayPalRequest`, `handleReturnToApp`, and `payPalLaunchCallback` API as `PayPalButton` above. The only difference is that `setPayPalRequest` sets `PayPalCheckoutRequest.shouldOfferPayLater` to `true` on your request before starting the PayPal Checkout flow:
@@ -309,6 +309,39 @@ VenmoButton(
     venmoTokenizeCallback = venmoTokenizeCallback
 )
 ```
+
+For PayPal Pay Later button, you should invoke the PayLaterButton composable like this:
+```kotlin
+private val payLaterTokenizeCallback = PayPalTokenizeCallback { payPalResult ->
+    when (payPalResult) {
+        is PayPalResult.Success -> {
+            handlePayPalResult(payPalResult.nonce)
+        }
+
+        is PayPalResult.Cancel -> {
+            handleError(Exception("User did not complete PayPal Pay Later payment flow"))
+        }
+
+        is PayPalResult.Failure -> {
+            handleError(payPalResult.error)
+        }
+    }
+    // clear intent data
+    intent.data = null
+}
+
+PayLaterButton(
+    style = PayLaterButtonColor.Blue, // or PayLaterButtonColor.Black / PayLaterButtonColor.White
+    payPalRequest = payPalCheckoutRequest,
+    authorization = authStringArg,
+    appLinkReturnUrl = "https://merchant-app.com".toUri(),
+    deepLinkFallbackUrlScheme = "com.merchant.app.payments",
+    paypalTokenizeCallback = payLaterTokenizeCallback
+)
+```
+
+**Note:** PayPal Pay Later is only available with `PayPalCheckoutRequest`. The composable sets
+`PayPalCheckoutRequest.shouldOfferPayLater` to `true` on your request when the button is clicked.
 
 After you've received a result, clear out the `intent.data` by setting it to null.
 
