@@ -12,4 +12,7 @@
     <declare-styleable name="VenmoButton">
         <attr name="paymentButtonColor" />
     </declare-styleable>
+    <declare-styleable name="PayLaterButton">
+        <attr name="paymentButtonColor" />
+    </declare-styleable>
 </resources>

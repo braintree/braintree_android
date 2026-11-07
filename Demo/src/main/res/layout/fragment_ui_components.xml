@@ -131,6 +131,57 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- ===== PayPal Pay Later section ===== -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/paypal_pay_later" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/pay_later_button_toggle_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            custom:checkedButton="@id/button_pay_later_blue"
+            custom:singleSelection="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_pay_later_blue"
+                style="@style/ColorToggleButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/blue_button_color_option"
+                custom:backgroundTint="@color/toggle_stroke_color" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_pay_later_black"
+                style="@style/ColorToggleButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/black_button_color_option"
+                custom:backgroundTint="@color/toggle_stroke_color" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_pay_later_white"
+                style="@style/ColorToggleButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/white_button_color_option"
+                custom:backgroundTint="@color/toggle_stroke_color" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <com.braintreepayments.api.uicomponents.PayLaterButton
+            android:id="@+id/pay_later_payment_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            custom:paymentButtonColor="blue" />
+
         <!-- ===== Card Fields section ===== -->
         <TextView
             android:layout_width="wrap_content"
