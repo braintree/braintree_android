@@ -1,15 +1,12 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.Typeface
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.TypedValue
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.FontRes
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 import kotlin.math.roundToInt
@@ -22,13 +19,6 @@ internal fun Float.dpToPx(resources: Resources): Int {
     val px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, resources.displayMetrics).roundToInt()
     return if (this > 0f) px.coerceAtLeast(1) else px
 }
-
-/**
- * The drawable a resolved theme attribute points to, or `null` when it has no resource ID. A theme can set an attribute
- * such as `selectableItemBackground` to a plain color, and loading resource ID 0 would crash.
- */
-internal fun TypedValue.drawableOrNull(context: Context): Drawable? =
-    if (resourceId != 0) ContextCompat.getDrawable(context, resourceId) else null
 
 /**
  * Applies the merchant's font, or the system font, at [sizeSp] in [textColor], the style's text color by default.

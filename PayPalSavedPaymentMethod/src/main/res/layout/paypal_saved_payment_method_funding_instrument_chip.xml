@@ -18,11 +18,11 @@
             android:layout_gravity="center_vertical"
             android:visibility="gone" />
 
+        <!-- A fixed 28x20 frame, so square or portrait art scales down instead of growing the chip. -->
         <ImageView
             android:id="@+id/paypal_saved_payment_method_funding_instrument_icon"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
+            android:layout_height="@dimen/paypal_saved_payment_method_funding_instrument_icon_height"
             android:importantForAccessibility="no"
             android:scaleType="fitCenter" />
     </FrameLayout>

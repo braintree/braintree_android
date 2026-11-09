@@ -7,6 +7,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
+import android.os.Build
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -43,6 +48,7 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestParameterInjector
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
 import kotlinx.coroutines.CompletableDeferred
 import java.io.IOException
 
@@ -50,14 +56,14 @@ import java.io.IOException
 class FundingInstrumentChipViewUnitTest {
 
     private val context: Context = RuntimeEnvironment.getApplication()
-    private val sut = FundingInstrumentChipView(context)
-    private val text: TextView = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_text)
-    private val icon: ImageView = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon)
-    private val iconContainer: View =
-        sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon_container)
-    private val iconShimmer: View =
-        sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon_shimmer)
-    private val editIcon: ImageView = sut.findViewById(R.id.paypal_saved_payment_method_edit_icon)
+    private var sut = FundingInstrumentChipView(context)
+    private val text: TextView get() = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_text)
+    private val icon: ImageView get() = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon)
+    private val iconContainer: View
+        get() = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon_container)
+    private val iconShimmer: View
+        get() = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon_shimmer)
+    private val editIcon: ImageView get() = sut.findViewById(R.id.paypal_saved_payment_method_edit_icon)
     private val card = PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.CARD))
     private var editClicks = 0
 
@@ -98,15 +104,25 @@ class FundingInstrumentChipViewUnitTest {
     fun `an editable chip shows touch feedback and calls back when tapped`() {
         bind(card)
 
-        assertNotNull(sut.foreground)
+        assertIsChipRipple(sut.foreground)
         assertTrue(sut.performClick())
         assertEquals(1, editClicks)
     }
 
     @Test
+    fun `the touch feedback is the chip's own ripple on a dark theme too`() {
+        val darkChip = FundingInstrumentChipView(ContextThemeWrapper(context, android.R.style.Theme_Material))
+
+        val style = PayPalSavedPaymentMethodStyleResolver(context, PayPalSavedPaymentMethodViewStyle())
+        darkChip.bind(card, style, editEnabled = true) {}
+
+        assertIsChipRipple(darkChip.foreground)
+    }
+
+    @Test
     fun `card art shows a shimmer while it loads, then the image`() {
         val image = CompletableDeferred<Bitmap>()
-        sut.imageLoader = imageLoader { image.await() }
+        sut = chipWith(imageLoader { image.await() })
 
         bind(PayPalSavedPaymentMethodDisplayState.Content(cardWithArt()))
         idle()
@@ -120,8 +136,31 @@ class FundingInstrumentChipViewUnitTest {
     }
 
     @Test
+    fun `portrait card art scales into the fixed frame instead of growing the chip`() {
+        sut = chipWith(imageLoader { Bitmap.createBitmap(60, 120, Bitmap.Config.ARGB_8888) })
+        bind(PayPalSavedPaymentMethodDisplayState.Content(cardWithArt()))
+        idle()
+
+        sut.measure(
+            View.MeasureSpec.makeMeasureSpec(CHIP_WIDTH, View.MeasureSpec.AT_MOST),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        sut.layout(0, 0, sut.measuredWidth, sut.measuredHeight)
+
+        val resources = context.resources
+        assertEquals(
+            resources.getDimensionPixelSize(R.dimen.paypal_saved_payment_method_funding_instrument_icon_width),
+            icon.width
+        )
+        assertEquals(
+            resources.getDimensionPixelSize(R.dimen.paypal_saved_payment_method_funding_instrument_icon_height),
+            icon.height
+        )
+    }
+
+    @Test
     fun `card art that can't be loaded shows the generic card icon`() {
-        sut.imageLoader = failingImageLoader()
+        sut = chipWith(failingImageLoader())
 
         bind(PayPalSavedPaymentMethodDisplayState.Content(cardWithArt()))
         idle()
@@ -132,7 +171,7 @@ class FundingInstrumentChipViewUnitTest {
 
     @Test
     fun `a product shown by its label leaves no space when its art can't be loaded`() {
-        sut.imageLoader = failingImageLoader()
+        sut = chipWith(failingImageLoader())
         val credit = paymentMethod(PayPalSavedPaymentMethodType.PAYPAL_CREDIT).copy(imageUrl = ART_URL)
 
         bind(PayPalSavedPaymentMethodDisplayState.Content(credit))
@@ -146,11 +185,11 @@ class FundingInstrumentChipViewUnitTest {
     @Test
     fun `card art whose load a detach cancelled loads again when the chip is attached again`() {
         val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
-        val chip = FundingInstrumentChipView(activity)
+        var requests = 0
+        val loader = imageLoader { if (requests++ == 0) CompletableDeferred<Bitmap>().await() else cardArt() }
+        val chip = FundingInstrumentChipView(activity, imageLoader = loader)
         val chipIcon: ImageView = chip.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon)
         val chipShimmer: View = chip.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon_shimmer)
-        var requests = 0
-        chip.imageLoader = imageLoader { if (requests++ == 0) CompletableDeferred<Bitmap>().await() else cardArt() }
         activity.setContentView(chip)
         chip.bind(
             PayPalSavedPaymentMethodDisplayState.Content(cardWithArt()),
@@ -181,7 +220,7 @@ class FundingInstrumentChipViewUnitTest {
     fun `cached card art shows on the first frame without a shimmer or a request`() {
         val loader = imageLoader { error("not expected") }
         every { loader.peek(ART_URL) } returns cardArt()
-        sut.imageLoader = loader
+        sut = chipWith(loader)
 
         bind(PayPalSavedPaymentMethodDisplayState.Content(cardWithArt()))
 
@@ -236,6 +275,19 @@ class FundingInstrumentChipViewUnitTest {
 
         assertTrue(editIcon.isVisible)
         assertTrue(sut.isClickable)
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.N_MR1])
+    fun `only an editable chip is a keyboard focus stop, before Android 8 too`() {
+        bind(card)
+        assertTrue(sut.isFocusable)
+
+        bind(email(isEditable = false))
+        assertFalse(sut.isFocusable)
+
+        bind(email(isEditable = true))
+        assertTrue(sut.isFocusable)
     }
 
     @Test
@@ -305,6 +357,20 @@ class FundingInstrumentChipViewUnitTest {
         editEnabled: Boolean = true,
         style: PayPalSavedPaymentMethodViewStyle = PayPalSavedPaymentMethodViewStyle()
     ) = sut.bind(state, PayPalSavedPaymentMethodStyleResolver(context, style), editEnabled) { editClicks++ }
+
+    // The chip's fixed ripple, masked to its rounded corners. The theme's selectableItemBackground is also a
+    // ripple, but its mask is a plain color, not a rounded shape.
+    private fun assertIsChipRipple(foreground: Drawable?) {
+        assertTrue(foreground is RippleDrawable)
+        val mask = (foreground as RippleDrawable).findDrawableByLayerId(android.R.id.mask)
+        assertTrue(mask is GradientDrawable)
+        assertEquals(
+            context.resources.getDimension(R.dimen.paypal_saved_payment_method_funding_instrument_chip_corner_radius),
+            (mask as GradientDrawable).cornerRadius
+        )
+    }
+
+    private fun chipWith(loader: ImageLoader) = FundingInstrumentChipView(context, imageLoader = loader)
 
     private fun imageLoader(load: suspend () -> Bitmap): ImageLoader = mockk {
         every { peek(any()) } returns null

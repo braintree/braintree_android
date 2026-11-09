@@ -1,10 +1,12 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -38,7 +40,8 @@ import kotlinx.coroutines.launch
 /** The funding instrument chip: icon, masked digits or label (or the buyer's email), and the edit icon. */
 internal class FundingInstrumentChipView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null
+    attrs: AttributeSet? = null,
+    private val imageLoader: ImageLoader = ImageLoader.getInstance()
 ) : LinearLayout(context, attrs) {
 
     private val iconContainer: View
@@ -49,22 +52,24 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
     private var isEditable = false
     private var boundIcon: Pair<String?, Int?>? = null
 
-    // Replaced in tests.
-    internal var imageLoader: ImageLoader = ImageLoader.getInstance()
-
     // Not tied to attach, so card art bound before the view is attached still loads. Cancelled on detach.
     private var iconScope: CoroutineScope? = null
     private var iconJob: Job? = null
     private val editActionLabel = context.getString(R.string.paypal_saved_payment_method_edit_action_label)
 
-    // The theme's touch feedback, clipped to the chip's rounded corners.
-    private val clickFeedback = TypedValue().let { value ->
-        if (context.theme.resolveAttribute(android.R.attr.selectableItemBackground, value, true)) {
-            value.drawableOrNull(context)
-        } else {
-            null
+    // A fixed dark ripple, kept inside the rounded corners. The theme's ripple is light on a dark theme and would
+    // barely show on the chip's fixed light background.
+    private val clickFeedback = RippleDrawable(
+        ColorStateList.valueOf(
+            ContextCompat.getColor(context, R.color.paypal_saved_payment_method_funding_instrument_chip_ripple)
+        ),
+        null,
+        GradientDrawable().apply {
+            cornerRadius =
+                resources.getDimension(R.dimen.paypal_saved_payment_method_funding_instrument_chip_corner_radius)
+            setColor(Color.BLACK)
         }
-    }
+    )
     private val chipTextColor =
         ContextCompat.getColor(context, R.color.paypal_saved_payment_method_funding_instrument_chip_text)
 
@@ -128,6 +133,9 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
             ViewCompat.removeAccessibilityAction(this, AccessibilityNodeInfoCompat.ACTION_CLICK)
         }
         isClickable = isEditable
+        // Before Android 8 a clickable view isn't focusable, so keyboard and D-pad users couldn't reach the edit
+        // action.
+        isFocusable = isEditable
         isEnabled = editEnabled
         foreground = if (isEditable) clickFeedback else null
 
