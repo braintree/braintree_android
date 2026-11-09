@@ -87,12 +87,11 @@ fun PayPalSavedPaymentMethodView(
                 factoryDeepLinkFallbackUrlScheme,
                 defaultClientFactory(context)
             )
-        },
-        createPendingRequestRepository = { key -> PendingRequestRepository(context, key) }
+        }
     )
 }
 
-/** The component with the view model and pending request storage injectable, for tests. */
+/** The component with the view model injectable, for tests. */
 @OptIn(ExperimentalBetaApi::class)
 @Composable
 @Suppress("LongParameterList", "LongMethod")
@@ -105,26 +104,21 @@ internal fun PayPalSavedPaymentMethodView(
     deepLinkFallbackUrlScheme: String?,
     style: PayPalSavedPaymentMethodViewStyle,
     paypalTokenizeCallback: PayPalTokenizeCallback,
-    viewModelFactory: (String, Uri, String?) -> ViewModelProvider.Factory,
-    createPendingRequestRepository: (key: String) -> PendingRequestRepository
+    viewModelFactory: (String, Uri, String?) -> ViewModelProvider.Factory
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val currentCheckoutRequest by rememberUpdatedState(payPalCheckoutRequest)
     val currentCallback by rememberUpdatedState(paypalTokenizeCallback)
 
-    // Saved, so the view model and pending request are found again after recreation or process death. A new
+    // Saved, so the view model is found again after recreation or process death. A new
     // authorization or return URL gets its own, so an earlier edit isn't completed by it. The key is hashed because
     // it goes into saved state and the authorization mustn't.
     val instanceId = rememberSaveable { UUID.randomUUID().toString() }
     val viewModelKey = "PayPalSavedPaymentMethodView:$instanceId:" +
         Objects.hash(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
-    val pendingRequestRepository = remember(viewModelKey) { createPendingRequestRepository(viewModelKey) }
-    // Pending request of the edit in progress. This copy covers a failed repository write.
+    // Pending request of the edit in progress. Saved, so a return after process death can still be completed.
     var launchedPendingRequest by rememberSaveable(viewModelKey) { mutableStateOf<String?>(null) }
-    // The repository is only read once, to find an edit started before the process ended. After that, this instance
-    // knows its own pending request.
-    var storeChecked by remember(viewModelKey) { mutableStateOf(false) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
     if (registry == null) {
@@ -153,32 +147,23 @@ internal fun PayPalSavedPaymentMethodView(
         viewModel.onRequestChanged(request, style.showPayPalCreditMessaging)
     }
 
-    // Clears the stored pending request once its result is delivered. A cancel clears it too: every resume passes the
-    // pending request to the view model, so keeping it would deliver the cancel again each time the screen resumes.
+    // Forgets the pending request once its result is delivered. A cancel does too: every resume passes the pending
+    // request to the view model, so keeping it would deliver the cancel again each time the screen resumes.
     LaunchedEffect(viewModel) {
         viewModel.results.collect { result ->
             launchedPendingRequest = null
-            pendingRequestRepository.clear()
             currentCallback.onPayPalResult(result)
         }
     }
 
-    LifecycleResumeEffect(payPalLauncher, viewModel, pendingRequestRepository, viewModelKey) {
-        coroutineScope.launch {
-            val storedPendingRequest = if (launchedPendingRequest == null && !storeChecked) {
-                storeChecked = true
-                pendingRequestRepository.get()
-            } else {
-                null
-            }
-            // Kept like a launched one, so it's passed again if the view model drops it while an edit step runs.
-            if (storedPendingRequest != null) launchedPendingRequest = storedPendingRequest
-            val pendingRequest = launchedPendingRequest ?: return@launch
-            // The view model remembers a handled return, so the stored copy isn't needed any more.
-            if (viewModel.handleReturnToApp(pendingRequest, payPalLauncher, context.findActivity()?.intent)) {
-                launchedPendingRequest = null
-                pendingRequestRepository.clear()
-            }
+    LifecycleResumeEffect(payPalLauncher, viewModel, viewModelKey) {
+        val pendingRequest = launchedPendingRequest
+        // The view model remembers a handled return, so the pending request isn't needed once it has taken it. If it
+        // dropped it because an edit step is running, it's passed again on the next resume.
+        if (pendingRequest != null &&
+            viewModel.handleReturnToApp(pendingRequest, payPalLauncher, context.findActivity()?.intent)
+        ) {
+            launchedPendingRequest = null
         }
         onPauseOrDispose { }
     }
@@ -192,11 +177,7 @@ internal fun PayPalSavedPaymentMethodView(
         onEditClick = {
             coroutineScope.launch {
                 when (val pending = viewModel.startEdit(context, payPalLauncher, currentCheckoutRequest)) {
-                    is PayPalPendingRequest.Started -> {
-                        launchedPendingRequest = pending.pendingRequestString
-                        // Best effort: the paysheet is already open.
-                        pendingRequestRepository.store(pending.pendingRequestString)
-                    }
+                    is PayPalPendingRequest.Started -> launchedPendingRequest = pending.pendingRequestString
                     is PayPalPendingRequest.Failure ->
                         currentCallback.onPayPalResult(PayPalResult.Failure(pending.error))
                     null -> Unit

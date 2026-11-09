@@ -30,7 +30,6 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPayme
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodUiState
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -58,7 +57,6 @@ class PayPalSavedPaymentMethodViewUnitTest {
     )
     private val results = MutableSharedFlow<PayPalResult>(extraBufferCapacity = 1)
     private val viewModel = mockk<PayPalSavedPaymentMethodViewModel>(relaxed = true)
-    private val pendingRequestRepository = mockk<PendingRequestRepository>(relaxed = true)
     private val authorizations = mutableListOf<String>()
     private val delivered = mutableListOf<PayPalResult>()
     private val inputs = mutableStateOf(Inputs())
@@ -67,8 +65,6 @@ class PayPalSavedPaymentMethodViewUnitTest {
     fun setUp() {
         every { viewModel.state } returns state
         every { viewModel.results } returns results
-        coEvery { pendingRequestRepository.get() } returns null
-        coEvery { pendingRequestRepository.store(any()) } returns true
         composeTestRule.setContent {
             val current = inputs.value
             PayPalSavedPaymentMethodView(
@@ -88,8 +84,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
                             return viewModel as T
                         }
                     }
-                },
-                createPendingRequestRepository = { pendingRequestRepository }
+                }
             )
         }
         composeTestRule.waitForIdle()
@@ -129,7 +124,6 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
         composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
         composeTestRule.waitForIdle()
-        coVerify { pendingRequestRepository.store("pending") }
 
         resumeAgain()
 
@@ -148,7 +142,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
-    fun `a result is delivered to the callback and clears the pending request`() {
+    fun `a result is delivered to the callback, and later resumes don't complete the return again`() {
         coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
         composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
         composeTestRule.waitForIdle()
@@ -158,30 +152,21 @@ class PayPalSavedPaymentMethodViewUnitTest {
         resumeAgain()
 
         assertEquals(listOf<PayPalResult>(PayPalResult.Cancel), delivered)
-        coVerify { pendingRequestRepository.clear() }
         verify(exactly = 0) { viewModel.handleReturnToApp(any(), any(), any()) }
     }
 
     @Test
-    fun `the stored pending request is read once, not on every resume`() {
-        // setUp's first resume already read it.
-        resumeAgain()
-        resumeAgain()
-
-        coVerify(exactly = 1) { pendingRequestRepository.get() }
-    }
-
-    @Test
-    fun `a stored pending request the view model drops is passed again on the next resume`() {
-        // A new authorization is a new instance, whose first resume reads the stored request.
-        coEvery { pendingRequestRepository.get() } returns "stored"
-        every { viewModel.handleReturnToApp("stored", any(), any()) } returnsMany listOf(false, true)
-        inputs.value = inputs.value.copy(authorization = "another-client-token")
+    fun `a pending request the view model drops is passed again on the next resume, then forgotten`() {
+        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
+        every { viewModel.handleReturnToApp("pending", any(), any()) } returnsMany listOf(false, true)
+        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
         composeTestRule.waitForIdle()
 
         resumeAgain()
+        resumeAgain()
+        resumeAgain()
 
-        verify(exactly = 2) { viewModel.handleReturnToApp("stored", any(), any()) }
+        verify(exactly = 2) { viewModel.handleReturnToApp("pending", any(), any()) }
     }
 
     @Test
