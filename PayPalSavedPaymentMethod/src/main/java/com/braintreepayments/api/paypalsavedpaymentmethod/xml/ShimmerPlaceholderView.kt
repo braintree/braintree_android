@@ -9,6 +9,8 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Shader
+import android.os.Build
+import android.provider.Settings
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -18,8 +20,9 @@ import androidx.core.graphics.ColorUtils
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 
 /**
- * The loading bar with a sweeping highlight. Hidden from screen readers unless it has a content description.
- * [showsTrailingGap] `false` fills the whole width, for example for card art.
+ * The loading bar with a sweeping highlight, static when the system has animations turned off. Hidden from screen
+ * readers unless it has a content description. [showsTrailingGap] `false` fills the whole width, for example for card
+ * art.
  */
 internal class ShimmerPlaceholderView @JvmOverloads constructor(
     context: Context,
@@ -145,12 +148,27 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
     // Animates only while on screen, and not while the app is in the background.
     private fun updateAnimation() {
         if (!isInitialized) return
-        if (isAttachedToWindow && isShown && isWindowVisible) {
+        val isOnScreen = isAttachedToWindow && isShown && isWindowVisible
+        if (isOnScreen && areAnimationsEnabled()) {
             if (!animator.isStarted) animator.start()
         } else {
             animator.cancel()
+            // A static bar shows no highlight, rather than one frozen where the sweep stopped.
+            if (progress != 0f) {
+                progress = 0f
+                invalidate()
+            }
         }
     }
+
+    // With animations turned off ("Remove animations", Battery Saver) the bar stays static. Before Android 8 a
+    // zero-duration animator that repeats forever would otherwise redraw every frame.
+    private fun areAnimationsEnabled(): Boolean =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ValueAnimator.areAnimatorsEnabled()
+        } else {
+            Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) != 0f
+        }
 
     // The same sweep as the Compose ShimmerPlaceholder, so both views load the same way.
     private companion object {
