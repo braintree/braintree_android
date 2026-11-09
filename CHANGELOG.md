@@ -8,6 +8,8 @@
     * Fix Compose `PayPalButton` and `PayLaterButton` not returning a result when the Activity is recreated while the browser is open
     * Fix `VenmoButton` not re-enabling after failure in `createPaymentAuthRequest`, `venmoLauncher.launch()`, or when the hosting Activity is null
     * Add `PayLaterButton` and compose support to generate a PayPal-PayLater branded button for launching the PayLater flow
+- BraintreeCore
+    - Update Browser Switch version to 3.7.0
 
 ## 5.34.0 (2026-10-29)
 
