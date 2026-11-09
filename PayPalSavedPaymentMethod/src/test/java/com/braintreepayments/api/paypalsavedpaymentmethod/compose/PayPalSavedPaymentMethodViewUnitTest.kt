@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -49,6 +50,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
+    private val restorationTester = StateRestorationTester(composeTestRule)
     private val state = MutableStateFlow(
         PayPalSavedPaymentMethodUiState(
             fundingInstrument = CARD_STATE,
@@ -65,7 +67,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     fun setUp() {
         every { viewModel.state } returns state
         every { viewModel.results } returns results
-        composeTestRule.setContent {
+        restorationTester.setContent {
             val current = inputs.value
             PayPalSavedPaymentMethodView(
                 payPalCheckoutRequest = CHECKOUT,
@@ -153,6 +155,20 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
         assertEquals(listOf<PayPalResult>(PayPalResult.Cancel), delivered)
         verify(exactly = 0) { viewModel.handleReturnToApp(any(), any(), any()) }
+    }
+
+    @Test
+    fun `a pending request survives restoring the saved state, and the return is completed with it`() {
+        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
+        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
+        composeTestRule.waitForIdle()
+        verify(exactly = 0) { viewModel.handleReturnToApp(any(), any(), any()) }
+
+        // Only saved state keeps the pending request, so it must come back with it.
+        restorationTester.emulateSavedInstanceStateRestore()
+        composeTestRule.waitForIdle()
+
+        verify { viewModel.handleReturnToApp("pending", any(), any()) }
     }
 
     @Test
