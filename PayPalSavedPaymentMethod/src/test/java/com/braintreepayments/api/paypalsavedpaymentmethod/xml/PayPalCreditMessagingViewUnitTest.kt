@@ -114,6 +114,18 @@ class PayPalCreditMessagingViewUnitTest {
     }
 
     @Test
+    fun `only a message with a link is a keyboard focus stop`() {
+        bindMessage()
+        assertTrue(text.isFocusable)
+
+        bindMessage(MESSAGE_ONLY)
+        assertFalse(text.isFocusable)
+
+        bindMessage()
+        assertTrue(text.isFocusable)
+    }
+
+    @Test
     fun `the link uses the style's link color without an underline`() {
         bindMessage(linkColor = Color.BLUE)
 

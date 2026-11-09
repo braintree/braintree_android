@@ -75,6 +75,8 @@ internal class PayPalCreditMessagingView @JvmOverloads constructor(
         onLearnMoreClick: (url: String) -> Unit
     ) {
         textView.isClickable = learnMore != null
+        // The movement method made the text focusable; only a message with the link is a keyboard or D-pad stop.
+        textView.isFocusable = learnMore != null
         if (learnMore != null) {
             ViewCompat.replaceAccessibilityAction(
                 textView,
