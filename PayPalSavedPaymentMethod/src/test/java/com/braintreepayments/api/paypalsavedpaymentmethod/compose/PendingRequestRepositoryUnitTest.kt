@@ -21,10 +21,12 @@ class PendingRequestRepositoryUnitTest {
 
     private val dataStore = InMemoryDataStore()
 
+    private var now = 1_000_000L
+
     private fun TestScope.repository(
         key: String = "instance",
         dataStore: DataStore<Preferences> = this@PendingRequestRepositoryUnitTest.dataStore
-    ) = PendingRequestRepository(mockk(), key, dataStore, StandardTestDispatcher(testScheduler))
+    ) = PendingRequestRepository(mockk(), key, dataStore, StandardTestDispatcher(testScheduler)) { now }
 
     @Test
     fun `get returns null when nothing is stored`() = runTest {
@@ -59,6 +61,38 @@ class PendingRequestRepositoryUnitTest {
 
         assertEquals("first-request", first.get())
         assertNull(second.get())
+    }
+
+    @Test
+    fun `storing removes pending requests left behind for too long by other instances`() = runTest {
+        val abandoned = repository("abandoned")
+        abandoned.store("abandoned-request")
+        now += PendingRequestRepository.STALE_AFTER_MILLIS + 1
+
+        repository("current").store("current-request")
+
+        assertNull(abandoned.get())
+        assertEquals("current-request", repository("current").get())
+    }
+
+    @Test
+    fun `storing keeps another instance's recent pending request`() = runTest {
+        val other = repository("other")
+        other.store("other-request")
+        now += PendingRequestRepository.STALE_AFTER_MILLIS - 1
+
+        repository("current").store("current-request")
+
+        assertEquals("other-request", other.get())
+    }
+
+    @Test
+    fun `get ignores a pending request that is too old`() = runTest {
+        val subject = repository()
+        subject.store("pending-request")
+        now += PendingRequestRepository.STALE_AFTER_MILLIS + 1
+
+        assertNull(subject.get())
     }
 
     @Test

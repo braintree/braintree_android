@@ -163,6 +163,45 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
+    fun `the stored pending request is read once, not on every resume`() {
+        // setUp's first resume already read it.
+        resumeAgain()
+        resumeAgain()
+
+        coVerify(exactly = 1) { pendingRequestRepository.get() }
+    }
+
+    @Test
+    fun `a stored pending request the view model drops is passed again on the next resume`() {
+        // A new authorization is a new instance, whose first resume reads the stored request.
+        coEvery { pendingRequestRepository.get() } returns "stored"
+        every { viewModel.handleReturnToApp("stored", any(), any()) } returnsMany listOf(false, true)
+        inputs.value = inputs.value.copy(authorization = "another-client-token")
+        composeTestRule.waitForIdle()
+
+        resumeAgain()
+
+        verify(exactly = 2) { viewModel.handleReturnToApp("stored", any(), any()) }
+    }
+
+    @Test
+    fun `a cancel clears the pending request, so later resumes don't deliver it again`() {
+        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
+        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
+        composeTestRule.waitForIdle()
+        every { viewModel.handleReturnToApp(any(), any(), any()) } answers {
+            results.tryEmit(PayPalResult.Cancel)
+            true
+        }
+
+        resumeAgain()
+        resumeAgain()
+
+        assertEquals(listOf<PayPalResult>(PayPalResult.Cancel), delivered)
+        verify(exactly = 1) { viewModel.handleReturnToApp(any(), any(), any()) }
+    }
+
+    @Test
     fun `an edit in progress disables the chip and shows the loader`() {
         // The loader's spinner animates forever, so the clock is advanced by hand.
         composeTestRule.mainClock.autoAdvance = false

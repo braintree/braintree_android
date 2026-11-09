@@ -43,7 +43,9 @@ import java.util.UUID
  * `setIntent(intent)` in `onNewIntent`. The PayPal return URL is removed from the intent once handled.
  *
  * State is kept in the hosting activity or navigation destination until it's destroyed, so show one per screen, not
- * one per list item. If the screen closes while the edit is being completed, its result isn't delivered.
+ * one per list item, and keep it in the composition for as long as the screen is shown. Removing it and adding it back
+ * starts a new instance that doesn't know about an edit completed by the earlier one. If the screen closes while the
+ * edit is being completed, its result isn't delivered.
  *
  * @param payPalCheckoutRequest the checkout the edited funding instrument applies to.
  * @param request the amount and currency for the Pay Later message, and an optional merchant account. A change reloads
@@ -120,6 +122,9 @@ internal fun PayPalSavedPaymentMethodView(
     val pendingRequestRepository = remember(viewModelKey) { createPendingRequestRepository(viewModelKey) }
     // Pending request of the edit in progress. This copy covers a failed repository write.
     var launchedPendingRequest by rememberSaveable(viewModelKey) { mutableStateOf<String?>(null) }
+    // The repository is only read once, to find an edit started before the process ended. After that, this instance
+    // knows its own pending request.
+    var storeChecked by remember(viewModelKey) { mutableStateOf(false) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
     if (registry == null) {
@@ -148,7 +153,8 @@ internal fun PayPalSavedPaymentMethodView(
         viewModel.onRequestChanged(request, style.showPayPalCreditMessaging)
     }
 
-    // Clears the stored pending request once its result is delivered.
+    // Clears the stored pending request once its result is delivered. A cancel clears it too: every resume passes the
+    // pending request to the view model, so keeping it would deliver the cancel again each time the screen resumes.
     LaunchedEffect(viewModel) {
         viewModel.results.collect { result ->
             launchedPendingRequest = null
@@ -157,9 +163,17 @@ internal fun PayPalSavedPaymentMethodView(
         }
     }
 
-    LifecycleResumeEffect(payPalLauncher, viewModel, pendingRequestRepository) {
+    LifecycleResumeEffect(payPalLauncher, viewModel, pendingRequestRepository, viewModelKey) {
         coroutineScope.launch {
-            val pendingRequest = launchedPendingRequest ?: pendingRequestRepository.get() ?: return@launch
+            val storedPendingRequest = if (launchedPendingRequest == null && !storeChecked) {
+                storeChecked = true
+                pendingRequestRepository.get()
+            } else {
+                null
+            }
+            // Kept like a launched one, so it's passed again if the view model drops it while an edit step runs.
+            if (storedPendingRequest != null) launchedPendingRequest = storedPendingRequest
+            val pendingRequest = launchedPendingRequest ?: return@launch
             // The view model remembers a handled return, so the stored copy isn't needed any more.
             if (viewModel.handleReturnToApp(pendingRequest, payPalLauncher, context.findActivity()?.intent)) {
                 launchedPendingRequest = null
