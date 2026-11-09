@@ -154,6 +154,19 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
+    fun `a style change while detached during an edit doesn't open the loader again`() {
+        initialize()
+        state.value = PayPalSavedPaymentMethodUiState(fundingInstrument = CARD_STATE, isEditing = true)
+        idle()
+        activity.setContentView(View(activity))
+        val shown = ShadowDialog.getShownDialogs().size
+
+        sut.style = PayPalSavedPaymentMethodViewStyle(showPayPalCreditMessaging = false)
+
+        assertEquals(shown, ShadowDialog.getShownDialogs().size)
+    }
+
+    @Test
     fun `after being detached and attached again the view shows the latest state`() {
         initialize()
         state.value = PayPalSavedPaymentMethodUiState(fundingInstrument = CARD_STATE, isEditing = true)

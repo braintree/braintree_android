@@ -313,7 +313,8 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
             editEnabled = !state.isEditing,
             isEditCompleted = state.isEditCompleted
         )
-        if (state.isEditing) {
+        // Only while attached: a style change while detached mustn't open a dialog nothing would dismiss.
+        if (state.isEditing && isAttachedToWindow) {
             if (loadingDialog == null) loadingDialog = EditLoadingDialog(context).also { it.show() }
         } else {
             loadingDialog?.dismiss()
