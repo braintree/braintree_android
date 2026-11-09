@@ -202,7 +202,7 @@ class GooglePayClient internal constructor(
         return try {
             val configuration = braintreeClient.getConfiguration()
             GooglePayTokenizationParameters.Success(
-                getTokenizationParameters(configuration, merchantRepository.authorization),
+                getTokenizationParameters(configuration, braintreeClient.authorization),
                 getAllowedCardNetworks(configuration)
             )
         } catch (e: Exception) {
@@ -253,7 +253,7 @@ class GooglePayClient internal constructor(
         try {
             val configuration = braintreeClient.getConfiguration()
             if (configuration.isGooglePayEnabled) {
-                setGooglePayRequestDefaults(configuration, merchantRepository.authorization, request)
+                setGooglePayRequestDefaults(configuration, braintreeClient.authorization, request)
 
                 val paymentDataRequest =
                     PaymentDataRequest.fromJson(request.toJson())
