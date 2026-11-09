@@ -1,9 +1,11 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 
 import android.content.Context
+import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.TouchDelegate
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -47,6 +49,29 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         fundingInstrumentShimmer = findViewById(R.id.paypal_saved_payment_method_funding_instrument_shimmer)
         fundingInstrumentChip = findViewById(R.id.paypal_saved_payment_method_funding_instrument_chip)
         creditMessagingView = findViewById(R.id.paypal_saved_payment_method_credit_messaging)
+    }
+
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        super.onLayout(changed, l, t, r, b)
+        updateChipTouchDelegate()
+    }
+
+    // An editable chip gets a 48dp touch target, like Compose's minimumInteractiveComponentSize, without changing how
+    // the chip looks. Kept inside this view, since a touch outside it never arrives.
+    private fun updateChipTouchDelegate() {
+        if (!fundingInstrumentChip.isVisible || !fundingInstrumentChip.isClickable) {
+            touchDelegate = null
+            return
+        }
+        val bounds = Rect(0, 0, fundingInstrumentChip.width, fundingInstrumentChip.height)
+        offsetDescendantRectToMyCoords(fundingInstrumentChip, bounds)
+        val minSize = MIN_TOUCH_TARGET_DP.dpToPx(resources)
+        bounds.inset(
+            -((minSize - bounds.width() + 1) / 2).coerceAtLeast(0),
+            -((minSize - bounds.height() + 1) / 2).coerceAtLeast(0)
+        )
+        bounds.intersect(0, 0, width, height)
+        touchDelegate = TouchDelegate(bounds, fundingInstrumentChip)
     }
 
     @Suppress("LongParameterList")
@@ -119,5 +144,9 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         creditMessagingView.updateLayoutParams<MarginLayoutParams> {
             marginStart = if (resolvedStyle.showPayPalLogo) logoSize + labelGap else 0
         }
+    }
+
+    private companion object {
+        const val MIN_TOUCH_TARGET_DP = 48f
     }
 }
