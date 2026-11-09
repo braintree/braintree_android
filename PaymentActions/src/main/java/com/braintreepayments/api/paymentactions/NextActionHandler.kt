@@ -19,7 +19,8 @@ import kotlin.time.Duration.Companion.seconds
  * At [PaymentActionStatus.REQUIRES_CUSTOMER_ACTION], 3D Secure device data collection
  * ([NextAction.ThreeDSecureAuthentication]) is resolved internally through [threeDSecureProvider]:
  * the result is signaled to the server and the loop continues on the signal's response, so a
- * frictionless flow needs no extra fetch. Any other customer action returns
+ * frictionless flow needs no extra fetch. Device data is collected at most once per
+ * [handle] call; a repeated request, or any other customer action, returns
  * [PaymentActionResult.CustomerActionRequired].
  */
 internal class NextActionHandler(
@@ -39,6 +40,7 @@ internal class NextActionHandler(
     suspend fun handle(serviceResult: PaymentActionServiceResult? = null): PaymentActionResult {
         var lastVersion: Int? = null
         var processingAttempts = 0
+        var deviceDataCollected = false
         var passedInResult: PaymentActionServiceResult? = serviceResult
 
         while (true) {
@@ -63,12 +65,19 @@ internal class NextActionHandler(
                 }
 
                 PaymentActionStatus.REQUIRES_CUSTOMER_ACTION -> {
-                    if (paymentAction.nextAction !is NextAction.ThreeDSecureAuthentication) {
+                    // Device data is collected at most once per call: if the server asks again, hand
+                    // off rather than loop, so a misbehaving response can't keep the loop running.
+                    if (paymentAction.nextAction !is NextAction.ThreeDSecureAuthentication || deviceDataCollected) {
                         return PaymentActionResult.CustomerActionRequired(paymentAction.id)
                     }
-                    // The signal's response is the updated Payment Action, so the next turn uses it
-                    // instead of calling getPaymentAction() again.
-                    passedInResult = collectDeviceDataAndSignal()
+                    deviceDataCollected = true
+                    // The signal's response is the updated Payment Action, so the loop continues on it rather than re-fetching
+                    passedInResult = when (val deviceData = threeDSecureProvider.collectDeviceData()) {
+                        is DeviceDataResult.Failed -> return PaymentActionResult.Failure(deviceData.error)
+                        is DeviceDataResult.Collected -> service.signalCustomerActionComplete(
+                            CustomerCompletedAction.DeviceDataCollection(deviceData.dfReferenceId)
+                        )
+                    }
                 }
 
                 PaymentActionStatus.REQUIRES_PAYMENT_METHOD -> return PaymentActionResult.PaymentMethodRequired(paymentAction.id)
@@ -83,20 +92,6 @@ internal class NextActionHandler(
             }
         }
     }
-
-
-    /**
-     * Runs device data collection and signals its reference id to the server. A collection failure
-     * is returned as a [PaymentActionServiceResult.Failure] so the drive loop handles it like any
-     * other failed call.
-     */
-    private suspend fun collectDeviceDataAndSignal(): PaymentActionServiceResult =
-        when (val deviceData = threeDSecureProvider.collectDeviceData()) {
-            is DeviceDataResult.Collected -> service.signalCustomerActionComplete(
-                CustomerCompletedAction.DeviceDataCollection(deviceData.dfReferenceId)
-            )
-            is DeviceDataResult.Failed -> PaymentActionServiceResult.Failure(deviceData.error)
-        }
 
     /**
      * A version should never decrease within a single drive loop; if it does, the response is stale

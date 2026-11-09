@@ -267,6 +267,7 @@ class NextActionHandlerUnitTest {
                 coEvery { service.getPaymentAction() } returns
                     success(PaymentActionStatus.REQUIRES_CUSTOMER_ACTION, nextAction = nextAction)
 
+                val result = NextActionHandler(service, threeDSecureProvider).handle()
 
                 assertEquals("pa123", assertIs<PaymentActionResult.CustomerActionRequired>(result).id)
                 coVerify(exactly = 1) { service.getPaymentAction() }
@@ -414,18 +415,33 @@ class NextActionHandlerUnitTest {
     }
 
     @Test
-    fun `handle collects device data again when the server requests it again`() = runTest(testDispatcher) {
-        coEvery { service.getPaymentAction() } returns requiresDeviceData()
-        stubDeviceDataCollected()
-        coEvery { service.signalCustomerActionComplete(ddcSignal) } returnsMany listOf(
-            requiresDeviceData(),
-            success(PaymentActionStatus.SUCCEEDED),
-        )
+    fun `handle returns CustomerActionRequired when the signal response requests device data again`() =
+        runTest(testDispatcher) {
+            coEvery { service.getPaymentAction() } returns requiresDeviceData()
+            stubDeviceDataCollected()
+            coEvery { service.signalCustomerActionComplete(ddcSignal) } returns requiresDeviceData()
 
-        val result = sut.handle()
+            val result = sut.handle()
 
-        assertIs<PaymentActionResult.Completed>(result)
-        coVerify(exactly = 2) { threeDSecureProvider.collectDeviceData() }
-        coVerify(exactly = 1) { service.getPaymentAction() }
-    }
+            assertEquals("pa123", assertIs<PaymentActionResult.CustomerActionRequired>(result).id)
+            coVerify(exactly = 1) { threeDSecureProvider.collectDeviceData() }
+            coVerify(exactly = 1) { service.signalCustomerActionComplete(ddcSignal) }
+        }
+
+    @Test
+    fun `handle collects device data at most once even when a later poll requests it again`() =
+        runTest(testDispatcher) {
+            coEvery { service.getPaymentAction() } returnsMany listOf(
+                requiresDeviceData(),
+                requiresDeviceData(),
+            )
+            stubDeviceDataCollected()
+            coEvery { service.signalCustomerActionComplete(ddcSignal) } returns success(PaymentActionStatus.PROCESSING)
+
+            val result = sut.handle()
+
+            assertIs<PaymentActionResult.CustomerActionRequired>(result)
+            coVerify(exactly = 1) { threeDSecureProvider.collectDeviceData() }
+            coVerify(exactly = 2) { service.getPaymentAction() }
+        }
 }

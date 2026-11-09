@@ -69,9 +69,10 @@ internal class CardinalThreeDSecureProvider(
 
                 // During setup, Cardinal calls onValidated only when setup fails, e.g. an invalid JWT.
                 override fun onValidated(validateResponse: ValidateResponse?, serverJwt: String?) {
-                    resumeOnce(
-                        DeviceDataResult.Failed(BraintreeException(CARDINAL_SETUP_VALIDATION_FAILED_MESSAGE))
-                    )
+                    val message = validateResponse?.errorDescription
+                        ?.takeIf { it.isNotBlank() }
+                        ?: CARDINAL_SETUP_VALIDATION_FAILED_MESSAGE
+                    resumeOnce(DeviceDataResult.Failed(BraintreeException(message)))
                 }
             }
 

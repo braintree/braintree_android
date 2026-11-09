@@ -8,6 +8,7 @@ import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters
+import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
 import com.cardinalcommerce.shared.models.exceptions.InvalidInputException
 import io.mockk.every
@@ -146,6 +147,37 @@ class CardinalThreeDSecureProviderUnitTest {
         val error = assertIs<BraintreeException>(assertIs<DeviceDataResult.Failed>(result).error)
         assertEquals(CardinalThreeDSecureProvider.CARDINAL_SETUP_VALIDATION_FAILED_MESSAGE, error.message)
     }
+
+    @Test
+    fun `collectDeviceData returns Failed with Cardinal's error description when one is provided`() = runTest {
+        val validateResponse = mockk<ValidateResponse> {
+            every { errorDescription } returns "Invalid JWT signature"
+        }
+        every { cardinal.init(any(), any<CardinalInitService>()) } answers {
+            secondArg<CardinalInitService>().onValidated(validateResponse, null)
+        }
+
+        val result = buildSut().collectDeviceData()
+
+        val error = assertIs<BraintreeException>(assertIs<DeviceDataResult.Failed>(result).error)
+        assertEquals("Invalid JWT signature", error.message)
+    }
+
+    @Test
+    fun `collectDeviceData falls back to the default message when Cardinal's error description is blank`() =
+        runTest {
+            val validateResponse = mockk<ValidateResponse> {
+                every { errorDescription } returns "  "
+            }
+            every { cardinal.init(any(), any<CardinalInitService>()) } answers {
+                secondArg<CardinalInitService>().onValidated(validateResponse, null)
+            }
+
+            val result = buildSut().collectDeviceData()
+
+            val error = assertIs<BraintreeException>(assertIs<DeviceDataResult.Failed>(result).error)
+            assertEquals(CardinalThreeDSecureProvider.CARDINAL_SETUP_VALIDATION_FAILED_MESSAGE, error.message)
+        }
 
     @Test
     fun `collectDeviceData keeps the first result when Cardinal calls back twice`() = runTest {
