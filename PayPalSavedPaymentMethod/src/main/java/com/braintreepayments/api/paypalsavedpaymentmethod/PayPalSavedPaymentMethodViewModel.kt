@@ -118,9 +118,10 @@ internal class PayPalSavedPaymentMethodViewModel(
     }
 
     /**
-     * Loads the default funding instrument and, if shown, the Pay Later message. Called each time a view attaches, so
-     * a failed load is retried and a shown one refreshed; a failed refresh keeps what's shown. After an edit restored
-     * from [savedState], the first call loads the funding instrument the buyer picked and no message.
+     * Loads the default funding instrument and, if shown, the Pay Later message. Called each time a view binds to this
+     * view model or enters composition, so a failed load is retried and a shown one refreshed; a failed refresh keeps
+     * what's shown. Once an edit is complete, this loads nothing, even if loading the funding instrument the buyer
+     * picked failed; only after an edit restored from [savedState] does the first call load it.
      */
     fun load(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
         val isFirstLoad = this.request == null

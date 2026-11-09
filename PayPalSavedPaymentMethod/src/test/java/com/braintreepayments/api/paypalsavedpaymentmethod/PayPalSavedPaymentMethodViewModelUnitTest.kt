@@ -354,14 +354,19 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `the edited funding instrument maps a failed load like the first load`() = runTest(dispatcher) {
-        loadAndSettle()
-        coEvery { client.fetchPaymentMethod(any(), ORDER_ID, any()) } throws UnknownHostException()
+    fun `a failed load of the edited funding instrument maps like the first load and isn't retried`() =
+        runTest(dispatcher) {
+            loadAndSettle()
+            coEvery { client.fetchPaymentMethod(any(), ORDER_ID, any()) } throws UnknownHostException()
+            completeReturn()
+            assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, sut.state.value.fundingInstrument)
 
-        completeReturn()
+            loadAndSettle()
 
-        assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, sut.state.value.fundingInstrument)
-    }
+            assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, sut.state.value.fundingInstrument)
+            coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_DEFAULT, any(), any()) }
+            coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_UPDATED, ORDER_ID, any()) }
+        }
 
     @Test
     fun `an edit that completes while the first load is running wins over that load`() = runTest(dispatcher) {
