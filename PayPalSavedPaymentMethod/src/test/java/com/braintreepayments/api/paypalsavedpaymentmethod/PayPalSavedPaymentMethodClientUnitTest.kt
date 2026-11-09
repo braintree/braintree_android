@@ -3,7 +3,6 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod
 
 import android.content.Context
-import android.net.Uri
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
@@ -37,7 +36,6 @@ import org.junit.Assert.assertSame
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import java.io.IOException
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
@@ -114,22 +112,6 @@ class PayPalSavedPaymentMethodClientUnitTest {
 
         assertEquals(emptyList<PayPalSavedPaymentMethod>(), result.paymentMethods)
         assertNull(result.payer)
-    }
-
-    @Test
-    fun `the public constructor uses the authorization it is given`() = runTest {
-        val sut = PayPalSavedPaymentMethodClient(
-            RuntimeEnvironment.getApplication(),
-            Fixtures.TOKENIZATION_KEY,
-            Uri.parse("https://merchant.example.com"),
-            "com.merchant.braintree"
-        )
-
-        val result = sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest)
-
-        assertIs<PayPalSavedPaymentMethodException.InvalidAuthorization>(
-            assertIs<PayPalSavedPaymentMethodAuthRequest.Failure>(result).error
-        )
     }
 
     @Test

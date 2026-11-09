@@ -269,7 +269,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `a second edit step while one is running is ignored`() = runTest(dispatcher) {
+    fun `startEdit or a return while an edit is in flight is ignored`() = runTest(dispatcher) {
         val created = startEditInProgress()
 
         assertNull(sut.startEdit(activity, launcher, CHECKOUT))
