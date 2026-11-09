@@ -3,6 +3,7 @@ package com.braintreepayments.api.uicomponents.compose
 import android.app.Activity
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
@@ -20,6 +21,7 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -93,6 +95,38 @@ class PayPalButtonFlowUnitTest {
         assertTrue(launched)
         assertTrue(results.isEmpty())
         coVerify(exactly = 1) { pendingRequestRepository.storePendingRequest("pending-request") }
+    }
+
+    // endregion
+
+    // region restoreStoredRequest
+
+    @Test
+    fun `restoreStoredRequest does nothing when there is no stored request`() {
+        val error = restoreStoredRequest(payPalLauncher, "")
+
+        assertNull(error)
+        verify(exactly = 0) { payPalLauncher.restorePendingRequest(any()) }
+    }
+
+    @Test
+    fun `restoreStoredRequest gives the stored request to the launcher`() {
+        every { payPalLauncher.restorePendingRequest(any()) } just runs
+
+        val error = restoreStoredRequest(payPalLauncher, "pending-request")
+
+        assertNull(error)
+        verify(exactly = 1) { payPalLauncher.restorePendingRequest("pending-request") }
+    }
+
+    @Test
+    fun `restoreStoredRequest returns the error when the stored request cannot be restored`() {
+        val restoreError = BrowserSwitchException("invalid pending request")
+        every { payPalLauncher.restorePendingRequest(any()) } throws restoreError
+
+        val error = restoreStoredRequest(payPalLauncher, "pending-request")
+
+        assertSame(restoreError, error)
     }
 
     // endregion

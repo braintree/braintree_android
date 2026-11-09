@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.coroutineScope
+import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
@@ -25,6 +26,7 @@ import com.braintreepayments.api.paypal.PayPalRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 /**
  * Hosts the PayPal browser-switch flow shared by the PayPal and PayPal Pay Later buttons: it creates the client and
@@ -68,7 +70,10 @@ internal fun PayPalButtonFlow(
         return
     }
 
-    val payPalLauncher = remember { PayPalLauncher(registry) }
+    // Saved across Activity recreation so the new launcher registers under the same key and receives the Auth Tab
+    // result the registry stored while the Activity was destroyed.
+    val launcherKey = rememberSaveable { "PayPalButtonFlow_${UUID.randomUUID()}" }
+    val payPalLauncher = remember { PayPalLauncher(registry, launcherKey) }
     val payPalClient = remember {
         PayPalClient(
             context = context,
@@ -122,6 +127,14 @@ internal fun PayPalButtonFlow(
             lifecycle.coroutineScope.launch {
                 val pendingRequestStr = pendingRequestRepository.getPendingRequest()
 
+                val restoreError = restoreStoredRequest(payPalLauncher, pendingRequestStr)
+                if (restoreError != null) {
+                    enabled = true
+                    pendingRequestRepository.clearPendingRequest()
+                    paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(restoreError))
+                    return@launch
+                }
+
                 activity?.intent?.let { intent ->
                     handleReturnToApp(payPalLauncher, payPalClient, pendingRequestStr, intent, paypalTokenizeCallback)
                     enabled = true
@@ -136,6 +149,25 @@ internal fun PayPalButtonFlow(
         }
 
         onPauseOrDispose { lifecycle }
+    }
+}
+
+/**
+ * Gives [payPalLauncher] the stored pending request. The launcher only keeps it in memory, so a launcher created after
+ * the Activity was recreated needs it before the flow can be completed.
+ *
+ * @return the error if the stored request could not be restored, `null` otherwise.
+ */
+internal fun restoreStoredRequest(
+    payPalLauncher: PayPalLauncher,
+    pendingRequestString: String
+): BrowserSwitchException? {
+    if (pendingRequestString.isEmpty()) return null
+    return try {
+        payPalLauncher.restorePendingRequest(pendingRequestString)
+        null
+    } catch (e: BrowserSwitchException) {
+        e
     }
 }
 
