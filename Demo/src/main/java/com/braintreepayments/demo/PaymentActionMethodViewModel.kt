@@ -84,8 +84,8 @@ class PaymentActionMethodViewModel(
                 _events.send(PaymentActionMethodEvent.Terminal(STATE_CANCELED, result.id))
             is PaymentActionResult.Expired ->
                 _events.send(PaymentActionMethodEvent.Terminal(STATE_EXPIRED, result.id))
-            is PaymentActionResult.Unknown ->
-                _events.send(PaymentActionMethodEvent.Terminal(STATE_UNKNOWN, result.id))
+            is PaymentActionResult.Unrecognized ->
+                _events.send(PaymentActionMethodEvent.Terminal(STATE_UNRECOGNIZED, result.id))
             is PaymentActionResult.Failure -> _events.send(
                 PaymentActionMethodEvent.Terminal(
                     STATE_FAILURE,
@@ -116,7 +116,7 @@ class PaymentActionMethodViewModel(
         const val STATE_CANCELED = "CANCELED"
         const val STATE_EXPIRED = "EXPIRED"
         const val STATE_FAILURE = "FAILURE"
-        const val STATE_UNKNOWN = "UNKNOWN"
+        const val STATE_UNRECOGNIZED = "UNRECOGNIZED"
         const val STATE_SERVER_ACTION_REQUIRED = "SERVER_ACTION_REQUIRED"
     }
 }
