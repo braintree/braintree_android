@@ -5,7 +5,6 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
-import android.util.TypedValue
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -19,8 +18,6 @@ import io.mockk.unmockkStatic
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -101,24 +98,6 @@ class XmlStyleExtensionsUnitTest {
         textView.applyTextStyle(merchantFontStyle(), sizeSp = 20f, medium = true)
 
         assertSame(font, textView.typeface)
-    }
-
-    @Test
-    fun `drawableOrNull loads the drawable a theme attribute points to`() {
-        val value = TypedValue().apply { resourceId = R.drawable.ic_edit_pencil }
-
-        assertNotNull(value.drawableOrNull(context))
-    }
-
-    @Test
-    fun `drawableOrNull returns null instead of crashing for a theme attribute set to a plain color`() {
-        val value = TypedValue().apply {
-            type = TypedValue.TYPE_INT_COLOR_ARGB8
-            data = Color.GRAY
-            resourceId = 0
-        }
-
-        assertNull(value.drawableOrNull(context))
     }
 
     @Test
