@@ -267,7 +267,6 @@ class NextActionHandlerUnitTest {
                 coEvery { service.getPaymentAction() } returns
                     success(PaymentActionStatus.REQUIRES_CUSTOMER_ACTION, nextAction = nextAction)
 
-                val result = NextActionHandler(service, threeDSecureProvider).handle()
 
                 assertEquals("pa123", assertIs<PaymentActionResult.CustomerActionRequired>(result).id)
                 coVerify(exactly = 1) { service.getPaymentAction() }
