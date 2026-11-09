@@ -76,6 +76,10 @@ class PaymentActionsClient internal constructor(
      *
      * On failure [PaymentActionResult.Failure] containing an exception is returned.
      *
+     * If the Payment Action is still PROCESSING after the SDK's bounded retries,
+     * [PaymentActionResult.Processing] is returned. Wait briefly, then call [handleNextAction] to
+     * continue.
+     *
      * @param request [PaymentActionRequest]
      * @return [PaymentActionResult], or a [PaymentActionResult.Failure] with a [BraintreeException]
      *   if called while a previous [submitForPaymentAction] or [handleNextAction] call on this
@@ -89,14 +93,14 @@ class PaymentActionsClient internal constructor(
             braintreeClient.sendAnalyticsEvent(PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_STARTED)
             val serviceResult = service.setPaymentActionPaymentMethod(request)
             nextActionHandler.handle(serviceResult)
-        } catch (error: Throwable) {
+        } catch (error: Exception) {
             if (error is CancellationException) throw error
             PaymentActionResult.Failure(error)
         } finally {
             isHandlingNextAction.set(false)
         }
 
-        // Sent after the try/catch so a wrapped unexpected Throwable is reported as FAILED too.
+        // Sent after the try/catch so a wrapped unexpected Exception is reported as FAILED too.
         if (result is PaymentActionResult.Failure) {
             braintreeClient.sendAnalyticsEvent(
                 PaymentActionsAnalytics.SET_PAYMENT_ACTION_PAYMENT_METHOD_FAILED,
@@ -140,7 +144,7 @@ class PaymentActionsClient internal constructor(
         }
         return try {
             nextActionHandler.handle()
-        } catch (error: Throwable) {
+        } catch (error: Exception) {
             if (error is CancellationException) throw error
             PaymentActionResult.Failure(error)
         } finally {
