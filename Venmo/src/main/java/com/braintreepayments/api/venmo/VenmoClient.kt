@@ -222,7 +222,7 @@ class VenmoClient internal constructor(
             braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_SUCCEEDED, analyticsParams)
             return createPaymentAuthRequest(
                 context, request, configuration,
-                merchantRepository.authorization, venmoProfileId,
+                braintreeClient.authorization, venmoProfileId,
                 paymentContextId
             )
         } catch (e: Exception) {
@@ -357,7 +357,7 @@ class VenmoClient internal constructor(
         val paymentMethodNonce = parse(deepLinkUri.toString(), "payment_method_nonce")
         val username = parse(deepLinkUri.toString(), "username")
 
-        val isClientTokenAuth = (merchantRepository.authorization is ClientToken)
+        val isClientTokenAuth = (braintreeClient.authorization is ClientToken)
         try {
             val nonce = when {
                 paymentContextId != null -> {

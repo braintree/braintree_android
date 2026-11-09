@@ -1,11 +1,10 @@
 package com.braintreepayments.api.threedsecure
 
 import androidx.fragment.app.FragmentActivity
-import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.Authorization
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import com.braintreepayments.api.testutils.TestConfigurationBuilder
@@ -39,7 +38,6 @@ class ThreeDSecureClientUnitTest {
 
     private val activity: FragmentActivity = mockk(relaxed = true)
     private val threeDSecureAPI: ThreeDSecureAPI = mockk(relaxed = true)
-    private val merchantRepository: MerchantRepository = mockk(relaxed = true)
     private val paymentAuthRequestCallback: ThreeDSecurePaymentAuthRequestCallback = mockk(relaxed = true)
     private val threeDSecureTokenizeCallback: ThreeDSecureTokenizeCallback = mockk(relaxed = true)
 
@@ -63,8 +61,6 @@ class ThreeDSecureClientUnitTest {
         }
 
         threeDSecureParams = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE)
-
-        every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN)
     }
 
     @Test
@@ -75,13 +71,13 @@ class ThreeDSecureClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(threeDSecureEnabledConfig)
+            .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
             .build()
 
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -100,7 +96,7 @@ class ThreeDSecureClientUnitTest {
 
         val clientData = prepareLookupResult.clientData
         val lookup = JSONObject(clientData)
-        assertEquals("encoded_auth_fingerprint", lookup.getString("authorizationFingerprint"))
+        assertEquals(Fixtures.TOKENIZATION_KEY, lookup.getString("authorizationFingerprint"))
         assertEquals(
             "Android-${com.braintreepayments.api.core.BuildConfig.VERSION_NAME}",
             lookup.getString("braintreeLibraryVersion")
@@ -130,7 +126,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -164,7 +159,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -196,7 +190,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -232,7 +225,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -269,8 +261,7 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            threeDSecureAPI,
-            merchantRepository
+            threeDSecureAPI
         )
         sut.createPaymentAuthRequest(activity, basicRequest, paymentAuthRequestCallback)
 
@@ -311,7 +302,6 @@ class ThreeDSecureClientUnitTest {
             ThreeDSecureAPI(
                 braintreeClient
             ),
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -357,7 +347,6 @@ class ThreeDSecureClientUnitTest {
             ThreeDSecureAPI(
                 braintreeClient
             ),
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -399,7 +388,6 @@ class ThreeDSecureClientUnitTest {
             ThreeDSecureAPI(
                 braintreeClient
             ),
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -419,7 +407,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -455,7 +442,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -481,7 +467,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -511,7 +496,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -542,7 +526,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -577,7 +560,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -603,7 +585,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -629,7 +610,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -656,7 +636,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -677,7 +656,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -709,7 +687,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -745,7 +722,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -780,7 +756,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -821,7 +796,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -871,7 +845,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -914,7 +887,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
@@ -938,7 +910,6 @@ class ThreeDSecureClientUnitTest {
             braintreeClient,
             cardinalClient,
             threeDSecureAPI,
-            merchantRepository,
             dispatcher = testDispatcher,
             coroutineScope = this
         )
