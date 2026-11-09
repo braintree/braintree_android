@@ -1,7 +1,10 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
+import android.os.Build
+import android.provider.Settings
 import android.view.View
 import android.view.View.MeasureSpec
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
@@ -13,6 +16,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class ShimmerPlaceholderViewUnitTest {
@@ -63,6 +67,31 @@ class ShimmerPlaceholderViewUnitTest {
     }
 
     @Test
+    fun `stays static when animations are turned off`() {
+        val sut = shownShimmer()
+        assertTrue(sut.isAnimating)
+
+        setAnimatorDurationScale(0f)
+        try {
+            // Shown again, as when the buyer comes back after changing the setting.
+            sut.visibility = View.GONE
+            sut.visibility = View.VISIBLE
+
+            assertFalse(sut.isAnimating)
+        } finally {
+            setAnimatorDurationScale(1f)
+        }
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.N_MR1])
+    fun `stays static when animations are turned off before Android 8`() {
+        Settings.Global.putFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 0f)
+
+        assertFalse(shownShimmer().isAnimating)
+    }
+
+    @Test
     fun `leaves the trailing gap on the right in a left-to-right layout`() {
         val sut = layOut(View.LAYOUT_DIRECTION_LTR)
 
@@ -101,6 +130,21 @@ class ShimmerPlaceholderViewUnitTest {
 
         sut.contentDescription = null
         assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_NO, sut.importantForAccessibility)
+    }
+
+    // Attached, shown and in a visible window, so it would otherwise sweep.
+    private fun shownShimmer(): ShimmerPlaceholderView {
+        val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
+        val sut = ShimmerPlaceholderView(activity)
+        activity.setContentView(sut)
+        idle()
+        sut.dispatchWindowVisibilityChanged(View.VISIBLE)
+        return sut
+    }
+
+    // The system "Animator duration scale" setting, which ValueAnimator.areAnimatorsEnabled() reads from Android 8.
+    private fun setAnimatorDurationScale(scale: Float) {
+        ValueAnimator::class.java.getMethod("setDurationScale", Float::class.javaPrimitiveType).invoke(null, scale)
     }
 
     private fun layOut(direction: Int) = ShimmerPlaceholderView(context).apply {
