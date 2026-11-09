@@ -29,26 +29,14 @@ class PendingRequestRepositoryUnitTest {
     ) = PendingRequestRepository(mockk(), key, dataStore, StandardTestDispatcher(testScheduler)) { now }
 
     @Test
-    fun `get returns null when nothing is stored`() = runTest {
-        assertNull(repository().get())
-    }
-
-    @Test
-    fun `get returns the stored pending request`() = runTest {
+    fun `get returns the stored pending request, or null when none is stored or it was cleared`() = runTest {
         val subject = repository()
+        assertNull(subject.get())
 
         subject.store("pending-request")
-
         assertEquals("pending-request", subject.get())
-    }
-
-    @Test
-    fun `clear removes the stored pending request`() = runTest {
-        val subject = repository()
-        subject.store("pending-request")
 
         subject.clear()
-
         assertNull(subject.get())
     }
 
@@ -110,12 +98,8 @@ class PendingRequestRepositoryUnitTest {
     }
 
     @Test
-    fun `store returns true when the request is written`() = runTest {
+    fun `store returns whether the request was written, and doesn't throw when the write fails`() = runTest {
         assertTrue(repository().store("pending-request"))
-    }
-
-    @Test
-    fun `store returns false instead of throwing when the write fails`() = runTest {
         assertFalse(repository(dataStore = InMemoryDataStore(failWrites = true)).store("pending-request"))
     }
 

@@ -78,7 +78,7 @@ class PayPalSavedPaymentMethodContentUnitTest {
     }
 
     @Test
-    fun `a card shows its masked digits, and screen readers read it as a button that changes the payment method`() {
+    fun `a card is read as a button that changes the payment method, calls back, and is disabled during an edit`() {
         render(CARD)
 
         // The chip's text is merged into the one element screen readers read.
@@ -88,11 +88,6 @@ class PayPalSavedPaymentMethodContentUnitTest {
             .assert(SemanticsMatcher("has the change payment method action") {
                 it.config.getOrNull(SemanticsActions.OnClick)?.label == "Change payment method"
             })
-    }
-
-    @Test
-    fun `tapping the chip calls back, and the chip is disabled while an edit is in progress`() {
-        render(CARD)
         composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).assertIsEnabled().performClick()
         assertEquals(1, editClicks)
 
@@ -110,24 +105,19 @@ class PayPalSavedPaymentMethodContentUnitTest {
     }
 
     @Test
-    fun `screen readers hear PayPal first when the logo and label are hidden`() {
-        render(CARD, style = PayPalSavedPaymentMethodViewStyle(showPayPalLogo = false, showPayPalLabel = false))
-
-        assertDoesNotExist(BRAND_MARK_TEST_TAG)
-        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG)
-            .assertContentDescriptionEquals("PayPal, Visa, ending in 1 2 3 4")
-    }
-
-    @Test
-    fun `the logo is read as PayPal only when the label is hidden`() {
+    fun `screen readers hear PayPal once, from the label, else the logo, else the chip`() {
         render(CARD)
         composeTestRule.onNodeWithText("PayPal").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription("PayPal").assertDoesNotExist()
 
         render(CARD, style = PayPalSavedPaymentMethodViewStyle(showPayPalLabel = false))
-
         composeTestRule.onNodeWithText("PayPal").assertDoesNotExist()
         composeTestRule.onNodeWithContentDescription("PayPal").assertIsDisplayed()
+
+        render(CARD, style = PayPalSavedPaymentMethodViewStyle(showPayPalLogo = false, showPayPalLabel = false))
+        assertDoesNotExist(BRAND_MARK_TEST_TAG)
+        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG)
+            .assertContentDescriptionEquals("PayPal, Visa, ending in 1 2 3 4")
     }
 
     @Test
@@ -163,7 +153,12 @@ class PayPalSavedPaymentMethodContentUnitTest {
     }
 
     @Test
-    fun `an error with the logo and label both hidden renders nothing`() {
+    fun `nothing renders when hidden, or when only the logo and label would show and both are hidden`() {
+        render(PayPalSavedPaymentMethodDisplayState.Hidden, MESSAGE)
+        assertDoesNotExist(BRAND_MARK_TEST_TAG)
+        assertDoesNotExist(FUNDING_INSTRUMENT_CHIP_TEST_TAG)
+        assertDoesNotExist(CREDIT_MESSAGING_TEST_TAG)
+
         val noBrand = PayPalSavedPaymentMethodViewStyle(showPayPalLogo = false, showPayPalLabel = false)
 
         render(PayPalSavedPaymentMethodDisplayState.NoNetwork, style = noBrand)
@@ -173,15 +168,6 @@ class PayPalSavedPaymentMethodContentUnitTest {
 
         render(CARD, style = noBrand)
         composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).assertIsDisplayed()
-    }
-
-    @Test
-    fun `hidden renders nothing`() {
-        render(PayPalSavedPaymentMethodDisplayState.Hidden, MESSAGE)
-
-        assertDoesNotExist(BRAND_MARK_TEST_TAG)
-        assertDoesNotExist(FUNDING_INSTRUMENT_CHIP_TEST_TAG)
-        assertDoesNotExist(CREDIT_MESSAGING_TEST_TAG)
     }
 
     @Test
@@ -206,37 +192,31 @@ class PayPalSavedPaymentMethodContentUnitTest {
     }
 
     @Test
-    fun `the chip sits next to the logo and label when it fits`() {
+    fun `the chip sits next to the logo and label when it fits, on the left in right-to-left layouts`() {
         render(CARD, width = WIDE)
 
         val brand = bounds(BRAND_MARK_TEST_TAG)
         val chip = bounds(FUNDING_INSTRUMENT_CHIP_TEST_TAG)
         assertTrue(chip.left >= brand.right)
         assertTrue(abs(chip.center.y - brand.center.y) <= 1f)
+
+        render(CARD, width = WIDE, layoutDirection = LayoutDirection.Rtl)
+
+        assertTrue(bounds(FUNDING_INSTRUMENT_CHIP_TEST_TAG).right <= bounds(BRAND_MARK_TEST_TAG).left)
     }
 
     @Test
-    fun `the chip goes below the logo and label when it doesn't fit`() {
+    fun `the chip goes below the logo and label when it doesn't fit, but the loading shimmer never stacks`() {
         render(LONG_EMAIL, width = NARROW)
 
         val brand = bounds(BRAND_MARK_TEST_TAG)
         val chip = bounds(FUNDING_INSTRUMENT_CHIP_TEST_TAG)
         assertTrue(chip.top >= brand.bottom)
         assertTrue(chip.left <= brand.left + 1f)
-    }
 
-    @Test
-    fun `the loading shimmer never stacks`() {
         render(PayPalSavedPaymentMethodDisplayState.Loading, width = NARROW)
 
         assertTrue(bounds(FUNDING_INSTRUMENT_SHIMMER_TEST_TAG).left >= bounds(BRAND_MARK_TEST_TAG).right)
-    }
-
-    @Test
-    fun `right-to-left layouts place the chip to the left of the logo and label`() {
-        render(CARD, width = WIDE, layoutDirection = LayoutDirection.Rtl)
-
-        assertTrue(bounds(FUNDING_INSTRUMENT_CHIP_TEST_TAG).right <= bounds(BRAND_MARK_TEST_TAG).left)
     }
 
     @Suppress("LongParameterList")
