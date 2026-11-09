@@ -46,9 +46,16 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
         appLinkReturnUrl: Uri,
         deepLinkFallbackUrlScheme: String? = null
     ) : this(
-        braintreeClient = BraintreeClient(context, authorization),
-        payPalClient = PayPalClient(context, authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
+        BraintreeClient(
+            context = context,
+            authorization = authorization,
+            deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme,
+            appLinkReturnUri = appLinkReturnUrl
+        )
     )
+
+    // One BraintreeClient, shared with PayPalClient.
+    private constructor(braintreeClient: BraintreeClient) : this(braintreeClient, PayPalClient(braintreeClient))
 
     /**
      * Starts the edit flow by creating the PayPal auth request, seeded with the buyer's billing agreement. Launch it
