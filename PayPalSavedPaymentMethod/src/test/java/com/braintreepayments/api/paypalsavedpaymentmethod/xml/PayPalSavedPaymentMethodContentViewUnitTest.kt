@@ -3,6 +3,10 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 
 import android.content.Context
+import androidx.activity.ComponentActivity
+import android.graphics.Rect
+import android.os.SystemClock
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
@@ -25,8 +29,10 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class PayPalSavedPaymentMethodContentViewUnitTest {
@@ -132,6 +138,55 @@ class PayPalSavedPaymentMethodContentViewUnitTest {
         render(CARD_STATE, style = style)
 
         assertEquals(80f.dpToPx(context.resources), sut.minimumHeight)
+    }
+
+    // A dense screen, where the chip's dp size is well above 48 pixels.
+    @Config(qualifiers = "xxhdpi")
+    @Test
+    fun `tapping just outside an editable chip still edits, up to a 48dp touch target`() {
+        var edits = 0
+        sut.onEditClick = { edits++ }
+        // Attached, since the chip posts its click.
+        Robolectric.buildActivity(ComponentActivity::class.java).setup().get().setContentView(sut)
+        render(CARD_STATE)
+        layOut()
+        val chipBounds = Rect(0, 0, chip.width, chip.height).also { sut.offsetDescendantRectToMyCoords(chip, it) }
+        val minSize = 48f.dpToPx(context.resources)
+        assertTrue("the chip is smaller than the target", chipBounds.height() < minSize)
+        val x = chipBounds.centerX().toFloat()
+
+        tap(x, chipBounds.top - 2f)
+        assertEquals(1, edits)
+        // Beyond the 48dp target, nothing happens.
+        tap(x, chipBounds.centerY() - minSize / 2f - 2f)
+        assertEquals(1, edits)
+    }
+
+    @Test
+    fun `there is no touch target when the chip is hidden`() {
+        render(CARD_STATE)
+        layOut()
+        assertTrue(sut.touchDelegate != null)
+
+        render(PayPalSavedPaymentMethodDisplayState.Error)
+        layOut()
+
+        assertNull(sut.touchDelegate)
+    }
+
+    private fun layOut() {
+        sut.measure(
+            View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        sut.layout(0, 0, sut.measuredWidth, sut.measuredHeight)
+    }
+
+    private fun tap(x: Float, y: Float) {
+        val time = SystemClock.uptimeMillis()
+        sut.dispatchTouchEvent(MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, x, y, 0))
+        sut.dispatchTouchEvent(MotionEvent.obtain(time, time + 10, MotionEvent.ACTION_UP, x, y, 0))
+        idle()
     }
 
     private fun render(
