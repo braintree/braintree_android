@@ -1,10 +1,12 @@
 package com.braintreepayments.api.uicomponents.compose
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivityResultRegistryOwner
+import androidx.activity.result.ActivityResultRegistry
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.coroutineScope
+import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
@@ -31,6 +34,7 @@ import com.braintreepayments.api.venmo.VenmoResult
 import com.braintreepayments.api.venmo.VenmoTokenizeCallback
 import kotlin.text.isEmpty
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 /**
  * A composable that displays a Venmo branded button.
@@ -64,11 +68,41 @@ fun VenmoButton(
     venmoTokenizeCallback: VenmoTokenizeCallback
 ) {
     val context = LocalContext.current
+    VenmoButtonContent(
+        style = style,
+        venmoRequest = venmoRequest,
+        pendingRequestRepository = pendingRequestRepository,
+        venmoTokenizeCallback = venmoTokenizeCallback,
+        launcherFactory = { registry, resultKey -> VenmoLauncher(registry, resultKey) },
+        clientFactory = {
+            VenmoClient(
+                context = it,
+                authorization = authorization,
+                appLinkReturnUrl = appLinkReturnUrl,
+                deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
+            )
+        },
+        analyticsClientProvider = { AnalyticsClient.lazyInstance.value }
+    )
+}
+
+@Suppress("LongParameterList", "LongMethod")
+@Composable
+internal fun VenmoButtonContent(
+    style: VenmoButtonColor,
+    venmoRequest: VenmoRequest,
+    pendingRequestRepository: PendingRequestRepository,
+    venmoTokenizeCallback: VenmoTokenizeCallback,
+    launcherFactory: (ActivityResultRegistry, String) -> VenmoLauncher,
+    clientFactory: (Context) -> VenmoClient,
+    analyticsClientProvider: () -> AnalyticsClient
+) {
+    val context = LocalContext.current
     val activity = context.findActivity()
     val coroutineScope = rememberCoroutineScope()
 
     var enabled by remember { mutableStateOf(true) }
-    var flowLaunched by remember { mutableStateOf(false) }
+    var flowLaunched by rememberSaveable { mutableStateOf(false) }
     var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
@@ -83,16 +117,12 @@ fun VenmoButton(
         return
     }
 
-    val venmoLauncher = remember { VenmoLauncher(registry) }
-    val venmoClient = remember {
-        VenmoClient(
-            context = context,
-            authorization = authorization,
-            appLinkReturnUrl = appLinkReturnUrl,
-            deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
-        )
-    }
-    val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
+    // Saved across Activity recreation so the new launcher registers under the same key and receives the Auth Tab
+    // result the registry stored while the Activity was destroyed.
+    val launcherKey = rememberSaveable { "VenmoButton_${UUID.randomUUID()}" }
+    val venmoLauncher = remember { launcherFactory(registry, launcherKey) }
+    val venmoClient = remember { clientFactory(context) }
+    val analyticsClient = remember { analyticsClientProvider() }
 
     VenmoButtonView(style = style, enabled = enabled) {
         enabled = false
@@ -202,6 +232,14 @@ private fun handleReturnToApp(
 ) {
     if (pendingRequestString.isEmpty()) {
         callback.onVenmoResult(VenmoResult.Failure(PendingRequestException()))
+        return
+    }
+    // The launcher only keeps the pending request in memory, so after the Activity is recreated
+    // while the browser is open it must be restored before the result can be completed.
+    try {
+        venmoLauncher.restorePendingRequest(pendingRequestString)
+    } catch (e: BrowserSwitchException) {
+        callback.onVenmoResult(VenmoResult.Failure(e))
         return
     }
     val paymentAuthResult = venmoLauncher.handleReturnToApp(

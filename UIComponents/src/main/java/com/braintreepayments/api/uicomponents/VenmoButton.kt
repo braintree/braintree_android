@@ -11,6 +11,7 @@ import android.util.AttributeSet
 import androidx.activity.result.ActivityResultCaller
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
+import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.uicomponents.VenmoButtonColor.Companion.fromId
@@ -228,6 +229,16 @@ class VenmoButton @JvmOverloads constructor(
         intent: Intent,
         callback: VenmoTokenizeCallback
     ) {
+        // The launcher only keeps the pending request in memory, so after the Activity is recreated
+        // while the browser is open it must be restored before the result can be completed.
+        try {
+            venmoLauncher.restorePendingRequest(pendingRequest.pendingRequestString)
+        } catch (e: BrowserSwitchException) {
+            callback.onVenmoResult(VenmoResult.Failure(e))
+            setButtonReEnabled()
+            return
+        }
+
         val paymentAuthResult = venmoLauncher.handleReturnToApp(
             pendingRequest = pendingRequest,
             intent = intent
