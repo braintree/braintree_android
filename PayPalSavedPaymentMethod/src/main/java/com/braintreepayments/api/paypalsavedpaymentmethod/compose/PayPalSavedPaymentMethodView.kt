@@ -24,9 +24,11 @@ import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalReturnHandling
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodClient
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodViewModel
-import com.braintreepayments.api.paypalsavedpaymentmethod.defaultClientFactory
+import com.braintreepayments.api.paypalsavedpaymentmethod.clearPayPalReturnUrl
 import com.braintreepayments.api.paypalsavedpaymentmethod.findActivity
 import com.braintreepayments.api.paypalsavedpaymentmethod.openUrl
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
@@ -70,7 +72,8 @@ fun PayPalSavedPaymentMethodView(
     style: PayPalSavedPaymentMethodViewStyle = PayPalSavedPaymentMethodViewStyle(),
     paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
-    val context = LocalContext.current
+    // The application context, so the client doesn't hold the activity.
+    val applicationContext = LocalContext.current.applicationContext
     PayPalSavedPaymentMethodView(
         payPalCheckoutRequest = payPalCheckoutRequest,
         request = request,
@@ -81,12 +84,14 @@ fun PayPalSavedPaymentMethodView(
         style = style,
         paypalTokenizeCallback = paypalTokenizeCallback,
         viewModelFactory = { factoryAuthorization, factoryAppLinkReturnUrl, factoryDeepLinkFallbackUrlScheme ->
-            PayPalSavedPaymentMethodViewModel.Factory(
-                factoryAuthorization,
-                factoryAppLinkReturnUrl,
-                factoryDeepLinkFallbackUrlScheme,
-                defaultClientFactory(context)
-            )
+            PayPalSavedPaymentMethodViewModel.Factory {
+                PayPalSavedPaymentMethodClient(
+                    applicationContext,
+                    factoryAuthorization,
+                    factoryAppLinkReturnUrl,
+                    factoryDeepLinkFallbackUrlScheme
+                )
+            }
         }
     )
 }
@@ -158,12 +163,17 @@ internal fun PayPalSavedPaymentMethodView(
 
     LifecycleResumeEffect(payPalLauncher, viewModel, viewModelKey) {
         val pendingRequest = launchedPendingRequest
-        // The view model remembers a handled return, so the pending request isn't needed once it has taken it. If it
-        // dropped it because an edit step is running, it's passed again on the next resume.
-        if (pendingRequest != null &&
-            viewModel.handleReturnToApp(pendingRequest, payPalLauncher, context.findActivity()?.intent)
-        ) {
-            launchedPendingRequest = null
+        if (pendingRequest != null) {
+            val intent = context.findActivity()?.intent
+            when (viewModel.handleReturnToApp(pendingRequest, payPalLauncher, intent)) {
+                // An edit step is running, so it's passed again on the next resume.
+                PayPalReturnHandling.NOT_TAKEN -> Unit
+                PayPalReturnHandling.TAKEN -> launchedPendingRequest = null
+                PayPalReturnHandling.COMPLETED -> {
+                    launchedPendingRequest = null
+                    intent?.clearPayPalReturnUrl(appLinkReturnUrl, deepLinkFallbackUrlScheme)
+                }
+            }
         }
         onPauseOrDispose { }
     }

@@ -2,6 +2,7 @@
 
 package com.braintreepayments.api.paypalsavedpaymentmethod.compose
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +23,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalReturnHandling
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodViewModel
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
@@ -37,6 +39,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Before
 import org.junit.Rule
@@ -67,6 +70,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     fun setUp() {
         every { viewModel.state } returns state
         every { viewModel.results } returns results
+        every { viewModel.handleReturnToApp(any(), any(), any()) } returns PayPalReturnHandling.TAKEN
         restorationTester.setContent {
             val current = inputs.value
             PayPalSavedPaymentMethodView(
@@ -174,7 +178,8 @@ class PayPalSavedPaymentMethodViewUnitTest {
     @Test
     fun `a pending request the view model drops is passed again on the next resume, then forgotten`() {
         coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
-        every { viewModel.handleReturnToApp("pending", any(), any()) } returnsMany listOf(false, true)
+        every { viewModel.handleReturnToApp("pending", any(), any()) } returnsMany
+            listOf(PayPalReturnHandling.NOT_TAKEN, PayPalReturnHandling.TAKEN)
         composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
         composeTestRule.waitForIdle()
 
@@ -183,6 +188,24 @@ class PayPalSavedPaymentMethodViewUnitTest {
         resumeAgain()
 
         verify(exactly = 2) { viewModel.handleReturnToApp("pending", any(), any()) }
+    }
+
+    @Test
+    fun `a completed return clears the PayPal return URL from the activity's intent`() {
+        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
+        // The return URL arrives with the return. The activity's intent isn't replaced, since the test tracks the
+        // activity by it.
+        every { viewModel.handleReturnToApp("pending", any(), any()) } answers {
+            thirdArg<Intent?>()?.data = RETURN_URL.buildUpon().path("return").build()
+            PayPalReturnHandling.COMPLETED
+        }
+        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
+        composeTestRule.waitForIdle()
+
+        resumeAgain()
+
+        verify { viewModel.handleReturnToApp("pending", any(), composeTestRule.activity.intent) }
+        assertNull(composeTestRule.activity.intent.data)
     }
 
     @Test
