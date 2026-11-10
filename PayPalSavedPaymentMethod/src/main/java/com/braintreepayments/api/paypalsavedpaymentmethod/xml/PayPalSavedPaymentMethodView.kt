@@ -110,6 +110,8 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
         }
 
     private var viewModel: PayPalSavedPaymentMethodViewModel? = null
+    // So no other view with the same id shows the view model at the same time.
+    private var attachment: ViewModelAttachment? = null
     private var payPalLauncher: PayPalLauncher? = null
     private var launchCallback: PayPalSavedPaymentMethodLaunchCallback? = null
     private var tokenizeCallback: PayPalTokenizeCallback? = null
@@ -122,7 +124,7 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     private var state = PayPalSavedPaymentMethodUiState()
     private var loadingDialog: EditLoadingDialog? = null
 
-    // Identifies this view to its view model, which keeps no reference to the view.
+    // Identifies this view in AttachedViews without keeping a reference to it.
     private val instanceId = UUID.randomUUID().toString()
 
     // Renders and delivers results only while attached.
@@ -222,11 +224,11 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
             return
         }
         val viewModel = viewModel ?: return
-        if (viewModel.attachView(instanceId)) observeViewModel(viewModel) else fail(DUPLICATE_VIEW_ID_MESSAGE)
+        if (attachment?.attach() == true) observeViewModel(viewModel) else fail(DUPLICATE_VIEW_ID_MESSAGE)
     }
 
     override fun onDetachedFromWindow() {
-        viewModel?.detachView(instanceId)
+        attachment?.detach()
         attachedScope?.cancel()
         attachedScope = null
         loadingDialog?.dismiss()
@@ -251,26 +253,28 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
         val appLinkReturnUrl = appLinkReturnUrl ?: return
         val factory = viewModelFactory(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
         // Hashed, since the key is written to the saved instance state and the authorization mustn't be.
-        val viewModel = ViewModelProvider(owner, factory)[
-            "PayPalSavedPaymentMethodView:$id:" +
-                Objects.hash(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme),
-            PayPalSavedPaymentMethodViewModel::class.java
-        ]
-        if (viewModel.isAttachedToAnotherView(instanceId)) {
+        val key = "PayPalSavedPaymentMethodView:$id:" +
+            Objects.hash(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
+        val viewModel = ViewModelProvider(owner, factory)[key, PayPalSavedPaymentMethodViewModel::class.java]
+        val attachedViews = ViewModelProvider(owner)[AttachedViews::class.java]
+        if (attachedViews.isAttachedToAnotherView(key, instanceId)) {
             fail(DUPLICATE_VIEW_ID_MESSAGE)
             return
         }
         if (viewModel !== this.viewModel) unbindViewModel()
         this.viewModel = viewModel
+        val attachment = ViewModelAttachment(attachedViews, key, instanceId)
+        this.attachment = attachment
         request?.let { viewModel.load(it, style.showPayPalCreditMessaging) }
         pendingReturn?.let { (pendingRequest, intent) -> handleReturnToApp(pendingRequest, intent) }
         pendingReturn = null
-        if (isAttachedToWindow && viewModel.attachView(instanceId)) observeViewModel(viewModel)
+        if (isAttachedToWindow && attachment.attach()) observeViewModel(viewModel)
     }
 
     // Stops showing the current view model.
     private fun unbindViewModel() {
-        viewModel?.detachView(instanceId)
+        attachment?.detach()
+        attachment = null
         viewModel = null
         attachedScope?.cancel()
         attachedScope = null

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Looper
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.core.view.isVisible
@@ -65,7 +66,6 @@ class PayPalSavedPaymentMethodViewUnitTest {
     init {
         every { viewModel.state } returns state
         every { viewModel.results } returns results
-        every { viewModel.attachView(any()) } returns true
         every { viewModel.handleReturnToApp(any(), any(), any()) } returns PayPalReturnHandling.TAKEN
     }
 
@@ -243,13 +243,16 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
     @Test
     fun `an id another attached view already uses reports a failure and hides`() {
-        every { viewModel.isAttachedToAnotherView(any()) } returns true
+        initialize()
+        val first = sut
+        sut = PayPalSavedPaymentMethodView(activity).apply { id = first.id }
+        (first.parent as ViewGroup).addView(sut)
 
         initialize()
 
         assertEquals(true, failureMessage()?.startsWith("Another PayPalSavedPaymentMethodView"))
         assertFalse(sut.getChildAt(0).isVisible)
-        verify(exactly = 0) { viewModel.load(any(), any()) }
+        verify(exactly = 1) { viewModel.load(any(), any()) }
     }
 
     @Test
