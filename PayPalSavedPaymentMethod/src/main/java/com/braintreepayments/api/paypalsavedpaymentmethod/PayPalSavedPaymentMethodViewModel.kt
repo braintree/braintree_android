@@ -28,6 +28,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
@@ -56,10 +58,7 @@ internal class PayPalSavedPaymentMethodViewModel(
     private val client = createClient(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
 
     private val _state = MutableStateFlow(
-        PayPalSavedPaymentMethodUiState(
-            isEditCompleted = savedState[IS_EDIT_COMPLETED_KEY] ?: false,
-            editedOrderId = savedState[EDITED_ORDER_ID_KEY]
-        )
+        PayPalSavedPaymentMethodUiState(isEditCompleted = savedState[IS_EDIT_COMPLETED_KEY] ?: false)
     )
     val state: StateFlow<PayPalSavedPaymentMethodUiState> = _state.asStateFlow()
 
@@ -81,17 +80,31 @@ internal class PayPalSavedPaymentMethodViewModel(
         }
     }
 
-    private var loadedRequest: PayPalSavedPaymentMethodRequest? = null
-    private var isCreditMessagingEnabled = true
+    // What the views asked for; null until the first load.
+    private val inputs = MutableStateFlow<Inputs?>(null)
     private var defaultFundingInstrumentJob: Job? = null
     private var updatedFundingInstrumentJob: Job? = null
-    private var creditMessagingJob: Job? = null
 
-    // The request the shown Pay Later message was quoted for.
-    private var creditMessagingRequest: PayPalSavedPaymentMethodRequest? = null
+    // Only in saved state, since the views don't show it.
+    private var editedOrderId: String?
+        get() = savedState[EDITED_ORDER_ID_KEY]
+        set(value) {
+            savedState[EDITED_ORDER_ID_KEY] = value
+        }
+
+    // Allows one edit step at a time. The views show it as isEditing.
+    private var isEditStepRunning = false
+        set(value) {
+            field = value
+            _state.update { it.copy(isEditing = value) }
+        }
 
     // The XML view showing this view model, so two views with the same id can't share it.
     private var attachedViewId: String? = null
+
+    init {
+        viewModelScope.launch { showCreditMessagingForInputs() }
+    }
 
     /** Whether another view is showing this view model. */
     fun isAttachedToAnotherView(viewInstanceId: String): Boolean =
@@ -115,24 +128,20 @@ internal class PayPalSavedPaymentMethodViewModel(
      * API still returns the one from before the edit; only an edit restored from [savedState] loads it once.
      */
     fun load(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
-        val isFirstLoad = loadedRequest == null
-        loadedRequest = request
-        isCreditMessagingEnabled = showCreditMessaging
+        val previous = inputs.value
+        // A new load count refreshes the Pay Later message even for the same request.
+        inputs.value = Inputs(request, showCreditMessaging, loadCount = (previous?.loadCount ?: 0) + 1)
         if (!state.value.isEditCompleted) {
             loadBuyerDefaultBillingAgreement()
-        } else if (isFirstLoad) {
+        } else if (previous == null) {
             loadBuyerUpdatedBillingAgreement()
         }
-        startCreditFetch()
     }
 
     /** Reloads or hides the Pay Later message when the request or its setting changes. Does nothing before [load]. */
     fun onRequestChanged(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
-        val previousRequest = loadedRequest ?: return
-        val wasCreditMessagingEnabled = isCreditMessagingEnabled
-        loadedRequest = request
-        isCreditMessagingEnabled = showCreditMessaging
-        if (request != previousRequest || showCreditMessaging != wasCreditMessagingEnabled) startCreditFetch()
+        // Unchanged values don't emit, so they reload nothing.
+        inputs.update { it?.copy(request = request, showCreditMessaging = showCreditMessaging) }
     }
 
     /**
@@ -145,8 +154,8 @@ internal class PayPalSavedPaymentMethodViewModel(
         payPalCheckoutRequest: PayPalCheckoutRequest
     ): PayPalPendingRequest? {
         // TODO: send the edit flow analytics events, here and in finishReturn, once the catalog is approved.
-        if (state.value.isEditing) return null
-        _state.update { it.copy(isEditing = true) }
+        if (isEditStepRunning) return null
+        isEditStepRunning = true
         return try {
             tryOrElse({
                 val activity = context.findActivity() as? ComponentActivity
@@ -163,7 +172,7 @@ internal class PayPalSavedPaymentMethodViewModel(
                 }
             }) { error -> PayPalPendingRequest.Failure(error) }
         } finally {
-            _state.update { it.copy(isEditing = false) }
+            isEditStepRunning = false
         }
     }
 
@@ -181,16 +190,15 @@ internal class PayPalSavedPaymentMethodViewModel(
             intent?.clearReturnUrl()
             return true
         }
-        if (state.value.isEditing) return false
-        _state.update { it.copy(isEditing = true) }
+        if (isEditStepRunning) return false
+        isEditStepRunning = true
         viewModelScope.launch {
             val result = try {
                 finishReturn(pendingRequest, payPalLauncher, intent)
             } finally {
-                _state.update { it.copy(isEditing = false) }
+                isEditStepRunning = false
             }
             if (result is PayPalResult.Success) {
-                creditMessagingJob?.cancel()
                 saveEdit(editedOrderId = result.nonce.paymentId)
                 loadBuyerUpdatedBillingAgreement()
             }
@@ -243,19 +251,15 @@ internal class PayPalSavedPaymentMethodViewModel(
 
     private fun saveEdit(editedOrderId: String?) {
         savedState[IS_EDIT_COMPLETED_KEY] = true
-        savedState[EDITED_ORDER_ID_KEY] = editedOrderId
+        this.editedOrderId = editedOrderId
         // The Pay Later offer was quoted for the funding instrument from before the edit.
         _state.update {
-            it.copy(
-                isEditCompleted = true,
-                editedOrderId = editedOrderId,
-                creditMessaging = PayPalCreditMessagingDisplayState.Hidden
-            )
+            it.copy(isEditCompleted = true, creditMessaging = PayPalCreditMessagingDisplayState.Hidden)
         }
     }
 
     private fun loadBuyerDefaultBillingAgreement() {
-        val merchantAccountId = loadedRequest?.merchantAccountId
+        val merchantAccountId = inputs.value?.request?.merchantAccountId
         defaultFundingInstrumentJob?.cancel()
         defaultFundingInstrumentJob = viewModelScope.launch {
             val fundingInstrument = tryOrElse({
@@ -277,9 +281,9 @@ internal class PayPalSavedPaymentMethodViewModel(
 
     // If the picked funding instrument can't be loaded only the brand shows, since the old one is no longer charged.
     private fun loadBuyerUpdatedBillingAgreement() {
-        val merchantAccountId = loadedRequest?.merchantAccountId
+        val merchantAccountId = inputs.value?.request?.merchantAccountId
         updatedFundingInstrumentJob?.cancel()
-        val orderId = state.value.editedOrderId
+        val orderId = editedOrderId
         if (orderId == null) {
             _state.update { it.copy(fundingInstrument = PayPalSavedPaymentMethodDisplayState.Error) }
             return
@@ -297,23 +301,27 @@ internal class PayPalSavedPaymentMethodViewModel(
         }
     }
 
-    // Replaces any fetch in flight, so an older amount's message can't land last.
-    private fun startCreditFetch() {
-        val request = loadedRequest ?: return
-        creditMessagingJob?.cancel()
-        if (!isCreditMessagingEnabled || state.value.isEditCompleted) {
-            _state.update { it.copy(creditMessaging = PayPalCreditMessagingDisplayState.Hidden) }
-            return
-        }
-        creditMessagingJob = viewModelScope.launch {
+    // Shows the Pay Later message for the latest inputs. collectLatest cancels the fetch for older inputs, so an older
+    // amount's message can't land last.
+    private suspend fun showCreditMessagingForInputs() {
+        // The request the shown message was quoted for.
+        var shownFor: PayPalSavedPaymentMethodRequest? = null
+        inputs.filterNotNull().collectLatest { input ->
+            if (!input.showCreditMessaging || state.value.isEditCompleted) {
+                _state.update { it.copy(creditMessaging = PayPalCreditMessagingDisplayState.Hidden) }
+                return@collectLatest
+            }
+            val request = input.request
             val creditMessaging = tryOrElse({
                 client.fetchCreditPresentmentMessages(request.amount, request.currencyCode).toDisplayState()
             }) {
                 // A failed refresh for the same request keeps the message; any other failure hides it.
-                if (request == creditMessagingRequest) return@launch
+                if (request == shownFor) return@collectLatest
                 PayPalCreditMessagingDisplayState.Hidden
             }
-            creditMessagingRequest = request
+            // An edit completed meanwhile, and the offer no longer applies.
+            if (state.value.isEditCompleted) return@collectLatest
+            shownFor = request
             _state.update { it.copy(creditMessaging = creditMessaging) }
         }
     }
@@ -330,6 +338,12 @@ internal class PayPalSavedPaymentMethodViewModel(
             host.equals(appLinkReturnUrl.host, ignoreCase = true)
         return isDeepLinkReturn || isAppLinkReturn
     }
+
+    private data class Inputs(
+        val request: PayPalSavedPaymentMethodRequest,
+        val showCreditMessaging: Boolean,
+        val loadCount: Int
+    )
 
     /** Creates the view model for these values, restoring the completed edit from saved state. */
     class Factory(

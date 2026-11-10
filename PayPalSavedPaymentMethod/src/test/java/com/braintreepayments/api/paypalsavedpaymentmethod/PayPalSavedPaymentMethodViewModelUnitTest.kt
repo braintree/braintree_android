@@ -132,6 +132,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         assertEquals(PayPalSavedPaymentMethodDisplayState.Content(CARD), sut.state.value.fundingInstrument)
         assertEquals(MESSAGE, sut.state.value.creditMessaging)
         coVerify(exactly = 2) { client.fetchPaymentMethod(BUYER_DEFAULT, null, MERCHANT_ACCOUNT_ID) }
+        coVerify(exactly = 2) { client.fetchCreditPresentmentMessages(AMOUNT, "USD") }
     }
 
     @Test
@@ -307,7 +308,6 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
 
             assertSame(success, sut.results.first())
             assertTrue(sut.state.value.isEditCompleted)
-            assertEquals(ORDER_ID, sut.state.value.editedOrderId)
             assertEquals(true, savedState.get<Boolean>("is_edit_completed"))
             assertEquals(ORDER_ID, savedState.get<String>("edited_order_id"))
             assertEquals(PayPalSavedPaymentMethodDisplayState.Content(EDITED), sut.state.value.fundingInstrument)
