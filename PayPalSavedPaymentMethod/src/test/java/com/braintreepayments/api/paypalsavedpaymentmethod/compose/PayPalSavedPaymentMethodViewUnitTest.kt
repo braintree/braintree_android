@@ -23,7 +23,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
-import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalReturnHandling
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodViewModel
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
@@ -70,7 +70,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     fun setUp() {
         every { viewModel.state } returns state
         every { viewModel.results } returns results
-        every { viewModel.handleReturnToApp(any(), any(), any()) } returns PayPalReturnHandling.TAKEN
+        every { viewModel.handleReturnToApp(any(), any(), any()) } returns PayPalSavedPaymentMethodReturnResult.TAKEN
         restorationTester.setContent {
             val current = inputs.value
             PayPalSavedPaymentMethodView(
@@ -179,7 +179,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     fun `a pending request the view model drops is passed again on the next resume, then forgotten`() {
         coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
         every { viewModel.handleReturnToApp("pending", any(), any()) } returnsMany
-            listOf(PayPalReturnHandling.NOT_TAKEN, PayPalReturnHandling.TAKEN)
+            listOf(PayPalSavedPaymentMethodReturnResult.NOT_TAKEN, PayPalSavedPaymentMethodReturnResult.TAKEN)
         composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
         composeTestRule.waitForIdle()
 
@@ -197,7 +197,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
         // activity by it.
         every { viewModel.handleReturnToApp("pending", any(), any()) } answers {
             thirdArg<Intent?>()?.data = RETURN_URL.buildUpon().path("return").build()
-            PayPalReturnHandling.COMPLETED
+            PayPalSavedPaymentMethodReturnResult.COMPLETED
         }
         composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
         composeTestRule.waitForIdle()
