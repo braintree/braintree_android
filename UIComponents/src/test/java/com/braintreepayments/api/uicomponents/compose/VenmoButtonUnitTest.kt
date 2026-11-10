@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.Lifecycle
+import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.venmo.VenmoClient
@@ -24,6 +25,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
@@ -57,7 +59,7 @@ class VenmoButtonUnitTest {
                 venmoRequest = venmoRequest,
                 pendingRequestRepository = repository,
                 venmoTokenizeCallback = VenmoTokenizeCallback { results.add(it) },
-                launcherFactory = { venmoLauncher },
+                launcherFactory = { _, _ -> venmoLauncher },
                 clientFactory = { venmoClient },
                 analyticsClientProvider = { analyticsClient }
             )
@@ -166,6 +168,36 @@ class VenmoButtonUnitTest {
         pauseAndResume()
 
         assertSame(tokenized, results.single())
+        coVerify { repository.clearPendingRequest() }
+    }
+
+    @Test
+    fun `resume after launch restores the pending request before completing the flow`() {
+        setContent()
+        launchSuccessfully()
+        coEvery { repository.getPendingRequest() } returns "pending"
+        every { venmoLauncher.handleReturnToApp(any(), any()) } returns VenmoPaymentAuthResult.NoResult
+
+        pauseAndResume()
+
+        verifyOrder {
+            venmoLauncher.restorePendingRequest("pending")
+            venmoLauncher.handleReturnToApp(any(), any())
+        }
+    }
+
+    @Test
+    fun `resume after launch when restore fails reports failure and does not complete the flow`() {
+        setContent()
+        launchSuccessfully()
+        coEvery { repository.getPendingRequest() } returns "pending"
+        val restoreError = BrowserSwitchException("invalid pending request")
+        every { venmoLauncher.restorePendingRequest(any()) } throws restoreError
+
+        pauseAndResume()
+
+        assertSame(restoreError, (results.single() as VenmoResult.Failure).error)
+        verify(exactly = 0) { venmoLauncher.handleReturnToApp(any(), any()) }
         coVerify { repository.clearPendingRequest() }
     }
 

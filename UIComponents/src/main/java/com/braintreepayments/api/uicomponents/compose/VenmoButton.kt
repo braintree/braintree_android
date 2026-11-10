@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.coroutineScope
+import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
@@ -33,6 +34,7 @@ import com.braintreepayments.api.venmo.VenmoResult
 import com.braintreepayments.api.venmo.VenmoTokenizeCallback
 import kotlin.text.isEmpty
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 /**
  * A composable that displays a Venmo branded button.
@@ -71,7 +73,7 @@ fun VenmoButton(
         venmoRequest = venmoRequest,
         pendingRequestRepository = pendingRequestRepository,
         venmoTokenizeCallback = venmoTokenizeCallback,
-        launcherFactory = { VenmoLauncher(it) },
+        launcherFactory = { registry, resultKey -> VenmoLauncher(registry, resultKey) },
         clientFactory = {
             VenmoClient(
                 context = it,
@@ -91,7 +93,7 @@ internal fun VenmoButtonContent(
     venmoRequest: VenmoRequest,
     pendingRequestRepository: PendingRequestRepository,
     venmoTokenizeCallback: VenmoTokenizeCallback,
-    launcherFactory: (ActivityResultRegistry) -> VenmoLauncher,
+    launcherFactory: (ActivityResultRegistry, String) -> VenmoLauncher,
     clientFactory: (Context) -> VenmoClient,
     analyticsClientProvider: () -> AnalyticsClient
 ) {
@@ -100,7 +102,7 @@ internal fun VenmoButtonContent(
     val coroutineScope = rememberCoroutineScope()
 
     var enabled by remember { mutableStateOf(true) }
-    var flowLaunched by remember { mutableStateOf(false) }
+    var flowLaunched by rememberSaveable { mutableStateOf(false) }
     var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
@@ -115,7 +117,10 @@ internal fun VenmoButtonContent(
         return
     }
 
-    val venmoLauncher = remember { launcherFactory(registry) }
+    // Saved across Activity recreation so the new launcher registers under the same key and receives the Auth Tab
+    // result the registry stored while the Activity was destroyed.
+    val launcherKey = rememberSaveable { "VenmoButton_${UUID.randomUUID()}" }
+    val venmoLauncher = remember { launcherFactory(registry, launcherKey) }
     val venmoClient = remember { clientFactory(context) }
     val analyticsClient = remember { analyticsClientProvider() }
 
@@ -170,6 +175,14 @@ internal fun VenmoButtonContent(
             lifecycle.coroutineScope.launch {
                 val pendingRequestString = pendingRequestRepository.getPendingRequest()
 
+                val restoreError = restoreStoredVenmoRequest(venmoLauncher, pendingRequestString)
+                if (restoreError != null) {
+                    enabled = true
+                    pendingRequestRepository.clearPendingRequest()
+                    venmoTokenizeCallback.onVenmoResult(VenmoResult.Failure(restoreError))
+                    return@launch
+                }
+
                 activity?.intent?.let { intent ->
                     handleReturnToApp(venmoLauncher, venmoClient, pendingRequestString, intent, venmoTokenizeCallback)
                     enabled = true
@@ -184,6 +197,25 @@ internal fun VenmoButtonContent(
         }
 
         onPauseOrDispose { lifecycle }
+    }
+}
+
+/**
+ * Gives [venmoLauncher] the stored pending request. The launcher only keeps it in memory, so a launcher created after
+ * the Activity was recreated needs it before the flow can be completed.
+ *
+ * @return the error if the stored request could not be restored, `null` otherwise.
+ */
+internal fun restoreStoredVenmoRequest(
+    venmoLauncher: VenmoLauncher,
+    pendingRequestString: String
+): BrowserSwitchException? {
+    if (pendingRequestString.isEmpty()) return null
+    return try {
+        venmoLauncher.restorePendingRequest(pendingRequestString)
+        null
+    } catch (e: BrowserSwitchException) {
+        e
     }
 }
 

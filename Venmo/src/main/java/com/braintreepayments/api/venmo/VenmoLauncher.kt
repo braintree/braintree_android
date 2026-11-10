@@ -43,6 +43,21 @@ class VenmoLauncher internal constructor(
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
     )
 
+    /**
+     * Used to launch the Venmo flow in a web browser and deliver results, using a custom result key. Use it in
+     * Compose flows where the Activity can be recreated while the browser is open, so the result can still be
+     * delivered to the new launcher. After the Activity is recreated, call [restorePendingRequest] before
+     * [handleReturnToApp].
+     * @param registry ActivityResultRegistry parameter. It will be passed to BrowserSwitchClient.
+     * @param resultKey a unique key identifying this launcher's Activity result. Must be unique per live launcher
+     * instance in the same Activity, and stable across process death.
+     */
+    constructor(registry: ActivityResultRegistry, resultKey: String) : this(
+        browserSwitchClient = BrowserSwitchClient(registry, resultKey),
+        venmoRepository = VenmoRepository.instance,
+        lazyAnalyticsClient = AnalyticsClient.lazyInstance
+    )
+
     @Throws(BrowserSwitchException::class)
     fun restorePendingRequest(pendingRequestString: String) {
         browserSwitchClient.restorePendingRequest(pendingRequestString)

@@ -4,8 +4,10 @@
 
 * PayPal
   * Add `PayPalLauncher(ActivityResultRegistry, String)` constructor with a `resultKey` parameter, allowing the Auth Tab result to be delivered after the Activity is recreated
+* Venmo
+  * Add `VenmoLauncher(ActivityResultRegistry, String)` constructor with a `resultKey` parameter, allowing the Auth Tab result to be delivered after the Activity is recreated
 * UIComponents
-    * Fix Compose `PayPalButton` and `PayLaterButton` not returning a result when the Activity is recreated while the browser is open
+    * Fix Compose `PayPalButton`, `PayLaterButton`, and `VenmoButton` not returning a result when the Activity is recreated while the browser is open
     * Fix `VenmoButton` not re-enabling after failure in `createPaymentAuthRequest`, `venmoLauncher.launch()`, or when the hosting Activity is null
     * Fix `PayPalButton` returning a cancel instead of a result when the Activity is recreated while the browser is open
     * Fix `PayPalButton` and compose `PayPalButton` stuck in loading on failed auth request
