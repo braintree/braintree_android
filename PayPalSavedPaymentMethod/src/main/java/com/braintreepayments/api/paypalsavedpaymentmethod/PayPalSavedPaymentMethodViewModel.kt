@@ -2,7 +2,6 @@ package com.braintreepayments.api.paypalsavedpaymentmethod
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -36,12 +35,20 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
 
-/** Builds the client for an authorization and its return URLs. */
-internal typealias PayPalSavedPaymentMethodClientFactory =
-    (authorization: String, appLinkReturnUrl: Uri, deepLinkFallbackUrlScheme: String?) -> PayPalSavedPaymentMethodClient
+/** What [PayPalSavedPaymentMethodViewModel.handleReturnToApp] did with a PayPal return. */
+internal enum class PayPalReturnHandling {
+    /** Not taken, because an edit step is running. Keep the pending request and pass it again. */
+    NOT_TAKEN,
+
+    /** Taken. Forget the pending request; the intent holds no used-up PayPal return URL. */
+    TAKEN,
+
+    /** Taken, and the return is completed. Forget the pending request and clear the return URL from the intent. */
+    COMPLETED
+}
 
 /**
- * State and edit flow shared by the XML and Compose views, for one authorization and its return URLs. The state
+ * State and edit flow shared by the XML and Compose views, for one authorization. The state
  * survives configuration changes and the completed edit survives process death. A PayPal return is completed at most
  * once, so a result lost with the process isn't delivered again. Main thread only.
  */
@@ -49,13 +56,8 @@ internal typealias PayPalSavedPaymentMethodClientFactory =
 @Suppress("TooManyFunctions")
 internal class PayPalSavedPaymentMethodViewModel(
     private val savedState: SavedStateHandle,
-    authorization: String,
-    private val appLinkReturnUrl: Uri,
-    private val deepLinkFallbackUrlScheme: String?,
-    createClient: PayPalSavedPaymentMethodClientFactory
+    private val client: PayPalSavedPaymentMethodClient
 ) : ViewModel() {
-
-    private val client = createClient(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
 
     private val _state = MutableStateFlow(
         PayPalSavedPaymentMethodUiState(isEditCompleted = savedState[IS_EDIT_COMPLETED_KEY] ?: false)
@@ -153,7 +155,7 @@ internal class PayPalSavedPaymentMethodViewModel(
         payPalLauncher: PayPalLauncher,
         payPalCheckoutRequest: PayPalCheckoutRequest
     ): PayPalPendingRequest? {
-        // TODO: send the edit flow analytics events, here and in finishReturn, once the catalog is approved.
+        // TODO: send the edit flow analytics events, here and in handleReturnToApp, once the catalog is approved.
         if (isEditStepRunning) return null
         isEditStepRunning = true
         return try {
@@ -177,42 +179,22 @@ internal class PayPalSavedPaymentMethodViewModel(
     }
 
     /**
-     * Completes the PayPal return in [intent] in the view model's scope, so recreating the view doesn't cancel or
-     * repeat it, and delivers the result through [results]. A return with no result is a [PayPalResult.Cancel], and a
-     * cancelled return can be completed again later. After a success the funding instrument the buyer picked is
-     * loaded.
-     *
-     * Returns `false` if an edit step is running, so the caller keeps [pendingRequest] and passes it again. Otherwise
-     * returns `true`, including for a return already completed, whose return URL is just removed from [intent].
+     * Reads the PayPal return in [intent] and delivers the result through [results]. Tokenizing runs in the view
+     * model's scope, so recreating the view doesn't cancel or repeat it. A return with no result is a
+     * [PayPalResult.Cancel] and can be completed later. After a success the funding instrument the buyer picked is
+     * loaded. A return already completed, including before process death, isn't completed again.
      */
-    fun handleReturnToApp(pendingRequest: String, payPalLauncher: PayPalLauncher, intent: Intent?): Boolean {
-        if (pendingRequest.digest() == savedState[COMPLETED_PENDING_REQUEST_KEY]) {
-            intent?.clearReturnUrl()
-            return true
-        }
-        if (isEditStepRunning) return false
-        isEditStepRunning = true
-        viewModelScope.launch {
-            val result = try {
-                finishReturn(pendingRequest, payPalLauncher, intent)
-            } finally {
-                isEditStepRunning = false
-            }
-            if (result is PayPalResult.Success) {
-                saveEdit(editedOrderId = result.nonce.paymentId)
-                loadBuyerUpdatedBillingAgreement()
-            }
-            pendingResults.update { it + result }
-        }
-        return true
-    }
-
-    private suspend fun finishReturn(
+    fun handleReturnToApp(
         pendingRequest: String,
         payPalLauncher: PayPalLauncher,
         intent: Intent?
-    ): PayPalResult {
-        if (intent == null) return PayPalResult.Failure(BraintreeException(NO_INTENT_MESSAGE))
+    ): PayPalReturnHandling {
+        if (pendingRequest.digest() == savedState[COMPLETED_PENDING_REQUEST_KEY]) return PayPalReturnHandling.COMPLETED
+        if (isEditStepRunning) return PayPalReturnHandling.NOT_TAKEN
+        if (intent == null) {
+            deliver(PayPalResult.Failure(BraintreeException(NO_INTENT_MESSAGE)))
+            return PayPalReturnHandling.TAKEN
+        }
         return tryOrElse({
             payPalLauncher.restorePendingRequest(pendingRequest)
             val started = PayPalPendingRequest.Started(pendingRequest)
@@ -220,23 +202,47 @@ internal class PayPalSavedPaymentMethodViewModel(
                 is PayPalPaymentAuthResult.Success -> {
                     // Recorded before tokenizing, which uses up the PayPal approval, so it's never tokenized twice.
                     markCompleted(pendingRequest)
-                    val result = client.tokenize(authResult)
-                    intent.clearReturnUrl()
-                    if (result is PayPalResult.Cancel) savedState.remove<String>(COMPLETED_PENDING_REQUEST_KEY)
-                    result
+                    tokenize(authResult)
+                    PayPalReturnHandling.COMPLETED
                 }
-                is PayPalPaymentAuthResult.Failure -> {
-                    markCompleted(pendingRequest)
-                    intent.clearReturnUrl()
-                    PayPalResult.Failure(authResult.error)
+                is PayPalPaymentAuthResult.Failure -> failReturn(pendingRequest, authResult.error)
+                PayPalPaymentAuthResult.NoResult -> {
+                    deliver(PayPalResult.Cancel)
+                    PayPalReturnHandling.TAKEN
                 }
-                PayPalPaymentAuthResult.NoResult -> PayPalResult.Cancel
             }
-        }) { error ->
-            markCompleted(pendingRequest)
-            intent.clearReturnUrl()
-            PayPalResult.Failure(error)
+        }) { error -> failReturn(pendingRequest, error) }
+    }
+
+    private fun tokenize(authResult: PayPalPaymentAuthResult.Success) {
+        isEditStepRunning = true
+        viewModelScope.launch {
+            val result = try {
+                tryOrElse({ client.tokenize(authResult) }) { error -> PayPalResult.Failure(error) }
+            } finally {
+                isEditStepRunning = false
+            }
+            when (result) {
+                is PayPalResult.Success -> {
+                    saveEdit(editedOrderId = result.nonce.paymentId)
+                    loadBuyerUpdatedBillingAgreement()
+                }
+                // A cancel on the PayPal page doesn't use up the return, so the buyer can complete it later.
+                PayPalResult.Cancel -> savedState.remove<String>(COMPLETED_PENDING_REQUEST_KEY)
+                is PayPalResult.Failure -> Unit
+            }
+            deliver(result)
         }
+    }
+
+    private fun failReturn(pendingRequest: String, error: Exception): PayPalReturnHandling {
+        markCompleted(pendingRequest)
+        deliver(PayPalResult.Failure(error))
+        return PayPalReturnHandling.COMPLETED
+    }
+
+    private fun deliver(result: PayPalResult) {
+        pendingResults.update { it + result }
     }
 
     // A digest, since it's only compared for equality.
@@ -326,31 +332,15 @@ internal class PayPalSavedPaymentMethodViewModel(
         }
     }
 
-    private fun Intent.clearReturnUrl() {
-        if (data?.isReturnUrl() == true) data = null
-    }
-
-    /** Whether this is the PayPal return URL, matched as the browser switch does. */
-    private fun Uri.isReturnUrl(): Boolean {
-        val deepLinkScheme = deepLinkFallbackUrlScheme
-        val isDeepLinkReturn = deepLinkScheme != null && scheme.equals(deepLinkScheme, ignoreCase = true)
-        val isAppLinkReturn = scheme.equals(appLinkReturnUrl.scheme, ignoreCase = true) &&
-            host.equals(appLinkReturnUrl.host, ignoreCase = true)
-        return isDeepLinkReturn || isAppLinkReturn
-    }
-
     private data class Inputs(
         val request: PayPalSavedPaymentMethodRequest,
         val showCreditMessaging: Boolean,
         val loadCount: Int
     )
 
-    /** Creates the view model for these values, restoring the completed edit from saved state. */
+    /** Creates the view model with the client from [createClient], restoring the completed edit from saved state. */
     class Factory(
-        private val authorization: String,
-        private val appLinkReturnUrl: Uri,
-        private val deepLinkFallbackUrlScheme: String?,
-        private val createClient: PayPalSavedPaymentMethodClientFactory
+        private val createClient: () -> PayPalSavedPaymentMethodClient
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -361,13 +351,7 @@ internal class PayPalSavedPaymentMethodViewModel(
                 // No saved state owner, so nothing survives process death.
                 SavedStateHandle()
             }
-            return PayPalSavedPaymentMethodViewModel(
-                savedState,
-                authorization,
-                appLinkReturnUrl,
-                deepLinkFallbackUrlScheme,
-                createClient
-            ) as T
+            return PayPalSavedPaymentMethodViewModel(savedState, createClient()) as T
         }
     }
 
@@ -393,11 +377,3 @@ private inline fun <T> tryOrElse(block: () -> T, onError: (Exception) -> T): T =
         if (e is CancellationException) throw e
         onError(e)
     }
-
-/** Builds the real client. Uses the application context so no activity is retained. */
-internal fun defaultClientFactory(context: Context): PayPalSavedPaymentMethodClientFactory {
-    val applicationContext = context.applicationContext
-    return { authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme ->
-        PayPalSavedPaymentMethodClient(applicationContext, authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
-    }
-}
