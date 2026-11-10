@@ -17,11 +17,13 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import org.robolectric.util.ReflectionHelpers
 
 @RunWith(RobolectricTestRunner::class)
 class ShimmerPlaceholderViewUnitTest {
 
     private val context: Context = RuntimeEnvironment.getApplication()
+    private val activity by lazy { Robolectric.buildActivity(Activity::class.java).setup().get() }
 
     @Test
     fun `measures to the placeholder height and the width it's given`() {
@@ -40,29 +42,50 @@ class ShimmerPlaceholderViewUnitTest {
     }
 
     @Test
-    fun `sweeps only while attached, shown and the window is visible`() {
-        val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
-        val sut = ShimmerPlaceholderView(activity)
-        assertFalse(sut.isAnimating)
+    fun `doesn't sweep before it's attached`() {
+        assertFalse(ShimmerPlaceholderView(context).isAnimating)
+    }
 
-        activity.setContentView(sut)
-        idle()
-        // Robolectric reports the activity window as gone; a device reports it visible once the view is attached.
-        sut.dispatchWindowVisibilityChanged(View.VISIBLE)
-        assertTrue(sut.isAnimating)
+    @Test
+    fun `sweeps once attached and shown in a visible window`() {
+        assertTrue(shownShimmer().isAnimating)
+    }
+
+    @Test
+    fun `stops sweeping while hidden`() {
+        val sut = shownShimmer()
 
         sut.visibility = View.GONE
+
         assertFalse(sut.isAnimating)
+    }
+
+    @Test
+    fun `sweeps again when shown after being hidden`() {
+        val sut = shownShimmer()
+        sut.visibility = View.GONE
 
         sut.visibility = View.VISIBLE
+
         assertTrue(sut.isAnimating)
+    }
+
+    @Test
+    fun `stops sweeping while the app is in the background`() {
+        val sut = shownShimmer()
 
         sut.dispatchWindowVisibilityChanged(View.GONE)
-        assertFalse(sut.isAnimating)
 
-        sut.dispatchWindowVisibilityChanged(View.VISIBLE)
+        assertFalse(sut.isAnimating)
+    }
+
+    @Test
+    fun `stops sweeping once detached`() {
+        val sut = shownShimmer()
+
         activity.setContentView(View(activity))
         idle()
+
         assertFalse(sut.isAnimating)
     }
 
@@ -134,17 +157,18 @@ class ShimmerPlaceholderViewUnitTest {
 
     // Attached, shown and in a visible window, so it would otherwise sweep.
     private fun shownShimmer(): ShimmerPlaceholderView {
-        val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
         val sut = ShimmerPlaceholderView(activity)
         activity.setContentView(sut)
         idle()
+        // Robolectric reports the activity window as gone; a device reports it visible once the view is attached.
         sut.dispatchWindowVisibilityChanged(View.VISIBLE)
         return sut
     }
 
-    // The system "Animator duration scale" setting, which ValueAnimator.areAnimatorsEnabled() reads from Android 8.
+    // The animator duration scale that ValueAnimator.areAnimatorsEnabled() reads from Android 8. It's set directly,
+    // since Robolectric's ShadowValueAnimator.setDurationScale isn't public.
     private fun setAnimatorDurationScale(scale: Float) {
-        ValueAnimator::class.java.getMethod("setDurationScale", Float::class.javaPrimitiveType).invoke(null, scale)
+        ReflectionHelpers.setStaticField(ValueAnimator::class.java, "sDurationScale", scale)
     }
 
     private fun layOut(direction: Int) = ShimmerPlaceholderView(context).apply {

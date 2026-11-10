@@ -58,10 +58,9 @@ internal class PayPalCreditMessagingView @JvmOverloads constructor(
         textView.isVisible = state is PayPalCreditMessagingDisplayState.Content
         if (state is PayPalCreditMessagingDisplayState.Content) {
             textView.applyTextStyle(resolvedStyle, resolvedStyle.creditMessagingFontSizeSp)
-            val linkColor = resolvedStyle.creditMessagingLinkColor
             textView.text = state.content.toSpannable(
-                linkColor = linkColor ?: resolvedStyle.textColor,
-                underline = linkColor == null,
+                linkColor = resolvedStyle.creditMessagingLinkColor,
+                textColor = resolvedStyle.textColor,
                 onLearnMoreClick = onLearnMoreClick
             )
             bindAccessibilityClick(state.content.learnMore, onLearnMoreClick)
@@ -92,10 +91,10 @@ internal class PayPalCreditMessagingView @JvmOverloads constructor(
     }
 }
 
-// The "Learn more" link is bold, and underlined only without a merchant link color, as on iOS.
+// The "Learn more" link is bold. Without a merchant [linkColor] it's underlined in the [textColor], as on iOS.
 private fun PayPalCreditMessagingContent.toSpannable(
-    @ColorInt linkColor: Int,
-    underline: Boolean,
+    @ColorInt linkColor: Int?,
+    @ColorInt textColor: Int,
     onLearnMoreClick: (String) -> Unit
 ): CharSequence {
     val builder = SpannableStringBuilder(message)
@@ -108,8 +107,8 @@ private fun PayPalCreditMessagingContent.toSpannable(
             override fun onClick(widget: View) = onLearnMoreClick(link.url)
 
             override fun updateDrawState(textPaint: TextPaint) {
-                textPaint.color = linkColor
-                textPaint.isUnderlineText = underline
+                textPaint.color = linkColor ?: textColor
+                textPaint.isUnderlineText = linkColor == null
             }
         }
         builder.setSpan(linkSpan, start, builder.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)

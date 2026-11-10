@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.AccessibilityDelegateCompat
@@ -64,11 +65,7 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
             ContextCompat.getColor(context, R.color.paypal_saved_payment_method_funding_instrument_chip_ripple)
         ),
         null,
-        GradientDrawable().apply {
-            cornerRadius =
-                resources.getDimension(R.dimen.paypal_saved_payment_method_funding_instrument_chip_corner_radius)
-            setColor(Color.BLACK)
-        }
+        chipShape(Color.BLACK)
     )
     private val chipTextColor =
         ContextCompat.getColor(context, R.color.paypal_saved_payment_method_funding_instrument_chip_text)
@@ -84,13 +81,9 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
         textView = findViewById(R.id.paypal_saved_payment_method_funding_instrument_text)
         editIconView = findViewById(R.id.paypal_saved_payment_method_edit_icon)
 
-        background = GradientDrawable().apply {
-            cornerRadius =
-                resources.getDimension(R.dimen.paypal_saved_payment_method_funding_instrument_chip_corner_radius)
-            setColor(
-                ContextCompat.getColor(context, R.color.paypal_saved_payment_method_funding_instrument_chip_background)
-            )
-        }
+        background = chipShape(
+            ContextCompat.getColor(context, R.color.paypal_saved_payment_method_funding_instrument_chip_background)
+        )
         clipToOutline = true
         val horizontalPadding = resources.getDimensionPixelSize(
             R.dimen.paypal_saved_payment_method_funding_instrument_chip_horizontal_padding
@@ -224,5 +217,11 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
             fallbackIcon != null -> iconView.setImageResource(fallbackIcon)
             else -> iconView.setImageDrawable(null)
         }
+    }
+
+    // The chip's rounded shape, used for its background and to keep the ripple inside its corners.
+    private fun chipShape(@ColorInt color: Int) = GradientDrawable().apply {
+        cornerRadius = resources.getDimension(R.dimen.paypal_saved_payment_method_funding_instrument_chip_corner_radius)
+        setColor(color)
     }
 }

@@ -37,23 +37,29 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
     private val barPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.paypal_saved_payment_method_placeholder)
     }
-    private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    // A gradient one pixel wide, scaled to the highlight's width when drawn, so a new layout needs no new shader.
+    private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        shader = LinearGradient(
+            0f,
+            0f,
+            1f,
+            0f,
+            intArrayOf(
+                Color.TRANSPARENT,
+                ColorUtils.setAlphaComponent(Color.WHITE, HIGHLIGHT_ALPHA),
+                Color.TRANSPARENT
+            ),
+            null,
+            Shader.TileMode.CLAMP
+        )
+    }
     private val highlightMatrix = Matrix()
     private val barRect = RectF()
     private var progress = 0f
 
-    private val animator = ValueAnimator.ofFloat(0f, 1f).apply {
-        duration = SWEEP_DURATION_MILLIS
-        repeatCount = ValueAnimator.INFINITE
-        interpolator = LinearInterpolator()
-        addUpdateListener {
-            progress = it.animatedValue as Float
-            invalidate()
-        }
-    }
-
-    // False while the View constructor runs, which can report a visibility change before the animator exists.
-    private var isInitialized = false
+    // Created on the first sweep. Nullable, because the View constructor can report a visibility change before the
+    // fields of this class are set.
+    private var animator: ValueAnimator? = null
     private var isWindowVisible = true
 
     /** Whether the bar stops short of the trailing edge. */
@@ -70,11 +76,10 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
 
     @get:VisibleForTesting
     internal val isAnimating: Boolean
-        get() = animator.isStarted
+        get() = animator?.isStarted == true
 
     init {
         if (contentDescription == null) importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO
-        isInitialized = true
     }
 
     override fun setContentDescription(contentDescription: CharSequence?) {
@@ -100,27 +105,15 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
         val barWidth = (width - if (showsTrailingGap) trailingGap else 0).coerceAtLeast(0).toFloat()
         val barLeft = if (layoutDirection == LAYOUT_DIRECTION_RTL) width - barWidth else 0f
         barRect.set(barLeft, 0f, barLeft + barWidth, height.toFloat())
-        highlightPaint.shader = LinearGradient(
-            0f,
-            0f,
-            barWidth * HIGHLIGHT_WIDTH_FRACTION,
-            0f,
-            intArrayOf(
-                Color.TRANSPARENT,
-                ColorUtils.setAlphaComponent(Color.WHITE, HIGHLIGHT_ALPHA),
-                Color.TRANSPARENT
-            ),
-            null,
-            Shader.TileMode.CLAMP
-        )
     }
 
     override fun onDraw(canvas: Canvas) {
         canvas.drawRoundRect(barRect, cornerRadius, cornerRadius, barPaint)
         // The highlight starts fully off the left edge and ends fully off the right edge.
         val bandWidth = barRect.width() * HIGHLIGHT_WIDTH_FRACTION
-        highlightMatrix.setTranslate(barRect.left - bandWidth + progress * (barRect.width() + bandWidth), 0f)
-        highlightPaint.shader?.setLocalMatrix(highlightMatrix)
+        highlightMatrix.setScale(bandWidth, 1f)
+        highlightMatrix.postTranslate(barRect.left - bandWidth + progress * (barRect.width() + bandWidth), 0f)
+        highlightPaint.shader.setLocalMatrix(highlightMatrix)
         canvas.drawRoundRect(barRect, cornerRadius, cornerRadius, highlightPaint)
     }
 
@@ -141,18 +134,26 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
     }
 
     override fun onDetachedFromWindow() {
-        animator.cancel()
+        animator?.cancel()
         super.onDetachedFromWindow()
     }
 
     // Animates only while on screen, and not while the app is in the background.
     private fun updateAnimation() {
-        if (!isInitialized) return
         val isOnScreen = isAttachedToWindow && isShown && isWindowVisible
         if (isOnScreen && areAnimationsEnabled()) {
-            if (!animator.isStarted) animator.start()
+            val sweep = animator ?: ValueAnimator.ofFloat(0f, 1f).apply {
+                duration = SWEEP_DURATION_MILLIS
+                repeatCount = ValueAnimator.INFINITE
+                interpolator = LinearInterpolator()
+                addUpdateListener {
+                    progress = it.animatedValue as Float
+                    invalidate()
+                }
+            }.also { animator = it }
+            if (!sweep.isStarted) sweep.start()
         } else {
-            animator.cancel()
+            animator?.cancel()
             // A static bar shows no highlight, rather than one frozen where the sweep stopped.
             if (progress != 0f) {
                 progress = 0f

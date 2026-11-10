@@ -5,6 +5,8 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.os.Build
+import android.util.TypedValue
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -58,13 +60,15 @@ class XmlStyleExtensionsUnitTest {
         textView.applyTextStyle(resolvedStyle, sizeSp = 14f)
 
         assertEquals(Color.RED, textView.currentTextColor)
-        assertEquals(14f, textView.textSize / context.resources.displayMetrics.scaledDensity, DELTA)
+        val expectedSizePx =
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14f, context.resources.displayMetrics)
+        assertEquals(expectedSizePx, textView.textSize, DELTA)
         assertEquals(Typeface.DEFAULT, textView.typeface)
     }
 
     @Test
     fun `applyTextStyle uses the medium system font for medium text`() {
-        textView.applyTextStyle(resolvedStyle, sizeSp = 20f, medium = true)
+        textView.applyTextStyle(resolvedStyle, sizeSp = 20f, weight = TextWeight.MEDIUM)
 
         assertEquals(Typeface.create("sans-serif-medium", Typeface.NORMAL), textView.typeface)
     }
@@ -79,23 +83,23 @@ class XmlStyleExtensionsUnitTest {
     }
 
     @Test
-    @Config(sdk = [28])
+    @Config(sdk = [Build.VERSION_CODES.P])
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     fun `applyTextStyle uses the merchant's font at medium weight on Android 9 and later`() {
         val font = givenMerchantFont()
 
-        textView.applyTextStyle(merchantFontStyle(), sizeSp = 20f, medium = true)
+        textView.applyTextStyle(merchantFontStyle(), sizeSp = 20f, weight = TextWeight.MEDIUM)
 
         assertNotEquals(font, textView.typeface)
         assertEquals(500, textView.typeface.weight)
     }
 
     @Test
-    @Config(sdk = [27])
+    @Config(sdk = [Build.VERSION_CODES.O_MR1])
     fun `applyTextStyle keeps the merchant's font for medium text before Android 9`() {
         val font = givenMerchantFont()
 
-        textView.applyTextStyle(merchantFontStyle(), sizeSp = 20f, medium = true)
+        textView.applyTextStyle(merchantFontStyle(), sizeSp = 20f, weight = TextWeight.MEDIUM)
 
         assertSame(font, textView.typeface)
     }

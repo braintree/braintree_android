@@ -2,13 +2,12 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 
 import android.os.Looper
 import android.view.View
-import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import org.robolectric.Shadows.shadowOf
 
 /** The accessibility node TalkBack reads for this view. */
 internal fun View.nodeInfo(): AccessibilityNodeInfoCompat =
-    AccessibilityNodeInfoCompat.obtain().also { ViewCompat.onInitializeAccessibilityNodeInfo(this, it) }
+    AccessibilityNodeInfoCompat.wrap(createAccessibilityNodeInfo())
 
 /** The label TalkBack reads for this view's click action, or `null` if it has no labelled click action. */
 internal fun View.clickActionLabel(): CharSequence? =
