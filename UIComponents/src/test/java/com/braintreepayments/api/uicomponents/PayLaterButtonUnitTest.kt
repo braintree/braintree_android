@@ -9,6 +9,7 @@ import android.view.View.MeasureSpec
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
+import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
@@ -28,6 +29,7 @@ import io.mockk.runs
 import io.mockk.slot
 import io.mockk.unmockkObject
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -57,6 +59,7 @@ class PayLaterButtonUnitTest {
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
         every { mockPayPalClient.createPaymentAuthRequest(any(), any(), capture(authCallback)) } just runs
+        every { mockPayPalLauncher.restorePendingRequest(any()) } just runs
         mockkObject(AnalyticsClient.Companion)
         every { AnalyticsClient.lazyInstance } returns lazyOf(analyticsClient)
     }
@@ -319,6 +322,37 @@ class PayLaterButtonUnitTest {
         button.handleReturnToApp(PayPalPendingRequest.Started("pending"), Intent()) { results.add(it) }
 
         assertSame(error, (results.single() as PayPalResult.Failure).error)
+        assertTrue(button.isEnabled)
+    }
+
+    @Test
+    fun `handleReturnToApp restores the pending request before completing the flow`() {
+        every { mockPayPalLauncher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
+        val button = buttonWith(context)
+        val pending = PayPalPendingRequest.Started("test-pending-request")
+        val intent = Intent("test")
+
+        button.handleReturnToApp(pending, intent) {}
+
+        verifyOrder {
+            mockPayPalLauncher.restorePendingRequest("test-pending-request")
+            mockPayPalLauncher.handleReturnToApp(pending, intent)
+        }
+    }
+
+    @Test
+    fun `handleReturnToApp when restore fails reports failure, re-enables and does not complete the flow`() {
+        val restoreError = BrowserSwitchException("invalid pending request")
+        every { mockPayPalLauncher.restorePendingRequest(any()) } throws restoreError
+        val results = mutableListOf<PayPalResult>()
+        val button = buttonWith(context)
+        button.isEnabled = false
+
+        button.handleReturnToApp(PayPalPendingRequest.Started("pending"), Intent()) { results.add(it) }
+
+        assertSame(restoreError, (results.single() as PayPalResult.Failure).error)
+        verify(exactly = 0) { mockPayPalLauncher.handleReturnToApp(any(), any()) }
+        verify(exactly = 0) { mockPayPalClient.tokenize(any(), any()) }
         assertTrue(button.isEnabled)
     }
 
