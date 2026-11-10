@@ -4,7 +4,6 @@ package com.braintreepayments.api.paypalsavedpaymentmethod
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -65,7 +64,6 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     private val client = mockk<PayPalSavedPaymentMethodClient>()
     private val launcher = mockk<PayPalLauncher>(relaxed = true)
     private val activity = mockk<ComponentActivity>()
-    private val appLinkReturnUrl = uri(scheme = "https", host = "merchant.example.com")
     private val savedState = SavedStateHandle()
     private lateinit var sut: PayPalSavedPaymentMethodViewModel
 
@@ -84,8 +82,6 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     fun tearDown() {
         Dispatchers.resetMain()
     }
-
-    // Loading
 
     @Test
     fun `the first request loads the default funding instrument and the Pay Later message`() = runTest(dispatcher) {
@@ -239,8 +235,6 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         assertEquals(MESSAGE, sut.state.value.creditMessaging)
     }
 
-    // Starting an edit
-
     @Test
     fun `startEdit shows the edit in progress and returns the pending request`() = runTest(dispatcher) {
         val authRequest = mockk<PayPalPaymentAuthRequest.ReadyToLaunch>()
@@ -332,15 +326,13 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         assertFalse(sut.state.value.isEditing)
     }
 
-    // Completing an edit
-
     @Test
     fun `a successful edit is delivered, saved, and loads the funding instrument the buyer picked`() =
         runTest(dispatcher) {
             loadAndSettle()
             val success = givenReturn(success(ORDER_ID))
 
-            val handling = sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+            val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
             advanceUntilIdle()
 
             assertEquals(PayPalReturnHandling.COMPLETED, handling)
@@ -433,7 +425,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         val error = BraintreeException("return failed")
         every { launcher.handleReturnToApp(any(), any()) } returns authFailure(error)
 
-        val handling = sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+        val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
         advanceUntilIdle()
 
         assertEquals(PayPalReturnHandling.COMPLETED, handling)
@@ -445,7 +437,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         val error = IllegalStateException("bad pending request")
         every { launcher.restorePendingRequest(any()) } throws error
 
-        val handling = sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+        val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
         advanceUntilIdle()
 
         assertEquals(PayPalReturnHandling.COMPLETED, handling)
@@ -477,7 +469,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         runTest(dispatcher) {
             completeReturn()
 
-            val handling = newViewModel().handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+            val handling = newViewModel().handleReturnToApp(PENDING, launcher, returnIntent())
             advanceUntilIdle()
 
             assertEquals(PayPalReturnHandling.COMPLETED, handling)
@@ -500,7 +492,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         runTest(dispatcher) {
             completeReturn()
 
-            val handling = sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+            val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
 
             assertEquals(PayPalReturnHandling.COMPLETED, handling)
             verify(exactly = 1) { launcher.handleReturnToApp(any(), any()) }
@@ -511,7 +503,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         runTest(dispatcher) {
             val created = startEditInProgress()
 
-            assertEquals(PayPalReturnHandling.NOT_TAKEN, sut.handleReturnToApp(PENDING, launcher, intentWith(null)))
+            assertEquals(PayPalReturnHandling.NOT_TAKEN, sut.handleReturnToApp(PENDING, launcher, returnIntent()))
             created.complete(PayPalSavedPaymentMethodAuthRequest.Failure(BraintreeException("failed")))
             advanceUntilIdle()
 
@@ -523,10 +515,10 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         val authResult = mockk<PayPalPaymentAuthResult.Success>()
         every { launcher.handleReturnToApp(any(), any()) } returns authResult
         coEvery { client.tokenize(authResult) } coAnswers { CompletableDeferred<PayPalResult>().await() }
-        sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+        sut.handleReturnToApp(PENDING, launcher, returnIntent())
         runCurrent()
 
-        newViewModel().handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+        newViewModel().handleReturnToApp(PENDING, launcher, returnIntent())
         runCurrent()
 
         verify(exactly = 1) { launcher.handleReturnToApp(any(), any()) }
@@ -538,7 +530,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
             val authResult = mockk<PayPalPaymentAuthResult.Success>()
             every { launcher.handleReturnToApp(any(), any()) } returns authResult
             coEvery { client.tokenize(authResult) } coAnswers { CompletableDeferred<PayPalResult>().await() }
-            sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+            sut.handleReturnToApp(PENDING, launcher, returnIntent())
             runCurrent()
 
             sut = newViewModel()
@@ -557,7 +549,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     fun `a return with no result is delivered as a cancel without completing the return`() = runTest(dispatcher) {
         every { launcher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
 
-        val handling = sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+        val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
         advanceUntilIdle()
 
         assertEquals(PayPalReturnHandling.TAKEN, handling)
@@ -568,7 +560,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     @Test
     fun `a return with no result can be completed later`() = runTest(dispatcher) {
         every { launcher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
-        sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+        sut.handleReturnToApp(PENDING, launcher, returnIntent())
         advanceUntilIdle()
         sut.results.first()
 
@@ -646,7 +638,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     // Returns from PayPal with [tokenized] as the result and waits for it to be handled.
     private fun TestScope.completeReturn(tokenized: PayPalResult = success(ORDER_ID)): PayPalResult {
         givenReturn(tokenized)
-        sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+        sut.handleReturnToApp(PENDING, launcher, returnIntent())
         advanceUntilIdle()
         return tokenized
     }
@@ -678,14 +670,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         every { this@mockk.error } returns error
     }
 
-    private fun uri(scheme: String, host: String): Uri = mockk {
-        every { this@mockk.scheme } returns scheme
-        every { this@mockk.host } returns host
-    }
-
-    private fun intentWith(data: Uri?): Intent = mockk(relaxed = true) {
-        every { this@mockk.data } returns data
-    }
+    private fun returnIntent(): Intent = mockk(relaxed = true)
 
     private fun request(amount: String) = PayPalSavedPaymentMethodRequest(amount, "USD", MERCHANT_ACCOUNT_ID)
 
