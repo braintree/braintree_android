@@ -18,10 +18,10 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
+import io.mockk.verifyOrder
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -41,6 +41,7 @@ class PayPalButtonFlowUnitTest {
     @Before
     fun setUp() {
         coEvery { pendingRequestRepository.storePendingRequest(any()) } just runs
+        every { payPalLauncher.restorePendingRequest(any()) } just runs
     }
 
     // region completePayPalFlow
@@ -99,38 +100,6 @@ class PayPalButtonFlowUnitTest {
 
     // endregion
 
-    // region restoreStoredRequest
-
-    @Test
-    fun `restoreStoredRequest does nothing when there is no stored request`() {
-        val error = restoreStoredRequest(payPalLauncher, "")
-
-        assertNull(error)
-        verify(exactly = 0) { payPalLauncher.restorePendingRequest(any()) }
-    }
-
-    @Test
-    fun `restoreStoredRequest gives the stored request to the launcher`() {
-        every { payPalLauncher.restorePendingRequest(any()) } just runs
-
-        val error = restoreStoredRequest(payPalLauncher, "pending-request")
-
-        assertNull(error)
-        verify(exactly = 1) { payPalLauncher.restorePendingRequest("pending-request") }
-    }
-
-    @Test
-    fun `restoreStoredRequest returns the error when the stored request cannot be restored`() {
-        val restoreError = BrowserSwitchException("invalid pending request")
-        every { payPalLauncher.restorePendingRequest(any()) } throws restoreError
-
-        val error = restoreStoredRequest(payPalLauncher, "pending-request")
-
-        assertSame(restoreError, error)
-    }
-
-    // endregion
-
     // region handleReturnToApp
 
     @Test
@@ -140,6 +109,33 @@ class PayPalButtonFlowUnitTest {
         val failure = results.single() as PayPalResult.Failure
         assertTrue(failure.error is PendingRequestException)
         verify(exactly = 0) { payPalLauncher.handleReturnToApp(any(), any()) }
+    }
+
+    @Test
+    fun `handleReturnToApp restores the pending request before completing the flow`() {
+        every { payPalLauncher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
+
+        handleReturnToApp(payPalLauncher, payPalClient, "pending-request", intent, callback)
+
+        verifyOrder {
+            payPalLauncher.restorePendingRequest("pending-request")
+            payPalLauncher.handleReturnToApp(
+                match { it.pendingRequestString == "pending-request" },
+                intent
+            )
+        }
+    }
+
+    @Test
+    fun `handleReturnToApp reports the error and does not complete the flow when the restore fails`() {
+        val restoreError = BrowserSwitchException("invalid pending request")
+        every { payPalLauncher.restorePendingRequest(any()) } throws restoreError
+
+        handleReturnToApp(payPalLauncher, payPalClient, "pending-request", intent, callback)
+
+        assertSame(restoreError, (results.single() as PayPalResult.Failure).error)
+        verify(exactly = 0) { payPalLauncher.handleReturnToApp(any(), any()) }
+        verify(exactly = 0) { payPalClient.tokenize(any(), any()) }
     }
 
     @Test

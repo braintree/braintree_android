@@ -175,14 +175,6 @@ internal fun VenmoButtonContent(
             lifecycle.coroutineScope.launch {
                 val pendingRequestString = pendingRequestRepository.getPendingRequest()
 
-                val restoreError = restoreStoredVenmoRequest(venmoLauncher, pendingRequestString)
-                if (restoreError != null) {
-                    enabled = true
-                    pendingRequestRepository.clearPendingRequest()
-                    venmoTokenizeCallback.onVenmoResult(VenmoResult.Failure(restoreError))
-                    return@launch
-                }
-
                 activity?.intent?.let { intent ->
                     handleReturnToApp(venmoLauncher, venmoClient, pendingRequestString, intent, venmoTokenizeCallback)
                     enabled = true
@@ -197,25 +189,6 @@ internal fun VenmoButtonContent(
         }
 
         onPauseOrDispose { lifecycle }
-    }
-}
-
-/**
- * Gives [venmoLauncher] the stored pending request. The launcher only keeps it in memory, so a launcher created after
- * the Activity was recreated needs it before the flow can be completed.
- *
- * @return the error if the stored request could not be restored, `null` otherwise.
- */
-internal fun restoreStoredVenmoRequest(
-    venmoLauncher: VenmoLauncher,
-    pendingRequestString: String
-): BrowserSwitchException? {
-    if (pendingRequestString.isEmpty()) return null
-    return try {
-        venmoLauncher.restorePendingRequest(pendingRequestString)
-        null
-    } catch (e: BrowserSwitchException) {
-        e
     }
 }
 
@@ -259,6 +232,14 @@ private fun handleReturnToApp(
 ) {
     if (pendingRequestString.isEmpty()) {
         callback.onVenmoResult(VenmoResult.Failure(PendingRequestException()))
+        return
+    }
+    // The launcher only keeps the pending request in memory, so after the Activity is recreated
+    // while the browser is open it must be restored before the result can be completed.
+    try {
+        venmoLauncher.restorePendingRequest(pendingRequestString)
+    } catch (e: BrowserSwitchException) {
+        callback.onVenmoResult(VenmoResult.Failure(e))
         return
     }
     val paymentAuthResult = venmoLauncher.handleReturnToApp(

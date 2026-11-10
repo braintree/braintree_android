@@ -127,14 +127,6 @@ internal fun PayPalButtonFlow(
             lifecycle.coroutineScope.launch {
                 val pendingRequestStr = pendingRequestRepository.getPendingRequest()
 
-                val restoreError = restoreStoredRequest(payPalLauncher, pendingRequestStr)
-                if (restoreError != null) {
-                    enabled = true
-                    pendingRequestRepository.clearPendingRequest()
-                    paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(restoreError))
-                    return@launch
-                }
-
                 activity?.intent?.let { intent ->
                     handleReturnToApp(payPalLauncher, payPalClient, pendingRequestStr, intent, paypalTokenizeCallback)
                     enabled = true
@@ -149,25 +141,6 @@ internal fun PayPalButtonFlow(
         }
 
         onPauseOrDispose { lifecycle }
-    }
-}
-
-/**
- * Gives [payPalLauncher] the stored pending request. The launcher only keeps it in memory, so a launcher created after
- * the Activity was recreated needs it before the flow can be completed.
- *
- * @return the error if the stored request could not be restored, `null` otherwise.
- */
-internal fun restoreStoredRequest(
-    payPalLauncher: PayPalLauncher,
-    pendingRequestString: String
-): BrowserSwitchException? {
-    if (pendingRequestString.isEmpty()) return null
-    return try {
-        payPalLauncher.restorePendingRequest(pendingRequestString)
-        null
-    } catch (e: BrowserSwitchException) {
-        e
     }
 }
 
@@ -216,6 +189,14 @@ internal fun handleReturnToApp(
 ) {
     if (pendingRequestString.isEmpty()) {
         callback.onPayPalResult(PayPalResult.Failure(PendingRequestException()))
+        return
+    }
+    // The launcher only keeps the pending request in memory, so after the Activity is recreated
+    // while the browser is open it must be restored before the result can be completed.
+    try {
+        payPalLauncher.restorePendingRequest(pendingRequestString)
+    } catch (e: BrowserSwitchException) {
+        callback.onPayPalResult(PayPalResult.Failure(e))
         return
     }
     val paymentAuthResult = payPalLauncher.handleReturnToApp(
