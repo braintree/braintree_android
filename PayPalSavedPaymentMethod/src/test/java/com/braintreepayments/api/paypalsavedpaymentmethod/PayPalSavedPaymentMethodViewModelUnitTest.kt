@@ -335,7 +335,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
             val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
             advanceUntilIdle()
 
-            assertEquals(PayPalReturnHandling.COMPLETED, handling)
+            assertEquals(PayPalSavedPaymentMethodReturnResult.COMPLETED, handling)
             assertSame(success, sut.results.first())
             assertTrue(sut.state.value.isEditCompleted)
             assertEquals(true, savedState.get<Boolean>("is_edit_completed"))
@@ -428,7 +428,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
         advanceUntilIdle()
 
-        assertEquals(PayPalReturnHandling.COMPLETED, handling)
+        assertEquals(PayPalSavedPaymentMethodReturnResult.COMPLETED, handling)
         assertSame(error, firstFailureError())
     }
 
@@ -440,7 +440,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
         advanceUntilIdle()
 
-        assertEquals(PayPalReturnHandling.COMPLETED, handling)
+        assertEquals(PayPalSavedPaymentMethodReturnResult.COMPLETED, handling)
         assertSame(error, firstFailureError())
     }
 
@@ -449,7 +449,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         val handling = sut.handleReturnToApp(PENDING, launcher, null)
         advanceUntilIdle()
 
-        assertEquals(PayPalReturnHandling.TAKEN, handling)
+        assertEquals(PayPalSavedPaymentMethodReturnResult.TAKEN, handling)
         assertEquals(PayPalSavedPaymentMethodViewModel.NO_INTENT_MESSAGE, firstFailureError().message)
         assertNull(savedState.get<String>("completed_pending_request"))
     }
@@ -472,7 +472,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
             val handling = newViewModel().handleReturnToApp(PENDING, launcher, returnIntent())
             advanceUntilIdle()
 
-            assertEquals(PayPalReturnHandling.COMPLETED, handling)
+            assertEquals(PayPalSavedPaymentMethodReturnResult.COMPLETED, handling)
             verify(exactly = 1) { launcher.handleReturnToApp(any(), any()) }
             coVerify(exactly = 1) { client.tokenize(any<PayPalPaymentAuthResult.Success>()) }
         }
@@ -494,7 +494,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
 
             val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
 
-            assertEquals(PayPalReturnHandling.COMPLETED, handling)
+            assertEquals(PayPalSavedPaymentMethodReturnResult.COMPLETED, handling)
             verify(exactly = 1) { launcher.handleReturnToApp(any(), any()) }
         }
 
@@ -503,7 +503,9 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         runTest(dispatcher) {
             val created = startEditInProgress()
 
-            assertEquals(PayPalReturnHandling.NOT_TAKEN, sut.handleReturnToApp(PENDING, launcher, returnIntent()))
+            val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
+
+            assertEquals(PayPalSavedPaymentMethodReturnResult.NOT_TAKEN, handling)
             created.complete(PayPalSavedPaymentMethodAuthRequest.Failure(BraintreeException("failed")))
             advanceUntilIdle()
 
@@ -552,7 +554,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
         advanceUntilIdle()
 
-        assertEquals(PayPalReturnHandling.TAKEN, handling)
+        assertEquals(PayPalSavedPaymentMethodReturnResult.TAKEN, handling)
         assertSame(PayPalResult.Cancel, sut.results.first())
         assertFalse(sut.state.value.isEditCompleted)
     }

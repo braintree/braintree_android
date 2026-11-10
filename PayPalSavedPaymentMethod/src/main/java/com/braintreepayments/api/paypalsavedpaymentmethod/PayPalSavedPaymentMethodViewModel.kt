@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 import java.security.MessageDigest
 
 /** What [PayPalSavedPaymentMethodViewModel.handleReturnToApp] did with a PayPal return. */
-internal enum class PayPalReturnHandling {
+internal enum class PayPalSavedPaymentMethodReturnResult {
     /** Not taken, because an edit step is running. Keep the pending request and pass it again. */
     NOT_TAKEN,
 
@@ -62,7 +62,7 @@ internal class PayPalSavedPaymentMethodViewModel(
 ) : ViewModel() {
 
     // The completed edit, kept in saved state so it survives process death.
-    private var savedIsEditCompleted: Boolean
+    private var isSavedEditCompleted: Boolean
         get() = savedState[IS_EDIT_COMPLETED_KEY] ?: false
         set(value) {
             savedState[IS_EDIT_COMPLETED_KEY] = value
@@ -73,7 +73,7 @@ internal class PayPalSavedPaymentMethodViewModel(
             savedState[EDITED_ORDER_ID_KEY] = value
         }
 
-    private val _state = MutableStateFlow(PayPalSavedPaymentMethodUiState(isEditCompleted = savedIsEditCompleted))
+    private val _state = MutableStateFlow(PayPalSavedPaymentMethodUiState(isEditCompleted = isSavedEditCompleted))
     val state: StateFlow<PayPalSavedPaymentMethodUiState> = _state.asStateFlow()
 
     // Results no view has handled yet, oldest first.
@@ -182,12 +182,12 @@ internal class PayPalSavedPaymentMethodViewModel(
         pendingRequest: String,
         payPalLauncher: PayPalLauncher,
         intent: Intent?
-    ): PayPalReturnHandling = when {
-        pendingRequest.digest() == savedState[COMPLETED_PENDING_REQUEST_KEY] -> PayPalReturnHandling.COMPLETED
-        isEditStepRunning -> PayPalReturnHandling.NOT_TAKEN
+    ): PayPalSavedPaymentMethodReturnResult = when {
+        isCompleted(pendingRequest) -> PayPalSavedPaymentMethodReturnResult.COMPLETED
+        isEditStepRunning -> PayPalSavedPaymentMethodReturnResult.NOT_TAKEN
         intent == null -> {
             deliver(PayPalResult.Failure(BraintreeException(NO_INTENT_MESSAGE)))
-            PayPalReturnHandling.TAKEN
+            PayPalSavedPaymentMethodReturnResult.TAKEN
         }
         else -> readReturn(pendingRequest, payPalLauncher, intent)
     }
@@ -196,7 +196,7 @@ internal class PayPalSavedPaymentMethodViewModel(
         pendingRequest: String,
         payPalLauncher: PayPalLauncher,
         intent: Intent
-    ): PayPalReturnHandling {
+    ): PayPalSavedPaymentMethodReturnResult {
         val authResult = try {
             payPalLauncher.restorePendingRequest(pendingRequest)
             payPalLauncher.handleReturnToApp(PayPalPendingRequest.Started(pendingRequest), intent)
@@ -208,12 +208,12 @@ internal class PayPalSavedPaymentMethodViewModel(
                 // Recorded before tokenizing, which uses up the PayPal approval, so it's never tokenized twice.
                 markCompleted(pendingRequest)
                 tokenize(authResult)
-                PayPalReturnHandling.COMPLETED
+                PayPalSavedPaymentMethodReturnResult.COMPLETED
             }
             is PayPalPaymentAuthResult.Failure -> failReturn(pendingRequest, authResult.error)
             PayPalPaymentAuthResult.NoResult -> {
                 deliver(PayPalResult.Cancel)
-                PayPalReturnHandling.TAKEN
+                PayPalSavedPaymentMethodReturnResult.TAKEN
             }
         }
     }
@@ -247,10 +247,10 @@ internal class PayPalSavedPaymentMethodViewModel(
         }
     }
 
-    private fun failReturn(pendingRequest: String, error: Exception): PayPalReturnHandling {
+    private fun failReturn(pendingRequest: String, error: Exception): PayPalSavedPaymentMethodReturnResult {
         markCompleted(pendingRequest)
         deliver(PayPalResult.Failure(error))
-        return PayPalReturnHandling.COMPLETED
+        return PayPalSavedPaymentMethodReturnResult.COMPLETED
     }
 
     private fun deliver(result: PayPalResult) {
@@ -262,13 +262,16 @@ internal class PayPalSavedPaymentMethodViewModel(
         savedState[COMPLETED_PENDING_REQUEST_KEY] = pendingRequest.digest()
     }
 
+    private fun isCompleted(pendingRequest: String): Boolean =
+        pendingRequest.digest() == savedState[COMPLETED_PENDING_REQUEST_KEY]
+
     private fun String.digest(): String =
         MessageDigest.getInstance("SHA-256")
             .digest(toByteArray(Charsets.UTF_8))
             .joinToString("") { "%02x".format(it) }
 
     private fun saveEdit(editedOrderId: String?) {
-        savedIsEditCompleted = true
+        isSavedEditCompleted = true
         savedEditedOrderId = editedOrderId
         // The Pay Later offer was quoted for the funding instrument from before the edit.
         _state.update {

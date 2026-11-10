@@ -7,7 +7,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
 
-class IntentExtensionsUnitTest {
+class ReturnUrlExtensionsUnitTest {
 
     private val appLinkReturnUrl = uri(scheme = "https", host = "merchant.example.com")
 
