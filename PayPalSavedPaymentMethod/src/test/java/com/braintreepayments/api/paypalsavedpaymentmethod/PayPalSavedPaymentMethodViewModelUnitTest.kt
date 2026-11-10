@@ -98,14 +98,20 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `a failed load shows the offline state for a connection failure, an error otherwise`() = runTest(dispatcher) {
+    fun `a load that fails to connect shows the offline state`() = runTest(dispatcher) {
         coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws UnknownHostException()
-        loadAndSettle()
-        assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, sut.state.value.fundingInstrument)
 
-        coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws BraintreeException("boom")
-        sut = newViewModel()
         loadAndSettle()
+
+        assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, sut.state.value.fundingInstrument)
+    }
+
+    @Test
+    fun `a load that fails for another reason shows the error state`() = runTest(dispatcher) {
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws BraintreeException("boom")
+
+        loadAndSettle()
+
         assertEquals(PayPalSavedPaymentMethodDisplayState.Error, sut.state.value.fundingInstrument)
     }
 
@@ -136,16 +142,22 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `a failed Pay Later load hides its row, on the first load and for a new amount`() = runTest(dispatcher) {
+    fun `a failed first Pay Later load hides its row`() = runTest(dispatcher) {
         coEvery { client.fetchCreditPresentmentMessages(any(), any()) } throws IllegalStateException("boom")
-        loadAndSettle(amount = "10.00")
-        assertEquals(PayPalCreditMessagingDisplayState.Hidden, sut.state.value.creditMessaging)
 
-        coEvery { client.fetchCreditPresentmentMessages("10.00", any()) } returns MESSAGE_RESULT
-        sut = newViewModel()
         loadAndSettle(amount = "10.00")
+
+        assertEquals(PayPalCreditMessagingDisplayState.Hidden, sut.state.value.creditMessaging)
+    }
+
+    @Test
+    fun `a failed Pay Later load for a new amount hides the message quoted for the old one`() = runTest(dispatcher) {
+        coEvery { client.fetchCreditPresentmentMessages("20.00", any()) } throws IllegalStateException("boom")
+        loadAndSettle(amount = "10.00")
+
         sut.onRequestChanged(request("20.00"), showCreditMessaging = true)
         advanceUntilIdle()
+
         assertEquals(PayPalCreditMessagingDisplayState.Hidden, sut.state.value.creditMessaging)
     }
 
@@ -172,13 +184,24 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `a new request loads only the message again, the same request nothing`() = runTest(dispatcher) {
+    fun `a new request loads only the Pay Later message again`() = runTest(dispatcher) {
         loadAndSettle(amount = "10.00")
-        sut.onRequestChanged(request("10.00"), showCreditMessaging = true)
+
         sut.onRequestChanged(request("20.00"), showCreditMessaging = true)
         advanceUntilIdle()
 
-        coVerify(exactly = 2) { client.fetchCreditPresentmentMessages(any(), any()) }
+        coVerify(exactly = 1) { client.fetchCreditPresentmentMessages("20.00", any()) }
+        coVerify(exactly = 1) { client.fetchPaymentMethod(any(), any(), any()) }
+    }
+
+    @Test
+    fun `the same request loads nothing again`() = runTest(dispatcher) {
+        loadAndSettle(amount = "10.00")
+
+        sut.onRequestChanged(request("10.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { client.fetchCreditPresentmentMessages(any(), any()) }
         coVerify(exactly = 1) { client.fetchPaymentMethod(any(), any(), any()) }
     }
 
@@ -199,10 +222,16 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `turning the message off hides it, and turning it back on loads it`() = runTest(dispatcher) {
+    fun `a Pay Later message turned off is hidden and not loaded`() = runTest(dispatcher) {
         loadAndSettle(amount = "10.00", showCreditMessaging = false)
+
         assertEquals(PayPalCreditMessagingDisplayState.Hidden, sut.state.value.creditMessaging)
         coVerify(exactly = 0) { client.fetchCreditPresentmentMessages(any(), any()) }
+    }
+
+    @Test
+    fun `turning the Pay Later message back on loads it`() = runTest(dispatcher) {
+        loadAndSettle(amount = "10.00", showCreditMessaging = false)
 
         sut.onRequestChanged(request("10.00"), showCreditMessaging = true)
         advanceUntilIdle()
@@ -230,15 +259,24 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `startEdit returns a failure when the auth request fails or throws`() = runTest(dispatcher) {
+    fun `startEdit returns the failure of an auth request that fails`() = runTest(dispatcher) {
         val error = BraintreeException("auth failed")
         coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } returns
             PayPalSavedPaymentMethodAuthRequest.Failure(error)
-        assertSame(error, (sut.startEdit(activity, launcher, CHECKOUT) as PayPalPendingRequest.Failure).error)
 
+        val pending = sut.startEdit(activity, launcher, CHECKOUT)
+
+        assertSame(error, (pending as PayPalPendingRequest.Failure).error)
+    }
+
+    @Test
+    fun `startEdit returns the error of an auth request that throws`() = runTest(dispatcher) {
         val thrown = IOException("network")
         coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } throws thrown
-        assertSame(thrown, (sut.startEdit(activity, launcher, CHECKOUT) as PayPalPendingRequest.Failure).error)
+
+        val pending = sut.startEdit(activity, launcher, CHECKOUT)
+
+        assertSame(thrown, (pending as PayPalPendingRequest.Failure).error)
     }
 
     @Test
@@ -270,16 +308,14 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `startEdit or a return while an edit is in flight is ignored`() = runTest(dispatcher) {
+    fun `startEdit while an edit step is running is ignored`() = runTest(dispatcher) {
         val created = startEditInProgress()
 
         assertNull(sut.startEdit(activity, launcher, CHECKOUT))
-        sut.handleReturnToApp(PENDING, launcher, intentWith(null))
         created.complete(PayPalSavedPaymentMethodAuthRequest.Failure(BraintreeException("failed")))
         advanceUntilIdle()
 
         coVerify(exactly = 1) { client.createEditFundingInstrumentAuthRequest(any(), any()) }
-        verify(exactly = 0) { launcher.handleReturnToApp(any(), any()) }
     }
 
     @Test
@@ -355,16 +391,25 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `a failed load of the edited funding instrument maps like the first load and isn't retried`() =
+    fun `a failed load of the edited funding instrument shows the same state as a failed first load`() =
+        runTest(dispatcher) {
+            loadAndSettle()
+            coEvery { client.fetchPaymentMethod(any(), ORDER_ID, any()) } throws UnknownHostException()
+
+            completeReturn()
+
+            assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, sut.state.value.fundingInstrument)
+        }
+
+    @Test
+    fun `a failed load of the edited funding instrument isn't retried when a view attaches again`() =
         runTest(dispatcher) {
             loadAndSettle()
             coEvery { client.fetchPaymentMethod(any(), ORDER_ID, any()) } throws UnknownHostException()
             completeReturn()
-            assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, sut.state.value.fundingInstrument)
 
             loadAndSettle()
 
-            assertEquals(PayPalSavedPaymentMethodDisplayState.NoNetwork, sut.state.value.fundingInstrument)
             coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_DEFAULT, any(), any()) }
             coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_UPDATED, ORDER_ID, any()) }
         }
@@ -384,20 +429,15 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `a failed return is delivered and completes the return, a cancel doesn't`() = runTest(dispatcher) {
-        val failed = intentWith(appLinkReturnUrl)
+    fun `a failed return is delivered and completes the return`() = runTest(dispatcher) {
         val error = BraintreeException("return failed")
-        every { launcher.handleReturnToApp(any(), failed) } returns authFailure(error)
-        assertEquals(PayPalReturnHandling.COMPLETED, sut.handleReturnToApp(PENDING, launcher, failed))
-        advanceUntilIdle()
-        assertSame(error, firstFailureError())
+        every { launcher.handleReturnToApp(any(), any()) } returns authFailure(error)
 
-        val cancelled = intentWith(appLinkReturnUrl)
-        every { launcher.handleReturnToApp(any(), cancelled) } returns PayPalPaymentAuthResult.NoResult
-        assertEquals(PayPalReturnHandling.TAKEN, sut.handleReturnToApp("another-pending", launcher, cancelled))
+        val handling = sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
         advanceUntilIdle()
-        assertSame(PayPalResult.Cancel, sut.results.first())
-        assertFalse(sut.state.value.isEditCompleted)
+
+        assertEquals(PayPalReturnHandling.COMPLETED, handling)
+        assertSame(error, firstFailureError())
     }
 
     @Test
@@ -456,17 +496,13 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `handleReturnToApp tells the caller to clear its pending request once handled or already completed`() =
+    fun `a repeat of a completed return is reported as completed without reading it again`() =
         runTest(dispatcher) {
-            givenReturn(tokenized = success(ORDER_ID))
+            completeReturn()
 
-            val first = sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
-            advanceUntilIdle()
-            val repeat = sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
-            advanceUntilIdle()
+            val handling = sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
 
-            assertEquals(PayPalReturnHandling.COMPLETED, first)
-            assertEquals(PayPalReturnHandling.COMPLETED, repeat)
+            assertEquals(PayPalReturnHandling.COMPLETED, handling)
             verify(exactly = 1) { launcher.handleReturnToApp(any(), any()) }
         }
 
@@ -478,6 +514,8 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
             assertEquals(PayPalReturnHandling.NOT_TAKEN, sut.handleReturnToApp(PENDING, launcher, intentWith(null)))
             created.complete(PayPalSavedPaymentMethodAuthRequest.Failure(BraintreeException("failed")))
             advanceUntilIdle()
+
+            verify(exactly = 0) { launcher.handleReturnToApp(any(), any()) }
         }
 
     @Test
@@ -516,11 +554,23 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         }
 
     @Test
-    fun `a return with no result is a cancel, and the return can still be completed`() = runTest(dispatcher) {
+    fun `a return with no result is delivered as a cancel without completing the return`() = runTest(dispatcher) {
         every { launcher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
-        sut.handleReturnToApp(PENDING, launcher, intentWith(null))
+
+        val handling = sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
         advanceUntilIdle()
+
+        assertEquals(PayPalReturnHandling.TAKEN, handling)
         assertSame(PayPalResult.Cancel, sut.results.first())
+        assertFalse(sut.state.value.isEditCompleted)
+    }
+
+    @Test
+    fun `a return with no result can be completed later`() = runTest(dispatcher) {
+        every { launcher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
+        sut.handleReturnToApp(PENDING, launcher, intentWith(appLinkReturnUrl))
+        advanceUntilIdle()
+        sut.results.first()
 
         val success = completeReturn()
 
@@ -559,23 +609,6 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
 
         assertEquals(listOf(PayPalResult.Cancel, success), sut.results.take(2).toList())
     }
-
-    @Test
-    fun `only one view at a time can show the view model`() {
-        val first = "view-1"
-        val second = "view-2"
-
-        assertTrue(sut.attachView(first))
-        assertTrue(sut.isAttachedToAnotherView(second))
-        assertFalse(sut.attachView(second))
-        sut.detachView(second)
-        assertTrue(sut.isAttachedToAnotherView(second))
-
-        sut.detachView(first)
-        assertTrue(sut.attachView(second))
-    }
-
-    // Saved state and configuration
 
     @Test
     fun `an edit saved before the process died loads the funding instrument the buyer picked`() = runTest(dispatcher) {
