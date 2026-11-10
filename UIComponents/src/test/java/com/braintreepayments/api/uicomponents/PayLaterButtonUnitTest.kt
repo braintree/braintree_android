@@ -26,7 +26,9 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.runs
 import io.mockk.slot
+import io.mockk.unmockkObject
 import io.mockk.verify
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -57,6 +59,11 @@ class PayLaterButtonUnitTest {
         every { mockPayPalClient.createPaymentAuthRequest(any(), any(), capture(authCallback)) } just runs
         mockkObject(AnalyticsClient.Companion)
         every { AnalyticsClient.lazyInstance } returns lazyOf(analyticsClient)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkObject(AnalyticsClient.Companion)
     }
 
     // region PayLaterButtonColor
