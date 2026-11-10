@@ -101,27 +101,8 @@ internal class PayPalSavedPaymentMethodViewModel(
             _state.update { it.copy(isEditing = value) }
         }
 
-    // The XML view showing this view model, so two views with the same id can't share it.
-    private var attachedViewId: String? = null
-
     init {
         viewModelScope.launch { showCreditMessagingForInputs() }
-    }
-
-    /** Whether another view is showing this view model. */
-    fun isAttachedToAnotherView(viewInstanceId: String): Boolean =
-        attachedViewId != null && attachedViewId != viewInstanceId
-
-    /** Records that the view shows this view model. Returns `false` if another view already does. */
-    fun attachView(viewInstanceId: String): Boolean {
-        if (isAttachedToAnotherView(viewInstanceId)) return false
-        attachedViewId = viewInstanceId
-        return true
-    }
-
-    /** Records that the view no longer shows this view model. */
-    fun detachView(viewInstanceId: String) {
-        if (attachedViewId == viewInstanceId) attachedViewId = null
     }
 
     /**
