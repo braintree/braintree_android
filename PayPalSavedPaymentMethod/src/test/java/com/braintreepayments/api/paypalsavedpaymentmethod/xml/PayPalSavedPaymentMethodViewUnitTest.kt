@@ -20,7 +20,7 @@ import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
-import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalReturnHandling
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodViewModel
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
@@ -66,7 +66,8 @@ class PayPalSavedPaymentMethodViewUnitTest {
     init {
         every { viewModel.state } returns state
         every { viewModel.results } returns results
-        every { viewModel.handleReturnToApp(any(), any(), any()) } returns PayPalReturnHandling.TAKEN
+        every { viewModel.handleReturnToApp(any(), any(), any()) } returns
+            PayPalSavedPaymentMethodReturnResult.TAKEN
     }
 
     @Test
@@ -140,17 +141,20 @@ class PayPalSavedPaymentMethodViewUnitTest {
         val pending = PayPalPendingRequest.Started("pending")
         val returnUrl = RETURN_URL.buildUpon().path("return").build()
 
-        every { viewModel.handleReturnToApp(any(), any(), any()) } returns PayPalReturnHandling.NOT_TAKEN
+        every { viewModel.handleReturnToApp(any(), any(), any()) } returns
+            PayPalSavedPaymentMethodReturnResult.NOT_TAKEN
         val notTaken = Intent(Intent.ACTION_VIEW, returnUrl)
         assertFalse(sut.handleReturnToApp(pending, notTaken))
         assertEquals(returnUrl, notTaken.data)
 
-        every { viewModel.handleReturnToApp(any(), any(), any()) } returns PayPalReturnHandling.TAKEN
+        every { viewModel.handleReturnToApp(any(), any(), any()) } returns
+            PayPalSavedPaymentMethodReturnResult.TAKEN
         val taken = Intent(Intent.ACTION_VIEW, returnUrl)
         assertTrue(sut.handleReturnToApp(pending, taken))
         assertEquals(returnUrl, taken.data)
 
-        every { viewModel.handleReturnToApp(any(), any(), any()) } returns PayPalReturnHandling.COMPLETED
+        every { viewModel.handleReturnToApp(any(), any(), any()) } returns
+            PayPalSavedPaymentMethodReturnResult.COMPLETED
         val completed = Intent(Intent.ACTION_VIEW, returnUrl)
         assertTrue(sut.handleReturnToApp(pending, completed))
         assertNull(completed.data)
@@ -274,7 +278,8 @@ class PayPalSavedPaymentMethodViewUnitTest {
     @Test
     fun `initializing again keeps the launcher that opened the paysheet`() {
         val launchers = mutableListOf<PayPalLauncher>()
-        every { viewModel.handleReturnToApp(any(), capture(launchers), any()) } returns PayPalReturnHandling.TAKEN
+        every { viewModel.handleReturnToApp(any(), capture(launchers), any()) } returns
+            PayPalSavedPaymentMethodReturnResult.TAKEN
         initialize()
         sut.handleReturnToApp(PayPalPendingRequest.Started("pending"), Intent())
 
