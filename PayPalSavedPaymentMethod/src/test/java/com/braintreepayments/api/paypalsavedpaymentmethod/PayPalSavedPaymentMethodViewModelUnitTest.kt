@@ -18,14 +18,14 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessageItem
-import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
-import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalCreditMessagingResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalPayer
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
-import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodSummary
 import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -453,7 +453,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         }
 
     @Test
-    fun `a return cancelled on the PayPal page can still be completed`() = runTest(dispatcher) {
+    fun `a cancel from tokenizing doesn't complete the return, so it can still be completed`() = runTest(dispatcher) {
         completeReturn(tokenized = PayPalResult.Cancel)
         assertSame(PayPalResult.Cancel, sut.results.first())
 
@@ -521,7 +521,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         }
 
     @Test
-    fun `a cancelled return can still be completed`() = runTest(dispatcher) {
+    fun `a return with no result is a cancel, and the return can still be completed`() = runTest(dispatcher) {
         every { launcher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
         sut.handleReturnToApp(PENDING, launcher, intentWith(null))
         advanceUntilIdle()

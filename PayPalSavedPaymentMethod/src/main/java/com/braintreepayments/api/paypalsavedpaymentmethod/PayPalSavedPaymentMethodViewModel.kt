@@ -39,15 +39,9 @@ internal typealias PayPalSavedPaymentMethodClientFactory =
     (authorization: String, appLinkReturnUrl: Uri, deepLinkFallbackUrlScheme: String?) -> PayPalSavedPaymentMethodClient
 
 /**
- * State and edit flow shared by the XML and Compose views. Created for one authorization and its return URLs.
- * The state survives configuration changes, and the completed edit survives process death. Each result is kept until a
- * view has handled it, so it still arrives if the view is recreated while tokenizing or while the result is being
- * delivered. A result lost with the process is not delivered again, because its PayPal return can't be completed
- * twice; the edited funding instrument is still restored. An edit interrupted by process death while tokenizing isn't
- * recovered: its PayPal approval is already used, so the buyer's original funding instrument shows and they can edit
- * again.
- *
- * The launcher, activity and intent are passed per call and never kept. Main thread only.
+ * State and edit flow shared by the XML and Compose views, for one authorization and its return URLs. The state
+ * survives configuration changes and the completed edit survives process death. A PayPal return is completed at most
+ * once, so a result lost with the process isn't delivered again. Main thread only.
  */
 @OptIn(ExperimentalBetaApi::class)
 @Suppress("TooManyFunctions")
@@ -61,27 +55,25 @@ internal class PayPalSavedPaymentMethodViewModel(
 
     private val client = createClient(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
 
-    private val mutableState = MutableStateFlow(
+    private val _state = MutableStateFlow(
         PayPalSavedPaymentMethodUiState(
             isEditCompleted = savedState[IS_EDIT_COMPLETED_KEY] ?: false,
             editedOrderId = savedState[EDITED_ORDER_ID_KEY]
         )
     )
-    val state: StateFlow<PayPalSavedPaymentMethodUiState> = mutableState.asStateFlow()
+    val state: StateFlow<PayPalSavedPaymentMethodUiState> = _state.asStateFlow()
 
-    // Results not yet handled by a view, oldest first. A result sent while no view collects waits for the next one.
+    // Results no view has handled yet, oldest first.
     private val pendingResults = MutableStateFlow<List<PayPalResult>>(emptyList())
 
-    /**
-     * Delivers each result at least once: if the collector is cancelled while handling it, the next one receives it.
-     */
+    /** Delivers each result at least once: a result whose collector is cancelled goes to the next collector. */
     val results: Flow<PayPalResult> = flow {
         pendingResults.collect { pending ->
             val result = pending.firstOrNull() ?: return@collect
             try {
                 emit(result)
             } finally {
-                // Inactive only when cancelled, so the result wasn't handled.
+                // Still active means the collector handled it.
                 if (currentCoroutineContext().isActive) {
                     pendingResults.update { if (it.firstOrNull() === result) it.drop(1) else it }
                 }
@@ -89,13 +81,13 @@ internal class PayPalSavedPaymentMethodViewModel(
         }
     }
 
-    private var request: PayPalSavedPaymentMethodRequest? = null
-    private var showCreditMessaging = true
+    private var loadedRequest: PayPalSavedPaymentMethodRequest? = null
+    private var isCreditMessagingEnabled = true
     private var defaultFundingInstrumentJob: Job? = null
     private var updatedFundingInstrumentJob: Job? = null
     private var creditMessagingJob: Job? = null
 
-    // The request the shown Pay Later message was quoted for, so a failed refresh for it keeps the message.
+    // The request the shown Pay Later message was quoted for.
     private var creditMessagingRequest: PayPalSavedPaymentMethodRequest? = null
 
     // The XML view showing this view model, so two views with the same id can't share it.
@@ -103,7 +95,7 @@ internal class PayPalSavedPaymentMethodViewModel(
 
     /** Whether another view is showing this view model. */
     fun isAttachedToAnotherView(viewInstanceId: String): Boolean =
-        attachedViewId.let { it != null && it != viewInstanceId }
+        attachedViewId != null && attachedViewId != viewInstanceId
 
     /** Records that the view shows this view model. Returns `false` if another view already does. */
     fun attachView(viewInstanceId: String): Boolean {
@@ -118,99 +110,84 @@ internal class PayPalSavedPaymentMethodViewModel(
     }
 
     /**
-     * Loads the default funding instrument and, if shown, the Pay Later message. Called each time a view binds to this
-     * view model or enters composition, so a failed load is retried and a shown one refreshed; a failed refresh keeps
-     * what's shown. Once an edit is complete, this loads nothing, even if loading the funding instrument the buyer
-     * picked failed; only after an edit restored from [savedState] does the first call load it.
+     * Loads the default funding instrument and, if enabled, the Pay Later message. Called each time a view binds, so a
+     * failed load is retried and a shown one refreshed. After an edit the funding instrument isn't refetched, since the
+     * API still returns the one from before the edit; only an edit restored from [savedState] loads it once.
      */
     fun load(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
-        val isFirstLoad = this.request == null
-        this.request = request
-        this.showCreditMessaging = showCreditMessaging
-        if (state.value.isEditCompleted) {
-            // Refreshing would replace the funding instrument the buyer picked with the one from before the edit,
-            // which the API still returns.
-            if (isFirstLoad) loadBuyerUpdatedBillingAgreement()
-        } else {
+        val isFirstLoad = loadedRequest == null
+        loadedRequest = request
+        isCreditMessagingEnabled = showCreditMessaging
+        if (!state.value.isEditCompleted) {
             loadBuyerDefaultBillingAgreement()
+        } else if (isFirstLoad) {
+            loadBuyerUpdatedBillingAgreement()
         }
         startCreditFetch()
     }
 
-    /**
-     * Reloads the Pay Later message when the request changes or it's turned back on, and hides it when turned off.
-     * Does nothing before [load].
-     */
+    /** Reloads or hides the Pay Later message when the request or its setting changes. Does nothing before [load]. */
     fun onRequestChanged(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
-        val previous = this.request ?: return
-        val showedCreditMessaging = this.showCreditMessaging
-        this.request = request
-        this.showCreditMessaging = showCreditMessaging
-        if (request != previous || showCreditMessaging != showedCreditMessaging) startCreditFetch()
+        val previousRequest = loadedRequest ?: return
+        val wasCreditMessagingEnabled = isCreditMessagingEnabled
+        loadedRequest = request
+        isCreditMessagingEnabled = showCreditMessaging
+        if (request != previousRequest || showCreditMessaging != wasCreditMessagingEnabled) startCreditFetch()
     }
 
     /**
-     * Opens the PayPal paysheet. Runs in the caller's scope because it launches from [context]'s activity. Returns the
-     * pending request to keep, a failure to report, or `null` if an edit step is already running or the activity
-     * closed while the auth request was created.
+     * Opens the PayPal paysheet from [context]'s activity. Returns the pending request to keep, a failure to report,
+     * or `null` if an edit step is already running or the activity closed meanwhile.
      */
-    @Suppress("TooGenericExceptionCaught")
     suspend fun startEdit(
         context: Context,
         payPalLauncher: PayPalLauncher,
         payPalCheckoutRequest: PayPalCheckoutRequest
     ): PayPalPendingRequest? {
-        // One edit step at a time.
+        // TODO: send the edit flow analytics events, here and in finishReturn, once the catalog is approved.
         if (state.value.isEditing) return null
-        mutableState.update { it.copy(isEditing = true) }
-        // TODO: send the edit flow analytics events once the catalog is approved.
+        _state.update { it.copy(isEditing = true) }
         return try {
-            val activity = context.findActivity() as? ComponentActivity
-                ?: return PayPalPendingRequest.Failure(BraintreeException(NO_COMPONENT_ACTIVITY_MESSAGE))
-            when (val authRequest = client.createEditFundingInstrumentAuthRequest(context, payPalCheckoutRequest)) {
-                is PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch ->
-                    // The activity may have started closing while the auth request was created; no view is left to
-                    // return to.
-                    if (activity.isFinishing || activity.isDestroyed) {
-                        null
-                    } else {
-                        payPalLauncher.launch(activity, authRequest.paymentAuthRequest)
-                    }
-                is PayPalSavedPaymentMethodAuthRequest.Failure -> PayPalPendingRequest.Failure(authRequest.error)
-            }
-        } catch (e: Exception) {
-            if (e is CancellationException) throw e
-            PayPalPendingRequest.Failure(e)
+            tryOrElse({
+                val activity = context.findActivity() as? ComponentActivity
+                    ?: return PayPalPendingRequest.Failure(BraintreeException(NO_COMPONENT_ACTIVITY_MESSAGE))
+                when (val authRequest = client.createEditFundingInstrumentAuthRequest(context, payPalCheckoutRequest)) {
+                    is PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch ->
+                        // There's no view left to return to.
+                        if (activity.isFinishing || activity.isDestroyed) {
+                            null
+                        } else {
+                            payPalLauncher.launch(activity, authRequest.paymentAuthRequest)
+                        }
+                    is PayPalSavedPaymentMethodAuthRequest.Failure -> PayPalPendingRequest.Failure(authRequest.error)
+                }
+            }) { error -> PayPalPendingRequest.Failure(error) }
         } finally {
-            mutableState.update { it.copy(isEditing = false) }
+            _state.update { it.copy(isEditing = false) }
         }
     }
 
     /**
-     * Completes the return from PayPal in [intent], tokenizes and delivers the result through [results]. A return
-     * with no result is a [PayPalResult.Cancel]. Runs in the view model's scope, so recreating the view mid-tokenize
-     * neither cancels nor repeats it. A [pendingRequest] that was already completed is ignored and its return URL is
-     * removed from [intent]; a cancel doesn't count, so the buyer can still return with the same pending request.
-     * After a success the funding instrument the buyer picked is loaded, and the Pay Later message is not.
+     * Completes the PayPal return in [intent] in the view model's scope, so recreating the view doesn't cancel or
+     * repeat it, and delivers the result through [results]. A return with no result is a [PayPalResult.Cancel], and a
+     * cancelled return can be completed again later. After a success the funding instrument the buyer picked is
+     * loaded.
      *
-     * Returns `false` if the return was dropped because an edit step is running, so the caller keeps [pendingRequest]
-     * and passes it again. Otherwise returns `true`: the return is being handled or was already completed, and the
-     * caller can clear its stored copy. A result lost to process death after that is not delivered again.
+     * Returns `false` if an edit step is running, so the caller keeps [pendingRequest] and passes it again. Otherwise
+     * returns `true`, including for a return already completed, whose return URL is just removed from [intent].
      */
     fun handleReturnToApp(pendingRequest: String, payPalLauncher: PayPalLauncher, intent: Intent?): Boolean {
         if (pendingRequest.digest() == savedState[COMPLETED_PENDING_REQUEST_KEY]) {
-            // The restored intent still carries its return URL, which a later edit mustn't read.
             intent?.clearReturnUrl()
             return true
         }
-        // One edit step at a time.
         if (state.value.isEditing) return false
-        mutableState.update { it.copy(isEditing = true) }
+        _state.update { it.copy(isEditing = true) }
         viewModelScope.launch {
             val result = try {
                 finishReturn(pendingRequest, payPalLauncher, intent)
             } finally {
-                mutableState.update { it.copy(isEditing = false) }
+                _state.update { it.copy(isEditing = false) }
             }
             if (result is PayPalResult.Success) {
                 creditMessagingJob?.cancel()
@@ -222,46 +199,39 @@ internal class PayPalSavedPaymentMethodViewModel(
         return true
     }
 
-    @Suppress("TooGenericExceptionCaught")
     private suspend fun finishReturn(
         pendingRequest: String,
         payPalLauncher: PayPalLauncher,
         intent: Intent?
     ): PayPalResult {
-        // TODO: send the edit flow analytics events once the catalog is approved.
         if (intent == null) return PayPalResult.Failure(BraintreeException(NO_INTENT_MESSAGE))
-        return try {
+        return tryOrElse({
             payPalLauncher.restorePendingRequest(pendingRequest)
             val started = PayPalPendingRequest.Started(pendingRequest)
             when (val authResult = payPalLauncher.handleReturnToApp(started, intent)) {
                 is PayPalPaymentAuthResult.Success -> {
-                    // Recorded before tokenizing, which uses up the PayPal approval; a return interrupted after this
-                    // point is not repeated.
+                    // Recorded before tokenizing, which uses up the PayPal approval, so it's never tokenized twice.
                     markCompleted(pendingRequest)
-                    client.tokenize(authResult).also {
-                        intent.clearReturnUrl()
-                        // A cancel on the PayPal page doesn't count, so the buyer can still return with this request.
-                        if (it is PayPalResult.Cancel) savedState.remove<String>(COMPLETED_PENDING_REQUEST_KEY)
-                    }
+                    val result = client.tokenize(authResult)
+                    intent.clearReturnUrl()
+                    if (result is PayPalResult.Cancel) savedState.remove<String>(COMPLETED_PENDING_REQUEST_KEY)
+                    result
                 }
-                // Cleared too, so a later edit doesn't read the same return URL.
                 is PayPalPaymentAuthResult.Failure -> {
                     markCompleted(pendingRequest)
-                    PayPalResult.Failure(authResult.error).also { intent.clearReturnUrl() }
+                    intent.clearReturnUrl()
+                    PayPalResult.Failure(authResult.error)
                 }
-                // Not recorded for a cancel, so the buyer can still return with the same pending request.
                 PayPalPaymentAuthResult.NoResult -> PayPalResult.Cancel
             }
-        } catch (e: Exception) {
-            if (e is CancellationException) throw e
+        }) { error ->
             markCompleted(pendingRequest)
-            // Cleared here as well.
             intent.clearReturnUrl()
-            PayPalResult.Failure(e)
+            PayPalResult.Failure(error)
         }
     }
 
-    // Only compared for equality, so a digest is kept rather than the pending request itself.
+    // A digest, since it's only compared for equality.
     private fun markCompleted(pendingRequest: String) {
         savedState[COMPLETED_PENDING_REQUEST_KEY] = pendingRequest.digest()
     }
@@ -275,7 +245,7 @@ internal class PayPalSavedPaymentMethodViewModel(
         savedState[IS_EDIT_COMPLETED_KEY] = true
         savedState[EDITED_ORDER_ID_KEY] = editedOrderId
         // The Pay Later offer was quoted for the funding instrument from before the edit.
-        mutableState.update {
+        _state.update {
             it.copy(
                 isEditCompleted = true,
                 editedOrderId = editedOrderId,
@@ -284,84 +254,67 @@ internal class PayPalSavedPaymentMethodViewModel(
         }
     }
 
-    // The funding instrument PayPal charges unless the buyer changes it. A failed refresh keeps what's shown; only a
-    // failed first load shows the error.
-    @Suppress("TooGenericExceptionCaught")
     private fun loadBuyerDefaultBillingAgreement() {
-        val merchantAccountId = request?.merchantAccountId
+        val merchantAccountId = loadedRequest?.merchantAccountId
         defaultFundingInstrumentJob?.cancel()
         defaultFundingInstrumentJob = viewModelScope.launch {
-            val fundingInstrument = try {
+            val fundingInstrument = tryOrElse({
                 client.fetchPaymentMethod(
                     PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT,
                     null,
                     merchantAccountId
                 ).toDisplayState()
-            } catch (e: Exception) {
-                if (e is CancellationException) throw e
+            }) { error ->
+                // A failed refresh keeps what's shown; only a failed first load shows the error.
                 if (state.value.fundingInstrument != PayPalSavedPaymentMethodDisplayState.Loading) return@launch
-                e.toDisplayState()
+                error.toDisplayState()
             }
-            // An edit completed meanwhile; its funding instrument wins.
+            // An edit completed meanwhile, and its funding instrument wins.
             if (state.value.isEditCompleted) return@launch
-            mutableState.update { it.copy(fundingInstrument = fundingInstrument) }
+            _state.update { it.copy(fundingInstrument = fundingInstrument) }
         }
     }
 
-    // The funding instrument the buyer picked. If it can't be loaded only the PayPal logo and label show, since the
-    // earlier one is no longer charged.
+    // If the picked funding instrument can't be loaded only the brand shows, since the old one is no longer charged.
     private fun loadBuyerUpdatedBillingAgreement() {
-        val merchantAccountId = request?.merchantAccountId
+        val merchantAccountId = loadedRequest?.merchantAccountId
         updatedFundingInstrumentJob?.cancel()
         val orderId = state.value.editedOrderId
         if (orderId == null) {
-            mutableState.update { it.copy(fundingInstrument = PayPalSavedPaymentMethodDisplayState.Error) }
+            _state.update { it.copy(fundingInstrument = PayPalSavedPaymentMethodDisplayState.Error) }
             return
         }
-        mutableState.update { it.copy(fundingInstrument = PayPalSavedPaymentMethodDisplayState.Loading) }
+        _state.update { it.copy(fundingInstrument = PayPalSavedPaymentMethodDisplayState.Loading) }
         updatedFundingInstrumentJob = viewModelScope.launch {
-            val fundingInstrument = fetchFundingInstrument(
-                PayPalFundingInstrumentFetchType.BUYER_UPDATED_BILLING_AGREEMENT,
-                orderId,
-                merchantAccountId
-            )
-            mutableState.update { it.copy(fundingInstrument = fundingInstrument) }
+            val fundingInstrument = tryOrElse({
+                client.fetchPaymentMethod(
+                    PayPalFundingInstrumentFetchType.BUYER_UPDATED_BILLING_AGREEMENT,
+                    orderId,
+                    merchantAccountId
+                ).toDisplayState()
+            }) { error -> error.toDisplayState() }
+            _state.update { it.copy(fundingInstrument = fundingInstrument) }
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
-    private suspend fun fetchFundingInstrument(
-        fundingInstrumentType: PayPalFundingInstrumentFetchType,
-        orderId: String?,
-        merchantAccountId: String?
-    ): PayPalSavedPaymentMethodDisplayState = try {
-        client.fetchPaymentMethod(fundingInstrumentType, orderId, merchantAccountId).toDisplayState()
-    } catch (e: Exception) {
-        if (e is CancellationException) throw e
-        e.toDisplayState()
-    }
-
-    // Replaces the fetch in flight, so an older amount's message can't land last.
-    @Suppress("TooGenericExceptionCaught")
+    // Replaces any fetch in flight, so an older amount's message can't land last.
     private fun startCreditFetch() {
-        val request = request ?: return
+        val request = loadedRequest ?: return
         creditMessagingJob?.cancel()
-        // Hidden when turned off, and after an edit since the offer no longer applies.
-        if (!showCreditMessaging || state.value.isEditCompleted) {
-            mutableState.update { it.copy(creditMessaging = PayPalCreditMessagingDisplayState.Hidden) }
-        } else {
-            creditMessagingJob = viewModelScope.launch {
-                val creditMessaging = try {
-                    client.fetchCreditPresentmentMessages(request.amount, request.currencyCode).toDisplayState()
-                } catch (e: Exception) {
-                    if (e is CancellationException) throw e
-                    // A failed refresh for the same request keeps the message; otherwise a failure only hides the row.
-                    if (request == creditMessagingRequest) return@launch
-                    PayPalCreditMessagingDisplayState.Hidden
-                }
-                creditMessagingRequest = request
-                mutableState.update { it.copy(creditMessaging = creditMessaging) }
+        if (!isCreditMessagingEnabled || state.value.isEditCompleted) {
+            _state.update { it.copy(creditMessaging = PayPalCreditMessagingDisplayState.Hidden) }
+            return
+        }
+        creditMessagingJob = viewModelScope.launch {
+            val creditMessaging = tryOrElse({
+                client.fetchCreditPresentmentMessages(request.amount, request.currencyCode).toDisplayState()
+            }) {
+                // A failed refresh for the same request keeps the message; any other failure hides it.
+                if (request == creditMessagingRequest) return@launch
+                PayPalCreditMessagingDisplayState.Hidden
             }
+            creditMessagingRequest = request
+            _state.update { it.copy(creditMessaging = creditMessaging) }
         }
     }
 
@@ -413,6 +366,19 @@ internal class PayPalSavedPaymentMethodViewModel(
         private const val COMPLETED_PENDING_REQUEST_KEY = "completed_pending_request"
     }
 }
+
+/**
+ * Runs [block], passing any failure other than cancellation to [onError]. The client reports failures by throwing, and
+ * cancellation must still reach the coroutine.
+ */
+@Suppress("TooGenericExceptionCaught")
+private inline fun <T> tryOrElse(block: () -> T, onError: (Exception) -> T): T =
+    try {
+        block()
+    } catch (e: Exception) {
+        if (e is CancellationException) throw e
+        onError(e)
+    }
 
 /** Builds the real client. Uses the application context so no activity is retained. */
 internal fun defaultClientFactory(context: Context): PayPalSavedPaymentMethodClientFactory {
