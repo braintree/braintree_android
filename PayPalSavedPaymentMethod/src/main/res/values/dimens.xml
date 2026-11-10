@@ -26,5 +26,6 @@
     <dimen name="paypal_saved_payment_method_funding_instrument_icon_width">28dp</dimen>
     <dimen name="paypal_saved_payment_method_funding_instrument_icon_height">20dp</dimen>
     <dimen name="paypal_saved_payment_method_funding_instrument_icon_margin">8dp</dimen>
+    <!-- Slightly shorter than the card art frame, so the loading bar sits inside it, as in the Compose chip. -->
     <dimen name="paypal_saved_payment_method_funding_instrument_icon_loading_height">18dp</dimen>
 </resources>

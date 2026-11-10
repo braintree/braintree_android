@@ -17,7 +17,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -36,6 +35,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.CompletableDeferred
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -49,13 +49,13 @@ import org.robolectric.RobolectricTestParameterInjector
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
-import kotlinx.coroutines.CompletableDeferred
 import java.io.IOException
 
 @RunWith(RobolectricTestParameterInjector::class)
 class FundingInstrumentChipViewUnitTest {
 
     private val context: Context = RuntimeEnvironment.getApplication()
+    private val activity by lazy { Robolectric.buildActivity(Activity::class.java).setup().get() }
     private var sut = FundingInstrumentChipView(context)
     private val text: TextView get() = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_text)
     private val icon: ImageView get() = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon)
@@ -68,13 +68,19 @@ class FundingInstrumentChipViewUnitTest {
     private var editClicks = 0
 
     @Test
-    fun `a card shows its masked digits, icon and edit icon, and reads its digits one by one`() {
+    fun `a card shows its masked digits, icon and edit icon`() {
         bind(card)
 
         assertEquals("••1234", text.text.toString())
-        assertEquals("Visa, ending in 1 2 3 4", sut.contentDescription)
         assertTrue(iconContainer.isVisible)
         assertTrue(editIcon.isVisible)
+    }
+
+    @Test
+    fun `screen readers hear a card's digits one by one`() {
+        bind(card)
+
+        assertEquals("Visa, ending in 1 2 3 4", sut.contentDescription)
     }
 
     @Test
@@ -93,18 +99,24 @@ class FundingInstrumentChipViewUnitTest {
 
     @Test
     fun `PayPal Credit shows its label without digits or an icon`() {
-        bind(PayPalSavedPaymentMethodDisplayState.Content(paymentMethod(PayPalSavedPaymentMethodType.PAYPAL_CREDIT)))
+        bind(PayPalSavedPaymentMethodDisplayState.Content(payPalCredit()))
 
-        assertEquals("Visa", text.text.toString())
-        assertEquals("Visa", sut.contentDescription)
+        assertEquals("PayPal Credit", text.text.toString())
+        assertEquals("PayPal Credit", sut.contentDescription)
         assertFalse(iconContainer.isVisible)
     }
 
     @Test
-    fun `an editable chip shows touch feedback and calls back when tapped`() {
+    fun `an editable chip shows its own ripple as touch feedback`() {
         bind(card)
 
         assertIsChipRipple(sut.foreground)
+    }
+
+    @Test
+    fun `tapping an editable chip calls back`() {
+        bind(card)
+
         assertTrue(sut.performClick())
         assertEquals(1, editClicks)
     }
@@ -141,11 +153,7 @@ class FundingInstrumentChipViewUnitTest {
         bind(PayPalSavedPaymentMethodDisplayState.Content(cardWithArt()))
         idle()
 
-        sut.measure(
-            View.MeasureSpec.makeMeasureSpec(CHIP_WIDTH, View.MeasureSpec.AT_MOST),
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        )
-        sut.layout(0, 0, sut.measuredWidth, sut.measuredHeight)
+        layOutAtChipWidth()
 
         val resources = context.resources
         assertEquals(
@@ -172,7 +180,7 @@ class FundingInstrumentChipViewUnitTest {
     @Test
     fun `a product shown by its label leaves no space when its art can't be loaded`() {
         sut = chipWith(failingImageLoader())
-        val credit = paymentMethod(PayPalSavedPaymentMethodType.PAYPAL_CREDIT).copy(imageUrl = ART_URL)
+        val credit = payPalCredit().copy(imageUrl = ART_URL)
 
         bind(PayPalSavedPaymentMethodDisplayState.Content(credit))
         idle()
@@ -183,37 +191,33 @@ class FundingInstrumentChipViewUnitTest {
     }
 
     @Test
-    fun `card art whose load a detach cancelled loads again when the chip is attached again`() {
-        val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
+    fun `card art whose load a detach cancelled loads again on the next attach`() {
         var requests = 0
+        // The first load never finishes, so only the detach ends it.
         val loader = imageLoader { if (requests++ == 0) CompletableDeferred<Bitmap>().await() else cardArt() }
-        val chip = FundingInstrumentChipView(activity, imageLoader = loader)
-        val chipIcon: ImageView = chip.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon)
-        val chipShimmer: View = chip.findViewById(R.id.paypal_saved_payment_method_funding_instrument_icon_shimmer)
-        activity.setContentView(chip)
-        chip.bind(
-            PayPalSavedPaymentMethodDisplayState.Content(cardWithArt()),
-            PayPalSavedPaymentMethodStyleResolver(activity, PayPalSavedPaymentMethodViewStyle()),
-            editEnabled = true
-        ) {}
-        idle()
+        sut = attachedChipWithArt(loader)
 
-        // Detaching cancels the first load before it finishes; attaching again loads the art again.
         activity.setContentView(View(activity))
         idle()
-        assertTrue(chipShimmer.isVisible)
-        activity.setContentView(chip)
+        assertTrue(iconShimmer.isVisible)
+        activity.setContentView(sut)
         idle()
 
         assertEquals(2, requests)
-        assertFalse(chipShimmer.isVisible)
-        assertTrue(chipIcon.drawable is BitmapDrawable)
+        assertFalse(iconShimmer.isVisible)
+        assertTrue(icon.drawable is BitmapDrawable)
+    }
 
-        // Art that already loaded isn't requested again.
+    @Test
+    fun `card art that already loaded isn't requested again on the next attach`() {
+        var requests = 0
+        sut = attachedChipWithArt(imageLoader { cardArt().also { requests++ } })
+
         activity.setContentView(View(activity))
-        activity.setContentView(chip)
+        activity.setContentView(sut)
         idle()
-        assertEquals(2, requests)
+
+        assertEquals(1, requests)
     }
 
     @Test
@@ -242,14 +246,10 @@ class FundingInstrumentChipViewUnitTest {
 
     @Test
     fun `a long label shrinks so the edit icon keeps its space`() {
-        val longLabel = paymentMethod(PayPalSavedPaymentMethodType.PAYPAL_CREDIT).copy(label = "A".repeat(200))
+        val longLabel = payPalCredit().copy(label = "A".repeat(200))
         bind(PayPalSavedPaymentMethodDisplayState.Content(longLabel))
 
-        sut.measure(
-            View.MeasureSpec.makeMeasureSpec(CHIP_WIDTH, View.MeasureSpec.AT_MOST),
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        )
-        sut.layout(0, 0, sut.measuredWidth, sut.measuredHeight)
+        layOutAtChipWidth()
 
         assertTrue(editIcon.width > 0)
         assertTrue(editIcon.right <= sut.width - sut.paddingRight)
@@ -296,7 +296,7 @@ class FundingInstrumentChipViewUnitTest {
 
         assertFalse(sut.isEnabled)
         sut.performClick()
-        ViewCompat.performAccessibilityAction(sut, AccessibilityNodeInfoCompat.ACTION_CLICK, null)
+        sut.performAccessibilityAction(AccessibilityNodeInfoCompat.ACTION_CLICK, null)
         assertEquals(0, editClicks)
     }
 
@@ -372,6 +372,27 @@ class FundingInstrumentChipViewUnitTest {
 
     private fun chipWith(loader: ImageLoader) = FundingInstrumentChipView(context, imageLoader = loader)
 
+    // A chip attached to an activity and showing card art from [loader].
+    private fun attachedChipWithArt(loader: ImageLoader): FundingInstrumentChipView {
+        val chip = FundingInstrumentChipView(activity, imageLoader = loader)
+        activity.setContentView(chip)
+        chip.bind(
+            PayPalSavedPaymentMethodDisplayState.Content(cardWithArt()),
+            PayPalSavedPaymentMethodStyleResolver(activity, PayPalSavedPaymentMethodViewStyle()),
+            editEnabled = true
+        ) {}
+        idle()
+        return chip
+    }
+
+    private fun layOutAtChipWidth() {
+        sut.measure(
+            View.MeasureSpec.makeMeasureSpec(CHIP_WIDTH, View.MeasureSpec.AT_MOST),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        sut.layout(0, 0, sut.measuredWidth, sut.measuredHeight)
+    }
+
     private fun imageLoader(load: suspend () -> Bitmap): ImageLoader = mockk {
         every { peek(any()) } returns null
         coEvery { load(ART_URL) } coAnswers { load() }
@@ -390,6 +411,14 @@ class FundingInstrumentChipViewUnitTest {
         label = "Visa",
         imageUrl = null,
         lastDigits = "1234",
+        subtype = null
+    )
+
+    private fun payPalCredit() = PayPalSavedPaymentMethod(
+        type = PayPalSavedPaymentMethodType.PAYPAL_CREDIT,
+        label = "PayPal Credit",
+        imageUrl = null,
+        lastDigits = null,
         subtype = null
     )
 

@@ -5,12 +5,12 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.os.Build
 import android.text.Spanned
 import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.text.style.StyleSpan
 import android.widget.TextView
-import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -59,24 +59,28 @@ class PayPalCreditMessagingViewUnitTest {
     }
 
     @Test
-    fun `a message with a link shows the link bold and opens its url when tapped`() {
+    fun `a message with a link shows the message followed by the link in bold`() {
         bindMessage()
 
         assertFalse(shimmer.isVisible)
         assertEquals("Pay in 4. Learn more", text.text.toString())
         val spanned = text.text as Spanned
-        val link = spanned.link()
-        assertEquals(10, spanned.getSpanStart(link))
-        assertEquals(
-            Typeface.BOLD,
-            spanned.getSpans(spanned.getSpanStart(link), spanned.length, StyleSpan::class.java).single().style
-        )
-        link.onClick(text)
+        val linkStart = spanned.getSpanStart(spanned.link())
+        assertEquals("Pay in 4. ".length, linkStart)
+        assertEquals(Typeface.BOLD, spanned.getSpans(linkStart, spanned.length, StyleSpan::class.java).single().style)
+    }
+
+    @Test
+    fun `tapping the link opens its url`() {
+        bindMessage()
+
+        (text.text as Spanned).link().onClick(text)
+
         assertEquals(listOf(URL), openedUrls)
     }
 
     @Test
-    @Config(sdk = [23])
+    @Config(sdk = [Build.VERSION_CODES.N_MR1])
     fun `screen readers can open the link before Android 8`() {
         bindMessage()
 
@@ -95,21 +99,29 @@ class PayPalCreditMessagingViewUnitTest {
         assertTrue(text.isClickable)
         assertFalse(text.isLongClickable)
         assertEquals("Learn more", text.clickActionLabel())
-        assertTrue(ViewCompat.performAccessibilityAction(text, AccessibilityNodeInfoCompat.ACTION_CLICK, null))
+        assertTrue(text.performAccessibilityAction(AccessibilityNodeInfoCompat.ACTION_CLICK, null))
         assertEquals(listOf(URL), openedUrls)
     }
 
     @Test
-    fun `a message without a link shows the message only and isn't a TalkBack double tap target`() {
+    fun `a message without a link shows the message only`() {
         bindMessage()
 
         bindMessage(MESSAGE_ONLY)
 
         assertEquals("Pay in 4.", text.text.toString())
         assertEquals(0, (text.text as Spanned).getSpans(0, text.text.length, ClickableSpan::class.java).size)
+    }
+
+    @Test
+    fun `a message without a link isn't a TalkBack double tap target`() {
+        bindMessage()
+
+        bindMessage(MESSAGE_ONLY)
+
         assertFalse(text.isClickable)
         assertNull(text.clickActionLabel())
-        ViewCompat.performAccessibilityAction(text, AccessibilityNodeInfoCompat.ACTION_CLICK, null)
+        text.performAccessibilityAction(AccessibilityNodeInfoCompat.ACTION_CLICK, null)
         assertTrue(openedUrls.isEmpty())
     }
 
