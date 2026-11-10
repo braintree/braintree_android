@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.35.0 (2026-11-10)
 
 * PayPal
   * Add `PayPalLauncher(ActivityResultRegistry, String)` constructor with a `resultKey` parameter, allowing the Auth Tab result to be delivered after the Activity is recreated
