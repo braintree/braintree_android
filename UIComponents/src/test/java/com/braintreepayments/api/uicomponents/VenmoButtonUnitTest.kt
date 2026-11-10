@@ -3,6 +3,7 @@ package com.braintreepayments.api.uicomponents
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.test.core.app.ApplicationProvider
+import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.venmo.VenmoClient
@@ -21,6 +22,7 @@ import io.mockk.mockkObject
 import io.mockk.slot
 import io.mockk.unmockkObject
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -93,6 +95,37 @@ class VenmoButtonUnitTest {
             )
         }
         assertFalse(button.isEnabled)
+    }
+
+    @Test
+    fun `handleReturnToApp restores the pending request before completing the flow`() {
+        every { mockVenmoLauncher.handleReturnToApp(any(), any()) } returns VenmoPaymentAuthResult.NoResult
+        val button = VenmoButton(ApplicationProvider.getApplicationContext(), mockVenmoClient, mockVenmoLauncher)
+        val pendingRequest = VenmoPendingRequest.Started("test-pending-request")
+        val intent = Intent("test")
+
+        button.handleReturnToApp(pendingRequest, intent) {}
+
+        verifyOrder {
+            mockVenmoLauncher.restorePendingRequest("test-pending-request")
+            mockVenmoLauncher.handleReturnToApp(pendingRequest, intent)
+        }
+    }
+
+    @Test
+    fun `handleReturnToApp when restore fails reports failure, re-enables button and does not complete the flow`() {
+        val restoreError = BrowserSwitchException("invalid pending request")
+        every { mockVenmoLauncher.restorePendingRequest(any()) } throws restoreError
+        val button = VenmoButton(ApplicationProvider.getApplicationContext(), mockVenmoClient, mockVenmoLauncher)
+        button.isEnabled = false
+        val result = slot<VenmoResult>()
+
+        button.handleReturnToApp(VenmoPendingRequest.Started("pending"), Intent()) { result.captured = it }
+
+        assertSame(restoreError, (result.captured as VenmoResult.Failure).error)
+        verify(exactly = 0) { mockVenmoLauncher.handleReturnToApp(any(), any()) }
+        verify(exactly = 0) { mockVenmoClient.tokenize(any(), any()) }
+        assertTrue(button.isEnabled)
     }
 
     @Test
