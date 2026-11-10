@@ -54,7 +54,8 @@ internal enum class PayPalReturnHandling {
  * with the process isn't delivered again. Main thread only.
  */
 @OptIn(ExperimentalBetaApi::class)
-@Suppress("TooManyFunctions")
+// The client reports failures by throwing, so its calls catch Exception and rethrow cancellation, as CardClient does.
+@Suppress("TooManyFunctions", "TooGenericExceptionCaught")
 internal class PayPalSavedPaymentMethodViewModel(
     private val savedState: SavedStateHandle,
     private val client: PayPalSavedPaymentMethodClient
@@ -152,20 +153,20 @@ internal class PayPalSavedPaymentMethodViewModel(
         val activity = context.findActivity() as? ComponentActivity
             ?: return PayPalPendingRequest.Failure(BraintreeException(NO_COMPONENT_ACTIVITY_MESSAGE))
         isEditStepRunning = true
-        try {
-            val launched = attempt {
-                when (val authRequest = client.createEditFundingInstrumentAuthRequest(context, payPalCheckoutRequest)) {
-                    // There's no view left to return to.
-                    is PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch ->
-                        if (activity.isFinishing || activity.isDestroyed) {
-                            null
-                        } else {
-                            payPalLauncher.launch(activity, authRequest.paymentAuthRequest)
-                        }
-                    is PayPalSavedPaymentMethodAuthRequest.Failure -> PayPalPendingRequest.Failure(authRequest.error)
-                }
+        return try {
+            when (val authRequest = client.createEditFundingInstrumentAuthRequest(context, payPalCheckoutRequest)) {
+                // There's no view left to return to.
+                is PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch ->
+                    if (activity.isFinishing || activity.isDestroyed) {
+                        null
+                    } else {
+                        payPalLauncher.launch(activity, authRequest.paymentAuthRequest)
+                    }
+                is PayPalSavedPaymentMethodAuthRequest.Failure -> PayPalPendingRequest.Failure(authRequest.error)
             }
-            return launched.valueOr { PayPalPendingRequest.Failure(it) }
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            PayPalPendingRequest.Failure(e)
         } finally {
             isEditStepRunning = false
         }
@@ -196,13 +197,11 @@ internal class PayPalSavedPaymentMethodViewModel(
         payPalLauncher: PayPalLauncher,
         intent: Intent
     ): PayPalReturnHandling {
-        val read = attempt {
+        val authResult = try {
             payPalLauncher.restorePendingRequest(pendingRequest)
             payPalLauncher.handleReturnToApp(PayPalPendingRequest.Started(pendingRequest), intent)
-        }
-        val authResult = when (read) {
-            is Attempt.Succeeded -> read.value
-            is Attempt.Failed -> return failReturn(pendingRequest, read.error)
+        } catch (e: Exception) {
+            return failReturn(pendingRequest, e)
         }
         return when (authResult) {
             is PayPalPaymentAuthResult.Success -> {
@@ -228,7 +227,10 @@ internal class PayPalSavedPaymentMethodViewModel(
         isEditStepRunning = true
         viewModelScope.launch {
             val result = try {
-                attempt { client.tokenize(authResult) }.valueOr { PayPalResult.Failure(it) }
+                client.tokenize(authResult)
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                PayPalResult.Failure(e)
             } finally {
                 isEditStepRunning = false
             }
@@ -278,23 +280,20 @@ internal class PayPalSavedPaymentMethodViewModel(
         val merchantAccountId = inputs?.request?.merchantAccountId
         defaultFundingInstrumentJob?.cancel()
         defaultFundingInstrumentJob = viewModelScope.launch {
-            val fetched = attempt {
+            val fundingInstrument = try {
                 client.fetchPaymentMethod(
                     PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT,
                     null,
                     merchantAccountId
                 ).toDisplayState()
-            }
-            val fundingInstrument = when (fetched) {
-                is Attempt.Succeeded -> fetched.value
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 // A failed refresh keeps what's shown; only a failed first load shows the error.
-                is Attempt.Failed -> fetched.error.toDisplayState()
-                    .takeIf { state.value.fundingInstrument == PayPalSavedPaymentMethodDisplayState.Loading }
+                if (state.value.fundingInstrument != PayPalSavedPaymentMethodDisplayState.Loading) return@launch
+                e.toDisplayState()
             }
             // An edit that completed meanwhile wins.
-            if (fundingInstrument != null && !state.value.isEditCompleted) {
-                _state.update { it.copy(fundingInstrument = fundingInstrument) }
-            }
+            if (!state.value.isEditCompleted) _state.update { it.copy(fundingInstrument = fundingInstrument) }
         }
     }
 
@@ -309,13 +308,16 @@ internal class PayPalSavedPaymentMethodViewModel(
         }
         _state.update { it.copy(fundingInstrument = PayPalSavedPaymentMethodDisplayState.Loading) }
         updatedFundingInstrumentJob = viewModelScope.launch {
-            val fundingInstrument = attempt {
+            val fundingInstrument = try {
                 client.fetchPaymentMethod(
                     PayPalFundingInstrumentFetchType.BUYER_UPDATED_BILLING_AGREEMENT,
                     orderId,
                     merchantAccountId
                 ).toDisplayState()
-            }.valueOr { it.toDisplayState() }
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                e.toDisplayState()
+            }
             _state.update { it.copy(fundingInstrument = fundingInstrument) }
         }
     }
@@ -328,11 +330,13 @@ internal class PayPalSavedPaymentMethodViewModel(
             return
         }
         val request = requested.request
-        val fetched = attempt { client.fetchCreditPresentmentMessages(request.amount, request.currencyCode) }
-        val creditMessaging = when (fetched) {
-            is Attempt.Succeeded -> fetched.value.toDisplayState()
+        val creditMessaging = try {
+            client.fetchCreditPresentmentMessages(request.amount, request.currencyCode).toDisplayState()
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
             // A failed refresh for the same request keeps the message; any other failure hides it.
-            is Attempt.Failed -> if (request == creditMessagingQuotedFor) return else hidden
+            if (request == creditMessagingQuotedFor) return
+            hidden
         }
         // An edit that completed during the fetch has already hidden the offer.
         if (state.value.isEditCompleted) return
@@ -368,26 +372,3 @@ internal class PayPalSavedPaymentMethodViewModel(
         private const val COMPLETED_PENDING_REQUEST_KEY = "completed_pending_request"
     }
 }
-
-/** The outcome of a client call. The client reports failures by throwing. */
-private sealed interface Attempt<out T> {
-    class Succeeded<T>(val value: T) : Attempt<T>
-    class Failed(val error: Exception) : Attempt<Nothing>
-}
-
-/** Runs [block], catching any failure except cancellation, which must still reach the coroutine. */
-@Suppress("TooGenericExceptionCaught")
-private inline fun <T> attempt(block: () -> T): Attempt<T> =
-    try {
-        Attempt.Succeeded(block())
-    } catch (e: Exception) {
-        if (e is CancellationException) throw e
-        Attempt.Failed(e)
-    }
-
-/** The value, or what [onFailure] makes of the error. */
-private inline fun <T> Attempt<T>.valueOr(onFailure: (Exception) -> T): T =
-    when (this) {
-        is Attempt.Succeeded -> value
-        is Attempt.Failed -> onFailure(error)
-    }
