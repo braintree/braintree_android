@@ -24,7 +24,7 @@ import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
-import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalReturnHandling
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodClient
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodViewModel
@@ -167,9 +167,9 @@ internal fun PayPalSavedPaymentMethodView(
             val intent = context.findActivity()?.intent
             when (viewModel.handleReturnToApp(pendingRequest, payPalLauncher, intent)) {
                 // An edit step is running, so it's passed again on the next resume.
-                PayPalReturnHandling.NOT_TAKEN -> Unit
-                PayPalReturnHandling.TAKEN -> launchedPendingRequest = null
-                PayPalReturnHandling.COMPLETED -> {
+                PayPalSavedPaymentMethodReturnResult.NOT_TAKEN -> Unit
+                PayPalSavedPaymentMethodReturnResult.TAKEN -> launchedPendingRequest = null
+                PayPalSavedPaymentMethodReturnResult.COMPLETED -> {
                     launchedPendingRequest = null
                     intent?.clearPayPalReturnUrl(appLinkReturnUrl, deepLinkFallbackUrlScheme)
                 }
