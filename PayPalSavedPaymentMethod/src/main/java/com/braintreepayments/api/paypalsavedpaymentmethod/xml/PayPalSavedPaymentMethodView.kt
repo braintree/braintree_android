@@ -17,9 +17,11 @@ import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalReturnHandling
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodClient
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodViewModel
-import com.braintreepayments.api.paypalsavedpaymentmethod.defaultClientFactory
+import com.braintreepayments.api.paypalsavedpaymentmethod.clearPayPalReturnUrl
 import com.braintreepayments.api.paypalsavedpaymentmethod.findActivity
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.openUrl
@@ -95,12 +97,16 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     // Creates the view model for these values. Replaced in tests.
     internal var viewModelFactory: (String, Uri, String?) -> ViewModelProvider.Factory =
         { authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme ->
-            PayPalSavedPaymentMethodViewModel.Factory(
-                authorization,
-                appLinkReturnUrl,
-                deepLinkFallbackUrlScheme,
-                defaultClientFactory(context)
-            )
+            // The application context, so the client doesn't hold the activity.
+            val applicationContext = context.applicationContext
+            PayPalSavedPaymentMethodViewModel.Factory {
+                PayPalSavedPaymentMethodClient(
+                    applicationContext,
+                    authorization,
+                    appLinkReturnUrl,
+                    deepLinkFallbackUrlScheme
+                )
+            }
         }
 
     private var viewModel: PayPalSavedPaymentMethodViewModel? = null
@@ -196,7 +202,14 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
             pendingReturn = pendingRequest to intent
             return true
         }
-        return viewModel.handleReturnToApp(pendingRequest.pendingRequestString, payPalLauncher, intent)
+        return when (viewModel.handleReturnToApp(pendingRequest.pendingRequestString, payPalLauncher, intent)) {
+            PayPalReturnHandling.NOT_TAKEN -> false
+            PayPalReturnHandling.TAKEN -> true
+            PayPalReturnHandling.COMPLETED -> {
+                appLinkReturnUrl?.let { intent.clearPayPalReturnUrl(it, deepLinkFallbackUrlScheme) }
+                true
+            }
+        }
     }
 
     override fun onAttachedToWindow() {
