@@ -17,7 +17,7 @@ import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
-import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalReturnHandling
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodClient
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodViewModel
@@ -205,9 +205,9 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
             return true
         }
         return when (viewModel.handleReturnToApp(pendingRequest.pendingRequestString, payPalLauncher, intent)) {
-            PayPalReturnHandling.NOT_TAKEN -> false
-            PayPalReturnHandling.TAKEN -> true
-            PayPalReturnHandling.COMPLETED -> {
+            PayPalSavedPaymentMethodReturnResult.NOT_TAKEN -> false
+            PayPalSavedPaymentMethodReturnResult.TAKEN -> true
+            PayPalSavedPaymentMethodReturnResult.COMPLETED -> {
                 appLinkReturnUrl?.let { intent.clearPayPalReturnUrl(it, deepLinkFallbackUrlScheme) }
                 true
             }
