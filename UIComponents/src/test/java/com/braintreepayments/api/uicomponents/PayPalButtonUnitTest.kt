@@ -3,28 +3,31 @@ package com.braintreepayments.api.uicomponents
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.test.core.app.ApplicationProvider
+import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
-import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
 import com.braintreepayments.api.paypal.PayPalPaymentAuthCallback
+import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
 import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
 import com.braintreepayments.api.paypal.PayPalPendingRequest
-import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import io.mockk.CapturingSlot
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.runs
 import io.mockk.slot
 import io.mockk.unmockkObject
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertSame
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -41,11 +44,26 @@ class PayPalButtonUnitTest {
     private val mockAnalyticsClient: AnalyticsClient = mockk(relaxed = true)
     private val payPalRequest = PayPalCheckoutRequest("1.00", true)
     private val launchCallback: PayPalLaunchCallback = mockk(relaxed = true)
+    private val callback: PayPalTokenizeCallback = mockk(relaxed = true)
+
+    private val pendingRequest = PayPalPendingRequest.Started("test-pending-request")
+    private val intent = Intent()
+
+    private lateinit var button: PayPalButton
 
     @Before
     fun setUp() {
         mockkObject(AnalyticsClient.Companion)
         every { AnalyticsClient.lazyInstance } returns lazyOf(mockAnalyticsClient)
+
+        button = PayPalButton(
+            ApplicationProvider.getApplicationContext(),
+            mockPayPalClient,
+            mockPayPalLauncher
+        )
+
+        // Simulate the button having been clicked (disabled) during the launch flow
+        button.isEnabled = false
     }
 
     @After
@@ -72,32 +90,32 @@ class PayPalButtonUnitTest {
     @Test
     fun `click disables button and creates a payment auth request with the request`() {
         captureAuthRequestCallback()
-        val button = buttonWithActivity()
+        val clickButton = buttonWithActivity()
 
-        button.performClick()
+        clickButton.performClick()
 
-        assertFalse(button.isEnabled)
+        assertFalse(clickButton.isEnabled)
         verify { mockPayPalClient.createPaymentAuthRequest(any(), payPalRequest, any()) }
     }
 
     @Test
     fun `click without payPalLaunchCallback throws NullPointerException`() {
-        val button = PayPalButton(
+        val clickButton = PayPalButton(
             ApplicationProvider.getApplicationContext(),
             mockPayPalClient,
             mockPayPalLauncher
         )
-        button.setPayPalRequest(payPalRequest)
+        clickButton.setPayPalRequest(payPalRequest)
 
-        val exception = assertThrows(NullPointerException::class.java) { button.performClick() }
+        val exception = assertThrows(NullPointerException::class.java) { clickButton.performClick() }
         assertEquals("PayPalLaunchCallback must be initialized first", exception.message)
     }
 
     @Test
     fun `click when createPaymentAuthRequest returns Failure notifies callback with Failure`() {
         val callbackSlot = captureAuthRequestCallback()
-        val button = buttonWithActivity()
-        button.performClick()
+        val clickButton = buttonWithActivity()
+        clickButton.performClick()
 
         val error = Exception("createPaymentAuthRequest failed")
         val failure = mockk<PayPalPaymentAuthRequest.Failure>(relaxed = true)
@@ -117,8 +135,8 @@ class PayPalButtonUnitTest {
         every {
             mockPayPalLauncher.launch(any(), any())
         } returns PayPalPendingRequest.Started("pending-request")
-        val button = buttonWithActivity()
-        button.performClick()
+        val clickButton = buttonWithActivity()
+        clickButton.performClick()
 
         val readyToLaunch = mockk<PayPalPaymentAuthRequest.ReadyToLaunch>(relaxed = true)
         callbackSlot.captured.onPayPalPaymentAuthRequest(readyToLaunch)
@@ -143,8 +161,8 @@ class PayPalButtonUnitTest {
         every {
             mockPayPalLauncher.launch(any(), any())
         } returns PayPalPendingRequest.Failure(launchError)
-        val button = buttonWithActivity()
-        button.performClick()
+        val clickButton = buttonWithActivity()
+        clickButton.performClick()
 
         callbackSlot.captured.onPayPalPaymentAuthRequest(
             mockk<PayPalPaymentAuthRequest.ReadyToLaunch>(relaxed = true)
@@ -161,14 +179,14 @@ class PayPalButtonUnitTest {
     fun `click when activity is null notifies callback with Failure`() {
         val callbackSlot = captureAuthRequestCallback()
         // Application context has no Activity, so getActivity() returns null
-        val button = PayPalButton(
+        val clickButton = PayPalButton(
             ApplicationProvider.getApplicationContext(),
             mockPayPalClient,
             mockPayPalLauncher
         )
-        button.payPalLaunchCallback = launchCallback
-        button.setPayPalRequest(payPalRequest)
-        button.performClick()
+        clickButton.payPalLaunchCallback = launchCallback
+        clickButton.setPayPalRequest(payPalRequest)
+        clickButton.performClick()
 
         callbackSlot.captured.onPayPalPaymentAuthRequest(
             mockk<PayPalPaymentAuthRequest.ReadyToLaunch>(relaxed = true)
@@ -186,64 +204,72 @@ class PayPalButtonUnitTest {
     }
 
     @Test
-    fun `handleReturnToApp on PaymentAuthResult Success tokenizes and forwards result`() {
-        val paymentAuthSuccess = mockk<PayPalPaymentAuthResult.Success>(relaxed = true)
-        every { mockPayPalLauncher.handleReturnToApp(any(), any()) } returns paymentAuthSuccess
-        val tokenizeResult = mockk<PayPalResult.Success>(relaxed = true)
-        every { mockPayPalClient.tokenize(paymentAuthSuccess, any()) } answers {
-            secondArg<com.braintreepayments.api.paypal.PayPalTokenizeCallback>().onPayPalResult(tokenizeResult)
-        }
-        val callback = mockk<PayPalTokenizeCallback>(relaxed = true)
-        val button = PayPalButton(
-            ApplicationProvider.getApplicationContext(),
-            mockPayPalClient,
-            mockPayPalLauncher
-        )
-        button.isEnabled = false
-
-        button.handleReturnToApp(PayPalPendingRequest.Started("pending"), Intent(), callback)
-
-        verify { callback.onPayPalResult(tokenizeResult) }
-        assertTrue(button.isEnabled)
-    }
-
-    @Test
-    fun `handleReturnToApp on PaymentAuthResult NoResult returns Cancel`() {
+    fun `handleReturnToApp restores the pending request before completing the flow`() {
+        every { mockPayPalLauncher.restorePendingRequest(any()) } just runs
         every { mockPayPalLauncher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
-        val resultSlot = slot<PayPalResult>()
-        val callback = PayPalTokenizeCallback { resultSlot.captured = it }
-        val button = PayPalButton(
-            ApplicationProvider.getApplicationContext(),
-            mockPayPalClient,
-            mockPayPalLauncher
-        )
-        button.isEnabled = false
 
-        button.handleReturnToApp(PayPalPendingRequest.Started("pending"), Intent(), callback)
+        button.handleReturnToApp(pendingRequest, intent, callback)
 
-        assertSame(PayPalResult.Cancel, resultSlot.captured)
+        verifyOrder {
+            mockPayPalLauncher.restorePendingRequest("test-pending-request")
+            mockPayPalLauncher.handleReturnToApp(pendingRequest, intent)
+        }
+    }
+
+    @Test
+    fun `handleReturnToApp when restore fails reports failure, re-enables button and does not complete the flow`() {
+        val restoreError = BrowserSwitchException("invalid pending request")
+        every { mockPayPalLauncher.restorePendingRequest(any()) } throws restoreError
+
+        button.handleReturnToApp(pendingRequest, intent, callback)
+
+        verify { callback.onPayPalResult(match { it is PayPalResult.Failure && it.error === restoreError }) }
+        verify(exactly = 0) { mockPayPalLauncher.handleReturnToApp(any(), any()) }
+        verify(exactly = 0) { mockPayPalClient.tokenize(any(), any()) }
         assertTrue(button.isEnabled)
     }
 
     @Test
-    fun `handleReturnToApp on PaymentAuthResult Failure returns Failure`() {
-        val error = Exception("return to app error")
-        val paymentAuthFailure = mockk<PayPalPaymentAuthResult.Failure>(relaxed = true)
-        every { paymentAuthFailure.error } returns error
-        every { mockPayPalLauncher.handleReturnToApp(any(), any()) } returns paymentAuthFailure
-        val resultSlot = slot<PayPalResult>()
-        val callback = PayPalTokenizeCallback { resultSlot.captured = it }
-        val button = PayPalButton(
-            ApplicationProvider.getApplicationContext(),
-            mockPayPalClient,
-            mockPayPalLauncher
-        )
-        button.isEnabled = false
+    fun `handleReturnToApp on NoResult reports cancel and re-enables button`() {
+        every { mockPayPalLauncher.restorePendingRequest(any()) } just runs
+        every { mockPayPalLauncher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
 
-        button.handleReturnToApp(PayPalPendingRequest.Started("pending"), Intent(), callback)
+        button.handleReturnToApp(pendingRequest, intent, callback)
 
-        val result = resultSlot.captured as PayPalResult.Failure
-        assertEquals(error, result.error)
+        verify { callback.onPayPalResult(PayPalResult.Cancel) }
+        assertTrue(button.isEnabled)
+    }
+
+    @Test
+    fun `handleReturnToApp on Failure reports failure and re-enables button`() {
+        val authError = Exception("return to app error")
+        val authFailure = mockk<PayPalPaymentAuthResult.Failure>(relaxed = true)
+        every { authFailure.error } returns authError
+        every { mockPayPalLauncher.restorePendingRequest(any()) } just runs
+        every { mockPayPalLauncher.handleReturnToApp(any(), any()) } returns authFailure
+
+        button.handleReturnToApp(pendingRequest, intent, callback)
+
+        verify { callback.onPayPalResult(match { it is PayPalResult.Failure && it.error === authError }) }
+        assertTrue(button.isEnabled)
+    }
+
+    @Test
+    fun `handleReturnToApp on Success tokenizes and re-enables button`() {
+        val authSuccess = mockk<PayPalPaymentAuthResult.Success>(relaxed = true)
+        every { mockPayPalLauncher.restorePendingRequest(any()) } just runs
+        every { mockPayPalLauncher.handleReturnToApp(any(), any()) } returns authSuccess
+        val tokenizeResult = mockk<PayPalResult.Success>(relaxed = true)
+        every { mockPayPalClient.tokenize(authSuccess, any()) } answers {
+            secondArg<PayPalTokenizeCallback>().onPayPalResult(tokenizeResult)
+        }
+
+        assertFalse(button.isEnabled)
+
+        button.handleReturnToApp(pendingRequest, intent, callback)
+
+        verify { mockPayPalClient.tokenize(authSuccess, any()) }
+        verify { callback.onPayPalResult(tokenizeResult) }
         assertTrue(button.isEnabled)
     }
 }
