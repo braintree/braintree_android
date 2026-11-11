@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -34,7 +34,6 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.findActivity
 import com.braintreepayments.api.paypalsavedpaymentmethod.openUrl
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
 import kotlinx.coroutines.launch
-import java.util.Objects
 import java.util.UUID
 
 /**
@@ -44,6 +43,10 @@ import java.util.UUID
  *
  * Requires a client token generated with the buyer's payment method ID. The host activity must call
  * `setIntent(intent)` in `onNewIntent`. The PayPal return URL is removed from the intent once handled.
+ *
+ * The [authorization] and return URLs are read when the component first appears, as on iOS, so a refreshed client
+ * token doesn't lose the buyer's edit or a return from PayPal. To start over, for example for another buyer, key the
+ * component on the authorization: `key(authorization) { PayPalSavedPaymentMethodView(...) }`.
  *
  * State is kept in the hosting activity or navigation destination until it's destroyed, so show one per screen, not
  * one per list item, and keep it in the composition for as long as the screen is shown. Removing it and adding it back
@@ -117,14 +120,14 @@ internal fun PayPalSavedPaymentMethodView(
     val currentCheckoutRequest by rememberUpdatedState(payPalCheckoutRequest)
     val currentCallback by rememberUpdatedState(paypalTokenizeCallback)
 
-    // Saved, so the view model is found again after recreation or process death. A new authorization or return URL
-    // gets its own, so an earlier edit isn't completed by it. Hashed, because the key goes into saved state and the
-    // authorization mustn't.
+    // Saved, so the view model is found again after recreation or process death.
     val instanceId = rememberSaveable { UUID.randomUUID().toString() }
-    val viewModelKey = "PayPalSavedPaymentMethodView:$instanceId:" +
-        Objects.hash(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
+    val viewModelKey = "PayPalSavedPaymentMethodView:$instanceId"
+    // Read once, as on iOS, so a refreshed authorization keeps the view model and the edit in progress.
+    val returnUrls = remember { ReturnUrls(appLinkReturnUrl, deepLinkFallbackUrlScheme) }
+    val factory = remember { viewModelFactory(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme) }
     // Pending request of the edit in progress. Saved, so a return after process death can still be completed.
-    var launchedPendingRequest by rememberSaveable(viewModelKey) { mutableStateOf<String?>(null) }
+    var launchedPendingRequest by rememberSaveable { mutableStateOf<String?>(null) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
     if (registry == null) {
@@ -136,14 +139,8 @@ internal fun PayPalSavedPaymentMethodView(
     }
     val payPalLauncher = remember(registry) { PayPalLauncher(registry) }
 
-    // One per instance and authorization.
-    val viewModel: PayPalSavedPaymentMethodViewModel = viewModel(
-        key = viewModelKey,
-        factory = remember(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme) {
-            viewModelFactory(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
-        }
-    )
-    val state by viewModel.state.collectAsState()
+    val viewModel: PayPalSavedPaymentMethodViewModel = viewModel(key = viewModelKey, factory = factory)
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     // The first load fetches both; later request changes reload the message.
     LaunchedEffect(viewModel) {
@@ -162,11 +159,11 @@ internal fun PayPalSavedPaymentMethodView(
         }
     }
 
-    LifecycleResumeEffect(payPalLauncher, viewModel, viewModelKey) {
+    LifecycleResumeEffect(payPalLauncher, viewModel) {
         val pendingRequest = launchedPendingRequest
         val intent = context.findActivity()?.intent
         if (pendingRequest != null &&
-            viewModel.takeReturn(pendingRequest, payPalLauncher, intent, appLinkReturnUrl, deepLinkFallbackUrlScheme)
+            viewModel.takeReturn(pendingRequest, payPalLauncher, intent, returnUrls)
         ) {
             launchedPendingRequest = null
         }
@@ -208,16 +205,18 @@ private fun PayPalSavedPaymentMethodViewModel.takeReturn(
     pendingRequest: String,
     payPalLauncher: PayPalLauncher,
     intent: Intent?,
-    appLinkReturnUrl: Uri,
-    deepLinkFallbackUrlScheme: String?
+    returnUrls: ReturnUrls
 ): Boolean = when (handleReturnToApp(pendingRequest, payPalLauncher, intent)) {
     PayPalSavedPaymentMethodReturnResult.NOT_TAKEN -> false
     PayPalSavedPaymentMethodReturnResult.TAKEN -> true
     PayPalSavedPaymentMethodReturnResult.COMPLETED -> {
-        intent?.clearPayPalReturnUrl(appLinkReturnUrl, deepLinkFallbackUrlScheme)
+        intent?.clearPayPalReturnUrl(returnUrls.appLink, returnUrls.deepLinkScheme)
         true
     }
 }
+
+// The return URLs the component was first shown with.
+private class ReturnUrls(val appLink: Uri, val deepLinkScheme: String?)
 
 private const val NO_ACTIVITY_RESULT_REGISTRY_MESSAGE =
     "PayPalSavedPaymentMethodView must be hosted in an activity that provides an ActivityResultRegistry."

@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
@@ -51,7 +52,12 @@ internal fun PayPalSavedPaymentMethodContent(
     if (fundingInstrumentState == PayPalSavedPaymentMethodDisplayState.Hidden) return
 
     val context = LocalContext.current
-    val resolvedStyle = remember(style, context) { PayPalSavedPaymentMethodStyleResolver(context, style) }
+    // Also keyed on the configuration, so a dark mode, font scale or locale change the activity handles itself
+    // resolves colors and sizes again.
+    val configuration = LocalConfiguration.current
+    val resolvedStyle = remember(style, context, configuration) {
+        PayPalSavedPaymentMethodStyleResolver(context, style)
+    }
     val showsBrandMark = resolvedStyle.showPayPalLogo || resolvedStyle.showPayPalLabel
     // Only the brand would show and it's hidden, so no empty card.
     if (!fundingInstrumentState.showsFundingInstrumentRow && !showsBrandMark) return
