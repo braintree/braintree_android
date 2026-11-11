@@ -2,12 +2,17 @@
 
 package com.braintreepayments.api.paypalsavedpaymentmethod.compose
 
+import android.graphics.Bitmap
+import android.graphics.Color as AndroidColor
+import androidx.annotation.ColorInt
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
@@ -28,17 +33,28 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.paypalsavedpaymentmethod.imageloader.ImageLoader
+import com.braintreepayments.api.paypalsavedpaymentmethod.imageloader.LOADED_IMAGE_TEST_TAG
 import com.braintreepayments.api.paypalsavedpaymentmethod.imageloader.PLACEHOLDER_IMAGE_TEST_TAG
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodAppearance
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodContainerStyle
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodCreditMessagingStyle
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -47,6 +63,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
+import java.io.IOException
 import kotlin.math.abs
 
 @RunWith(RobolectricTestRunner::class)
@@ -219,6 +236,81 @@ class PayPalSavedPaymentMethodContentUnitTest {
         assertTrue(bounds(FUNDING_INSTRUMENT_SHIMMER_TEST_TAG).left >= bounds(BRAND_MARK_TEST_TAG).right)
     }
 
+    @Test
+    fun `without a link color the Learn more link is underlined in the text color`() {
+        render(CARD, MESSAGE, style = PayPalSavedPaymentMethodViewStyle(componentAppearance = appearance(TEXT_COLOR)))
+
+        val linkStyle = learnMoreLinkStyle()
+        assertEquals(Color(TEXT_COLOR), linkStyle.color)
+        assertEquals(TextDecoration.Underline, linkStyle.textDecoration)
+    }
+
+    @Test
+    fun `the Learn more link uses the style's link color without an underline`() {
+        val style = PayPalSavedPaymentMethodViewStyle(
+            componentAppearance = appearance(TEXT_COLOR),
+            container = PayPalSavedPaymentMethodContainerStyle(
+                creditMessaging = PayPalSavedPaymentMethodCreditMessagingStyle(linkColor = LINK_COLOR)
+            )
+        )
+
+        render(CARD, MESSAGE, style = style)
+
+        val linkStyle = learnMoreLinkStyle()
+        assertEquals(Color(LINK_COLOR), linkStyle.color)
+        assertEquals(TextDecoration.None, linkStyle.textDecoration)
+    }
+
+    @Test
+    fun `portrait card art scales into the chip's frame instead of growing it`() {
+        val portraitArt = Bitmap.createBitmap(60, 120, Bitmap.Config.ARGB_8888)
+        val imageLoader = mockk<ImageLoader> {
+            every { peek(any()) } returns portraitArt
+        }
+
+        renderChip(PayPalSavedPaymentMethodType.CARD, imageLoader)
+
+        val art = composeTestRule.onNodeWithTag(LOADED_IMAGE_TEST_TAG, useUnmergedTree = true)
+            .getBoundsInRoot()
+            .toRect()
+        assertEquals(28f, art.width, 0.5f)
+        assertTrue(art.height <= 20.5f)
+    }
+
+    @Test
+    fun `a product shown by its label leaves no space when its art can't be loaded`() {
+        val imageLoader = mockk<ImageLoader> {
+            every { peek(any()) } returns null
+            coEvery { load(any()) } throws IOException("Unexpected code 404")
+        }
+
+        renderChip(PayPalSavedPaymentMethodType.PAYPAL_CREDIT, imageLoader)
+        composeTestRule.mainClock.advanceTimeByFrame()
+
+        composeTestRule.onNodeWithTag(PLACEHOLDER_IMAGE_TEST_TAG, useUnmergedTree = true).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(LOADED_IMAGE_TEST_TAG, useUnmergedTree = true).assertDoesNotExist()
+    }
+
+    // The chip alone, showing a funding instrument of [type] whose card art comes from [imageLoader].
+    private fun renderChip(type: PayPalSavedPaymentMethodType, imageLoader: ImageLoader) {
+        val withArt = PayPalSavedPaymentMethodDisplayState.Content(
+            PayPalSavedPaymentMethod(type, "Visa", ART_URL, "1234", null)
+        )
+        composeTestRule.setContent {
+            FundingInstrumentChip(
+                state = withArt,
+                resolvedStyle = PayPalSavedPaymentMethodStyleResolver(
+                    LocalContext.current,
+                    PayPalSavedPaymentMethodViewStyle()
+                ),
+                editEnabled = true,
+                onEditClick = {},
+                imageLoader = imageLoader
+            )
+        }
+        composeTestRule.mainClock.advanceTimeByFrame()
+    }
+
     @Suppress("LongParameterList")
     private fun render(
         fundingInstrumentState: PayPalSavedPaymentMethodDisplayState,
@@ -260,6 +352,15 @@ class PayPalSavedPaymentMethodContentUnitTest {
         composeTestRule.mainClock.advanceTimeByFrame()
     }
 
+    private fun learnMoreLinkStyle(): SpanStyle {
+        val text = composeTestRule.onNodeWithText("Pay in 4. Learn more")
+            .fetchSemanticsNode().config[SemanticsProperties.Text].single()
+        val link = text.getLinkAnnotations(0, text.length).single().item as LinkAnnotation.Clickable
+        return checkNotNull(link.styles?.style)
+    }
+
+    private fun appearance(@ColorInt textColor: Int) = PayPalSavedPaymentMethodAppearance(textColor = textColor)
+
     private fun bounds(tag: String): Rect = composeTestRule.onNodeWithTag(tag).getBoundsInRoot().toRect()
 
     private fun textBounds(text: String): Rect = composeTestRule.onNodeWithText(text).getBoundsInRoot().toRect()
@@ -281,6 +382,9 @@ class PayPalSavedPaymentMethodContentUnitTest {
     private companion object {
         const val WIDE = 600
         const val NARROW = 240
+        const val ART_URL = "https://www.paypalobjects.com/images/visa.png"
+        const val TEXT_COLOR = AndroidColor.RED
+        const val LINK_COLOR = AndroidColor.BLUE
         val CARD = PayPalSavedPaymentMethodDisplayState.Content(
             PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD, "Visa", null, "1234", null)
         )

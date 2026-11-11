@@ -5,8 +5,8 @@
     <!-- Screen reader text for the full-screen edit loading dialog. -->
     <string name="paypal_saved_payment_method_loading_dialog_content_description">Loading</string>
     <!-- Screen reader text for a card or bank funding instrument, for example "Visa, ending in 1 2 3 4". -->
-
     <string name="paypal_saved_payment_method_funding_instrument_ending_in">%1$s, ending in %2$s</string>
+    <!-- Screen reader action for tapping the funding instrument. -->
     <string name="paypal_saved_payment_method_edit_action_label">Change payment method</string>
     <string name="paypal_saved_payment_method_loading_content_description">Loading saved payment method</string>
 </resources>
