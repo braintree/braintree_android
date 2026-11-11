@@ -22,6 +22,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
@@ -67,6 +68,19 @@ internal fun PayPalSavedPaymentMethodContent(
         visibleCreditMessagingState != PayPalCreditMessagingDisplayState.Hidden
     val labelGap = resolvedStyle.labelMarginStartDp.dp
     val fundingInstrumentGap = resolvedStyle.fundingInstrumentMarginStartDp.dp
+    val logoWidth = resolvedStyle.logoWidthDp.dp
+    val creditMessagingIndent = resolvedStyle.creditMessagingIndent()
+    val creditMessagingSpacing = dimensionResource(R.dimen.paypal_saved_payment_method_credit_messaging_top_spacing)
+    val creditMessaging: @Composable () -> Unit = {
+        if (showCreditMessaging) {
+            CreditMessagingRow(
+                state = visibleCreditMessagingState,
+                resolvedStyle = resolvedStyle,
+                onLearnMoreClick = onLearnMoreClick,
+                modifier = Modifier.testTag(CREDIT_MESSAGING_TEST_TAG)
+            )
+        }
+    }
 
     Card(
         // The height is a minimum, so large text isn't clipped.
@@ -106,6 +120,17 @@ internal fun PayPalSavedPaymentMethodContent(
                         )
                     }
                 }
+                if (showCreditMessaging) {
+                    // The loading shimmer never stacks, so it starts after the logo and the gap.
+                    Box(
+                        modifier = Modifier.padding(
+                            start = creditMessagingIndent ?: (logoWidth + fundingInstrumentGap),
+                            top = creditMessagingSpacing
+                        )
+                    ) {
+                        creditMessaging()
+                    }
+                }
             } else {
                 SideBySideOrStacked(
                     gap = fundingInstrumentGap,
@@ -121,26 +146,24 @@ internal fun PayPalSavedPaymentMethodContent(
                                 modifier = Modifier.testTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG)
                             )
                         }
-                    }
-                )
-            }
-            if (showCreditMessaging) {
-                CreditMessagingRow(
-                    state = visibleCreditMessagingState,
-                    resolvedStyle = resolvedStyle,
-                    onLearnMoreClick = onLearnMoreClick,
-                    modifier = Modifier
-                        .padding(
-                            // Aligned with the label: after the logo if it's shown, else at the leading edge.
-                            start = if (resolvedStyle.showPayPalLogo) resolvedStyle.logoWidthDp.dp + labelGap else 0.dp,
-                            top = dimensionResource(R.dimen.paypal_saved_payment_method_credit_messaging_top_spacing)
-                        )
-                        // After the padding, so the bounds start at the message.
-                        .testTag(CREDIT_MESSAGING_TEST_TAG)
+                    },
+                    below = creditMessaging,
+                    belowSpacing = creditMessagingSpacing,
+                    belowIndent = creditMessagingIndent
                 )
             }
         }
     }
+}
+
+/**
+ * Where the Pay Later message starts: under the label, or at the leading edge without the logo. With the logo shown
+ * and the label hidden it's `null`, meaning it lines up with the funding instrument.
+ */
+private fun PayPalSavedPaymentMethodStyleResolver.creditMessagingIndent(): Dp? = when {
+    !showPayPalLogo -> 0.dp
+    showPayPalLabel -> logoWidthDp.dp + labelMarginStartDp.dp
+    else -> null
 }
 
 /** The merchant's font, or the default. */
