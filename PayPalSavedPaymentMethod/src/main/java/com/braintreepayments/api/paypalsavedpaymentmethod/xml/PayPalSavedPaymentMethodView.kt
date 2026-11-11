@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.util.AttributeSet
+import android.view.View
 import android.widget.FrameLayout
 import androidx.activity.result.ActivityResultRegistryOwner
 import androidx.lifecycle.ViewModelProvider
@@ -17,14 +18,14 @@ import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
-import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodClient
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodViewModel
 import com.braintreepayments.api.paypalsavedpaymentmethod.clearPayPalReturnUrl
 import com.braintreepayments.api.paypalsavedpaymentmethod.findActivity
-import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.openUrl
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodUiState
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
@@ -33,7 +34,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import java.util.Objects
 import java.util.UUID
 
 /**
@@ -61,6 +61,7 @@ import java.util.UUID
  * Style it with the `paypalSavedPaymentMethod*` XML attributes or [style]; a style set in code replaces the attributes.
  */
 @ExperimentalBetaApi
+@Suppress("TooManyFunctions")
 class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -132,14 +133,16 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
 
     init {
         addView(contentView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
-        contentView.onEditClick = { onEditClick() }
+        contentView.onEditClick = { startEdit() }
         contentView.onLearnMoreClick = { url -> context.openUrl(url) }
         render()
     }
 
     /**
-     * Sets up the view and loads the funding instrument and the Pay Later message. Calling it again starts over with
-     * the new values.
+     * Sets up the view and loads the funding instrument and the Pay Later message. Calling it again updates the
+     * checkout, the request and the callbacks. The authorization and return URLs from the first call are kept, as on
+     * iOS, so a refreshed client token doesn't lose the buyer's edit or a return from PayPal. To start over, for
+     * example for another buyer, use a new view with a different `android:id`.
      *
      * @param authorization a client token carrying the buyer's payment method ID.
      * @param appLinkReturnUrl the Android App Link used to return to your app from PayPal.
@@ -149,7 +152,6 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
      * @param tokenizeCallback receives the result of the edit: success with the nonce, cancel, or failure.
      * @param deepLinkFallbackUrlScheme a return URL scheme used when the App Link is not available.
      */
-    @Suppress("LongParameterList")
     @JvmOverloads
     fun initialize(
         authorization: String,
@@ -172,13 +174,14 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
                 // Registered without a lifecycle, so initialize can be called at any time. Kept on a repeat call, since
                 // the paysheet's result goes to the launcher that opened it.
                 if (payPalLauncher == null) payPalLauncher = PayPalLauncher(registryOwner.activityResultRegistry)
-                this.authorization = authorization
-                this.appLinkReturnUrl = appLinkReturnUrl
-                this.deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
+                // Read once, as on iOS, so a refreshed authorization keeps the view model and the edit in progress.
+                if (this.authorization == null) {
+                    this.authorization = authorization
+                    this.appLinkReturnUrl = appLinkReturnUrl
+                    this.deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
+                }
                 // Inside a fragment's view the view model is found once the view is added to it, otherwise on attach.
-                // An attached view in a window with no owner, such as a plain dialog, uses the activity's.
-                val owner = findViewTreeViewModelStoreOwner()
-                    ?: (context.findActivity() as? ViewModelStoreOwner)?.takeIf { isAttachedToWindow }
+                val owner = viewModelStoreOwner()
                 if (owner != null) bindViewModel(owner) else unbindViewModel()
             }
         }
@@ -217,10 +220,8 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         if (authorization != null && viewModel == null) {
-            // A window without a view model owner, such as a plain dialog, uses the activity's.
-            val owner = findViewTreeViewModelStoreOwner() ?: context.findActivity() as? ViewModelStoreOwner
             // Starts rendering once found.
-            owner?.let { bindViewModel(it) }
+            viewModelStoreOwner()?.let { bindViewModel(it) }
             return
         }
         val viewModel = viewModel ?: return
@@ -245,16 +246,14 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
 
     /**
      * Uses the view model of the hosting fragment or activity, so the state and an edit in progress survive
-     * configuration changes, and the completed edit survives process death. One per view, found by its id; new values
-     * from [initialize] get a new one. Completes a return handled before it was found.
+     * configuration changes, and the completed edit survives process death. One per view, found by its id. Completes a
+     * return handled before it was found.
      */
     private fun bindViewModel(owner: ViewModelStoreOwner) {
         val authorization = authorization ?: return
         val appLinkReturnUrl = appLinkReturnUrl ?: return
         val factory = viewModelFactory(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
-        // Hashed, since the key is written to the saved instance state and the authorization mustn't be.
-        val key = "PayPalSavedPaymentMethodView:$id:" +
-            Objects.hash(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
+        val key = "PayPalSavedPaymentMethodView:$id"
         val viewModel = ViewModelProvider(owner, factory)[key, PayPalSavedPaymentMethodViewModel::class.java]
         val attachedViews = ViewModelProvider(owner)[AttachedViews::class.java]
         if (attachedViews.isAttachedToAnotherView(key, instanceId)) {
@@ -293,11 +292,11 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     }
 
     // Opens the PayPal paysheet when the buyer taps the funding instrument.
-    private val onEditClick: () -> Unit = onEditClick@{
-        val viewModel = viewModel ?: return@onEditClick
-        val payPalLauncher = payPalLauncher ?: return@onEditClick
-        val payPalCheckoutRequest = payPalCheckoutRequest ?: return@onEditClick
-        val scope = attachedScope ?: return@onEditClick
+    private fun startEdit() {
+        val viewModel = viewModel ?: return
+        val payPalLauncher = payPalLauncher ?: return
+        val payPalCheckoutRequest = payPalCheckoutRequest ?: return
+        val scope = attachedScope ?: return
         scope.launch {
             when (val pendingRequest = viewModel.startEdit(context, payPalLauncher, payPalCheckoutRequest)) {
                 is PayPalPendingRequest.Started -> launchCallback?.onPayPalPendingRequest(pendingRequest)
@@ -347,3 +346,8 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
             "Another PayPalSavedPaymentMethodView in this activity or fragment already uses this android:id."
     }
 }
+
+// The hosting fragment or activity. An attached view in a window with no owner, such as a plain dialog, uses the
+// activity's.
+private fun View.viewModelStoreOwner(): ViewModelStoreOwner? = findViewTreeViewModelStoreOwner()
+    ?: (context.findActivity() as? ViewModelStoreOwner)?.takeIf { isAttachedToWindow }
