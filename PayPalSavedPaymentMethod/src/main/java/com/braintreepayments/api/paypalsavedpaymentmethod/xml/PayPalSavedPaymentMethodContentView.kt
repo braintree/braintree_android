@@ -17,8 +17,8 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.R
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.showsFundingInstrumentRow
-import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.visibleWith
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 
 /**
  * Renders the component from its display states: the PayPal logo and label, the funding instrument chip and the
@@ -39,6 +39,10 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
     private val fundingInstrumentShimmer: ShimmerPlaceholderView
     private val fundingInstrumentChip: FundingInstrumentChipView
     private val creditMessagingView: PayPalCreditMessagingView
+    private val fundingInstrumentRow: FundingInstrumentRowLayout
+
+    // The style last applied, so a state change alone doesn't rebuild the background and spacing.
+    private var appliedStyle: PayPalSavedPaymentMethodStyleResolver? = null
 
     init {
         orientation = VERTICAL
@@ -49,6 +53,18 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         fundingInstrumentShimmer = findViewById(R.id.paypal_saved_payment_method_funding_instrument_shimmer)
         fundingInstrumentChip = findViewById(R.id.paypal_saved_payment_method_funding_instrument_chip)
         creditMessagingView = findViewById(R.id.paypal_saved_payment_method_credit_messaging)
+        fundingInstrumentRow = findViewById(R.id.paypal_saved_payment_method_funding_instrument_row)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        // The Pay Later start depends on whether the chip stacked, which is only known once the row is measured.
+        val start = creditMessagingStart()
+        val params = creditMessagingView.layoutParams as MarginLayoutParams
+        if (params.marginStart != start) {
+            params.marginStart = start
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        }
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
@@ -74,7 +90,6 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         touchDelegate = TouchDelegate(bounds, fundingInstrumentChip)
     }
 
-    @Suppress("LongParameterList")
     fun render(
         fundingInstrumentState: PayPalSavedPaymentMethodDisplayState,
         creditMessagingState: PayPalCreditMessagingDisplayState,
@@ -87,7 +102,10 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         isVisible = fundingInstrumentState != PayPalSavedPaymentMethodDisplayState.Hidden &&
             (fundingInstrumentState.showsFundingInstrumentRow || showsBrand)
         if (!isVisible) return
-        applyStyle(resolvedStyle)
+        if (resolvedStyle !== appliedStyle) {
+            applyStyle(resolvedStyle)
+            appliedStyle = resolvedStyle
+        }
 
         fundingInstrumentShimmer.isVisible = fundingInstrumentState == PayPalSavedPaymentMethodDisplayState.Loading
         fundingInstrumentChip.isVisible = fundingInstrumentState.showsFundingInstrumentRow &&
@@ -140,9 +158,18 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         val fundingInstrumentGap = resolvedStyle.fundingInstrumentMarginStartDp.dpToPx(resources)
         fundingInstrumentShimmer.updateLayoutParams<MarginLayoutParams> { marginStart = fundingInstrumentGap }
         fundingInstrumentChip.updateLayoutParams<MarginLayoutParams> { marginStart = fundingInstrumentGap }
-        // Aligned with the label: after the logo if it's shown, else at the leading edge.
-        creditMessagingView.updateLayoutParams<MarginLayoutParams> {
-            marginStart = if (resolvedStyle.showPayPalLogo) logoSize + labelGap else 0
+    }
+
+    // Under the label, or at the leading edge without the logo. With the logo shown and the label hidden it lines up
+    // with the funding instrument: after the logo and the gap, or at the leading edge when the chip stacked.
+    private fun creditMessagingStart(): Int {
+        val style = appliedStyle ?: return 0
+        val logoSize = style.logoWidthDp.dpToPx(resources)
+        return when {
+            !style.showPayPalLogo -> 0
+            style.showPayPalLabel -> logoSize + style.labelMarginStartDp.dpToPx(resources)
+            fundingInstrumentRow.isStacked -> 0
+            else -> logoSize + style.fundingInstrumentMarginStartDp.dpToPx(resources)
         }
     }
 
