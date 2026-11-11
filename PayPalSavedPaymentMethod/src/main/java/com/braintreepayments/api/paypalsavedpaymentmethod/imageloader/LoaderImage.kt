@@ -20,7 +20,7 @@ import kotlin.coroutines.cancellation.CancellationException
 /**
  * Renders the funding-instrument icon at [url] via [ImageLoader]. While the image loads it shows [loading], which is
  * blank by default. It shows [placeholder] only when there is no image to show: if the load fails, or if [url] is
- * `null` or not an https URL with a host.
+ * `null` or not an https URL with a host. Without a [placeholder] it then shows nothing and takes no space.
  *
  * The icon is decorative (the FI label is rendered next to it), so it has no content description.
  *
@@ -29,7 +29,7 @@ import kotlin.coroutines.cancellation.CancellationException
 @Composable
 internal fun LoaderImage(
     url: String?,
-    placeholder: Painter,
+    placeholder: Painter?,
     modifier: Modifier = Modifier,
     loading: @Composable (Modifier) -> Unit = { Spacer(it) },
     imageLoader: ImageLoader = remember { ImageLoader.getInstance() },
@@ -59,11 +59,13 @@ internal fun LoaderImage(
             contentDescription = null,
             modifier = modifier.testTag(LOADED_IMAGE_TEST_TAG)
         )
-        LoadState.Failed -> Image(
-            painter = placeholder,
-            contentDescription = null,
-            modifier = modifier.testTag(PLACEHOLDER_IMAGE_TEST_TAG)
-        )
+        LoadState.Failed -> if (placeholder != null) {
+            Image(
+                painter = placeholder,
+                contentDescription = null,
+                modifier = modifier.testTag(PLACEHOLDER_IMAGE_TEST_TAG)
+            )
+        }
     }
 }
 

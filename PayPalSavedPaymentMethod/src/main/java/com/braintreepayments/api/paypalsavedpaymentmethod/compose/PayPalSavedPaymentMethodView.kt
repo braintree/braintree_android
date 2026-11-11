@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.compose
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.runtime.Composable
@@ -14,8 +15,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -24,9 +25,9 @@ import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
-import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodClient
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodViewModel
 import com.braintreepayments.api.paypalsavedpaymentmethod.clearPayPalReturnUrl
 import com.braintreepayments.api.paypalsavedpaymentmethod.findActivity
@@ -99,7 +100,7 @@ fun PayPalSavedPaymentMethodView(
 /** The component with the view model injectable, for tests. */
 @OptIn(ExperimentalBetaApi::class)
 @Composable
-@Suppress("LongParameterList", "LongMethod")
+@Suppress("LongParameterList")
 internal fun PayPalSavedPaymentMethodView(
     payPalCheckoutRequest: PayPalCheckoutRequest,
     request: PayPalSavedPaymentMethodRequest,
@@ -116,9 +117,9 @@ internal fun PayPalSavedPaymentMethodView(
     val currentCheckoutRequest by rememberUpdatedState(payPalCheckoutRequest)
     val currentCallback by rememberUpdatedState(paypalTokenizeCallback)
 
-    // Saved, so the view model is found again after recreation or process death. A new
-    // authorization or return URL gets its own, so an earlier edit isn't completed by it. The key is hashed because
-    // it goes into saved state and the authorization mustn't.
+    // Saved, so the view model is found again after recreation or process death. A new authorization or return URL
+    // gets its own, so an earlier edit isn't completed by it. Hashed, because the key goes into saved state and the
+    // authorization mustn't.
     val instanceId = rememberSaveable { UUID.randomUUID().toString() }
     val viewModelKey = "PayPalSavedPaymentMethodView:$instanceId:" +
         Objects.hash(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
@@ -163,17 +164,11 @@ internal fun PayPalSavedPaymentMethodView(
 
     LifecycleResumeEffect(payPalLauncher, viewModel, viewModelKey) {
         val pendingRequest = launchedPendingRequest
-        if (pendingRequest != null) {
-            val intent = context.findActivity()?.intent
-            when (viewModel.handleReturnToApp(pendingRequest, payPalLauncher, intent)) {
-                // An edit step is running, so it's passed again on the next resume.
-                PayPalSavedPaymentMethodReturnResult.NOT_TAKEN -> Unit
-                PayPalSavedPaymentMethodReturnResult.TAKEN -> launchedPendingRequest = null
-                PayPalSavedPaymentMethodReturnResult.COMPLETED -> {
-                    launchedPendingRequest = null
-                    intent?.clearPayPalReturnUrl(appLinkReturnUrl, deepLinkFallbackUrlScheme)
-                }
-            }
+        val intent = context.findActivity()?.intent
+        if (pendingRequest != null &&
+            viewModel.takeReturn(pendingRequest, payPalLauncher, intent, appLinkReturnUrl, deepLinkFallbackUrlScheme)
+        ) {
+            launchedPendingRequest = null
         }
         onPauseOrDispose { }
     }
@@ -200,6 +195,27 @@ internal fun PayPalSavedPaymentMethodView(
 
     if (state.isEditing) {
         LoadingDialog()
+    }
+}
+
+/**
+ * Passes the PayPal return in [intent] to the view model and clears its return URL once the return is completed.
+ * Returns whether the view model took it, so the pending request can be forgotten; one it didn't take, because an edit
+ * step is running, is passed again on the next resume.
+ */
+@OptIn(ExperimentalBetaApi::class)
+private fun PayPalSavedPaymentMethodViewModel.takeReturn(
+    pendingRequest: String,
+    payPalLauncher: PayPalLauncher,
+    intent: Intent?,
+    appLinkReturnUrl: Uri,
+    deepLinkFallbackUrlScheme: String?
+): Boolean = when (handleReturnToApp(pendingRequest, payPalLauncher, intent)) {
+    PayPalSavedPaymentMethodReturnResult.NOT_TAKEN -> false
+    PayPalSavedPaymentMethodReturnResult.TAKEN -> true
+    PayPalSavedPaymentMethodReturnResult.COMPLETED -> {
+        intent?.clearPayPalReturnUrl(appLinkReturnUrl, deepLinkFallbackUrlScheme)
+        true
     }
 }
 

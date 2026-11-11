@@ -34,9 +34,9 @@ internal fun CreditMessagingRow(
         }
         is PayPalCreditMessagingDisplayState.Content -> {
             val textColor = Color(resolvedStyle.textColor)
-            val linkColor = resolvedStyle.creditMessagingLinkColor?.let { Color(it) } ?: textColor
+            val linkColor = resolvedStyle.creditMessagingLinkColor?.let { Color(it) }
             Text(
-                text = state.content.toAnnotatedString(linkColor, onLearnMoreClick),
+                text = state.content.toAnnotatedString(linkColor, textColor, onLearnMoreClick),
                 color = textColor,
                 fontSize = resolvedStyle.creditMessagingFontSizeSp.sp,
                 fontFamily = resolvedStyle.fontFamily,
@@ -47,8 +47,12 @@ internal fun CreditMessagingRow(
     }
 }
 
-/** The message followed by the "Learn more" link, bold and underlined. */
-private fun PayPalCreditMessagingContent.toAnnotatedString(linkColor: Color, onLearnMoreClick: (String) -> Unit) =
+/** The message and the bold "Learn more" link, underlined in [textColor] when there's no merchant [linkColor]. */
+private fun PayPalCreditMessagingContent.toAnnotatedString(
+    linkColor: Color?,
+    textColor: Color,
+    onLearnMoreClick: (String) -> Unit
+) =
     buildAnnotatedString {
         append(message)
         val learnMore = learnMore
@@ -57,9 +61,9 @@ private fun PayPalCreditMessagingContent.toAnnotatedString(linkColor: Color, onL
             val url = learnMore.url
             append(" ")
             val linkStyle = SpanStyle(
-                color = linkColor,
+                color = linkColor ?: textColor,
                 fontWeight = FontWeight.Bold,
-                textDecoration = TextDecoration.Underline
+                textDecoration = if (linkColor == null) TextDecoration.Underline else TextDecoration.None
             )
             withLink(
                 LinkAnnotation.Clickable(
