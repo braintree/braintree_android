@@ -20,15 +20,15 @@ import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
-import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodViewModel
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodUiState
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
 import io.mockk.coEvery
@@ -290,15 +290,13 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
-    fun `a new authorization gets a new view model, the same one keeps it`() {
+    fun `a refreshed authorization keeps the view model, as on iOS`() {
         initialize()
-        initialize()
+
+        initialize(authorization = "refreshed-client-token")
+
         assertEquals(1, createdViewModels)
-
-        initialize(authorization = "another-client-token")
-
-        assertEquals(2, createdViewModels)
-        assertEquals("another-client-token", authorizations.last())
+        assertEquals(listOf("client-token"), authorizations)
     }
 
     @Test
@@ -311,10 +309,9 @@ class PayPalSavedPaymentMethodViewUnitTest {
         idle()
 
         initialize()
-        initialize(authorization = "another-client-token")
         sut.handleReturnToApp(PayPalPendingRequest.Started("pending"), Intent())
 
-        assertEquals(listOf("client-token", "another-client-token"), authorizations)
+        assertEquals(listOf("client-token"), authorizations)
         verify { viewModel.handleReturnToApp("pending", any(), any()) }
     }
 

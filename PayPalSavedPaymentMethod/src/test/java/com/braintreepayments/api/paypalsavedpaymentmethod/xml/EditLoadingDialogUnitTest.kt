@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 
 import android.graphics.drawable.Animatable
+import android.view.KeyEvent
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ProgressBar
@@ -25,8 +26,9 @@ class EditLoadingDialogUnitTest {
     @Test
     fun `blocks the screen until it is dismissed`() {
         assertTrue(sut.isShowing)
-        assertFalse(sut.window!!.attributes.dimAmount > 0f)
-        sut.onBackPressed()
+        assertFalse(checkNotNull(sut.window).attributes.dimAmount > 0f)
+        sut.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK))
+        sut.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK))
         assertTrue(sut.isShowing)
     }
 

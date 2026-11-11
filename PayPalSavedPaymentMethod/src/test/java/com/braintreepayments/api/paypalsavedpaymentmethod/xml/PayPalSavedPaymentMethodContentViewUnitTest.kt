@@ -3,21 +3,21 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 
 import android.content.Context
-import androidx.activity.ComponentActivity
 import android.graphics.Rect
 import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
+import androidx.activity.ComponentActivity
 import androidx.core.view.isVisible
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
+import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethodType
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalLabelStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalLogoStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodContainerStyle
@@ -110,15 +110,41 @@ class PayPalSavedPaymentMethodContentViewUnitTest {
             )
         )
         render(CARD_STATE, MESSAGE_STATE, style = style)
+        layOut()
         assertEquals(48f.dpToPx(context.resources), logo.layoutParams.width)
         assertEquals(48f.dpToPx(context.resources), logo.layoutParams.height)
         assertEquals(6f.dpToPx(context.resources), label.paddingStart)
         assertEquals(54f.dpToPx(context.resources), (creditMessaging.layoutParams as MarginLayoutParams).marginStart)
 
         render(CARD_STATE, MESSAGE_STATE, style = PayPalSavedPaymentMethodViewStyle(showPayPalLogo = false))
+        layOut()
         assertFalse(logo.isVisible)
         assertEquals(0, label.paddingStart)
         assertEquals(0, (creditMessaging.layoutParams as MarginLayoutParams).marginStart)
+    }
+
+    @Test
+    fun `with the logo shown and the label hidden, Pay Later lines up with the chip`() {
+        render(CARD_STATE, MESSAGE_STATE, style = LOGO_ONLY)
+
+        layOut()
+
+        assertEquals(startInContent(chip), startInContent(creditMessaging))
+    }
+
+    @Test
+    fun `with the label hidden and the chip stacked, Pay Later starts at the leading edge with the chip`() {
+        // A logo almost as wide as the view leaves no room beside it, so the chip stacks below.
+        val wideLogo = PayPalSavedPaymentMethodViewStyle(
+            showPayPalLabel = false,
+            container = PayPalSavedPaymentMethodContainerStyle(logo = PayPalLogoStyle(widthDp = 260f))
+        )
+        render(CARD_STATE, MESSAGE_STATE, style = wideLogo)
+
+        layOut(width = NARROW_WIDTH)
+
+        assertEquals(sut.paddingStart, startInContent(chip))
+        assertEquals(startInContent(chip), startInContent(creditMessaging))
     }
 
     @Test
@@ -174,9 +200,13 @@ class PayPalSavedPaymentMethodContentViewUnitTest {
         assertNull(sut.touchDelegate)
     }
 
-    private fun layOut() {
+    // Where [view] starts within the content view.
+    private fun startInContent(view: View): Int =
+        Rect(0, 0, view.width, view.height).also { sut.offsetDescendantRectToMyCoords(view, it) }.left
+
+    private fun layOut(width: Int = 1080) {
         sut.measure(
-            View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         )
         sut.layout(0, 0, sut.measuredWidth, sut.measuredHeight)
@@ -206,6 +236,8 @@ class PayPalSavedPaymentMethodContentViewUnitTest {
         val CARD_STATE = PayPalSavedPaymentMethodDisplayState.Content(
             PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD, "Visa", null, "1234", null)
         )
+        const val NARROW_WIDTH = 300
+        val LOGO_ONLY = PayPalSavedPaymentMethodViewStyle(showPayPalLabel = false)
         val MESSAGE_STATE = PayPalCreditMessagingDisplayState.Content(
             PayPalCreditMessagingContent("Pay in 4.", learnMore = null)
         )
