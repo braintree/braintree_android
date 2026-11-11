@@ -65,7 +65,6 @@ import java.util.UUID
  */
 @ExperimentalBetaApi
 @Composable
-@Suppress("LongParameterList")
 fun PayPalSavedPaymentMethodView(
     payPalCheckoutRequest: PayPalCheckoutRequest,
     request: PayPalSavedPaymentMethodRequest,
@@ -103,7 +102,6 @@ fun PayPalSavedPaymentMethodView(
 /** The component with the view model injectable, for tests. */
 @OptIn(ExperimentalBetaApi::class)
 @Composable
-@Suppress("LongParameterList")
 internal fun PayPalSavedPaymentMethodView(
     payPalCheckoutRequest: PayPalCheckoutRequest,
     request: PayPalSavedPaymentMethodRequest,

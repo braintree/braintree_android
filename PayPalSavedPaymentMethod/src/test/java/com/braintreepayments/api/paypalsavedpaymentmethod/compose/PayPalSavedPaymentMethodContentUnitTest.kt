@@ -5,6 +5,7 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.compose
 import android.graphics.Bitmap
 import android.graphics.Color as AndroidColor
 import androidx.annotation.ColorInt
+import androidx.annotation.DimenRes
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.paypalsavedpaymentmethod.R
 import com.braintreepayments.api.paypalsavedpaymentmethod.imageloader.ImageLoader
 import com.braintreepayments.api.paypalsavedpaymentmethod.imageloader.LOADED_IMAGE_TEST_TAG
 import com.braintreepayments.api.paypalsavedpaymentmethod.imageloader.PLACEHOLDER_IMAGE_TEST_TAG
@@ -62,6 +64,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.GraphicsMode
 import java.io.IOException
 import kotlin.math.abs
@@ -237,6 +240,35 @@ class PayPalSavedPaymentMethodContentUnitTest {
     }
 
     @Test
+    fun `with the logo shown and the label hidden, the Pay Later message lines up with the chip`() {
+        render(CARD, MESSAGE, style = LOGO_ONLY)
+
+        assertTrue(abs(bounds(CREDIT_MESSAGING_TEST_TAG).left - bounds(FUNDING_INSTRUMENT_CHIP_TEST_TAG).left) <= 1f)
+    }
+
+    @Test
+    fun `with the label hidden and the chip stacked, the Pay Later message starts with the chip`() {
+        render(LONG_EMAIL, MESSAGE, style = LOGO_ONLY, width = NARROW)
+
+        val chip = bounds(FUNDING_INSTRUMENT_CHIP_TEST_TAG)
+        assertTrue(chip.top >= bounds(BRAND_MARK_TEST_TAG).bottom)
+        assertTrue(abs(bounds(CREDIT_MESSAGING_TEST_TAG).left - chip.left) <= 1f)
+    }
+
+    @Test
+    fun `while loading with the label hidden, the Pay Later shimmer lines up with the funding instrument shimmer`() {
+        render(
+            PayPalSavedPaymentMethodDisplayState.Loading,
+            PayPalCreditMessagingDisplayState.Loading,
+            style = LOGO_ONLY
+        )
+
+        val shimmerStart = bounds(BRAND_MARK_TEST_TAG).right +
+            dimenDp(R.dimen.paypal_saved_payment_method_style_default_funding_instrument_margin_start)
+        assertTrue(abs(bounds(CREDIT_MESSAGING_TEST_TAG).left - shimmerStart) <= 1f)
+    }
+
+    @Test
     fun `without a link color the Learn more link is underlined in the text color`() {
         render(CARD, MESSAGE, style = PayPalSavedPaymentMethodViewStyle(componentAppearance = appearance(TEXT_COLOR)))
 
@@ -311,7 +343,6 @@ class PayPalSavedPaymentMethodContentUnitTest {
         composeTestRule.mainClock.advanceTimeByFrame()
     }
 
-    @Suppress("LongParameterList")
     private fun render(
         fundingInstrumentState: PayPalSavedPaymentMethodDisplayState,
         creditMessagingState: PayPalCreditMessagingDisplayState = PayPalCreditMessagingDisplayState.Hidden,
@@ -361,6 +392,11 @@ class PayPalSavedPaymentMethodContentUnitTest {
 
     private fun appearance(@ColorInt textColor: Int) = PayPalSavedPaymentMethodAppearance(textColor = textColor)
 
+    private fun dimenDp(@DimenRes id: Int): Float {
+        val resources = RuntimeEnvironment.getApplication().resources
+        return resources.getDimension(id) / resources.displayMetrics.density
+    }
+
     private fun bounds(tag: String): Rect = composeTestRule.onNodeWithTag(tag).getBoundsInRoot().toRect()
 
     private fun textBounds(text: String): Rect = composeTestRule.onNodeWithText(text).getBoundsInRoot().toRect()
@@ -382,6 +418,7 @@ class PayPalSavedPaymentMethodContentUnitTest {
     private companion object {
         const val WIDE = 600
         const val NARROW = 240
+        val LOGO_ONLY = PayPalSavedPaymentMethodViewStyle(showPayPalLabel = false)
         const val ART_URL = "https://www.paypalobjects.com/images/visa.png"
         const val TEXT_COLOR = AndroidColor.RED
         const val LINK_COLOR = AndroidColor.BLUE
