@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.neverEqualPolicy
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -39,6 +40,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Before
@@ -64,7 +66,8 @@ class PayPalSavedPaymentMethodViewUnitTest {
     private val viewModel = mockk<PayPalSavedPaymentMethodViewModel>(relaxed = true)
     private val authorizations = mutableListOf<String>()
     private val delivered = mutableListOf<PayPalResult>()
-    private val inputs = mutableStateOf(Inputs())
+    // Never equal, so setting equal inputs still recomposes, as a parent passing a new but equal request would.
+    private val inputs = mutableStateOf(Inputs(), neverEqualPolicy())
 
     @Before
     fun setUp() {
@@ -113,15 +116,40 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
-    fun `a new authorization gets a new view model, the same one keeps it`() {
-        inputs.value = inputs.value.copy(request = PayPalSavedPaymentMethodRequest("20.00", "USD"))
+    fun `an equal request in a new instance doesn't reload the Pay Later message`() {
+        val equalRequest = PayPalSavedPaymentMethodRequest("10.00", "USD")
+        assertNotSame(REQUEST, equalRequest)
+
+        inputs.value = inputs.value.copy(request = equalRequest)
         composeTestRule.waitForIdle()
+
+        verify(exactly = 1) { viewModel.onRequestChanged(any(), any()) }
+    }
+
+    @Test
+    fun `a refreshed authorization keeps the view model, as on iOS`() {
+        inputs.value = inputs.value.copy(authorization = "refreshed-client-token")
+        composeTestRule.waitForIdle()
+
         assertEquals(listOf("client-token"), authorizations)
+        verify(exactly = 1) { viewModel.load(any(), any()) }
+    }
 
-        inputs.value = inputs.value.copy(authorization = "another-client-token")
+    @Test
+    fun `a refreshed authorization keeps the pending request, so the return is still completed`() {
+        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
+        // Not taken the first time, so the pending request is still kept when the authorization changes.
+        every { viewModel.handleReturnToApp("pending", any(), any()) } returnsMany
+            listOf(PayPalSavedPaymentMethodReturnResult.NOT_TAKEN, PayPalSavedPaymentMethodReturnResult.TAKEN)
+        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
         composeTestRule.waitForIdle()
+        resumeAgain()
 
-        assertEquals(listOf("client-token", "another-client-token"), authorizations)
+        inputs.value = inputs.value.copy(authorization = "refreshed-client-token")
+        composeTestRule.waitForIdle()
+        resumeAgain()
+
+        verify(exactly = 2) { viewModel.handleReturnToApp("pending", any(), any()) }
     }
 
     @Test
