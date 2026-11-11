@@ -133,7 +133,7 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         }
 
         labelView.isVisible = resolvedStyle.showPayPalLabel
-        labelView.applyTextStyle(resolvedStyle, resolvedStyle.labelFontSizeSp, medium = true)
+        labelView.applyTextStyle(resolvedStyle, resolvedStyle.labelFontSizeSp, weight = TextWeight.MEDIUM)
         // The gap sits between the logo and the label.
         labelView.updatePaddingRelative(start = if (resolvedStyle.showPayPalLogo) labelGap else 0)
 
