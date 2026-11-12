@@ -89,12 +89,10 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val height = if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
-            MeasureSpec.getSize(heightMeasureSpec)
-        } else {
-            barHeight
-        }
-        setMeasuredDimension(getDefaultSize(suggestedMinimumWidth, widthMeasureSpec), height)
+        setMeasuredDimension(
+            getDefaultSize(suggestedMinimumWidth, widthMeasureSpec),
+            resolveSize(barHeight, heightMeasureSpec)
+        )
     }
 
     // Recomputed on every layout, not only on a size change, because changing the layout direction lays the view out

@@ -144,6 +144,25 @@ class ShimmerPlaceholderViewUnitTest {
     }
 
     @Test
+    fun `stays within an at-most height from the layout`() {
+        val sut = ShimmerPlaceholderView(context)
+        val barHeight =
+            context.resources.getDimensionPixelSize(R.dimen.paypal_saved_payment_method_placeholder_height)
+
+        sut.measure(
+            MeasureSpec.makeMeasureSpec(28, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(barHeight - 1, MeasureSpec.AT_MOST)
+        )
+        assertEquals(barHeight - 1, sut.measuredHeight)
+
+        sut.measure(
+            MeasureSpec.makeMeasureSpec(28, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(barHeight + 10, MeasureSpec.AT_MOST)
+        )
+        assertEquals(barHeight, sut.measuredHeight)
+    }
+
+    @Test
     fun `is hidden from screen readers unless it has a content description`() {
         val sut = ShimmerPlaceholderView(context)
         assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_NO, sut.importantForAccessibility)
