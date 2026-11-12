@@ -28,12 +28,7 @@ internal fun PayPalBrandMark(resolvedStyle: PayPalSavedPaymentMethodStyleResolve
         if (resolvedStyle.showPayPalLogo) {
             Image(
                 painter = painterResource(R.drawable.ic_paypal_brand_logo),
-                // The label already says "PayPal".
-                contentDescription = if (resolvedStyle.showPayPalLabel) {
-                    null
-                } else {
-                    stringResource(R.string.paypal_saved_payment_method_label)
-                },
+                contentDescription = stringResource(R.string.paypal_saved_payment_method_logo_content_description),
                 // Square box; the artwork fits inside it.
                 modifier = Modifier.size(resolvedStyle.logoWidthDp.dp),
                 contentScale = ContentScale.Fit

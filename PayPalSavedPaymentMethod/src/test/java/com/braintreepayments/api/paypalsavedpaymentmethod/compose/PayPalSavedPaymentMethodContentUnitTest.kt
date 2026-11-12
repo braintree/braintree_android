@@ -125,14 +125,14 @@ class PayPalSavedPaymentMethodContentUnitTest {
     }
 
     @Test
-    fun `screen readers hear PayPal once, from the label, else the logo, else the chip`() {
+    fun `screen readers hear the logo as PayPal logo, the label as PayPal, else the chip`() {
         render(CARD)
         composeTestRule.onNodeWithText("PayPal").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("PayPal").assertDoesNotExist()
+        composeTestRule.onNodeWithContentDescription("PayPal logo").assertIsDisplayed()
 
         render(CARD, style = PayPalSavedPaymentMethodViewStyle(showPayPalLabel = false))
         composeTestRule.onNodeWithText("PayPal").assertDoesNotExist()
-        composeTestRule.onNodeWithContentDescription("PayPal").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("PayPal logo").assertIsDisplayed()
 
         render(CARD, style = PayPalSavedPaymentMethodViewStyle(showPayPalLogo = false, showPayPalLabel = false))
         assertDoesNotExist(BRAND_MARK_TEST_TAG)
