@@ -18,7 +18,7 @@
             android:orientation="horizontal">
 
             <!--
-              Square box; the artwork fits inside it. The content description is set in code: "PayPal" only when the label is hidden.
+              Square box; the artwork fits inside it. The content description is set in code.
             -->
             <ImageView
                 android:id="@+id/paypal_saved_payment_method_logo"
