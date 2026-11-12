@@ -11,7 +11,9 @@ import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.MerchantRepository
 
 /**
  * Responsible for launching the Venmo app to authenticate users
@@ -20,6 +22,7 @@ class VenmoLauncher internal constructor(
     private val browserSwitchClient: BrowserSwitchClient,
     private val venmoRepository: VenmoRepository,
     lazyAnalyticsClient: Lazy<AnalyticsClient>,
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
     /**
      * Used to launch the Venmo flow in a web browser and deliver results to your Activity
@@ -50,6 +53,8 @@ class VenmoLauncher internal constructor(
 
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 
+    private var startedRequest: Pair<String, Authorization>? = null
+
     /**
      * Launches the Venmo authentication flow by switching to the Venmo app or a mobile browser, if
      * the Venmo app is not installed on the device.
@@ -65,11 +70,12 @@ class VenmoLauncher internal constructor(
         activity: ComponentActivity,
         paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch
     ): VenmoPendingRequest {
-        analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_STARTED, analyticsEventParams)
+        val authorization = paymentAuthRequest.requestParams.authorization
+        sendEvent(VenmoAnalytics.APP_SWITCH_STARTED, analyticsEventParams, authorization)
         try {
             assertCanPerformBrowserSwitch(activity, paymentAuthRequest.requestParams)
         } catch (browserSwitchException: BrowserSwitchException) {
-            analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_FAILED, analyticsEventParams)
+            sendEvent(VenmoAnalytics.APP_SWITCH_FAILED, analyticsEventParams, authorization)
             val manifestInvalidError = createBrowserSwitchError(browserSwitchException)
             return VenmoPendingRequest.Failure(manifestInvalidError)
         }
@@ -80,12 +86,13 @@ class VenmoLauncher internal constructor(
         )
         return when (request) {
             is BrowserSwitchStartResult.Failure -> {
-                analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_FAILED, analyticsEventParams)
+                sendEvent(VenmoAnalytics.APP_SWITCH_FAILED, analyticsEventParams, authorization)
                 VenmoPendingRequest.Failure(request.error)
             }
 
             is BrowserSwitchStartResult.Started -> {
-                analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, analyticsEventParams)
+                authorization?.let { startedRequest = request.pendingRequest to it }
+                sendEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, analyticsEventParams, authorization)
                 VenmoPendingRequest.Started(request.pendingRequest)
             }
         }
@@ -114,21 +121,26 @@ class VenmoLauncher internal constructor(
         pendingRequest: VenmoPendingRequest.Started,
         intent: Intent
     ): VenmoPaymentAuthResult {
-        analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_STARTED, analyticsEventParams)
+        val authorization = startedRequest
+            ?.takeIf { it.first == pendingRequest.pendingRequestString }
+            ?.second
+        sendEvent(VenmoAnalytics.HANDLE_RETURN_STARTED, analyticsEventParams, authorization)
         return when (val browserSwitchResult =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
             is BrowserSwitchFinalResult.Success -> {
-                analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_SUCCEEDED, analyticsEventParams)
+                sendEvent(VenmoAnalytics.HANDLE_RETURN_SUCCEEDED, analyticsEventParams, authorization)
+                if (authorization != null) startedRequest = null
                 VenmoPaymentAuthResult.Success(browserSwitchResult)
             }
 
             is BrowserSwitchFinalResult.Failure -> {
-                analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_FAILED, analyticsEventParams)
+                sendEvent(VenmoAnalytics.HANDLE_RETURN_FAILED, analyticsEventParams, authorization)
+                if (authorization != null) startedRequest = null
                 VenmoPaymentAuthResult.Failure(browserSwitchResult.error)
             }
 
             is BrowserSwitchFinalResult.NoResult -> {
-                analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_NO_RESULT, analyticsEventParams)
+                sendEvent(VenmoAnalytics.HANDLE_RETURN_NO_RESULT, analyticsEventParams, authorization)
                 VenmoPaymentAuthResult.NoResult
             }
         }
@@ -157,6 +169,18 @@ class VenmoLauncher internal constructor(
 
     private val analyticsEventParams by lazy {
         AnalyticsEventParams(appSwitchUrl = venmoRepository.venmoUrl.toString())
+    }
+
+    private fun sendEvent(
+        eventName: String,
+        params: AnalyticsEventParams = AnalyticsEventParams(),
+        authorization: Authorization?
+    ) {
+        // shortcut: falls back to the newest client's authorization when the pending request's owner
+        // is unknown (e.g. after process death); wrong for apps with several authorizations,
+        // fix needs the owner carried across process death without persisting a token
+        val resolvedAuthorization = authorization ?: merchantRepository.authorizationOrNull ?: return
+        analyticsClient.sendEvent(eventName, resolvedAuthorization, params)
     }
 
     companion object {
