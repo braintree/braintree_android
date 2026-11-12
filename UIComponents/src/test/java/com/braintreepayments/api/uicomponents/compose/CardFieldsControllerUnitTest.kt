@@ -10,6 +10,7 @@ import com.braintreepayments.api.card.CardResult
 import com.braintreepayments.api.card.CardTokenizeCallback
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import com.braintreepayments.api.uicomponents.cardfields.CardFieldsResult
@@ -32,6 +33,7 @@ class CardFieldsControllerUnitTest {
 
     private val cardClient: CardClient = mockk(relaxed = true)
     private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
+    private val authorization = Authorization.fromString("sandbox_tmxhyf7d_dcpspy2brwdjr3qn")
 
     private fun String.asTextFieldValue() = TextFieldValue(text = this, selection = TextRange(length))
 
@@ -45,6 +47,7 @@ class CardFieldsControllerUnitTest {
             mutableStateOf(viewModel.currentExpiration.asTextFieldValue()),
             mutableStateOf(viewModel.currentCvv.asTextFieldValue()),
             cardClient,
+            authorization,
             request,
             analyticsClient
         )
@@ -219,6 +222,7 @@ class CardFieldsControllerUnitTest {
         verify {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.CARD_FIELDS_PRESENTED,
+                authorization,
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
             )
         }
@@ -234,6 +238,7 @@ class CardFieldsControllerUnitTest {
             mutableStateOf(viewModel.currentExpiration.asTextFieldValue()),
             mutableStateOf(viewModel.currentCvv.asTextFieldValue()),
             cardClient,
+            authorization,
             analyticsClient = analyticsClient,
             shouldSendPresentedEvent = shouldSendPresentedEvent,
         )
@@ -246,6 +251,7 @@ class CardFieldsControllerUnitTest {
             mutableStateOf(viewModel.currentExpiration.asTextFieldValue()),
             mutableStateOf(viewModel.currentCvv.asTextFieldValue()),
             cardClient,
+            authorization,
             analyticsClient = analyticsClient,
             shouldSendPresentedEvent = shouldSendPresentedEvent,
         )
@@ -253,6 +259,7 @@ class CardFieldsControllerUnitTest {
         verify(exactly = 1) {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.CARD_FIELDS_PRESENTED,
+                authorization,
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
             )
         }
@@ -267,6 +274,7 @@ class CardFieldsControllerUnitTest {
         verify {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.CARD_FIELDS_VALIDATED,
+                authorization,
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
             )
         }
