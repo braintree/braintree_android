@@ -51,20 +51,26 @@ internal val PayPalSavedPaymentMethodDisplayState.showsFundingInstrumentRow: Boo
         this !is PayPalSavedPaymentMethodDisplayState.Error &&
         this !is PayPalSavedPaymentMethodDisplayState.Hidden
 
-/** What the Pay Later row shows next to [fundingInstrumentState]. It's hidden after an edit. */
+/**
+ * What the Pay Later row shows next to [fundingInstrumentState]; the two load as one unit. While the funding
+ * instrument loads, the row shimmers and a message that arrives early is held back. Once the funding instrument is
+ * shown, the row follows its own state (shimmer, message, or hidden if its fetch failed). If the funding instrument
+ * fails, can't be edited, or after an edit, the row is hidden.
+ */
 internal fun PayPalCreditMessagingDisplayState.visibleWith(
     fundingInstrumentState: PayPalSavedPaymentMethodDisplayState,
     isEditCompleted: Boolean
 ): PayPalCreditMessagingDisplayState {
-    val showsRow = !isEditCompleted && when (fundingInstrumentState) {
-        PayPalSavedPaymentMethodDisplayState.Loading,
-        is PayPalSavedPaymentMethodDisplayState.Content -> true
-        is PayPalSavedPaymentMethodDisplayState.NoFundingInstrument -> fundingInstrumentState.isEditable
+    if (isEditCompleted || this == PayPalCreditMessagingDisplayState.Hidden) {
+        return PayPalCreditMessagingDisplayState.Hidden
+    }
+    return when (fundingInstrumentState) {
+        PayPalSavedPaymentMethodDisplayState.Loading -> PayPalCreditMessagingDisplayState.Loading
+        is PayPalSavedPaymentMethodDisplayState.Content -> this
+        is PayPalSavedPaymentMethodDisplayState.NoFundingInstrument ->
+            if (fundingInstrumentState.isEditable) this else PayPalCreditMessagingDisplayState.Hidden
         PayPalSavedPaymentMethodDisplayState.NoNetwork,
         PayPalSavedPaymentMethodDisplayState.Error,
-        PayPalSavedPaymentMethodDisplayState.Hidden -> false
+        PayPalSavedPaymentMethodDisplayState.Hidden -> PayPalCreditMessagingDisplayState.Hidden
     }
-    val isLoadingOnItsOwn = this == PayPalCreditMessagingDisplayState.Loading &&
-        fundingInstrumentState != PayPalSavedPaymentMethodDisplayState.Loading
-    return if (showsRow && !isLoadingOnItsOwn) this else PayPalCreditMessagingDisplayState.Hidden
 }
