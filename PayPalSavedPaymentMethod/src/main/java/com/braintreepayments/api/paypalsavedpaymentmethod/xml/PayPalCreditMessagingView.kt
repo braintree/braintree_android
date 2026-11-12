@@ -10,6 +10,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.StyleSpan
 import android.util.AttributeSet
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
@@ -76,6 +77,9 @@ internal class PayPalCreditMessagingView @JvmOverloads constructor(
         textView.isClickable = learnMore != null
         // The movement method made the text focusable; only a message with the link is a keyboard or D-pad stop.
         textView.isFocusable = learnMore != null
+        // A focused text has no link selected, so the movement method ignores Enter and the center button. They open
+        // the link here instead, like a tap on it. Touches are unchanged.
+        textView.setOnKeyListener(learnMore?.let { link -> learnMoreKeyListener(link.url, onLearnMoreClick) })
         if (learnMore != null) {
             ViewCompat.replaceAccessibilityAction(
                 textView,
@@ -90,6 +94,13 @@ internal class PayPalCreditMessagingView @JvmOverloads constructor(
         }
     }
 }
+
+private fun learnMoreKeyListener(url: String, onLearnMoreClick: (url: String) -> Unit) =
+    View.OnKeyListener { _, keyCode, event ->
+        val isActivationKey = keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+        if (isActivationKey && event.action == KeyEvent.ACTION_UP) onLearnMoreClick(url)
+        isActivationKey
+    }
 
 // The "Learn more" link is bold. Without a merchant [linkColor] it's underlined in the [textColor], as on iOS.
 private fun PayPalCreditMessagingContent.toSpannable(

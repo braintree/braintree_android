@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:parentTag="android.widget.FrameLayout">
 
-    <!-- Decorative: the funding instrument shimmer already announces loading. -->
+    <!-- Decorative: the container announces loading once, on the funding instrument shimmer. -->
     <com.braintreepayments.api.paypalsavedpaymentmethod.xml.ShimmerPlaceholderView
         android:id="@+id/paypal_saved_payment_method_credit_messaging_shimmer"
         android:layout_width="match_parent"

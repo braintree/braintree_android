@@ -10,6 +10,8 @@ import android.text.Spanned
 import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.text.style.StyleSpan
+import android.view.KeyEvent
+import android.view.View
 import android.widget.TextView
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
@@ -138,6 +140,27 @@ class PayPalCreditMessagingViewUnitTest {
     }
 
     @Test
+    fun `a keyboard or D-pad user can open the link from the focused message`() {
+        bindMessage()
+        layOut()
+
+        assertTrue(text.requestFocus())
+        press(KeyEvent.KEYCODE_DPAD_CENTER)
+
+        assertEquals(listOf(URL), openedUrls)
+    }
+
+    @Test
+    fun `pressing enter on a focused message without a link opens nothing`() {
+        bindMessage(MESSAGE_ONLY)
+        layOut()
+
+        press(KeyEvent.KEYCODE_ENTER)
+
+        assertTrue(openedUrls.isEmpty())
+    }
+
+    @Test
     fun `the link uses the style's link color without an underline`() {
         bindMessage(linkColor = Color.BLUE)
 
@@ -151,6 +174,19 @@ class PayPalCreditMessagingViewUnitTest {
 
         assertEquals(Color.RED, drawnLink().color)
         assertTrue(drawnLink().isUnderlineText)
+    }
+
+    private fun layOut() {
+        sut.measure(
+            View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        sut.layout(0, 0, sut.measuredWidth, sut.measuredHeight)
+    }
+
+    private fun press(keyCode: Int) {
+        text.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+        text.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
     }
 
     private fun bindMessage(content: PayPalCreditMessagingContent = CONTENT, linkColor: Int? = null) =
