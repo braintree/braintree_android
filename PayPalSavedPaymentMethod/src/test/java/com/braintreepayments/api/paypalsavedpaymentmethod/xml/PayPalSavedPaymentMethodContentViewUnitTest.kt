@@ -148,13 +148,15 @@ class PayPalSavedPaymentMethodContentViewUnitTest {
     }
 
     @Test
-    fun `the logo is read as PayPal only when the label is hidden`() {
+    fun `the logo is read as PayPal logo and the label as PayPal`() {
         render(CARD_STATE)
-        assertNull(logo.contentDescription)
+        assertEquals("PayPal logo", logo.contentDescription)
+        assertNull(label.contentDescription)
+        assertEquals("PayPal", label.text.toString())
 
         render(CARD_STATE, style = PayPalSavedPaymentMethodViewStyle(showPayPalLabel = false))
         assertFalse(label.isVisible)
-        assertEquals("PayPal", logo.contentDescription)
+        assertEquals("PayPal logo", logo.contentDescription)
     }
 
     @Test
