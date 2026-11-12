@@ -5,14 +5,12 @@ import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.json.JSONException
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -27,20 +25,13 @@ class ConfigurationLoaderUnitTest {
     private val configurationCache: ConfigurationCache = mockk(relaxed = true)
     private val braintreeHttpClient: BraintreeHttpClient = mockk(relaxed = true)
     private val authorization: Authorization = mockk(relaxed = true)
-    private val merchantRepository: MerchantRepository = mockk(relaxed = true)
     private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
 
     private lateinit var sut: ConfigurationLoader
 
-    @Before
-    fun setUp() {
-        every { merchantRepository.authorization } returns authorization
-    }
-
     @Test
     fun `when httpClient get returns a valid config response, loadConfiguration returns Success`() = runTest {
         every { authorization.configUrl } returns "https://example.com/config"
-        every { merchantRepository.authorization } returns authorization
 
         val mockResponse = HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
         coEvery {
@@ -52,7 +43,7 @@ class ConfigurationLoaderUnitTest {
         } returns mockResponse
 
         sut = createConfigurationLoader()
-        val configResult = sut.loadConfiguration()
+        val configResult = sut.loadConfiguration(authorization, sendAnalytics = true)
 
         assertTrue(configResult is ConfigurationLoaderResult.Success)
     }
@@ -72,7 +63,7 @@ class ConfigurationLoaderUnitTest {
         } returns mockResponse
 
         sut = createConfigurationLoader()
-        sut.loadConfiguration()
+        sut.loadConfiguration(authorization, sendAnalytics = true)
 
         val cacheKey = Base64.encodeToString(
             "https://example.com/config?configVersion=3bearer".toByteArray(),
@@ -98,7 +89,7 @@ class ConfigurationLoaderUnitTest {
         } returns mockResponse
 
         sut = createConfigurationLoader()
-        val configResult = sut.loadConfiguration()
+        val configResult = sut.loadConfiguration(authorization, sendAnalytics = true)
 
         assertTrue((configResult as ConfigurationLoaderResult.Failure).error is JSONException)
     }
@@ -117,7 +108,7 @@ class ConfigurationLoaderUnitTest {
         } throws httpError
 
         sut = createConfigurationLoader()
-        val configResult = sut.loadConfiguration()
+        val configResult = sut.loadConfiguration(authorization, sendAnalytics = true)
 
         assertEquals(
             (configResult as ConfigurationLoaderResult.Failure).error.message,
@@ -127,10 +118,10 @@ class ConfigurationLoaderUnitTest {
 
     @Test
     fun `when authorization is invalid, loadConfiguration returns a Failure with the auth error message`() = runTest {
-        every { merchantRepository.authorization } returns InvalidAuthorization("invalid", "token invalid")
+        val invalidAuthorization = InvalidAuthorization("invalid", "token invalid")
 
         sut = createConfigurationLoader()
-        val configResult = sut.loadConfiguration()
+        val configResult = sut.loadConfiguration(invalidAuthorization, sendAnalytics = true)
 
         assertEquals(
             (configResult as ConfigurationLoaderResult.Failure).error.message,
@@ -151,7 +142,7 @@ class ConfigurationLoaderUnitTest {
         every { configurationCache.getConfiguration(cacheKey) } returns Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN
 
         sut = createConfigurationLoader()
-        val configResult = sut.loadConfiguration()
+        val configResult = sut.loadConfiguration(authorization, sendAnalytics = true)
 
         assertTrue(configResult is ConfigurationLoaderResult.Success)
     }
@@ -160,40 +151,6 @@ class ConfigurationLoaderUnitTest {
     fun `when configuration is fetched from the API, loadConfiguration sends an API_REQUEST_LATENCY analytics event`() =
         runTest {
         every { authorization.configUrl } returns "https://example.com/config"
-        every { merchantRepository.authorization } returns authorization
-
-        val mockResponse = HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 10))
-        coEvery {
-            braintreeHttpClient.get(
-                "https://example.com/config?configVersion=3",
-                null,
-                authorization
-            )
-        } returns mockResponse
-
-        sut = createConfigurationLoader()
-        val configResult = sut.loadConfiguration()
-
-        verify {
-            analyticsClient.sendEvent(
-                eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                analyticsEventParams = AnalyticsEventParams(
-                    startTime = 0,
-                    endTime = 10,
-                    endpoint = "/v1/configuration"
-                ),
-                sendImmediately = false
-            )
-        }
-
-        assertTrue(configResult is ConfigurationLoaderResult.Success)
-    }
-
-    @Test
-    fun `when loadConfiguration is called with sendAnalytics true and the configuration is fetched from the API, an API_REQUEST_LATENCY event is sent`() =
-        runTest {
-        every { authorization.configUrl } returns "https://example.com/config"
-        every { merchantRepository.authorization } returns authorization
 
         val mockResponse = HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 10))
         coEvery {
@@ -210,6 +167,7 @@ class ConfigurationLoaderUnitTest {
         verify {
             analyticsClient.sendEvent(
                 eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                authorization = authorization,
                 analyticsEventParams = AnalyticsEventParams(
                     startTime = 0,
                     endTime = 10,
@@ -226,7 +184,6 @@ class ConfigurationLoaderUnitTest {
     fun `when loadConfiguration is called with an authorization only and the configuration is fetched from the API, no analytics event is sent`() =
         runTest {
         every { authorization.configUrl } returns "https://example.com/config"
-        every { merchantRepository.authorization } returns authorization
 
         val mockResponse = HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 10))
         coEvery {
@@ -241,47 +198,10 @@ class ConfigurationLoaderUnitTest {
         val configResult = sut.loadConfiguration(authorization)
 
         verify(exactly = 0) {
-            analyticsClient.sendEvent(any(), any(), any())
+            analyticsClient.sendEvent(any(), any(), any(), any())
         }
 
         assertTrue(configResult is ConfigurationLoaderResult.Success)
-    }
-
-    @Test
-    fun `when loadConfiguration is called with an explicit authorization, the request uses it instead of the MerchantRepository authorization`() =
-        runTest {
-        val repoAuth = mockk<Authorization>(relaxed = true)
-        val explicitAuth = mockk<Authorization>(relaxed = true)
-        every { repoAuth.configUrl } returns "https://example.com/repo-config"
-        every { explicitAuth.configUrl } returns "https://example.com/explicit-config"
-        every { merchantRepository.authorization } returns repoAuth
-
-        val mockResponse = HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
-        coEvery {
-            braintreeHttpClient.get(
-                "https://example.com/explicit-config?configVersion=3",
-                null,
-                explicitAuth
-            )
-        } returns mockResponse
-
-        sut = createConfigurationLoader()
-        sut.loadConfiguration(explicitAuth, sendAnalytics = true)
-
-        coVerify {
-            braintreeHttpClient.get(
-                "https://example.com/explicit-config?configVersion=3",
-                null,
-                explicitAuth
-            )
-        }
-        coVerify(exactly = 0) {
-            braintreeHttpClient.get(
-                "https://example.com/repo-config?configVersion=3",
-                null,
-                repoAuth
-            )
-        }
     }
 
     @Test
@@ -298,7 +218,7 @@ class ConfigurationLoaderUnitTest {
         } returns mockResponse
 
         sut = createConfigurationLoader()
-        val configResult = sut.loadConfiguration()
+        val configResult = sut.loadConfiguration(authorization, sendAnalytics = true)
 
         val failure = configResult as ConfigurationLoaderResult.Failure
         assertTrue(failure.error is ConfigurationException)
@@ -307,7 +227,6 @@ class ConfigurationLoaderUnitTest {
 
     private fun createConfigurationLoader() = ConfigurationLoader(
         httpClient = braintreeHttpClient,
-        merchantRepository = merchantRepository,
         configurationCache = configurationCache,
         lazyAnalyticsClient = lazy { analyticsClient }
     )
