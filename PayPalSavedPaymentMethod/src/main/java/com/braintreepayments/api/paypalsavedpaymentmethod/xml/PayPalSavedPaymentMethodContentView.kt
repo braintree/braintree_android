@@ -143,12 +143,7 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
             width = logoSize
             height = logoSize
         }
-        // The label already says "PayPal".
-        logoView.contentDescription = if (resolvedStyle.showPayPalLabel) {
-            null
-        } else {
-            context.getString(R.string.paypal_saved_payment_method_label)
-        }
+        logoView.contentDescription = context.getString(R.string.paypal_saved_payment_method_logo_content_description)
 
         labelView.isVisible = resolvedStyle.showPayPalLabel
         labelView.applyTextStyle(resolvedStyle, resolvedStyle.labelFontSizeSp, weight = TextWeight.MEDIUM)
