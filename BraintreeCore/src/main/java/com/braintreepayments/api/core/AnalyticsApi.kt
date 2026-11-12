@@ -33,15 +33,15 @@ internal class AnalyticsApi(
             sessionId = analyticsParamRepository.sessionId,
             integration = merchantRepository.integrationType
         )
-        val analyticsRequest =
-            createFPTIPayload(merchantRepository.authorization, jsonEvents, metadata)
+        val authorization = merchantRepository.authorization
+        val analyticsRequest = createFPTIPayload(authorization, jsonEvents, metadata)
         coroutineScope.launch {
             try {
                 httpClient.post(
                     path = FPTI_ANALYTICS_URL,
                     data = analyticsRequest.toString(),
                     configuration = null,
-                    authorization = merchantRepository.authorization,
+                    authorization = authorization,
                 )
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
