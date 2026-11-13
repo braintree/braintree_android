@@ -23,7 +23,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPay
 internal fun CreditMessagingRow(
     state: PayPalCreditMessagingDisplayState,
     resolvedStyle: PayPalSavedPaymentMethodStyleResolver,
-    onLearnMoreClick: (url: String) -> Unit,
+    onLearnMoreClick: (PayPalCreditMessagingContent.LearnMore) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (state) {
@@ -51,14 +51,13 @@ internal fun CreditMessagingRow(
 private fun PayPalCreditMessagingContent.toAnnotatedString(
     linkColor: Color?,
     textColor: Color,
-    onLearnMoreClick: (String) -> Unit
+    onLearnMoreClick: (PayPalCreditMessagingContent.LearnMore) -> Unit
 ) =
     buildAnnotatedString {
         append(message)
         val learnMore = learnMore
         if (learnMore != null) {
             val text = learnMore.text
-            val url = learnMore.url
             append(" ")
             val linkStyle = SpanStyle(
                 color = linkColor ?: textColor,
@@ -69,7 +68,7 @@ private fun PayPalCreditMessagingContent.toAnnotatedString(
                 LinkAnnotation.Clickable(
                     tag = LEARN_MORE_LINK_TAG,
                     styles = TextLinkStyles(style = linkStyle),
-                    linkInteractionListener = { onLearnMoreClick(url) }
+                    linkInteractionListener = { onLearnMoreClick(learnMore) }
                 )
             ) {
                 append(text)

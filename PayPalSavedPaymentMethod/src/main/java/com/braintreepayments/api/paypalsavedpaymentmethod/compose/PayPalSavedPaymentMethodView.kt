@@ -31,7 +31,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMeth
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodViewModel
 import com.braintreepayments.api.paypalsavedpaymentmethod.clearPayPalReturnUrl
 import com.braintreepayments.api.paypalsavedpaymentmethod.findActivity
-import com.braintreepayments.api.paypalsavedpaymentmethod.openUrl
+import com.braintreepayments.api.paypalsavedpaymentmethod.openLearnMore
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -184,7 +184,7 @@ internal fun PayPalSavedPaymentMethodView(
                 }
             }
         },
-        onLearnMoreClick = { url -> context.openUrl(url) },
+        onLearnMoreClick = { learnMore -> context.openLearnMore(learnMore) },
         modifier = modifier
     )
 

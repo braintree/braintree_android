@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.showsFundingInstrumentRow
@@ -45,7 +46,7 @@ internal fun PayPalSavedPaymentMethodContent(
     creditMessagingState: PayPalCreditMessagingDisplayState,
     style: PayPalSavedPaymentMethodViewStyle,
     onEditClick: () -> Unit,
-    onLearnMoreClick: (url: String) -> Unit,
+    onLearnMoreClick: (PayPalCreditMessagingContent.LearnMore) -> Unit,
     modifier: Modifier = Modifier,
     editEnabled: Boolean = true,
     isEditCompleted: Boolean = false
