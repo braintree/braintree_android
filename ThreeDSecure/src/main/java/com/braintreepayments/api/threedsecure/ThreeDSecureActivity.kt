@@ -29,9 +29,14 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
          * Here, we schedule the 3DS auth challenge launch to run immediately after onCreate() is
          * complete. This gives the CardinalValidateReceiver callback a chance to run before 3DS
          * is initiated.
+         *
+         * When the Activity is recreated (e.g. on rotation), savedInstanceState is non-null and
+         * the challenge is already in progress, so we must not call cca_continue again.
          */
-        Handler(Looper.getMainLooper()).post {
-            launchCardinalAuthChallenge(cardinalClient)
+        if (savedInstanceState == null) {
+            Handler(Looper.getMainLooper()).post {
+                launchCardinalAuthChallenge(cardinalClient)
+            }
         }
     }
 
