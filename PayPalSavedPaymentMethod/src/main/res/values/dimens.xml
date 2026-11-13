@@ -19,4 +19,13 @@
     <dimen name="paypal_saved_payment_method_placeholder_trailing_gap">40dp</dimen>
     <dimen name="paypal_saved_payment_method_loading_dialog_spinner_size">48dp</dimen>
     <dimen name="paypal_saved_payment_method_loading_dialog_spinner_stroke_width">2dp</dimen>
+    <dimen name="paypal_saved_payment_method_funding_instrument_chip_corner_radius">6dp</dimen>
+    <dimen name="paypal_saved_payment_method_funding_instrument_chip_horizontal_padding">8dp</dimen>
+    <dimen name="paypal_saved_payment_method_funding_instrument_chip_vertical_padding">4dp</dimen>
+    <dimen name="paypal_saved_payment_method_funding_instrument_icon_width">28dp</dimen>
+    <dimen name="paypal_saved_payment_method_funding_instrument_icon_height">20dp</dimen>
+    <dimen name="paypal_saved_payment_method_funding_instrument_icon_margin">8dp</dimen>
+    <dimen name="paypal_saved_payment_method_funding_instrument_icon_loading_height">18dp</dimen>
+    <dimen name="paypal_saved_payment_method_credit_messaging_top_spacing">6dp</dimen>
+    <dimen name="paypal_saved_payment_method_stacked_layout_spacing">6dp</dimen>
 </resources>

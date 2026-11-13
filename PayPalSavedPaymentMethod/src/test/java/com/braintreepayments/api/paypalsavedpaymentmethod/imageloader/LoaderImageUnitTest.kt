@@ -119,6 +119,21 @@ class LoaderImageUnitTest {
     }
 
     @Test
+    fun `shows nothing when the load fails and there's no placeholder`() {
+        coEvery { httpClient.sendRequestForBytes(any(), any()) } throws IOException("boom")
+
+        composeTestRule.setContent {
+            LoaderImage(url = URL, placeholder = null, imageLoader = sut)
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithTag(PLACEHOLDER_IMAGE_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(LOADING_TEST_TAG).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(LOADED_IMAGE_TEST_TAG).assertDoesNotExist()
+    }
+
+    @Test
     fun `shows the placeholder when the load fails with an unexpected exception`() {
         coEvery { httpClient.sendRequestForBytes(any(), any()) } throws IllegalStateException("boom")
 
