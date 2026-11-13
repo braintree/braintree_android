@@ -14,6 +14,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePaddingRelative
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.showsFundingInstrumentRow
@@ -31,7 +32,7 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs) {
 
     var onEditClick: () -> Unit = {}
-    var onLearnMoreClick: (url: String) -> Unit = {}
+    var onLearnMoreClick: (PayPalCreditMessagingContent.LearnMore) -> Unit = {}
 
     private val brandView: View
     private val logoView: ImageView

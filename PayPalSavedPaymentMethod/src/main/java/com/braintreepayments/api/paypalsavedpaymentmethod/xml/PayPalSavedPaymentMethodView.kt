@@ -24,7 +24,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMeth
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodViewModel
 import com.braintreepayments.api.paypalsavedpaymentmethod.clearPayPalReturnUrl
 import com.braintreepayments.api.paypalsavedpaymentmethod.findActivity
-import com.braintreepayments.api.paypalsavedpaymentmethod.openUrl
+import com.braintreepayments.api.paypalsavedpaymentmethod.openLearnMore
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodUiState
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
@@ -134,7 +134,7 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     init {
         addView(contentView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
         contentView.onEditClick = { startEdit() }
-        contentView.onLearnMoreClick = { url -> context.openUrl(url) }
+        contentView.onLearnMoreClick = { learnMore -> context.openLearnMore(learnMore) }
         render()
     }
 
