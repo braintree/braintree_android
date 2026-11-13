@@ -11,7 +11,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 
-/** Blocks the screen while the edit flow runs, so the buyer can't tap Edit twice. */
+/**
+ * Blocks the screen while the edit flow runs, so the buyer can't tap Edit twice. It shows only a spinner, since the
+ * same loader shows while the order is created and while tokenizing, so no single message fits both. The spinner is a
+ * drawable, because the platform spinner's stroke and padding can't be set, and it matches the Compose spinner. The
+ * window's default dim and background are cleared, so only the translucent background shows.
+ */
 internal class EditLoadingDialog(context: Context) : Dialog(context) {
 
     init {
@@ -20,12 +25,8 @@ internal class EditLoadingDialog(context: Context) : Dialog(context) {
         val spinnerSize = context.resources.getDimensionPixelSize(
             R.dimen.paypal_saved_payment_method_loading_dialog_spinner_size
         )
-        // Spinner only: the same loader shows while the order is created and while tokenizing, so no single message
-        // fits both.
         val spinner = ProgressBar(context).apply {
             isIndeterminate = true
-            // The platform spinner's stroke and padding can't be set, so a drawable gives it the Compose spinner's size
-            // and stroke.
             indeterminateDrawable =
                 ContextCompat.getDrawable(context, R.drawable.paypal_saved_payment_method_loading_spinner)
             contentDescription =
@@ -38,7 +39,6 @@ internal class EditLoadingDialog(context: Context) : Dialog(context) {
             addView(spinner, FrameLayout.LayoutParams(spinnerSize, spinnerSize, Gravity.CENTER))
         }
         setContentView(root)
-        // Clears the window's default dim and background, so only the translucent background above shows.
         window?.apply {
             setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             setBackgroundDrawable(Color.TRANSPARENT.toDrawable())

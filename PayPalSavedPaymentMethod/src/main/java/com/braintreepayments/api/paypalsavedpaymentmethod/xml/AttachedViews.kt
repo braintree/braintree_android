@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
  */
 internal class AttachedViews : ViewModel() {
 
-    // View model key to the instance id of the view showing it.
+    /** View model key to the instance id of the view showing it. */
     private val viewByKey = mutableMapOf<String, String>()
 
     /** Whether another view shows the view model under [key]. */
