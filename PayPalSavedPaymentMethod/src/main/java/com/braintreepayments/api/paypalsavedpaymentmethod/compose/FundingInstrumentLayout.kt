@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
  * [belowIndent], or lined up with the funding instrument when [belowIndent] is `null`.
  */
 @Composable
-internal fun SideBySideOrStacked(
+internal fun FundingInstrumentLayout(
     gap: Dp,
     stackedSpacing: Dp,
     brand: @Composable () -> Unit,

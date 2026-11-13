@@ -129,7 +129,7 @@ internal fun PayPalSavedPaymentMethodContent(
                     }
                 }
             } else {
-                SideBySideOrStacked(
+                FundingInstrumentLayout(
                     gap = fundingInstrumentGap,
                     stackedSpacing = dimensionResource(R.dimen.paypal_saved_payment_method_stacked_layout_spacing),
                     brand = brandMark,
