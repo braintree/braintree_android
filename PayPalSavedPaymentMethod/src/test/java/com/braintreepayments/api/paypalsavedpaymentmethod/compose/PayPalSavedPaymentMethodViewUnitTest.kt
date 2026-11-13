@@ -137,12 +137,10 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
     @Test
     fun `a refreshed authorization keeps the pending request, so the return is still completed`() {
-        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
         // Not taken the first time, so the pending request is still kept when the authorization changes.
         every { viewModel.handleReturnToApp("pending", any(), any()) } returnsMany
             listOf(PayPalSavedPaymentMethodReturnResult.NOT_TAKEN, PayPalSavedPaymentMethodReturnResult.TAKEN)
-        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
-        composeTestRule.waitForIdle()
+        startEdit()
         resumeAgain()
 
         inputs.value = inputs.value.copy(authorization = "refreshed-client-token")
@@ -154,10 +152,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
     @Test
     fun `tapping the chip opens the paysheet, and the next resume completes the return`() {
-        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
-
-        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
-        composeTestRule.waitForIdle()
+        startEdit()
 
         resumeAgain()
 
@@ -167,19 +162,14 @@ class PayPalSavedPaymentMethodViewUnitTest {
     @Test
     fun `a failed paysheet launch is reported to the callback`() {
         val error = BraintreeException("launch failed")
-        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Failure(error)
-
-        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
-        composeTestRule.waitForIdle()
+        startEdit(PayPalPendingRequest.Failure(error))
 
         assertSame(error, (delivered.single() as PayPalResult.Failure).error)
     }
 
     @Test
     fun `a result is delivered to the callback, and later resumes don't complete the return again`() {
-        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
-        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
-        composeTestRule.waitForIdle()
+        startEdit()
 
         results.tryEmit(PayPalResult.Cancel)
         composeTestRule.waitForIdle()
@@ -191,9 +181,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
     @Test
     fun `a pending request survives restoring the saved state, and the return is completed with it`() {
-        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
-        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
-        composeTestRule.waitForIdle()
+        startEdit()
         verify(exactly = 0) { viewModel.handleReturnToApp(any(), any(), any()) }
 
         // Only saved state keeps the pending request, so it must come back with it.
@@ -205,11 +193,9 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
     @Test
     fun `a pending request the view model drops is passed again on the next resume, then forgotten`() {
-        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
         every { viewModel.handleReturnToApp("pending", any(), any()) } returnsMany
             listOf(PayPalSavedPaymentMethodReturnResult.NOT_TAKEN, PayPalSavedPaymentMethodReturnResult.TAKEN)
-        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
-        composeTestRule.waitForIdle()
+        startEdit()
 
         resumeAgain()
         resumeAgain()
@@ -220,15 +206,13 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
     @Test
     fun `a completed return clears the PayPal return URL from the activity's intent`() {
-        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Started("pending")
         // The return URL arrives with the return. The activity's intent isn't replaced, since the test tracks the
         // activity by it.
         every { viewModel.handleReturnToApp("pending", any(), any()) } answers {
             thirdArg<Intent?>()?.data = RETURN_URL.buildUpon().path("return").build()
             PayPalSavedPaymentMethodReturnResult.COMPLETED
         }
-        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
-        composeTestRule.waitForIdle()
+        startEdit()
 
         resumeAgain()
 
@@ -246,6 +230,13 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
         composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).assertIsNotEnabled()
         composeTestRule.onNodeWithContentDescription("Loading").assertExists()
+    }
+
+    // Taps the chip, whose edit returns [pending].
+    private fun startEdit(pending: PayPalPendingRequest = PayPalPendingRequest.Started("pending")) {
+        coEvery { viewModel.startEdit(any(), any(), any()) } returns pending
+        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
+        composeTestRule.waitForIdle()
     }
 
     // Pauses and resumes the activity, as when the buyer comes back from the paysheet.
