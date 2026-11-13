@@ -371,7 +371,7 @@ class PayPalSavedPaymentMethodContentUnitTest {
                         creditMessagingState = current.creditMessagingState,
                         style = current.style,
                         onEditClick = { editClicks++ },
-                        onLearnMoreClick = { openedUrls += it },
+                        onLearnMoreClick = { openedUrls += it.url },
                         modifier = Modifier.width(current.width.dp),
                         editEnabled = current.editEnabled,
                         isEditCompleted = current.isEditCompleted
