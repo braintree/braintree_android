@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The loading arc. Radius 23 = (48 - 2) / 2, so the 2dp stroke fills the 48dp box. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="@dimen/paypal_saved_payment_method_loading_dialog_spinner_size"
+    android:height="@dimen/paypal_saved_payment_method_loading_dialog_spinner_size"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <group
+        android:name="rotation"
+        android:pivotX="24"
+        android:pivotY="24">
+        <path
+            android:name="arc"
+            android:pathData="M24,1 A23,23 0 1,1 24,47 A23,23 0 1,1 24,1"
+            android:strokeColor="@color/paypal_saved_payment_method_loading_dialog_content"
+            android:strokeLineCap="square"
+            android:strokeWidth="2"
+            android:trimPathEnd="0.03"
+            android:trimPathStart="0" />
+    </group>
+</vector>

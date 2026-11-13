@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The head grows the arc in the first half of each cycle, the tail catches up in the second. -->
+<objectAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="1332"
+    android:repeatCount="infinite">
+    <propertyValuesHolder
+        android:propertyName="trimPathEnd"
+        android:valueType="floatType">
+        <keyframe
+            android:fraction="0"
+            android:value="0.03" />
+        <keyframe
+            android:fraction="0.5"
+            android:interpolator="@android:interpolator/fast_out_slow_in"
+            android:value="0.8" />
+        <keyframe
+            android:fraction="1"
+            android:value="0.8" />
+    </propertyValuesHolder>
+    <propertyValuesHolder
+        android:propertyName="trimPathStart"
+        android:valueType="floatType">
+        <keyframe
+            android:fraction="0"
+            android:value="0" />
+        <keyframe
+            android:fraction="0.5"
+            android:value="0" />
+        <keyframe
+            android:fraction="1"
+            android:interpolator="@android:interpolator/fast_out_slow_in"
+            android:value="0.77" />
+    </propertyValuesHolder>
+</objectAnimator>
