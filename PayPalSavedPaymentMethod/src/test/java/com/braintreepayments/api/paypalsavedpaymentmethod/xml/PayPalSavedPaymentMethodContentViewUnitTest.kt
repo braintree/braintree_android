@@ -255,8 +255,6 @@ class PayPalSavedPaymentMethodContentViewUnitTest {
         )
         const val NARROW_WIDTH = 300
         val LOGO_ONLY = PayPalSavedPaymentMethodViewStyle(showPayPalLabel = false)
-        val MESSAGE_STATE = PayPalCreditMessagingDisplayState.Content(
-            PayPalCreditMessagingContent("Pay in 4.", learnMore = null)
-        )
+        val MESSAGE_STATE = PayPalCreditMessagingDisplayState.Content(PayPalCreditMessagingContent("Pay in 4.", null))
     }
 }
