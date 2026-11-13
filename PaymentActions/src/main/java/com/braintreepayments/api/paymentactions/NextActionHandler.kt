@@ -70,13 +70,15 @@ internal class NextActionHandler(
                     if (paymentAction.nextAction !is NextAction.ThreeDSecureAuthentication || deviceDataCollected) {
                         return PaymentActionResult.CustomerActionRequired(paymentAction.id)
                     }
-                    deviceDataCollected = true
                     // The signal's response is the updated Payment Action, so the loop continues on it rather than re-fetching
                     passedInResult = when (val deviceData = threeDSecureProvider.collectDeviceData()) {
                         is DeviceDataResult.Failed -> return PaymentActionResult.Failure(deviceData.error)
-                        is DeviceDataResult.Collected -> service.signalCustomerActionComplete(
-                            CustomerCompletedAction.DeviceDataCollection(deviceData.dfReferenceId)
-                        )
+                        is DeviceDataResult.Collected -> {
+                            deviceDataCollected = true
+                            service.signalCustomerActionComplete(
+                                CustomerCompletedAction.DeviceDataCollection(deviceData.dfReferenceId)
+                            )
+                        }
                     }
                 }
 
