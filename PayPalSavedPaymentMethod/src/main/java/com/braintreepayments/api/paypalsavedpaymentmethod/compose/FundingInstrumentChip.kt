@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 import com.braintreepayments.api.paypalsavedpaymentmethod.imageloader.ImageLoader
 import com.braintreepayments.api.paypalsavedpaymentmethod.imageloader.LoaderImage
-import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPaymentMethod
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.accessibilityLabel
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.iconRes
@@ -104,47 +103,39 @@ internal fun FundingInstrumentChip(
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        when (state) {
-            is PayPalSavedPaymentMethodDisplayState.Content -> {
-                val paymentMethod = state.paymentMethod
-                val fallbackIcon = paymentMethod.iconRes()
-                if (paymentMethod.imageUrl != null || fallbackIcon != null) {
-                    val iconWidth = dimensionResource(R.dimen.paypal_saved_payment_method_funding_instrument_icon_width)
-                    val iconHeight =
-                        dimensionResource(R.dimen.paypal_saved_payment_method_funding_instrument_icon_height)
-                    val iconLoadingHeight =
-                        dimensionResource(R.dimen.paypal_saved_payment_method_funding_instrument_icon_loading_height)
-                    LoaderImage(
-                        url = paymentMethod.imageUrl,
-                        placeholder = fallbackIcon?.let { painterResource(it) },
-                        modifier = Modifier
-                            .padding(end = iconMargin)
-                            .width(iconWidth)
-                            .heightIn(max = iconHeight),
-                        loading = {
-                            ShimmerPlaceholder(
-                                contentDescription = null,
-                                modifier = it,
-                                height = iconLoadingHeight,
-                                trailingGap = 0.dp
-                            )
-                        },
-                        imageLoader = imageLoader
-                    )
-                }
-                FundingInstrumentText(
-                    text = paymentMethod.displayText(),
-                    resolvedStyle = resolvedStyle,
-                    modifier = Modifier.weight(1f, fill = false).clearAndSetSemantics { }
+        if (state is PayPalSavedPaymentMethodDisplayState.Content) {
+            val paymentMethod = state.paymentMethod
+            val fallbackIcon = paymentMethod.iconRes()
+            if (paymentMethod.imageUrl != null || fallbackIcon != null) {
+                val iconWidth = dimensionResource(R.dimen.paypal_saved_payment_method_funding_instrument_icon_width)
+                val iconHeight = dimensionResource(R.dimen.paypal_saved_payment_method_funding_instrument_icon_height)
+                val iconLoadingHeight =
+                    dimensionResource(R.dimen.paypal_saved_payment_method_funding_instrument_icon_loading_height)
+                LoaderImage(
+                    url = paymentMethod.imageUrl,
+                    placeholder = fallbackIcon?.let { painterResource(it) },
+                    modifier = Modifier
+                        .padding(end = iconMargin)
+                        .width(iconWidth)
+                        .heightIn(max = iconHeight),
+                    loading = {
+                        ShimmerPlaceholder(
+                            contentDescription = null,
+                            modifier = it,
+                            height = iconLoadingHeight,
+                            trailingGap = 0.dp
+                        )
+                    },
+                    imageLoader = imageLoader
                 )
             }
-            is PayPalSavedPaymentMethodDisplayState.NoFundingInstrument ->
-                FundingInstrumentText(
-                    text = state.payerEmail,
-                    resolvedStyle = resolvedStyle,
-                    modifier = Modifier.weight(1f, fill = false).clearAndSetSemantics { }
-                )
-            else -> Unit
+        }
+        state.chipText()?.let { text ->
+            FundingInstrumentText(
+                text = text,
+                resolvedStyle = resolvedStyle,
+                modifier = Modifier.weight(1f, fill = false).clearAndSetSemantics { }
+            )
         }
         if (isEditable) {
             Image(
@@ -176,8 +167,12 @@ private fun FundingInstrumentText(
     )
 }
 
+/** The card's last digits, else the product's label, else the buyer's email; `null` for states with no chip. */
 @Composable
-private fun PayPalSavedPaymentMethod.displayText(): String =
-    lastDigitsOrNull()?.let {
+private fun PayPalSavedPaymentMethodDisplayState.chipText(): String? = when (this) {
+    is PayPalSavedPaymentMethodDisplayState.Content -> paymentMethod.lastDigitsOrNull()?.let {
         stringResource(R.string.paypal_saved_payment_method_label_funding_instrument_card_masked_number, it)
-    } ?: label
+    } ?: paymentMethod.label
+    is PayPalSavedPaymentMethodDisplayState.NoFundingInstrument -> payerEmail
+    else -> null
+}

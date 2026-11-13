@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Places [brand] and [fundingInstrument] side by side, [gap] apart, when the funding instrument fits at its full
- * width. Otherwise stacks them [stackedSpacing] apart. [below] goes under both, [belowSpacing] apart, starting at
- * [belowIndent], or lined up with the funding instrument when [belowIndent] is `null`.
+ * Places [brand] and [fundingInstrument] side by side, [gap] apart, when the funding instrument fits at its full width
+ * or [canStack] is `false`. Otherwise stacks them [stackedSpacing] apart. [below] goes under both, [belowSpacing]
+ * apart, starting at [belowIndent], or lined up with the funding instrument when [belowIndent] is `null`.
  */
 @Composable
 internal fun FundingInstrumentLayout(
@@ -21,7 +21,8 @@ internal fun FundingInstrumentLayout(
     fundingInstrument: @Composable () -> Unit,
     below: @Composable () -> Unit = {},
     belowSpacing: Dp = 0.dp,
-    belowIndent: Dp? = 0.dp
+    belowIndent: Dp? = 0.dp,
+    canStack: Boolean = true
 ) {
     Layout(contents = listOf(brand, fundingInstrument, below)) { measurables, constraints ->
         val (brandMeasurables, fundingInstrumentMeasurables, belowMeasurables) = measurables
@@ -32,7 +33,8 @@ internal fun FundingInstrumentLayout(
             fundingInstrument = fundingInstrumentMeasurables.firstOrNull(),
             gapPx = if (brandPlaceable == null) 0 else gap.roundToPx(),
             stackedSpacingPx = stackedSpacing.roundToPx(),
-            constraints = looseConstraints
+            constraints = looseConstraints,
+            canStack = canStack
         )
         val belowX = belowIndent?.roundToPx() ?: row.fundingInstrumentX
         val belowPlaceable = belowMeasurables.firstOrNull()?.measure(
@@ -47,18 +49,19 @@ internal fun FundingInstrumentLayout(
 }
 
 /**
- * Measures the brand and funding instrument row: side by side if the funding instrument fits at its full width,
- * otherwise stacked, with the spacing only when the brand is shown.
+ * Measures the brand and funding instrument row: side by side if the funding instrument fits at its full width or
+ * [canStack] is `false`, otherwise stacked, with the spacing only when the brand is shown.
  */
 private fun measureRow(
     brand: Placeable?,
     fundingInstrument: Measurable?,
     gapPx: Int,
     stackedSpacingPx: Int,
-    constraints: Constraints
+    constraints: Constraints,
+    canStack: Boolean
 ): MeasuredRow {
     val fullWidth = fundingInstrument?.maxIntrinsicWidth(Constraints.Infinity) ?: 0
-    val isStacked = fundingInstrument != null && constraints.hasBoundedWidth &&
+    val isStacked = canStack && fundingInstrument != null && constraints.hasBoundedWidth &&
         brand.widthOrZero + gapPx + fullWidth > constraints.maxWidth
     val fundingInstrumentX = if (isStacked) 0 else brand.widthOrZero + gapPx
     val fundingInstrumentConstraints = constraints.copy(maxWidth = constraints.widthFrom(fundingInstrumentX))

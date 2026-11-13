@@ -3,7 +3,6 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.compose
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -12,7 +11,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -39,7 +37,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPay
  * Pay Later message. Stateless. Renders nothing when hidden, or when only the logo and label would show and the
  * merchant hid both. The style is resolved again on a configuration change the activity handles itself (dark mode,
  * font scale, locale), and the merchant's height is a minimum so large text isn't clipped. While loading, the shimmer
- * sits beside the brand without stacking, and the Pay Later shimmer is indented to match.
+ * takes the funding instrument's place and never stacks.
  */
 @OptIn(ExperimentalBetaApi::class)
 @Composable
@@ -62,13 +60,11 @@ internal fun PayPalSavedPaymentMethodContent(
     }
     val showsBrandMark = resolvedStyle.showPayPalLogo || resolvedStyle.showPayPalLabel
     if (!fundingInstrumentState.showsFundingInstrumentRow && !showsBrandMark) return
-    val showFundingInstrument = fundingInstrumentState.showsFundingInstrumentRow
     val visibleCreditMessagingState = creditMessagingState.visibleWith(fundingInstrumentState, isEditCompleted)
     val showCreditMessaging = resolvedStyle.showPayPalCreditMessaging &&
         visibleCreditMessagingState != PayPalCreditMessagingDisplayState.Hidden
     val labelGap = resolvedStyle.labelMarginStartDp.dp
     val fundingInstrumentGap = resolvedStyle.fundingInstrumentMarginStartDp.dp
-    val logoWidth = resolvedStyle.logoWidthDp.dp
     val creditMessagingIndent = resolvedStyle.creditMessagingIndent()
     val creditMessagingSpacing = dimensionResource(R.dimen.paypal_saved_payment_method_credit_messaging_top_spacing)
     val creditMessaging: @Composable () -> Unit = {
@@ -101,54 +97,35 @@ internal fun PayPalSavedPaymentMethodContent(
                     vertical = resolvedStyle.verticalPaddingDp.dp
                 )
         ) {
-            val brandMark: @Composable () -> Unit = { PayPalBrandMark(resolvedStyle, labelGap) }
-            if (fundingInstrumentState == PayPalSavedPaymentMethodDisplayState.Loading) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    brandMark()
-                    // Tagged here: the placeholder replaces its own modifier's semantics.
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .testTag(FUNDING_INSTRUMENT_SHIMMER_TEST_TAG)
-                            .padding(start = if (showsBrandMark) fundingInstrumentGap else 0.dp)
-                    ) {
-                        ShimmerPlaceholder(
-                            contentDescription =
-                                stringResource(R.string.paypal_saved_payment_method_loading_content_description)
-                        )
-                    }
-                }
-                if (showCreditMessaging) {
-                    Box(
-                        modifier = Modifier.padding(
-                            start = creditMessagingIndent ?: (logoWidth + fundingInstrumentGap),
-                            top = creditMessagingSpacing
-                        )
-                    ) {
-                        creditMessaging()
-                    }
-                }
-            } else {
-                FundingInstrumentLayout(
-                    gap = fundingInstrumentGap,
-                    stackedSpacing = dimensionResource(R.dimen.paypal_saved_payment_method_stacked_layout_spacing),
-                    brand = brandMark,
-                    fundingInstrument = {
-                        if (showFundingInstrument) {
-                            FundingInstrumentChip(
-                                state = fundingInstrumentState,
-                                resolvedStyle = resolvedStyle,
-                                editEnabled = editEnabled,
-                                onEditClick = onEditClick,
-                                modifier = Modifier.testTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG)
+            val isLoading = fundingInstrumentState == PayPalSavedPaymentMethodDisplayState.Loading
+            FundingInstrumentLayout(
+                gap = fundingInstrumentGap,
+                stackedSpacing = dimensionResource(R.dimen.paypal_saved_payment_method_stacked_layout_spacing),
+                brand = { PayPalBrandMark(resolvedStyle, labelGap) },
+                fundingInstrument = {
+                    if (isLoading) {
+                        // Tagged here: the placeholder replaces its own modifier's semantics.
+                        Box(modifier = Modifier.testTag(FUNDING_INSTRUMENT_SHIMMER_TEST_TAG)) {
+                            ShimmerPlaceholder(
+                                contentDescription =
+                                    stringResource(R.string.paypal_saved_payment_method_loading_content_description)
                             )
                         }
-                    },
-                    below = creditMessaging,
-                    belowSpacing = creditMessagingSpacing,
-                    belowIndent = creditMessagingIndent
-                )
-            }
+                    } else if (fundingInstrumentState.showsFundingInstrumentRow) {
+                        FundingInstrumentChip(
+                            state = fundingInstrumentState,
+                            resolvedStyle = resolvedStyle,
+                            editEnabled = editEnabled,
+                            onEditClick = onEditClick,
+                            modifier = Modifier.testTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG)
+                        )
+                    }
+                },
+                below = creditMessaging,
+                belowSpacing = creditMessagingSpacing,
+                belowIndent = creditMessagingIndent,
+                canStack = !isLoading
+            )
         }
     }
 }
