@@ -198,7 +198,7 @@ class PayPalCreditMessagingViewUnitTest {
                 creditMessaging = PayPalSavedPaymentMethodCreditMessagingStyle(linkColor = linkColor)
             )
         )
-        sut.bind(state, PayPalSavedPaymentMethodStyleResolver(context, style)) { openedUrls += it }
+        sut.bind(state, PayPalSavedPaymentMethodStyleResolver(context, style)) { openedUrls += it.url }
     }
 
     private fun Spanned.link(): ClickableSpan = getSpans(0, length, ClickableSpan::class.java).single()
