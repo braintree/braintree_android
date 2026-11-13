@@ -2,6 +2,7 @@
 
 package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
 import android.os.SystemClock
@@ -99,6 +100,20 @@ class PayPalSavedPaymentMethodContentViewUnitTest {
 
         render(CARD_STATE, MESSAGE_STATE, style = PayPalSavedPaymentMethodViewStyle(showPayPalCreditMessaging = false))
         assertFalse(creditMessaging.isVisible)
+    }
+
+    @Test
+    fun `Pay Later is laid out under the label when the view was measured before its content arrived`() {
+        // Attached and laid out while empty, as in an app: the margins resolve before the content is rendered.
+        val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
+        activity.setContentView(sut)
+        layOut()
+
+        render(CARD_STATE, MESSAGE_STATE)
+        layOut()
+
+        val labelStart = startInContent(label) + label.paddingStart
+        assertEquals(labelStart, startInContent(creditMessaging))
     }
 
     @Test
