@@ -101,6 +101,12 @@ class PayPalClient internal constructor(
         )
     )
 
+    /**
+     * @suppress Lets another Braintree module share its [BraintreeClient] instead of creating a second one.
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    constructor(braintreeClient: BraintreeClient) : this(braintreeClient, PayPalInternalClient(braintreeClient))
+
     init {
         analyticsParamRepository.linkType = when (getReturnLinkTypeUseCase()) {
             ReturnLinkTypeResult.APP_LINK -> LinkType.APP_LINK
