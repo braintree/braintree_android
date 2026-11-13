@@ -75,7 +75,6 @@ fun PayPalSavedPaymentMethodView(
     style: PayPalSavedPaymentMethodViewStyle = PayPalSavedPaymentMethodViewStyle(),
     paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
-    // The application context, so the client doesn't hold the activity.
     val applicationContext = LocalContext.current.applicationContext
     PayPalSavedPaymentMethodView(
         payPalCheckoutRequest = payPalCheckoutRequest,
@@ -99,7 +98,14 @@ fun PayPalSavedPaymentMethodView(
     )
 }
 
-/** The component with the view model injectable, for tests. */
+/**
+ * The component with the view model injectable, for tests. The instance ID and the pending request of an edit are
+ * saved, so the view model is found again and a return can still be completed after recreation or process death. The
+ * authorization and return URLs are read once, as on iOS, so a refreshed authorization keeps the edit in progress.
+ * The first load fetches the funding instrument and the Pay Later message; later request changes reload only the
+ * message. The pending request is forgotten once its result is delivered, a cancel included, since every resume passes
+ * it to the view model and would deliver the cancel again.
+ */
 @OptIn(ExperimentalBetaApi::class)
 @Composable
 internal fun PayPalSavedPaymentMethodView(
@@ -118,13 +124,10 @@ internal fun PayPalSavedPaymentMethodView(
     val currentCheckoutRequest by rememberUpdatedState(payPalCheckoutRequest)
     val currentCallback by rememberUpdatedState(paypalTokenizeCallback)
 
-    // Saved, so the view model is found again after recreation or process death.
     val instanceId = rememberSaveable { UUID.randomUUID().toString() }
     val viewModelKey = "PayPalSavedPaymentMethodView:$instanceId"
-    // Read once, as on iOS, so a refreshed authorization keeps the view model and the edit in progress.
     val returnUrls = remember { ReturnUrls(appLinkReturnUrl, deepLinkFallbackUrlScheme) }
     val factory = remember { viewModelFactory(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme) }
-    // Pending request of the edit in progress. Saved, so a return after process death can still be completed.
     var launchedPendingRequest by rememberSaveable { mutableStateOf<String?>(null) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
@@ -140,7 +143,6 @@ internal fun PayPalSavedPaymentMethodView(
     val viewModel: PayPalSavedPaymentMethodViewModel = viewModel(key = viewModelKey, factory = factory)
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    // The first load fetches both; later request changes reload the message.
     LaunchedEffect(viewModel) {
         viewModel.load(request, style.showPayPalCreditMessaging)
     }
@@ -148,8 +150,6 @@ internal fun PayPalSavedPaymentMethodView(
         viewModel.onRequestChanged(request, style.showPayPalCreditMessaging)
     }
 
-    // Forgets the pending request once its result is delivered. A cancel does too: every resume passes the pending
-    // request to the view model, so keeping it would deliver the cancel again each time the screen resumes.
     LaunchedEffect(viewModel) {
         viewModel.results.collect { result ->
             launchedPendingRequest = null
@@ -213,7 +213,7 @@ private fun PayPalSavedPaymentMethodViewModel.takeReturn(
     }
 }
 
-// The return URLs the component was first shown with.
+/** The return URLs the component was first shown with. */
 private class ReturnUrls(val appLink: Uri, val deepLinkScheme: String?)
 
 private const val NO_ACTIVITY_RESULT_REGISTRY_MESSAGE =

@@ -20,7 +20,10 @@ import androidx.compose.ui.unit.sp
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 
-/** The PayPal logo and label, either of which the merchant can hide. */
+/**
+ * The PayPal logo and label, either of which the merchant can hide. The logo's artwork fits inside a square box, and
+ * [labelGap] separates the logo and the label.
+ */
 @Composable
 internal fun PayPalBrandMark(resolvedStyle: PayPalSavedPaymentMethodStyleResolver, labelGap: Dp) {
     if (!resolvedStyle.showPayPalLogo && !resolvedStyle.showPayPalLabel) return
@@ -29,7 +32,6 @@ internal fun PayPalBrandMark(resolvedStyle: PayPalSavedPaymentMethodStyleResolve
             Image(
                 painter = painterResource(R.drawable.ic_paypal_brand_logo),
                 contentDescription = stringResource(R.string.paypal_saved_payment_method_logo_content_description),
-                // Square box; the artwork fits inside it.
                 modifier = Modifier.size(resolvedStyle.logoWidthDp.dp),
                 contentScale = ContentScale.Fit
             )
@@ -41,7 +43,6 @@ internal fun PayPalBrandMark(resolvedStyle: PayPalSavedPaymentMethodStyleResolve
                 fontSize = resolvedStyle.labelFontSizeSp.sp,
                 fontWeight = FontWeight.Medium,
                 fontFamily = resolvedStyle.fontFamily,
-                // The gap sits between the logo and the label.
                 modifier = Modifier.padding(start = if (resolvedStyle.showPayPalLogo) labelGap else 0.dp)
             )
         }
