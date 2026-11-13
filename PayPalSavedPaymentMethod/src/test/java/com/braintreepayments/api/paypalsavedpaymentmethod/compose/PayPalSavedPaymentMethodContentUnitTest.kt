@@ -33,6 +33,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextDecoration
@@ -195,6 +196,20 @@ class PayPalSavedPaymentMethodContentUnitTest {
 
         val link = learnMoreLink()
         link.linkInteractionListener?.onClick(link)
+
+        assertEquals(listOf(URL), openedUrls)
+    }
+
+    @Test
+    fun `screen readers read the Pay Later message as one element whose action opens Learn more`() {
+        render(CARD, MESSAGE)
+
+        composeTestRule.onNodeWithTag(CREDIT_MESSAGING_TEST_TAG)
+            .assert(SemanticsMatcher("has no separate link to focus") { it.children.isEmpty() })
+            .assert(SemanticsMatcher("has the Learn more action") {
+                it.config.getOrNull(SemanticsActions.OnClick)?.label == "Learn more"
+            })
+            .performSemanticsAction(SemanticsActions.OnClick)
 
         assertEquals(listOf(URL), openedUrls)
     }
