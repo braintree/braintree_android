@@ -64,6 +64,9 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         val params = creditMessagingView.layoutParams as MarginLayoutParams
         if (params.marginStart != start) {
             params.marginStart = start
+            // LinearLayout positions children by their left and right margins, which a start margin set in place
+            // doesn't update once the view has resolved its layout direction.
+            params.resolveLayoutDirection(layoutDirection)
             super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         }
     }
