@@ -89,10 +89,10 @@ internal class FundingInstrumentRowLayout @JvmOverloads constructor(
 
     override fun checkLayoutParams(params: LayoutParams?): Boolean = params is MarginLayoutParams
 
-    // The start margin separates the shimmer or chip from the logo and label.
+    /** The start margin separates the shimmer or chip from the logo and label. */
     private fun gapBefore(child: View): Int = if (getChildAt(BRAND).isGone) 0 else child.marginStart
 
-    // Positions from the start edge, mirrored for right-to-left layouts.
+    /** Positions from the start edge, mirrored for right-to-left layouts. */
     private fun placeChild(child: View, start: Int, top: Int) {
         val childLeft = if (layoutDirection == LAYOUT_DIRECTION_RTL) {
             width - start - child.measuredWidth

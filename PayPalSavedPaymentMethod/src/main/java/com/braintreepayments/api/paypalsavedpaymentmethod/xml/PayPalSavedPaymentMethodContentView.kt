@@ -42,7 +42,7 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
     private val creditMessagingView: PayPalCreditMessagingView
     private val fundingInstrumentRow: FundingInstrumentRowLayout
 
-    // The style last applied, so a state change alone doesn't rebuild the background and spacing.
+    /** The style last applied, so a state change alone doesn't rebuild the background and spacing. */
     private var appliedStyle: PayPalSavedPaymentMethodStyleResolver? = null
 
     init {
@@ -57,15 +57,18 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         fundingInstrumentRow = findViewById(R.id.paypal_saved_payment_method_funding_instrument_row)
     }
 
+    /**
+     * Sets the Pay Later start, which depends on whether the chip stacked and so is only known once the row is
+     * measured, then measures again. The margins are resolved after setting it, since LinearLayout positions children
+     * by their left and right margins, which a start margin set in place doesn't update once the layout direction is
+     * resolved.
+     */
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        // The Pay Later start depends on whether the chip stacked, which is only known once the row is measured.
         val start = creditMessagingStart()
         val params = creditMessagingView.layoutParams as MarginLayoutParams
         if (params.marginStart != start) {
             params.marginStart = start
-            // LinearLayout positions children by their left and right margins, which a start margin set in place
-            // doesn't update once the view has resolved its layout direction.
             params.resolveLayoutDirection(layoutDirection)
             super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         }
@@ -76,8 +79,10 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         updateChipTouchDelegate()
     }
 
-    // An editable chip gets a 48dp touch target, like Compose's minimumInteractiveComponentSize, without changing how
-    // the chip looks. Kept inside this view, since a touch outside it never arrives.
+    /**
+     * An editable chip gets a 48dp touch target, like Compose's minimumInteractiveComponentSize, without changing how
+     * the chip looks. Kept inside this view, since a touch outside it never arrives.
+     */
     private fun updateChipTouchDelegate() {
         if (!fundingInstrumentChip.isVisible || !fundingInstrumentChip.isClickable) {
             touchDelegate = null
@@ -102,7 +107,6 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         isEditCompleted: Boolean
     ) {
         val showsBrand = resolvedStyle.showPayPalLogo || resolvedStyle.showPayPalLabel
-        // Nothing to draw when only the brand would show and it's hidden.
         isVisible = fundingInstrumentState != PayPalSavedPaymentMethodDisplayState.Hidden &&
             (fundingInstrumentState.showsFundingInstrumentRow || showsBrand)
         if (!isVisible) return
@@ -126,6 +130,10 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         creditMessagingView.bind(visibleCreditMessagingState, resolvedStyle) { onLearnMoreClick(it) }
     }
 
+    /**
+     * Applies the style. The merchant's height is a minimum, so large text isn't clipped, and the label's start padding
+     * is the gap between the logo and the label.
+     */
     private fun applyStyle(resolvedStyle: PayPalSavedPaymentMethodStyleResolver) {
         background = GradientDrawable().apply {
             cornerRadius = resolvedStyle.cornerRadiusDp.dpToPx(resources).toFloat()
@@ -136,7 +144,6 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         val horizontalPadding = resolvedStyle.horizontalPaddingDp.dpToPx(resources)
         val verticalPadding = resolvedStyle.verticalPaddingDp.dpToPx(resources)
         setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
-        // The height is a minimum, so large text isn't clipped.
         minimumHeight = resolvedStyle.heightDp?.dpToPx(resources) ?: 0
 
         val logoSize = resolvedStyle.logoWidthDp.dpToPx(resources)
@@ -151,7 +158,6 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
 
         labelView.isVisible = resolvedStyle.showPayPalLabel
         labelView.applyTextStyle(resolvedStyle, resolvedStyle.labelFontSizeSp, weight = TextWeight.MEDIUM)
-        // The gap sits between the logo and the label.
         labelView.updatePaddingRelative(start = if (resolvedStyle.showPayPalLogo) labelGap else 0)
 
         val fundingInstrumentGap = resolvedStyle.fundingInstrumentMarginStartDp.dpToPx(resources)
@@ -159,8 +165,10 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
         fundingInstrumentChip.updateLayoutParams<MarginLayoutParams> { marginStart = fundingInstrumentGap }
     }
 
-    // Under the label, or at the leading edge without the logo. With the logo shown and the label hidden it lines up
-    // with the funding instrument: after the logo and the gap, or at the leading edge when the chip stacked.
+    /**
+     * Under the label, or at the leading edge without the logo. With the logo shown and the label hidden it lines up
+     * with the funding instrument: after the logo and the gap, or at the leading edge when the chip stacked.
+     */
     private fun creditMessagingStart(): Int {
         val style = appliedStyle ?: return 0
         val logoSize = style.logoWidthDp.dpToPx(resources)

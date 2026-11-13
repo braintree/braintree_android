@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -97,13 +96,8 @@ class PayPalSavedPaymentMethodViewUnitTest {
     @Test
     fun `tapping the funding instrument passes the pending request to the launch callback`() {
         val pending = PayPalPendingRequest.Started("pending")
-        coEvery { viewModel.startEdit(any(), any(), any()) } returns pending
-        initialize()
-        state.value = PayPalSavedPaymentMethodUiState(fundingInstrument = CARD_STATE)
-        idle()
 
-        chip().performClick()
-        idle()
+        tapChip(pending)
 
         assertEquals(listOf(pending), launchedRequests)
     }
@@ -111,13 +105,8 @@ class PayPalSavedPaymentMethodViewUnitTest {
     @Test
     fun `a failed edit launch is reported to the tokenize callback`() {
         val error = BraintreeException("launch failed")
-        coEvery { viewModel.startEdit(any(), any(), any()) } returns PayPalPendingRequest.Failure(error)
-        initialize()
-        state.value = PayPalSavedPaymentMethodUiState(fundingInstrument = CARD_STATE)
-        idle()
 
-        chip().performClick()
-        idle()
+        tapChip(PayPalPendingRequest.Failure(error))
 
         assertSame(error, (delivered.single() as PayPalResult.Failure).error)
     }
@@ -141,23 +130,17 @@ class PayPalSavedPaymentMethodViewUnitTest {
         val pending = PayPalPendingRequest.Started("pending")
         val returnUrl = RETURN_URL.buildUpon().path("return").build()
 
-        every { viewModel.handleReturnToApp(any(), any(), any()) } returns
-            PayPalSavedPaymentMethodReturnResult.NOT_TAKEN
-        val notTaken = Intent(Intent.ACTION_VIEW, returnUrl)
-        assertFalse(sut.handleReturnToApp(pending, notTaken))
-        assertEquals(returnUrl, notTaken.data)
-
-        every { viewModel.handleReturnToApp(any(), any(), any()) } returns
-            PayPalSavedPaymentMethodReturnResult.TAKEN
-        val taken = Intent(Intent.ACTION_VIEW, returnUrl)
-        assertTrue(sut.handleReturnToApp(pending, taken))
-        assertEquals(returnUrl, taken.data)
-
-        every { viewModel.handleReturnToApp(any(), any(), any()) } returns
-            PayPalSavedPaymentMethodReturnResult.COMPLETED
-        val completed = Intent(Intent.ACTION_VIEW, returnUrl)
-        assertTrue(sut.handleReturnToApp(pending, completed))
-        assertNull(completed.data)
+        // What the view model did, whether the merchant can forget the request, and the intent's data afterwards.
+        listOf(
+            Triple(PayPalSavedPaymentMethodReturnResult.NOT_TAKEN, false, returnUrl),
+            Triple(PayPalSavedPaymentMethodReturnResult.TAKEN, true, returnUrl),
+            Triple(PayPalSavedPaymentMethodReturnResult.COMPLETED, true, null)
+        ).forEach { (result, canForget, dataAfter) ->
+            every { viewModel.handleReturnToApp(any(), any(), any()) } returns result
+            val intent = Intent(Intent.ACTION_VIEW, returnUrl)
+            assertEquals(canForget, sut.handleReturnToApp(pending, intent))
+            assertEquals(dataAfter, intent.data)
+        }
     }
 
     @Test
@@ -344,6 +327,16 @@ class PayPalSavedPaymentMethodViewUnitTest {
         idle()
     }
 
+    // Initializes with a card and taps it; the edit returns [pending].
+    private fun tapChip(pending: PayPalPendingRequest) {
+        coEvery { viewModel.startEdit(any(), any(), any()) } returns pending
+        initialize()
+        state.value = PayPalSavedPaymentMethodUiState(fundingInstrument = CARD_STATE)
+        idle()
+        chip().performClick()
+        idle()
+    }
+
     private fun idle() = shadowOf(Looper.getMainLooper()).idle()
 
     private fun chip(): View = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_chip)
@@ -355,8 +348,6 @@ class PayPalSavedPaymentMethodViewUnitTest {
         val CARD_STATE = PayPalSavedPaymentMethodDisplayState.Content(
             PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD, "Visa", null, "1234", null)
         )
-        val MESSAGE_STATE = PayPalCreditMessagingDisplayState.Content(
-            PayPalCreditMessagingContent("Pay in 4.", learnMore = null)
-        )
+        val MESSAGE_STATE = PayPalCreditMessagingDisplayState.Content(PayPalCreditMessagingContent("Pay in 4.", null))
     }
 }
