@@ -18,7 +18,10 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMess
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 
-/** The Pay Later message with its "Learn more" link, or its shimmer while it loads. */
+/**
+ * The Pay Later message with its "Learn more" link, or its shimmer while it loads. The shimmer is silent, since the
+ * funding instrument shimmer already announces loading.
+ */
 @Composable
 internal fun CreditMessagingRow(
     state: PayPalCreditMessagingDisplayState,
@@ -27,8 +30,7 @@ internal fun CreditMessagingRow(
     modifier: Modifier = Modifier
 ) {
     when (state) {
-        // Decorative: the funding instrument shimmer already announces loading.
-        // Wrapped, since the placeholder replaces the semantics of its own modifier, including the test tag.
+        // Wrapped: the placeholder replaces its own modifier's semantics, including the test tag.
         PayPalCreditMessagingDisplayState.Loading -> Box(modifier = modifier.fillMaxWidth()) {
             ShimmerPlaceholder(contentDescription = null)
         }

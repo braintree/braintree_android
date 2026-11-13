@@ -46,7 +46,10 @@ internal fun SideBySideOrStacked(
     }
 }
 
-// Measures the brand and funding instrument row: side by side if the funding instrument fits at its full width.
+/**
+ * Measures the brand and funding instrument row: side by side if the funding instrument fits at its full width,
+ * otherwise stacked, with the spacing only when the brand is shown.
+ */
 private fun measureRow(
     brand: Placeable?,
     fundingInstrument: Measurable?,
@@ -64,7 +67,6 @@ private fun measureRow(
         fundingInstrument = fundingInstrument?.measure(fundingInstrumentConstraints),
         isStacked = isStacked,
         fundingInstrumentX = fundingInstrumentX,
-        // Spacing only applies when the brand is shown.
         spacingPx = if (isStacked && brand != null) stackedSpacingPx else 0
     )
 }
@@ -95,6 +97,6 @@ private class MeasuredRow(
 private val Placeable?.widthOrZero: Int get() = this?.width ?: 0
 private val Placeable?.heightOrZero: Int get() = this?.height ?: 0
 
-// The width left after [start], or unbounded.
+/** The width left after [start], or unbounded. */
 private fun Constraints.widthFrom(start: Int): Int =
     if (hasBoundedWidth) (maxWidth - start).coerceAtLeast(0) else Constraints.Infinity

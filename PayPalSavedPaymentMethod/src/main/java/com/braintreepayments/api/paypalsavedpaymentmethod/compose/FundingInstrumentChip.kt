@@ -40,7 +40,14 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.state.iconRes
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.lastDigitsOrNull
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 
-/** The funding instrument or the buyer's email, with an edit control when the buyer can change it. */
+/**
+ * The funding instrument or the buyer's email, with an edit control when the buyer can change it. The whole chip is
+ * the edit target and screen readers read it as one element, for example "Visa, ending in 1 2 3 4", so its icons and
+ * text are decorative. An editable chip gets a 48dp touch target and a fixed dark ripple, since the theme's ripple is
+ * light on a dark theme and barely shows on the light chip. Card art shows a shimmer while it loads and the generic
+ * icon if it fails; with no generic icon it leaves no space, as on iOS. The art's frame is capped, so square or
+ * portrait art scales down instead of growing the chip, and a long label shrinks so the edit icon keeps its space.
+ */
 @Composable
 internal fun FundingInstrumentChip(
     state: PayPalSavedPaymentMethodDisplayState,
@@ -66,9 +73,7 @@ internal fun FundingInstrumentChip(
     )
     val isEditable = state.isEditable
     Row(
-        // The whole chip is the edit target and is read as one element, e.g. "Visa, ending in 1 2 3 4".
         modifier = modifier
-            // An editable chip gets a 48dp touch target, with the chip centered inside it.
             .then(if (isEditable) Modifier.minimumInteractiveComponentSize() else Modifier)
             .clip(chipShape)
             .background(colorResource(R.color.paypal_saved_payment_method_funding_instrument_chip_background))
@@ -77,7 +82,6 @@ internal fun FundingInstrumentChip(
                 if (isEditable) {
                     Modifier.clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        // A fixed dark ripple: the theme's is light on a dark theme and barely shows on the light chip.
                         indication = ripple(
                             color = colorResource(R.color.paypal_saved_payment_method_funding_instrument_chip_ripple)
                         ),
@@ -104,7 +108,6 @@ internal fun FundingInstrumentChip(
             is PayPalSavedPaymentMethodDisplayState.Content -> {
                 val paymentMethod = state.paymentMethod
                 val fallbackIcon = paymentMethod.iconRes()
-                // Card art with a shimmer while it loads, and the generic icon if it fails to load.
                 if (paymentMethod.imageUrl != null || fallbackIcon != null) {
                     val iconWidth = dimensionResource(R.dimen.paypal_saved_payment_method_funding_instrument_icon_width)
                     val iconHeight =
@@ -113,15 +116,12 @@ internal fun FundingInstrumentChip(
                         dimensionResource(R.dimen.paypal_saved_payment_method_funding_instrument_icon_loading_height)
                     LoaderImage(
                         url = paymentMethod.imageUrl,
-                        // Art that fails to load with no generic icon leaves no space, as on iOS.
                         placeholder = fallbackIcon?.let { painterResource(it) },
-                        // A capped frame, so square or portrait art scales down instead of growing the chip.
                         modifier = Modifier
                             .padding(end = iconMargin)
                             .width(iconWidth)
                             .heightIn(max = iconHeight),
                         loading = {
-                            // Decorative: the chip is read as one element.
                             ShimmerPlaceholder(
                                 contentDescription = null,
                                 modifier = it,
@@ -135,7 +135,6 @@ internal fun FundingInstrumentChip(
                 FundingInstrumentText(
                     text = paymentMethod.displayText(),
                     resolvedStyle = resolvedStyle,
-                    // Shrinks a long label so the edit icon keeps its space.
                     modifier = Modifier.weight(1f, fill = false).clearAndSetSemantics { }
                 )
             }
@@ -148,7 +147,6 @@ internal fun FundingInstrumentChip(
             else -> Unit
         }
         if (isEditable) {
-            // Decorative: the chip carries the edit action.
             Image(
                 painter = painterResource(R.drawable.ic_edit_pencil),
                 contentDescription = null,
@@ -160,6 +158,7 @@ internal fun FundingInstrumentChip(
     }
 }
 
+/** The chip's text, in a fixed color as on iOS, so it stays readable on the chip's fixed background. */
 @Composable
 private fun FundingInstrumentText(
     text: String,
@@ -169,7 +168,6 @@ private fun FundingInstrumentText(
     Text(
         text = text,
         modifier = modifier,
-        // Fixed, like iOS, so the text stays readable on the chip's fixed background.
         color = colorResource(R.color.paypal_saved_payment_method_funding_instrument_chip_text),
         fontSize = resolvedStyle.fundingInstrumentTextFontSizeSp.sp,
         fontFamily = resolvedStyle.fontFamily,

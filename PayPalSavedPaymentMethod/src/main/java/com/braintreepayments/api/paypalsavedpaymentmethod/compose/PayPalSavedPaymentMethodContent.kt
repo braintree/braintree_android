@@ -37,7 +37,9 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPay
 /**
  * Renders the component from its display states: the PayPal logo and label, the funding instrument chip and the
  * Pay Later message. Stateless. Renders nothing when hidden, or when only the logo and label would show and the
- * merchant hid both.
+ * merchant hid both. The style is resolved again on a configuration change the activity handles itself (dark mode,
+ * font scale, locale), and the merchant's height is a minimum so large text isn't clipped. While loading, the shimmer
+ * sits beside the brand without stacking, and the Pay Later shimmer is indented to match.
  */
 @OptIn(ExperimentalBetaApi::class)
 @Composable
@@ -54,14 +56,11 @@ internal fun PayPalSavedPaymentMethodContent(
     if (fundingInstrumentState == PayPalSavedPaymentMethodDisplayState.Hidden) return
 
     val context = LocalContext.current
-    // Also keyed on the configuration, so a dark mode, font scale or locale change the activity handles itself
-    // resolves colors and sizes again.
     val configuration = LocalConfiguration.current
     val resolvedStyle = remember(style, context, configuration) {
         PayPalSavedPaymentMethodStyleResolver(context, style)
     }
     val showsBrandMark = resolvedStyle.showPayPalLogo || resolvedStyle.showPayPalLabel
-    // Only the brand would show and it's hidden, so no empty card.
     if (!fundingInstrumentState.showsFundingInstrumentRow && !showsBrandMark) return
     val showFundingInstrument = fundingInstrumentState.showsFundingInstrumentRow
     val visibleCreditMessagingState = creditMessagingState.visibleWith(fundingInstrumentState, isEditCompleted)
@@ -84,7 +83,6 @@ internal fun PayPalSavedPaymentMethodContent(
     }
 
     Card(
-        // The height is a minimum, so large text isn't clipped.
         modifier = modifier.heightIn(min = resolvedStyle.heightDp?.dp ?: 0.dp),
         shape = RoundedCornerShape(resolvedStyle.cornerRadiusDp.dp),
         colors = CardDefaults.cardColors(containerColor = Color(resolvedStyle.backgroundColor)),
@@ -107,12 +105,11 @@ internal fun PayPalSavedPaymentMethodContent(
             if (fundingInstrumentState == PayPalSavedPaymentMethodDisplayState.Loading) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     brandMark()
-                    // Tagged on the wrapper, since the placeholder replaces the semantics of its own modifier.
+                    // Tagged here: the placeholder replaces its own modifier's semantics.
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .testTag(FUNDING_INSTRUMENT_SHIMMER_TEST_TAG)
-                            // The gap only applies when the brand is shown.
                             .padding(start = if (showsBrandMark) fundingInstrumentGap else 0.dp)
                     ) {
                         ShimmerPlaceholder(
@@ -122,7 +119,6 @@ internal fun PayPalSavedPaymentMethodContent(
                     }
                 }
                 if (showCreditMessaging) {
-                    // The loading shimmer never stacks, so it starts after the logo and the gap.
                     Box(
                         modifier = Modifier.padding(
                             start = creditMessagingIndent ?: (logoWidth + fundingInstrumentGap),
