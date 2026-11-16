@@ -26,6 +26,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPay
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -159,12 +160,37 @@ class PayPalCreditMessagingViewUnitTest {
     }
 
     @Test
+    fun `pressing numpad enter or space on the focused message opens the link, as on a button`() {
+        bindMessage()
+
+        assertTrue(text.requestFocus())
+        press(KeyEvent.KEYCODE_NUMPAD_ENTER)
+        press(KeyEvent.KEYCODE_SPACE)
+
+        assertEquals(listOf(URL, URL), openedUrls)
+    }
+
+    @Test
     fun `pressing enter on a focused message without a link opens nothing`() {
         bindMessage(MESSAGE_ONLY)
 
         press(KeyEvent.KEYCODE_ENTER)
 
         assertTrue(openedUrls.isEmpty())
+    }
+
+    @Test
+    fun `binding the same state and style again skips the rebuild but opens the link with the latest callback`() {
+        val resolvedStyle = PayPalSavedPaymentMethodStyleResolver(context, PayPalSavedPaymentMethodViewStyle())
+        val state = PayPalCreditMessagingDisplayState.Content(CONTENT)
+        sut.bind(state, resolvedStyle) { openedUrls += "earlier callback" }
+        val shownText = text.text
+
+        sut.bind(state, resolvedStyle) { openedUrls += it.url }
+
+        assertSame(shownText, text.text)
+        (text.text as Spanned).link().onClick(text)
+        assertEquals(listOf(URL), openedUrls)
     }
 
     @Test

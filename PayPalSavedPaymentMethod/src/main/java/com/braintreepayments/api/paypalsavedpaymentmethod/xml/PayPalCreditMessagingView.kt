@@ -34,6 +34,14 @@ internal class PayPalCreditMessagingView @JvmOverloads constructor(
     private val shimmerView: ShimmerPlaceholderView
     private val textView: TextView
 
+    /** The latest callback, so a bind skipped for an unchanged state still opens the link with it. */
+    private var onLearnMoreClick: (PayPalCreditMessagingContent.LearnMore) -> Unit = {}
+    private val forwardLearnMoreClick: (PayPalCreditMessagingContent.LearnMore) -> Unit = { onLearnMoreClick(it) }
+
+    /** What was last bound, so binding the same state and style again doesn't rebuild the message. */
+    private var boundState: PayPalCreditMessagingDisplayState? = null
+    private var boundStyle: PayPalSavedPaymentMethodStyleResolver? = null
+
     init {
         LayoutInflater.from(context).inflate(R.layout.paypal_saved_payment_method_credit_messaging, this)
         shimmerView = findViewById(R.id.paypal_saved_payment_method_credit_messaging_shimmer)
@@ -48,12 +56,19 @@ internal class PayPalCreditMessagingView @JvmOverloads constructor(
         textView.isLongClickable = false
     }
 
-    /** Shows [state]; [PayPalCreditMessagingDisplayState.Hidden] hides the whole row. */
+    /**
+     * Shows [state]; [PayPalCreditMessagingDisplayState.Hidden] hides the whole row. Returns early when [state] and
+     * [resolvedStyle] are the ones already shown; [onLearnMoreClick] is still updated.
+     */
     fun bind(
         state: PayPalCreditMessagingDisplayState,
         resolvedStyle: PayPalSavedPaymentMethodStyleResolver,
         onLearnMoreClick: (PayPalCreditMessagingContent.LearnMore) -> Unit
     ) {
+        this.onLearnMoreClick = onLearnMoreClick
+        if (state == boundState && resolvedStyle === boundStyle) return
+        boundState = state
+        boundStyle = resolvedStyle
         isVisible = state != PayPalCreditMessagingDisplayState.Hidden
         shimmerView.isVisible = state == PayPalCreditMessagingDisplayState.Loading
         textView.isVisible = state is PayPalCreditMessagingDisplayState.Content
@@ -62,9 +77,9 @@ internal class PayPalCreditMessagingView @JvmOverloads constructor(
             textView.text = state.content.toSpannable(
                 linkColor = resolvedStyle.creditMessagingLinkColor,
                 textColor = resolvedStyle.textColor,
-                onLearnMoreClick = onLearnMoreClick
+                onLearnMoreClick = forwardLearnMoreClick
             )
-            bindAccessibilityClick(state.content.learnMore, onLearnMoreClick)
+            bindAccessibilityClick(state.content.learnMore, forwardLearnMoreClick)
         }
     }
 
@@ -77,8 +92,8 @@ internal class PayPalCreditMessagingView @JvmOverloads constructor(
         textView.isClickable = learnMore != null
         // The movement method made the text focusable; only a message with the link is a keyboard or D-pad stop.
         textView.isFocusable = learnMore != null
-        // A focused text has no link selected, so the movement method ignores Enter and the center button. They open
-        // the link here instead, like a tap on it. Touches are unchanged.
+        // A focused text has no link selected, so the movement method ignores the confirm keys. They open the link here
+        // instead, like a tap on it. Touches are unchanged.
         textView.setOnKeyListener(learnMore?.let { link -> learnMoreKeyListener(link, onLearnMoreClick) })
         if (learnMore != null) {
             ViewCompat.replaceAccessibilityAction(
@@ -100,10 +115,18 @@ private fun learnMoreKeyListener(
     onLearnMoreClick: (PayPalCreditMessagingContent.LearnMore) -> Unit
 ) =
     View.OnKeyListener { _, keyCode, event ->
-        val isActivationKey = keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+        val isActivationKey = keyCode in CONFIRM_KEYS
         if (isActivationKey && event.action == KeyEvent.ACTION_UP) onLearnMoreClick(learnMore)
         isActivationKey
     }
+
+/** The keys that click a focused button on Android: Enter, numpad Enter, the D-pad center button and Space. */
+private val CONFIRM_KEYS = setOf(
+    KeyEvent.KEYCODE_ENTER,
+    KeyEvent.KEYCODE_NUMPAD_ENTER,
+    KeyEvent.KEYCODE_DPAD_CENTER,
+    KeyEvent.KEYCODE_SPACE
+)
 
 // The "Learn more" link is bold. Without a merchant [linkColor] it's underlined in the [textColor], as on iOS.
 private fun PayPalCreditMessagingContent.toSpannable(

@@ -63,7 +63,7 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
     private var isWindowVisible = true
 
     /** Whether the bar stops short of the trailing edge. */
-    internal var showsTrailingGap = true
+    var showsTrailingGap = true
         set(value) {
             field = value
             requestLayout()
@@ -71,11 +71,11 @@ internal class ShimmerPlaceholderView @JvmOverloads constructor(
         }
 
     @get:VisibleForTesting
-    internal val barBounds: RectF
+    val barBounds: RectF
         get() = RectF(barRect)
 
     @get:VisibleForTesting
-    internal val isAnimating: Boolean
+    val isAnimating: Boolean
         get() = animator?.isStarted == true
 
     init {
