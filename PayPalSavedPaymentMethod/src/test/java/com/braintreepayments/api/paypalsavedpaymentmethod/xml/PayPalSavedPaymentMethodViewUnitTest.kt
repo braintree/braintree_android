@@ -37,6 +37,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertSame
@@ -52,7 +54,8 @@ import org.robolectric.shadows.ShadowDialog
 @RunWith(RobolectricTestRunner::class)
 class PayPalSavedPaymentMethodViewUnitTest {
 
-    private val activity = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
+    private val activityController = Robolectric.buildActivity(ComponentActivity::class.java).setup()
+    private val activity = activityController.get()
     private val state = MutableStateFlow(PayPalSavedPaymentMethodUiState())
     private val results = MutableSharedFlow<PayPalResult>(extraBufferCapacity = 1)
     private val viewModel = mockk<PayPalSavedPaymentMethodViewModel>(relaxed = true)
@@ -247,7 +250,8 @@ class PayPalSavedPaymentMethodViewUnitTest {
         sut = PayPalSavedPaymentMethodView(activity).apply { id = View.generateViewId() }
         initialize()
         val intent = Intent()
-        sut.handleReturnToApp(PayPalPendingRequest.Started("pending"), intent)
+        // Not taken yet, so the merchant keeps the pending request in case the process dies before the view attaches.
+        assertFalse(sut.handleReturnToApp(PayPalPendingRequest.Started("pending"), intent))
         assertEquals(0, createdViewModels)
 
         activity.setContentView(sut)
@@ -256,6 +260,40 @@ class PayPalSavedPaymentMethodViewUnitTest {
         assertEquals(1, createdViewModels)
         assertEquals(listOf("client-token"), authorizations)
         verify { viewModel.handleReturnToApp("pending", any(), intent) }
+    }
+
+    @Test
+    fun `initializing again keeps observing the view model, so a result is delivered once`() {
+        var collections = 0
+        every { viewModel.results } returns flow {
+            collections++
+            emitAll(results)
+        }
+        initialize()
+        initialize()
+
+        results.tryEmit(PayPalResult.Cancel)
+        idle()
+
+        assertEquals(1, collections)
+        assertEquals(listOf<PayPalResult>(PayPalResult.Cancel), delivered)
+    }
+
+    @Test
+    fun `a result while the activity is stopped is delivered once it starts again`() {
+        // Replayed, as the view model keeps a result until a view handles it.
+        val kept = MutableSharedFlow<PayPalResult>(replay = 1)
+        every { viewModel.results } returns kept
+        initialize()
+        activityController.pause().stop()
+
+        kept.tryEmit(PayPalResult.Cancel)
+        idle()
+        assertTrue(delivered.isEmpty())
+
+        activityController.start().resume()
+        idle()
+        assertEquals(listOf<PayPalResult>(PayPalResult.Cancel), delivered)
     }
 
     @Test

@@ -8,9 +8,13 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import androidx.activity.result.ActivityResultRegistryOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.findViewTreeViewModelStoreOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
@@ -33,6 +37,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.styling.styleFromAttrs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -186,7 +191,8 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
      *
      * @return `true` if the view took the return or had already completed it, so the stored [pendingRequest] can be
      * cleared. `false` if it was not taken (before [initialize], while another edit step is running, or before PayPal
-     * returns a result); keep it and pass it again on the next `onResume`.
+     * returns a result) or the view isn't attached yet, in which case it completes once attached; keep it and pass it
+     * again on the next `onResume`, so a process death before then doesn't lose it.
      */
     fun handleReturnToApp(pendingRequest: PayPalPendingRequest.Started, intent: Intent): Boolean {
         val payPalLauncher = payPalLauncher ?: return false
@@ -194,7 +200,7 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
         val viewModel = viewModel
         if (viewModel == null) {
             pendingReturn = pendingRequest to intent
-            return true
+            return false
         }
         return when (viewModel.handleReturnToApp(pendingRequest.pendingRequestString, payPalLauncher, intent)) {
             PayPalSavedPaymentMethodReturnResult.NOT_TAKEN -> false
@@ -254,7 +260,8 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
         request?.let { viewModel.load(it, style.showPayPalCreditMessaging) }
         pendingReturn?.let { (pendingRequest, intent) -> handleReturnToApp(pendingRequest, intent) }
         pendingReturn = null
-        if (isAttachedToWindow && attachment.attach()) observeViewModel(viewModel)
+        // Already observed when initialize is called again for the same view model, so the collectors aren't restarted.
+        if (isAttachedToWindow && attachment.attach() && attachedScope == null) observeViewModel(viewModel)
     }
 
     /** Stops showing the current view model. */
@@ -292,17 +299,31 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
         }
     }
 
-    /** Renders every state change and delivers each result, until the view is detached. */
+    /**
+     * Renders every state change and delivers each result while the host is started, until the view is detached. A
+     * result that arrives while the host is stopped is delivered once it starts again, since the view model keeps it
+     * until a view handles it, so the merchant's callback never runs while the activity is stopped.
+     */
     private fun observeViewModel(viewModel: PayPalSavedPaymentMethodViewModel) {
         attachedScope?.cancel()
+        val lifecycle = (findViewTreeLifecycleOwner() ?: context.findActivity() as? LifecycleOwner)?.lifecycle
         attachedScope = MainScope().also { scope ->
             scope.launch {
-                viewModel.state.collect {
-                    state = it
-                    render()
+                val collect: suspend CoroutineScope.() -> Unit = {
+                    launch {
+                        viewModel.state.collect {
+                            state = it
+                            render()
+                        }
+                    }
+                    launch { viewModel.results.collect { tokenizeCallback?.onPayPalResult(it) } }
+                }
+                if (lifecycle != null) {
+                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED, collect)
+                } else {
+                    coroutineScope(collect)
                 }
             }
-            scope.launch { viewModel.results.collect { tokenizeCallback?.onPayPalResult(it) } }
         }
     }
 
