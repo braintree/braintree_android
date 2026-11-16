@@ -178,14 +178,15 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     /**
      * Completes the edit when the buyer returns from PayPal. Call it from `onResume` with the pending request stored
      * from the [PayPalSavedPaymentMethodLaunchCallback] and the activity's intent. A pending request that was already
-     * handled is ignored. A return with no result is reported as [PayPalResult.Cancel]. The PayPal return URL is
-     * removed from [intent] once handled.
+     * handled is ignored. A return with no result, for example when the activity resumes while the paysheet is still
+     * open, isn't reported and isn't taken, so the real return can still complete the edit, as on iOS. The PayPal
+     * return URL is removed from [intent] once handled.
      *
      * Does nothing before [initialize], so call it first, for example after restoring the authorization in `onCreate`.
      *
      * @return `true` if the view took the return or had already completed it, so the stored [pendingRequest] can be
-     * cleared. `false` if it was not taken (before [initialize], or while another edit step is running); keep it and
-     * pass it again on the next `onResume`.
+     * cleared. `false` if it was not taken (before [initialize], while another edit step is running, or before PayPal
+     * returns a result); keep it and pass it again on the next `onResume`.
      */
     fun handleReturnToApp(pendingRequest: PayPalPendingRequest.Started, intent: Intent): Boolean {
         val payPalLauncher = payPalLauncher ?: return false
