@@ -54,6 +54,7 @@ dependencies {
     api project(':PayPal')
 
     implementation libs.androidx.core.ktx
+    implementation libs.androidx.browser
     implementation libs.androidx.appcompat
     implementation libs.androidx.ui.tooling.preview
     implementation libs.android.compose
