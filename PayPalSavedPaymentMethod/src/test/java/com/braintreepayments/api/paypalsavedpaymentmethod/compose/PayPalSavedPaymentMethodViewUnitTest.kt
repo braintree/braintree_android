@@ -2,12 +2,15 @@
 
 package com.braintreepayments.api.paypalsavedpaymentmethod.compose
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.neverEqualPolicy
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.StateRestorationTester
@@ -18,7 +21,10 @@ import androidx.compose.ui.test.performClick
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
@@ -43,11 +49,14 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
 class PayPalSavedPaymentMethodViewUnitTest {
@@ -180,6 +189,35 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
+    fun `a failed tokenize is delivered to the callback, and later resumes don't pass the request again`() {
+        val error = BraintreeException("tokenize failed")
+        startEdit()
+
+        results.tryEmit(PayPalResult.Failure(error))
+        composeTestRule.waitForIdle()
+        resumeAgain()
+
+        assertSame(error, (delivered.single() as PayPalResult.Failure).error)
+        verify(exactly = 0) { viewModel.handleReturnToApp(any(), any(), any()) }
+    }
+
+    @Test
+    fun `a result while the activity is stopped is delivered once it starts again`() {
+        // Replayed, as the view model keeps a result until a view handles it.
+        val kept = MutableSharedFlow<PayPalResult>(replay = 1)
+        every { viewModel.results } returns kept
+        composeTestRule.activityRule.scenario.moveToState(Lifecycle.State.CREATED)
+
+        kept.tryEmit(PayPalResult.Cancel)
+        composeTestRule.waitForIdle()
+        assertTrue(delivered.isEmpty())
+
+        composeTestRule.activityRule.scenario.moveToState(Lifecycle.State.RESUMED)
+        composeTestRule.waitForIdle()
+        assertEquals(listOf<PayPalResult>(PayPalResult.Cancel), delivered)
+    }
+
+    @Test
     fun `a pending request survives restoring the saved state, and the return is completed with it`() {
         startEdit()
         verify(exactly = 0) { viewModel.handleReturnToApp(any(), any(), any()) }
@@ -230,6 +268,51 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
         composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).assertIsNotEnabled()
         composeTestRule.onNodeWithContentDescription("Loading").assertExists()
+    }
+
+    @Test
+    fun `without an ActivityResultRegistry it reports a failure and doesn't create the view model`() {
+        // Hosted by itself, not by composeTestRule, whose ComponentActivity always provides a registry. A plain
+        // Activity isn't an ActivityResultRegistryOwner; the owners Compose needs come from another activity.
+        val owners = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
+        val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
+        val reported = mutableListOf<PayPalResult>()
+        var createdViewModels = 0
+        val composeView = ComposeView(activity).apply {
+            setViewTreeLifecycleOwner(owners)
+            setViewTreeViewModelStoreOwner(owners)
+            setViewTreeSavedStateRegistryOwner(owners)
+            setContent {
+                PayPalSavedPaymentMethodView(
+                    payPalCheckoutRequest = PayPalCheckoutRequest(amount = "10.00", hasUserLocationConsent = true),
+                    request = PayPalSavedPaymentMethodRequest("10.00", "USD"),
+                    authorization = "client-token",
+                    appLinkReturnUrl = Uri.parse("https://merchant.example.com"),
+                    modifier = Modifier,
+                    deepLinkFallbackUrlScheme = null,
+                    style = PayPalSavedPaymentMethodViewStyle(),
+                    paypalTokenizeCallback = { reported += it },
+                    viewModelFactory = { _, _, _ ->
+                        object : ViewModelProvider.Factory {
+                            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+                                createdViewModels++
+                                return super.create(modelClass, extras)
+                            }
+                        }
+                    }
+                )
+            }
+        }
+
+        activity.setContentView(composeView)
+        shadowOf(Looper.getMainLooper()).idle()
+
+        val error = (reported.single() as PayPalResult.Failure).error
+        assertEquals(
+            "PayPalSavedPaymentMethodView must be hosted in an activity that provides an ActivityResultRegistry.",
+            error.message
+        )
+        assertEquals(0, createdViewModels)
     }
 
     // Taps the chip, whose edit returns [pending].

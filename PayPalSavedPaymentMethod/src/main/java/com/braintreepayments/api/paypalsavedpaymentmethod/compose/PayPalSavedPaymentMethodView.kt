@@ -14,9 +14,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -104,7 +107,10 @@ fun PayPalSavedPaymentMethodView(
  * authorization and return URLs are read once, as on iOS, so a refreshed authorization keeps the edit in progress.
  * The first load fetches the funding instrument and the Pay Later message; later request changes reload only the
  * message. The pending request is forgotten once its result is delivered, a cancel included, since every resume passes
- * it to the view model and would deliver the cancel again.
+ * it to the view model and would deliver the cancel again. A resume before PayPal returns, for example in split-screen
+ * while the paysheet is open, isn't a result, so the pending request is kept for the real return. Results reach the
+ * callback only while the host is started; one that arrives while it's stopped is delivered on start, since the view
+ * model keeps it until a view handles it.
  */
 @OptIn(ExperimentalBetaApi::class)
 @Composable
@@ -150,10 +156,13 @@ internal fun PayPalSavedPaymentMethodView(
         viewModel.onRequestChanged(request, style.showPayPalCreditMessaging)
     }
 
-    LaunchedEffect(viewModel) {
-        viewModel.results.collect { result ->
-            launchedPendingRequest = null
-            currentCallback.onPayPalResult(result)
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(viewModel, lifecycleOwner) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.results.collect { result ->
+                launchedPendingRequest = null
+                currentCallback.onPayPalResult(result)
+            }
         }
     }
 
