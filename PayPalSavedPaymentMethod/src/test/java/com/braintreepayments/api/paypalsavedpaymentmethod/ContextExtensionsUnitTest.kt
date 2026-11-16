@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import androidx.browser.customtabs.CustomTabsIntent
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
 import io.mockk.every
 import io.mockk.mockk
@@ -43,7 +44,7 @@ class ContextExtensionsUnitTest {
 
         assertEquals(Intent.ACTION_VIEW, intent.action)
         assertEquals(URL, intent.data.toString())
-        assertFalse(intent.hasExtra(CUSTOM_TABS_SESSION_EXTRA))
+        assertFalse(intent.hasExtra(CustomTabsIntent.EXTRA_SESSION))
         assertEquals(0, intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
@@ -53,7 +54,7 @@ class ContextExtensionsUnitTest {
 
         assertEquals(Intent.ACTION_VIEW, intent.action)
         assertEquals(URL, intent.data.toString())
-        assertTrue(intent.hasExtra(CUSTOM_TABS_SESSION_EXTRA))
+        assertTrue(intent.hasExtra(CustomTabsIntent.EXTRA_SESSION))
         assertEquals(0, intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
@@ -86,6 +87,5 @@ class ContextExtensionsUnitTest {
 
     private companion object {
         const val URL = "https://www.paypal.com/learn-more"
-        const val CUSTOM_TABS_SESSION_EXTRA = "android.support.customtabs.extra.SESSION"
     }
 }
