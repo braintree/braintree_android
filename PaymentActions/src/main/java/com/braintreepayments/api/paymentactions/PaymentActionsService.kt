@@ -3,6 +3,7 @@ package com.braintreepayments.api.paymentactions
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.GraphQLConstants
+import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
 import org.json.JSONObject
 import kotlin.coroutines.cancellation.CancellationException
@@ -193,6 +194,7 @@ internal class PaymentActionsService(
                     acsUrl = getString(ACS_URL_KEY),
                     acsRenderingType = optString(ACS_RENDERING_TYPE_KEY).takeIf { it.isNotEmpty() },
                     challengePayload = getString(CHALLENGE_PAYLOAD_KEY),
+                    mpiTransactionId = Json.optString(this, MPI_TRANSACTION_ID_KEY, null),
                 )
             else -> NextAction.Unrecognized(typeName)
         }
@@ -221,5 +223,6 @@ internal class PaymentActionsService(
         private const val ACS_URL_KEY = "acsUrl"
         private const val ACS_RENDERING_TYPE_KEY = "acsRenderingType"
         private const val CHALLENGE_PAYLOAD_KEY = "challengePayload"
+        private const val MPI_TRANSACTION_ID_KEY = "mpiTransactionId"
     }
 }

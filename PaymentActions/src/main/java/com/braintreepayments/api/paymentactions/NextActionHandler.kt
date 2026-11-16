@@ -16,12 +16,12 @@ import kotlin.time.Duration.Companion.seconds
  * required). The only status it re-polls internally is [PaymentActionStatus.PROCESSING], bounded by
  * [MAX_PROCESSING_ATTEMPTS]; on exhaustion it returns [PaymentActionResult.Processing].
  *
- * At [PaymentActionStatus.REQUIRES_CUSTOMER_ACTION], 3D Secure device data collection
- * ([NextAction.ThreeDSecureAuthentication]) is resolved internally through [threeDSecureProvider]:
- * the result is signaled to the server and the loop continues on the signal's response, so a
- * frictionless flow needs no extra fetch. Device data is collected at most once per
- * [handle] call; a repeated request, or any other customer action, returns
- * [PaymentActionResult.CustomerActionRequired].
+ * At [PaymentActionStatus.REQUIRES_CUSTOMER_ACTION], the 3D Secure steps are resolved internally
+ * through [threeDSecureProvider]: device data collection ([NextAction.ThreeDSecureAuthentication])
+ * and the challenge ([NextAction.ThreeDSecureChallenge]). Each result is signaled to the server and the
+ * loop continues on the signal's response, so no extra fetch is needed. Each step runs at most once per
+ * [handle] call. An abandoned challenge returns [PaymentActionResult.ThreeDSecureCanceled]; a repeated
+ * request, or any other customer action, returns [PaymentActionResult.CustomerActionRequired].
  */
 internal class NextActionHandler(
     private val service: PaymentActionsService,
@@ -33,14 +33,15 @@ internal class NextActionHandler(
      * [PaymentActionStatus.PROCESSING] retry cap is reached.
      *
      * @return the [PaymentActionResult] for the last fetched Payment Action, or a
-     * [PaymentActionResult.Failure] if a fetch, device data collection or signal fails, or the
-     * Payment Action's version decreases between fetches.
+     * [PaymentActionResult.Failure] if a fetch, device data collection, the challenge or a signal
+     * fails, or the Payment Action's version decreases between fetches.
      */
     @Suppress("ReturnCount")
     suspend fun handle(serviceResult: PaymentActionServiceResult? = null): PaymentActionResult {
         var lastVersion: Int? = null
         var processingAttempts = 0
         var deviceDataCollected = false
+        var challengePresented = false
         var passedInResult: PaymentActionServiceResult? = serviceResult
 
         while (true) {
@@ -65,20 +66,22 @@ internal class NextActionHandler(
                 }
 
                 PaymentActionStatus.REQUIRES_CUSTOMER_ACTION -> {
-                    // Device data is collected at most once per call: if the server asks again, hand
-                    // off rather than loop, so a misbehaving response can't keep the loop running.
-                    if (paymentAction.nextAction !is NextAction.ThreeDSecureAuthentication || deviceDataCollected) {
-                        return PaymentActionResult.CustomerActionRequired(paymentAction.id)
-                    }
-                    // The signal's response is the updated Payment Action, so the loop continues on it rather than re-fetching
-                    passedInResult = when (val deviceData = threeDSecureProvider.collectDeviceData()) {
-                        is DeviceDataResult.Failed -> return PaymentActionResult.Failure(deviceData.error)
-                        is DeviceDataResult.Collected -> {
+                    val nextAction = paymentAction.nextAction
+                    val outcome = when {
+                        nextAction is NextAction.ThreeDSecureAuthentication && !deviceDataCollected -> {
                             deviceDataCollected = true
-                            service.signalCustomerActionComplete(
-                                CustomerCompletedAction.DeviceDataCollection(deviceData.dfReferenceId)
-                            )
+                            collectDeviceData()
                         }
+                        nextAction is NextAction.ThreeDSecureChallenge && !challengePresented -> {
+                            challengePresented = true
+                            presentChallenge(paymentAction.id, nextAction)
+                        }
+                        else -> return PaymentActionResult.CustomerActionRequired(paymentAction.id)
+                    }
+                    // Continue on the signal's response instead of re-fetching.
+                    passedInResult = when (outcome) {
+                        is CustomerActionOutcome.Advanced -> outcome.response
+                        is CustomerActionOutcome.Stop -> return outcome.result
                     }
                 }
 
@@ -95,6 +98,45 @@ internal class NextActionHandler(
         }
     }
 
+    private suspend fun collectDeviceData(): CustomerActionOutcome =
+        when (val deviceData = threeDSecureProvider.collectDeviceData()) {
+            is DeviceDataResult.Failed -> CustomerActionOutcome.Stop(PaymentActionResult.Failure(deviceData.error))
+            is DeviceDataResult.Collected -> CustomerActionOutcome.Advanced(
+                service.signalCustomerActionComplete(
+                    CustomerCompletedAction.DeviceDataCollection(deviceData.dfReferenceId)
+                )
+            )
+        }
+
+    private suspend fun presentChallenge(
+        paymentActionId: String,
+        challenge: NextAction.ThreeDSecureChallenge,
+    ): CustomerActionOutcome {
+        // Checked before launching, so the shell never flashes for a challenge that can't be shown.
+        val transactionId = challenge.mpiTransactionId ?: return CustomerActionOutcome.Stop(
+            PaymentActionResult.Failure(BraintreeException(MISSING_MPI_TRANSACTION_ID_MESSAGE))
+        )
+
+        return when (val result = threeDSecureProvider.presentChallenge(transactionId, challenge.challengePayload)) {
+            is ChallengeResult.Completed -> CustomerActionOutcome.Advanced(
+                service.signalCustomerActionComplete(CustomerCompletedAction.Challenge(result.serverJwt))
+            )
+            ChallengeResult.Abandoned ->
+                CustomerActionOutcome.Stop(PaymentActionResult.ThreeDSecureCanceled(paymentActionId))
+            is ChallengeResult.Failed -> CustomerActionOutcome.Stop(PaymentActionResult.Failure(result.error))
+        }
+    }
+
+    /** What the drive loop does after resolving a customer action. */
+    private sealed class CustomerActionOutcome {
+
+        /** The server was signaled; the loop continues on its [response]. */
+        class Advanced(val response: PaymentActionServiceResult) : CustomerActionOutcome()
+
+        /** The loop stops and returns [result]. */
+        class Stop(val result: PaymentActionResult) : CustomerActionOutcome()
+    }
+
     /**
      * A version should never decrease within a single drive loop; if it does, the response is stale
      * or out of order. Equal or missing versions are expected (e.g. repeated `PROCESSING` fetches).
@@ -107,5 +149,7 @@ internal class NextActionHandler(
         internal val PROCESSING_RETRY_DELAY: Duration = 1.seconds
         internal const val VERSION_ANOMALY_MESSAGE =
             "Payment Action version decreased between fetches during handleNextAction."
+        internal const val MISSING_MPI_TRANSACTION_ID_MESSAGE =
+            "The 3D Secure challenge is missing its required mpiTransactionId."
     }
 }

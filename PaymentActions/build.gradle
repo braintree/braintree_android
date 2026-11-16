@@ -45,11 +45,16 @@ dependencies {
     api project(':BraintreeCore')
 
     implementation libs.androidx.annotation
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.activity
+    implementation libs.androidx.lifecycle.runtime.ktx
     implementation libs.coroutines.core
     implementation libs.cardinal
 
     testImplementation libs.junit
     testImplementation libs.kotlin.test
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.test.core
     testImplementation libs.json.assert
     testImplementation libs.mockk
     testImplementation libs.coroutines.test

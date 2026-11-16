@@ -54,6 +54,7 @@ internal object PaymentActionsGraphQLConstants {
                 acsUrl
                 acsRenderingType
                 challengePayload
+                mpiTransactionId
             }
         }
     """

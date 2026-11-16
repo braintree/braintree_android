@@ -210,6 +210,34 @@ class PaymentActionsClientUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
+    fun `handleNextAction presents a 3D Secure challenge and continues on the signal response`() =
+        runTest(testDispatcher) {
+            coEvery { service.getPaymentAction() } returns PaymentActionServiceResult.Success(
+                PaymentAction(
+                    id = "pa123",
+                    status = PaymentActionStatus.REQUIRES_CUSTOMER_ACTION,
+                    nextAction = NextAction.ThreeDSecureChallenge(
+                        acsUrl = "https://acs.example.com",
+                        acsRenderingType = null,
+                        challengePayload = "challenge-payload",
+                        mpiTransactionId = "mpi-tx-id",
+                    ),
+                )
+            )
+            coEvery { threeDSecureProvider.presentChallenge("mpi-tx-id", "challenge-payload") } returns
+                ChallengeResult.Completed("server-jwt")
+            coEvery {
+                service.signalCustomerActionComplete(CustomerCompletedAction.Challenge("server-jwt"))
+            } returns PaymentActionServiceResult.Success(paymentAction(PaymentActionStatus.SUCCEEDED))
+
+            val result = buildClient().handleNextAction()
+
+            assertEquals("pa123", assertIs<PaymentActionResult.Completed>(result).id)
+            coVerify(exactly = 1) { service.getPaymentAction() }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
     fun `submitForPaymentAction with SUCCEEDED returns Completed`() = runTest(testDispatcher) {
         val creditCard = CreditCard(number = "4111111111111111", expirationMonth = "12", expirationYear = "2028")
         coEvery { service.setPaymentActionPaymentMethod(creditCard) } returns PaymentActionServiceResult.Success(

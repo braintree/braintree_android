@@ -135,8 +135,10 @@ class PaymentActionsClient internal constructor(
      * Drives the Payment Action forward from its current server state until a terminal outcome or
      * a handoff boundary is reached.
      *
-     * 3D Secure device data collection is performed internally when the Payment Action requires
-     * it. Any other customer action returns [PaymentActionResult.CustomerActionRequired].
+     * 3D Secure device data collection and the challenge are performed internally. The challenge needs
+     * the app in the foreground, or a [PaymentActionResult.Failure] is returned. An abandoned challenge
+     * returns [PaymentActionResult.ThreeDSecureCanceled]; any other customer action returns
+     * [PaymentActionResult.CustomerActionRequired].
      *
      * A [PaymentActionResult.Processing] result means the SDK's own bounded internal retries were
      * exhausted while the Payment Action was still settling server-side — wait briefly, then call

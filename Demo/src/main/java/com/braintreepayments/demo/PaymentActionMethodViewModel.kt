@@ -103,6 +103,11 @@ class PaymentActionMethodViewModel(
                 _flowState.value = PaymentActionFlowState.CustomerActionRequired(result.id)
                 _events.send(PaymentActionMethodEvent.CustomerActionRequired(result.id))
             }
+            // The customer left the 3DS challenge; submitting the card again retries it.
+            is PaymentActionResult.ThreeDSecureCanceled -> {
+                _flowState.value = PaymentActionFlowState.PaymentMethodRequired(result.id)
+                _events.send(PaymentActionMethodEvent.PaymentMethodRequired(result.id))
+            }
             // TODO: replace manual advance with bounded polling + backoff
             is PaymentActionResult.Processing -> _flowState.value = PaymentActionFlowState.Processing(result.id)
         }
