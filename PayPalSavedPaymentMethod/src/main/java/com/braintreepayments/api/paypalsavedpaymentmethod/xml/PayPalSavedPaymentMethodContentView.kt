@@ -96,8 +96,8 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
             -((minSize - bounds.width() + 1) / 2).coerceAtLeast(0),
             -((minSize - bounds.height() + 1) / 2).coerceAtLeast(0)
         )
-        bounds.intersect(0, 0, width, height)
-        touchDelegate = TouchDelegate(bounds, fundingInstrumentChip)
+        val isInside = bounds.intersect(0, 0, width, height)
+        touchDelegate = if (isInside) TouchDelegate(bounds, fundingInstrumentChip) else null
     }
 
     fun render(
