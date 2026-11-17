@@ -217,6 +217,17 @@ class PayPalSavedPaymentMethodContentViewUnitTest {
         assertNull(sut.touchDelegate)
     }
 
+    @Test
+    fun `the touch target follows the chip's clickability without a layout pass`() {
+        render(CARD_STATE)
+        layOut()
+        assertTrue(sut.touchDelegate != null)
+
+        render(PayPalSavedPaymentMethodDisplayState.NoFundingInstrument("buyer@example.com", isEditable = false))
+
+        assertNull(sut.touchDelegate)
+    }
+
     // Where [view] starts within the content view.
     private fun startInContent(view: View): Int =
         Rect(0, 0, view.width, view.height).also { sut.offsetDescendantRectToMyCoords(view, it) }.left

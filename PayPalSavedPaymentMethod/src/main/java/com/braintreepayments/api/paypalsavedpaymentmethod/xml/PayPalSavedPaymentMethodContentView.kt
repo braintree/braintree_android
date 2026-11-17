@@ -81,7 +81,8 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
 
     /**
      * An editable chip gets a 48dp touch target, like Compose's minimumInteractiveComponentSize, without changing how
-     * the chip looks. Kept inside this view, since a touch outside it never arrives.
+     * the chip looks. Kept inside this view, since a touch outside it never arrives. Recomputed after each layout and
+     * render, since the chip's clickability can change without a layout pass.
      */
     private fun updateChipTouchDelegate() {
         if (!fundingInstrumentChip.isVisible || !fundingInstrumentChip.isClickable) {
@@ -128,6 +129,7 @@ internal class PayPalSavedPaymentMethodContentView @JvmOverloads constructor(
             PayPalCreditMessagingDisplayState.Hidden
         }
         creditMessagingView.bind(visibleCreditMessagingState, resolvedStyle) { onLearnMoreClick(it) }
+        updateChipTouchDelegate()
     }
 
     /**
