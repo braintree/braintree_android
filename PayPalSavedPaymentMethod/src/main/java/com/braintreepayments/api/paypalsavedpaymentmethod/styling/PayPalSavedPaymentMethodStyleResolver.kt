@@ -9,12 +9,15 @@ import androidx.core.content.ContextCompat
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 
-/** Resolves the merchant's style against the SDK defaults, in dp and sp. Negative sizes resolve to 0. */
+/**
+ * Resolves the merchant's style against the SDK defaults, in dp and sp. Negative sizes resolve to 0, and NaN or
+ * infinite ones are treated as unset.
+ */
 @OptIn(ExperimentalBetaApi::class)
 internal class PayPalSavedPaymentMethodStyleResolver(context: Context, style: PayPalSavedPaymentMethodViewStyle) {
 
     private val resources = context.resources
-    private val baseFontSizeSp: Float? = style.componentAppearance?.baseFontSizeSp
+    private val baseFontSizeSp: Float? = style.componentAppearance?.baseFontSizeSp.finiteOrNull()
 
     val showPayPalLogo: Boolean = style.showPayPalLogo
     val showPayPalLabel: Boolean = style.showPayPalLabel
@@ -31,7 +34,7 @@ internal class PayPalSavedPaymentMethodStyleResolver(context: Context, style: Pa
     @FontRes
     val fontResId: Int? = style.componentAppearance?.fontResId
 
-    val heightDp: Float? = style.container?.heightDp?.coerceAtLeast(0f)
+    val heightDp: Float? = style.container?.heightDp.finiteOrNull()?.coerceAtLeast(0f)
     val horizontalPaddingDp: Float =
         dp(style.container?.horizontalPaddingDp, R.dimen.paypal_saved_payment_method_style_default_horizontal_padding)
     val verticalPaddingDp: Float =
@@ -75,11 +78,14 @@ internal class PayPalSavedPaymentMethodStyleResolver(context: Context, style: Pa
     val creditMessagingLinkColor: Int? = style.container?.creditMessaging?.linkColor
 
     private fun dp(value: Float?, @DimenRes defaultRes: Int): Float =
-        (value ?: resources.dimenDp(defaultRes)).coerceAtLeast(0f)
+        (value.finiteOrNull() ?: resources.dimenDp(defaultRes)).coerceAtLeast(0f)
 
     private fun sp(value: Float?, @DimenRes defaultRes: Int): Float =
-        (value ?: baseFontSizeSp ?: resources.dimenSp(defaultRes)).coerceAtLeast(0f)
+        (value.finiteOrNull() ?: baseFontSizeSp ?: resources.dimenSp(defaultRes)).coerceAtLeast(0f)
 }
+
+// A NaN size would crash the views when rounded to pixels, and an infinite one would be huge.
+private fun Float?.finiteOrNull(): Float? = this?.takeIf { it.isFinite() }
 
 @ColorInt
 private fun Context.colorInt(@ColorRes colorRes: Int): Int = ContextCompat.getColor(this, colorRes)

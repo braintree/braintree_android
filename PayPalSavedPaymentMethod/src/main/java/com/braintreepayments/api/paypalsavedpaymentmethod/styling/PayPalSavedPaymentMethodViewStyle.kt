@@ -34,10 +34,10 @@ class PayPalSavedPaymentMethodViewStyle @JvmOverloads constructor(
  * overriding one, set the other as well so the text keeps enough contrast, for example light text on a dark
  * background.
  *
- * @property backgroundColor background color of the entire component, including its internal padding area. Null uses
- * the SDK default.
- * @property textColor text color used for the PayPal label, funding instrument text, and credit messaging. Null uses
- * the SDK default.
+ * @property backgroundColor background color of the component, including its internal padding area. The funding
+ * instrument chip keeps its own fixed light background. Null uses the SDK default.
+ * @property textColor text color used for the PayPal label and credit messaging. The funding instrument chip keeps its
+ * fixed black text so it stays legible on its fixed background. Null uses the SDK default.
  * @property baseFontSizeSp base font size, in sp, used for a text element whose own font size is not provided. If this
  * is also null, the SDK default font size for that element is used.
  * @property fontResId font used for text across the component. Null uses the system font.
@@ -129,8 +129,8 @@ class PayPalSavedPaymentMethodFundingInstrumentStyle @JvmOverloads constructor(
  *
  * @property fontSizeSp font size of the credit messaging text, in sp. Null uses
  * [PayPalSavedPaymentMethodAppearance.baseFontSizeSp], then the SDK default.
- * @property linkColor color of the "Learn more" link within credit messaging. Null shows the link bold and underlined
- * in the text color.
+ * @property linkColor color of the "Learn more" link within credit messaging. When set, the link is bold in this color
+ * without an underline. Null shows the link bold and underlined in the text color.
  */
 @ExperimentalBetaApi
 class PayPalSavedPaymentMethodCreditMessagingStyle @JvmOverloads constructor(
