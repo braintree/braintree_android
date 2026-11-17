@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
@@ -60,8 +62,10 @@ import java.util.UUID
  *
  * The view needs an `android:id` that is stable across recreation (for example from the layout) and not used by another
  * `PayPalSavedPaymentMethodView` in the same activity or fragment. Otherwise [initialize] sends a failure to the
- * [PayPalTokenizeCallback] and the view is hidden. In a fragment, call [initialize] from `onViewCreated` or later. If
- * the screen closes while an edit is being completed, its result isn't delivered.
+ * [PayPalTokenizeCallback] and the view is hidden. So it can't be used in list items, such as in a `RecyclerView`,
+ * since the items would share an `android:id` and the second one fails. In a fragment, call [initialize] from
+ * `onViewCreated` or later. The callbacks run only while the host is started. If the screen closes while an edit is
+ * being completed, its result isn't delivered.
  *
  * Style it with the `paypalSavedPaymentMethod*` XML attributes or [style]; a style set in code replaces the attributes.
  */
@@ -74,6 +78,7 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val contentView = PayPalSavedPaymentMethodContentView(context)
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     /** The checkout the edited funding instrument applies to. Read when the buyer taps it. */
     var payPalCheckoutRequest: PayPalCheckoutRequest? = null
@@ -140,8 +145,9 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     /**
      * Sets up the view and loads the funding instrument and the Pay Later message. Calling it again updates the
      * checkout, the request and the callbacks. The authorization and return URLs from the first call are kept, as on
-     * iOS, so a refreshed client token doesn't lose the buyer's edit or a return from PayPal. To start over, for
-     * example for another buyer, use a new view with a different `android:id`.
+     * iOS, so a refreshed client token doesn't lose the buyer's edit or a return from PayPal. This also means an
+     * expired client token isn't replaced by calling it again. To start over, for example for another buyer or with a
+     * new client token, use a new view with a different `android:id`.
      *
      * @param authorization a client token carrying the buyer's payment method ID.
      * @param appLinkReturnUrl the Android App Link used to return to your app from PayPal.
@@ -273,14 +279,18 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
         attachedScope = null
     }
 
-    /** Hides the view and reports why it can't be used. */
+    /**
+     * Hides the view and reports why it can't be used. The failure is posted, so the callback never runs from inside
+     * [initialize] or [onAttachedToWindow].
+     */
     private fun fail(message: String) {
         unbindViewModel()
         setup = null
         pendingReturn = null
         state = state.copy(fundingInstrument = PayPalSavedPaymentMethodDisplayState.Hidden, isEditing = false)
         render()
-        tokenizeCallback?.onPayPalResult(PayPalResult.Failure(BraintreeException(message)))
+        val callback = tokenizeCallback
+        mainHandler.post { callback?.onPayPalResult(PayPalResult.Failure(BraintreeException(message))) }
     }
 
     /** Opens the PayPal paysheet when the buyer taps the funding instrument. */

@@ -65,6 +65,16 @@ class FundingInstrumentRowLayoutUnitTest {
     }
 
     @Test
+    fun `without a bounded width the loading shimmer takes a fixed width`() {
+        render(PayPalSavedPaymentMethodDisplayState.Loading)
+
+        val unspecified = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        content.measure(unspecified, unspecified)
+
+        assertEquals(120f.dpToPx(context.resources), shimmer.measuredWidth)
+    }
+
+    @Test
     fun `without the logo and label the funding instrument starts at the leading edge and never stacks`() {
         render(
             email("a.very.long.buyer.email.address@example.com"),

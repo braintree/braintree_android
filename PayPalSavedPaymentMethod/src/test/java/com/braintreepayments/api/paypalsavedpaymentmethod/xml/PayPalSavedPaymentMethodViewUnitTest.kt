@@ -232,6 +232,17 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
+    fun `a setup failure reaches the callback after initialize returns, not from inside it`() {
+        sut = PayPalSavedPaymentMethodView(activity).apply { activity.setContentView(this) }
+
+        initialize(settle = false)
+        assertTrue(delivered.isEmpty())
+
+        idle()
+        assertEquals("PayPalSavedPaymentMethodView needs an android:id.", failureMessage())
+    }
+
+    @Test
     fun `an id another attached view already uses reports a failure and hides`() {
         initialize()
         val first = sut
@@ -343,7 +354,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
         activity.setContentView(this)
     }
 
-    private fun initialize(authorization: String = "client-token") {
+    private fun initialize(authorization: String = "client-token", settle: Boolean = true) {
         sut.viewModelFactory = { factoryAuthorization, _, _ ->
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
@@ -362,7 +373,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
             launchCallback = { launchedRequests += it },
             tokenizeCallback = { delivered += it }
         )
-        idle()
+        if (settle) idle()
     }
 
     // Initializes with a card and taps it; the edit returns [pending].

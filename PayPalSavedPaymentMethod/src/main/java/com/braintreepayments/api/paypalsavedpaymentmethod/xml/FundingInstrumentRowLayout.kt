@@ -12,7 +12,8 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.R
 /**
  * The row with the PayPal logo and label (first child), the loading shimmer (second) and the funding instrument chip
  * (third). The chip sits next to the logo and label, its start margin apart, when it fits at its full width; otherwise
- * it goes below them. The shimmer always sits next to the logo and label and fills the rest of the row.
+ * it goes below them. The shimmer always sits next to the logo and label and fills the rest of the row, or takes a
+ * fixed width when the row's width isn't bounded.
  */
 internal class FundingInstrumentRowLayout @JvmOverloads constructor(
     context: Context,
@@ -27,6 +28,7 @@ internal class FundingInstrumentRowLayout @JvmOverloads constructor(
         private set
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        check(childCount == CHILD_COUNT) { "Expected the brand, the shimmer and the chip, found $childCount views." }
         val brand = getChildAt(BRAND)
         val shimmer = getChildAt(SHIMMER)
         val chip = getChildAt(CHIP)
@@ -45,7 +47,8 @@ internal class FundingInstrumentRowLayout @JvmOverloads constructor(
             val gap = gapBefore(trailing)
             val available = (maxWidth - brandWidth - gap).coerceAtLeast(0)
             if (trailing === shimmer) {
-                shimmer.measure(MeasureSpec.makeMeasureSpec(available, MeasureSpec.EXACTLY), UNSPECIFIED)
+                val shimmerWidth = if (isBounded) available else UNBOUNDED_SHIMMER_WIDTH_DP.dpToPx(resources)
+                shimmer.measure(MeasureSpec.makeMeasureSpec(shimmerWidth, MeasureSpec.EXACTLY), UNSPECIFIED)
             } else {
                 chip.measure(UNSPECIFIED, UNSPECIFIED)
                 isStacked = isBounded && !brand.isGone && chip.measuredWidth > available
@@ -106,6 +109,8 @@ internal class FundingInstrumentRowLayout @JvmOverloads constructor(
         const val BRAND = 0
         const val SHIMMER = 1
         const val CHIP = 2
+        const val CHILD_COUNT = 3
+        const val UNBOUNDED_SHIMMER_WIDTH_DP = 120f
         val UNSPECIFIED = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
     }
 }
