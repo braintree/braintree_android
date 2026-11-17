@@ -28,11 +28,13 @@ class PaymentActionsClientUnitTest {
     private val testDispatcher = StandardTestDispatcher()
     private val service = mockk<PaymentActionsService>()
     private val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+    private val threeDSecureProvider = mockk<ThreeDSecureProvider>()
 
     private fun paymentAction(status: PaymentActionStatus) = PaymentAction(id = "pa123", status = status)
 
     private fun buildClient() = PaymentActionsClient(
         braintreeClient,
+        threeDSecureProvider,
         service,
         testDispatcher,
         CoroutineScope(testDispatcher),
@@ -181,6 +183,29 @@ class PaymentActionsClientUnitTest {
 
             assertIs<PaymentActionResult.Processing>(result)
             coVerify(exactly = NextActionHandler.MAX_PROCESSING_ATTEMPTS - 1) { service.getPaymentAction() }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `submitForPaymentAction collects 3D Secure device data and continues on the signal response`() =
+        runTest(testDispatcher) {
+            val creditCard = CreditCard(number = "4111111111111111", expirationMonth = "12", expirationYear = "2028")
+            coEvery { service.setPaymentActionPaymentMethod(creditCard) } returns PaymentActionServiceResult.Success(
+                PaymentAction(
+                    id = "pa123",
+                    status = PaymentActionStatus.REQUIRES_CUSTOMER_ACTION,
+                    nextAction = NextAction.ThreeDSecureAuthentication(bin = "401288"),
+                )
+            )
+            coEvery { threeDSecureProvider.collectDeviceData() } returns DeviceDataResult.Collected("df-ref")
+            coEvery {
+                service.signalCustomerActionComplete(CustomerCompletedAction.DeviceDataCollection("df-ref"))
+            } returns PaymentActionServiceResult.Success(paymentAction(PaymentActionStatus.SUCCEEDED))
+
+            val result = buildClient().submitForPaymentAction(creditCard)
+
+            assertEquals("pa123", assertIs<PaymentActionResult.Completed>(result).id)
+            coVerify(exactly = 0) { service.getPaymentAction() }
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)

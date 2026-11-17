@@ -31,12 +31,13 @@ fun interface PaymentActionCallback {
  */
 class PaymentActionsClient internal constructor(
     private val braintreeClient: BraintreeClient,
+    threeDSecureProvider: ThreeDSecureProvider,
     private val service: PaymentActionsService = PaymentActionsService(braintreeClient),
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
     private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
 ) {
 
-    private val nextActionHandler = NextActionHandler(service)
+    private val nextActionHandler = NextActionHandler(service, threeDSecureProvider)
 
     /**
      * Tracks whether a [submitForPaymentAction] or [handleNextAction] call is already in flight on
@@ -51,7 +52,15 @@ class PaymentActionsClient internal constructor(
      * @param authorization a Client Token used to authenticate
      */
     constructor(context: Context, authorization: String) : this(
-        BraintreeClient(context, authorization)
+        context.applicationContext,
+        BraintreeClient(context, authorization),
+    )
+
+    // BraintreeClient doesn't expose its context, so the 3D Secure provider is built here, where
+    // both the application context and the BraintreeClient are in hand.
+    private constructor(applicationContext: Context, braintreeClient: BraintreeClient) : this(
+        braintreeClient,
+        CardinalThreeDSecureProvider(applicationContext, braintreeClient),
     )
 
     /**
@@ -126,9 +135,8 @@ class PaymentActionsClient internal constructor(
      * Drives the Payment Action forward from its current server state until a terminal outcome or
      * a handoff boundary is reached.
      *
-     * This never starts device data collection or a 3D Secure challenge itself — if the Payment
-     * Action requires a customer action, this returns [PaymentActionResult.CustomerActionRequired]
-     * rather than driving the customer action, since that boundary is owned by a separate flow.
+     * 3D Secure device data collection is performed internally when the Payment Action requires
+     * it. Any other customer action returns [PaymentActionResult.CustomerActionRequired].
      *
      * A [PaymentActionResult.Processing] result means the SDK's own bounded internal retries were
      * exhausted while the Payment Action was still settling server-side — wait briefly, then call

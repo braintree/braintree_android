@@ -7,7 +7,7 @@ This document lists the runtime dependencies (both internal module dependencies 
 | Library                                                                                                                           | Module(s) |
 |-----------------------------------------------------------------------------------------------------------------------------------|---|
 | [browser-switch](https://github.com/braintree/browser-switch-android)                                                             | BraintreeCore |
-| [Cardinal Mobile SDK](https://developer.cardinaltrusted.com/docs/welcome)                                                         | ThreeDSecure |
+| [Cardinal Mobile SDK](https://developer.cardinaltrusted.com/docs/welcome)                                                         | ThreeDSecure, PaymentActions |
 | [Google Play Services Wallet](https://developers.google.com/pay/api)                                                              | GooglePay |
 | [PayPal Messaging](https://developer.paypal.com/braintree/docs/guides/paypal/messaging/android/v5/)                               | PayPalMessaging |
 | [OkHttp](https://square.github.io/okhttp/)                                                                                        | SharedUtils |
@@ -81,6 +81,15 @@ This document lists the runtime dependencies (both internal module dependencies 
 | `org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk` | 2.2.7-7 |
 | `androidx.appcompat:appcompat` | 1.6.0 |
 | `androidx.lifecycle:lifecycle-runtime` | 2.6.2 |
+
+### PaymentActions
+
+| Dependency | Version |
+|---|---|
+| `:BraintreeCore` | — |
+| `org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk` | 2.2.7-7 |
+| `androidx.annotation:annotation` | 1.7.0 |
+| `org.jetbrains.kotlinx:kotlinx-coroutines-core` | 1.7.1 |
 
 ### AmericanExpress
 
