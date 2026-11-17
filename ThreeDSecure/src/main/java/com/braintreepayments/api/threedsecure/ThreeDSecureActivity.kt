@@ -20,10 +20,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        challengeObserver =
-            CardinalChallengeObserver(this) { _, validateResponse: ValidateResponse?, s: String? ->
-                handleValidated(cardinalClient, validateResponse, s)
-            }
+        challengeObserver = challengeObserverFactory(this)
 
         /**
          * Here, we schedule the 3DS auth challenge launch to run immediately after onCreate() is
@@ -95,6 +92,18 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
     }
 
     companion object {
+        /**
+         * Creates the [CardinalChallengeObserver] for an Activity. Replaceable in tests because the
+         * real constructor requires a configured Cardinal SDK.
+         */
+        @VisibleForTesting
+        internal var challengeObserverFactory: (ThreeDSecureActivity) -> CardinalChallengeObserver? =
+            { activity ->
+                CardinalChallengeObserver(activity) { _, validateResponse: ValidateResponse?, s: String? ->
+                    activity.handleValidated(activity.cardinalClient, validateResponse, s)
+                }
+            }
+
         const val EXTRA_ERROR_MESSAGE: String =
             "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_ERROR_MESSAGE"
         const val EXTRA_THREE_D_SECURE_RESULT: String =
