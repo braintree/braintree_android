@@ -46,7 +46,7 @@ class AnalyticsApiTest {
             timestamp = System.currentTimeMillis()
         )
 
-        sut.execute(listOf(event), configuration)
+        sut.execute(listOf(event), configuration, merchantRepository.authorization)
     }
 
     @Test(timeout = 5000)
@@ -57,7 +57,7 @@ class AnalyticsApiTest {
             AnalyticsEvent(name = "test.event.failed", timestamp = System.currentTimeMillis())
         )
 
-        sut.execute(events, configuration)
+        sut.execute(events, configuration, merchantRepository.authorization)
     }
 
     @Test(timeout = 5000)
@@ -87,7 +87,7 @@ class AnalyticsApiTest {
             uiType = "one-touch"
         )
 
-        sut.execute(listOf(event), configuration)
+        sut.execute(listOf(event), configuration, merchantRepository.authorization)
     }
 
     @Test(timeout = 5000)
@@ -97,24 +97,25 @@ class AnalyticsApiTest {
             timestamp = System.currentTimeMillis()
         )
 
-        sut.execute(listOf(event), null)
+        sut.execute(listOf(event), null, merchantRepository.authorization)
     }
 
     @Test(timeout = 5000)
     fun execute_withEmptyEventList_doesNotCrash() {
-        sut.execute(emptyList(), configuration)
+        sut.execute(emptyList(), configuration, merchantRepository.authorization)
     }
 
     @Test(timeout = 5000)
     fun execute_withClientTokenAuthorization_doesNotCrash() {
-        merchantRepository.authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN)
+        val clientTokenAuthorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN)
+        merchantRepository.authorization = clientTokenAuthorization
 
         val event = AnalyticsEvent(
             name = "test.event.with.client.token",
             timestamp = System.currentTimeMillis()
         )
 
-        sut.execute(listOf(event), configuration)
+        sut.execute(listOf(event), configuration, clientTokenAuthorization)
     }
 
     @Test(timeout = 5000)
@@ -132,6 +133,6 @@ class AnalyticsApiTest {
             timestamp = System.currentTimeMillis()
         )
 
-        sut.execute(listOf(event), configuration)
+        sut.execute(listOf(event), configuration, merchantRepository.authorization)
     }
 }

@@ -1,33 +1,45 @@
 package com.braintreepayments.api.core
 
 /**
- * This class is responsible for holding analytic events in memory that will be batched with other events.
+ * Accumulated events for a single [Authorization]. Not a data class so no generated
+ * toString prints the authorization token.
+ */
+internal class AnalyticsEventBatch(val authorization: Authorization) {
+    val events = mutableListOf<AnalyticsEvent>()
+}
+
+/**
+ * This class is responsible for holding analytic events in memory that will be batched with other events,
+ * partitioned by the authorization of the client that produced them.
  */
 internal class AnalyticsEventRepository {
 
-    private val events: MutableList<AnalyticsEvent> = mutableListOf()
+    private val lock = Any()
+    private val partitions = LinkedHashMap<Authorization, AnalyticsEventBatch>()
 
     /**
-     * Adds an event to the internal event buffer.
+     * Adds an event to the batch of the given [authorization].
      */
-    fun addEvent(event: AnalyticsEvent) {
-        events.add(event)
+    fun addEvent(event: AnalyticsEvent, authorization: Authorization) {
+        synchronized(lock) {
+            partitions.getOrPut(authorization) { AnalyticsEventBatch(authorization) }
+                .events
+                .add(event)
+        }
     }
 
     /**
-     * Flushes the current event buffer and returns the accumulated events.
+     * Flushes all batches and returns them.
      *
-     * This function atomically clears the internal `events` list and returns a new list containing all the events that
-     * were previously in the buffer.
+     * This function atomically clears the internal partitions and returns a list containing one
+     * [AnalyticsEventBatch] per authorization, in insertion order.
      *
-     * @return A new list containing all events that were previously in the buffer.
+     * @return A new list of batches that were previously held; the repository is left empty.
      */
-    fun flushAndReturnEvents(): List<AnalyticsEvent> {
-        synchronized(events) {
-            val eventsToReturn = events.toList()
-            events.clear()
-            return eventsToReturn
-        }
+    fun flushAndReturnEvents(): List<AnalyticsEventBatch> = synchronized(lock) {
+        val batches = partitions.values.toList()
+        partitions.clear()
+        batches
     }
 
     companion object {

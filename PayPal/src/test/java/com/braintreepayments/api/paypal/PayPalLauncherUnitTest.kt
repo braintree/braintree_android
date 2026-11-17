@@ -387,8 +387,8 @@ class PayPalLauncherUnitTest {
             (paymentAuthResult as PayPalPaymentAuthResult.Success).browserSwitchSuccess
         )
 
-        verify { analyticsClient.sendEvent(any(), any()) }
-        verify { analyticsClient.sendEvent(any(), any()) }
+        verify { analyticsClient.sendEvent(any(), any<AnalyticsEventParams>()) }
+        verify { analyticsClient.sendEvent(any(), any<AnalyticsEventParams>()) }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED, slot1.captured)
         assertEquals(paymentToken, slot2.captured.contextId)
@@ -421,7 +421,7 @@ class PayPalLauncherUnitTest {
             (paymentAuthResult as PayPalPaymentAuthResult.Failure).error
         )
         verify {
-            analyticsClient.sendEvent(any(), any())
+            analyticsClient.sendEvent(any(), any<AnalyticsEventParams>())
         }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_FAILED, slot1.captured)
@@ -535,7 +535,7 @@ class PayPalLauncherUnitTest {
         )
 
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.NoResult)
-        verify { analyticsClient.sendEvent(any(), any()) }
+        verify { analyticsClient.sendEvent(any(), any<AnalyticsEventParams>()) }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, slot1.captured)
         assertEquals(paymentToken, slot2.captured.contextId)

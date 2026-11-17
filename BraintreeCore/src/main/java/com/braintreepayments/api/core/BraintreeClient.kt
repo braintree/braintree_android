@@ -80,8 +80,8 @@ class BraintreeClient internal constructor(
         merchantRepository.let {
             it.applicationContext = applicationContext
             it.integrationType = integrationType
-            // shortcut: analytics still read this shared value, so events from older clients go out
-            // with the newest client's authorization; fix by partitioning flushed events per authorization.
+            // shortcut: the singleton's authorization is now only a fallback for callers that have
+            // no client (launchers); remove once every caller passes its own authorization.
             it.authorization = authorization
             it.returnUrlScheme = returnUrlScheme
             if (appLinkReturnUri != null) {
@@ -133,7 +133,7 @@ class BraintreeClient internal constructor(
         params: AnalyticsEventParams = AnalyticsEventParams(),
         sendImmediately: Boolean = true,
     ) {
-        analyticsClient.sendEvent(eventName, params, sendImmediately)
+        analyticsClient.sendEvent(eventName, authorization, params, sendImmediately)
     }
 
     /**
@@ -222,17 +222,8 @@ class BraintreeClient internal constructor(
     /**
      * @suppress
      */
-    @Suppress("SwallowedException")
     internal fun reportCrash() {
-        coroutineScope.launch {
-            try {
-                val configuration = getConfiguration()
-                analyticsClient.reportCrash(configuration)
-            } catch (e: Exception) {
-                if (e is CancellationException) throw e
-                // no op
-            }
-        }
+        analyticsClient.reportCrash(authorization)
     }
 
     // TODO: Make launches browser switch as new task a property of `BraintreeOptions`

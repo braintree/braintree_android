@@ -24,7 +24,8 @@ internal class AnalyticsApi(
 
     fun execute(
         events: List<AnalyticsEvent>,
-        configuration: Configuration?
+        configuration: Configuration?,
+        authorization: Authorization
     ) {
         val jsonEvents = events.map { mapAnalyticsEventToFPTIEventJSON(it) }
         val metadata = deviceInspector.getDeviceMetadata(
@@ -33,7 +34,6 @@ internal class AnalyticsApi(
             sessionId = analyticsParamRepository.sessionId,
             integration = merchantRepository.integrationType
         )
-        val authorization = merchantRepository.authorization
         val analyticsRequest = createFPTIPayload(authorization, jsonEvents, metadata)
         coroutineScope.launch {
             try {

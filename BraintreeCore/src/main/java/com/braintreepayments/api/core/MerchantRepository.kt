@@ -20,6 +20,7 @@ class MerchantRepository {
      * clients must use [BraintreeClient.authorization] instead.
      */
     lateinit var authorization: Authorization
+
     lateinit var returnUrlScheme: String
     var appLinkReturnUri: Uri? = null
 
