@@ -10,6 +10,25 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <Button
+            android:id="@+id/vault"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paypal_saved_payment_method_vault" />
+
+        <TextView
+            android:id="@+id/vault_caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/saved_token"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:textIsSelectable="true" />
+
         <EditText
             android:id="@+id/client_token"
             android:layout_width="match_parent"
