@@ -264,7 +264,7 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
 
     private companion object {
         const val DEFAULT_AMOUNT = "10.00"
-        const val CURRENCY_CODE = "USD"
+        const val CURRENCY_CODE = "EUR"
         const val CLIENT_TOKEN_MAX_LINES = 4
         const val APP_LINK_RETURN_URL = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"
         const val DEEP_LINK_FALLBACK_URL_SCHEME = "com.braintreepayments.demo.braintree"
