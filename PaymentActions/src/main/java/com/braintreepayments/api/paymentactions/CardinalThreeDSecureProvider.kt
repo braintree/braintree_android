@@ -24,8 +24,9 @@ import kotlin.time.Duration.Companion.minutes
  * [ThreeDSecureProvider] backed by the Cardinal Mobile SDK, and the only class that touches Cardinal.
  * It's also the [ChallengeRegistrar] the challenge shell uses to reach Cardinal.
  *
- * Cardinal on Android is a process-wide singleton. Every [collectDeviceData] and [presentChallenge]
- * call configures and initializes a fresh Cardinal session.
+ * Cardinal on Android is a process-wide singleton. [collectDeviceData] starts a new Cardinal session and
+ * [presentChallenge] continues on it, as the legacy flow does. [presentChallenge] sets Cardinal up again
+ * only when this provider has no session in this process, e.g. after process death.
  *
  * @param createObserver replaced in tests; the real constructor needs a set-up Cardinal SDK.
  */
@@ -38,14 +39,22 @@ internal class CardinalThreeDSecureProvider(
         ::CardinalChallengeObserver,
 ) : ThreeDSecureProvider, ChallengeRegistrar {
 
+    /** Whether the live Cardinal session in this process is one this provider set up. */
+    @Volatile
+    private var hasSession = false
+
     override suspend fun collectDeviceData(): DeviceDataResult = setUp()
 
     override suspend fun presentChallenge(transactionId: String, payload: String): ChallengeResult {
-        // cca_continue throws if Cardinal isn't set up in this process (e.g. after an app restart).
-        // Re-running setup is safe mid-challenge and survives another module calling Cardinal.cleanup().
-        val setup = setUp()
-        if (setup is DeviceDataResult.Failed) return ChallengeResult.Failed(setup.error)
-        return challengePresenter.present(transactionId, payload, this)
+        // Continue on the device data session. Without one (e.g. after process death), cca_continue throws, so set Cardinal up first.
+        if (!hasSession) {
+            val setup = setUp()
+            if (setup is DeviceDataResult.Failed) return ChallengeResult.Failed(setup.error)
+        }
+        val result = challengePresenter.present(transactionId, payload, this)
+        // The session may be gone (e.g. another module called Cardinal.cleanup()), so set up again next time.
+        if (result is ChallengeResult.Failed) hasSession = false
+        return result
     }
 
     override fun register(activity: FragmentActivity, onResult: (ChallengeResult) -> Unit): ChallengeStarter {
@@ -84,8 +93,10 @@ internal class CardinalThreeDSecureProvider(
         }
 
         return try {
+            // A new setup replaces any earlier session; there's no session until this one completes.
+            hasSession = false
             Cardinal.getInstance().configure(appContext, cardinalParameters(configuration.environment))
-            setUpSession(jwt)
+            setUpSession(jwt).also { hasSession = it is DeviceDataResult.Collected }
         } catch (error: RuntimeException) {
             if (error is CancellationException) throw error
             DeviceDataResult.Failed(BraintreeException(CARDINAL_SETUP_ERROR_MESSAGE, error))

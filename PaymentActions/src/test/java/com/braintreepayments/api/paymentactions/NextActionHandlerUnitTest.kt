@@ -514,6 +514,26 @@ class NextActionHandlerUnitTest {
         }
 
     @Test
+    fun `a new handle call after an abandoned challenge presents the challenge again`() =
+        runTest(testDispatcher) {
+            coEvery { service.getPaymentAction() } returns requiresChallenge()
+            coEvery { threeDSecureProvider.presentChallenge(any(), any()) } returnsMany listOf(
+                ChallengeResult.Abandoned,
+                ChallengeResult.Completed("server-jwt"),
+            )
+            coEvery { service.signalCustomerActionComplete(challengeSignal) } returns
+                success(PaymentActionStatus.SUCCEEDED)
+
+            assertIs<PaymentActionResult.ThreeDSecureCanceled>(sut.handle())
+            val result = sut.handle()
+
+            // The once-per-call limit applies within a call only; each handle call starts fresh.
+            assertIs<PaymentActionResult.Completed>(result)
+            coVerify(exactly = 2) { threeDSecureProvider.presentChallenge("mpi-tx-id", "challenge-payload") }
+            coVerify(exactly = 1) { service.signalCustomerActionComplete(challengeSignal) }
+        }
+
+    @Test
     fun `handle returns Failure without signaling when the challenge fails`() = runTest(testDispatcher) {
         val error = BraintreeException("challenge failed")
         coEvery { service.getPaymentAction() } returns requiresChallenge()

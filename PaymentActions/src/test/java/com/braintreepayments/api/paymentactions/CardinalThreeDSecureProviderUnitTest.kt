@@ -251,7 +251,7 @@ class CardinalThreeDSecureProviderUnitTest {
     }
 
     @Test
-    fun `presentChallenge sets up Cardinal, then presents the challenge with itself as the registrar`() = runTest {
+    fun `presentChallenge without a session sets Cardinal up, then presents with itself as the registrar`() = runTest {
         stubSetupCompleted()
         val challengeResult = ChallengeResult.Completed("server-jwt")
         coEvery { challengePresenter.present(any(), any(), any()) } returns challengeResult
@@ -287,6 +287,52 @@ class CardinalThreeDSecureProviderUnitTest {
         val error = assertIs<BraintreeException>(assertIs<ChallengeResult.Failed>(result).error)
         assertEquals(CardinalThreeDSecureProvider.CARDINAL_SETUP_VALIDATION_FAILED_MESSAGE, error.message)
         coVerify(exactly = 0) { challengePresenter.present(any(), any(), any()) }
+    }
+
+    @Test
+    fun `presentChallenge continues on the device data session without setting Cardinal up again`() = runTest {
+        stubSetupCompleted()
+        coEvery { challengePresenter.present(any(), any(), any()) } returns ChallengeResult.Completed("server-jwt")
+        val sut = buildSut()
+
+        sut.collectDeviceData()
+        sut.presentChallenge("mpi-tx-id", "challenge-payload")
+
+        verify(exactly = 1) { cardinal.configure(any(), any()) }
+        verify(exactly = 1) { cardinal.init(any(), any<CardinalInitService>()) }
+        coVerify { challengePresenter.present("mpi-tx-id", "challenge-payload", sut) }
+    }
+
+    @Test
+    fun `presentChallenge sets Cardinal up when device data collection failed`() = runTest {
+        var initCalls = 0
+        every { cardinal.init(any(), any<CardinalInitService>()) } answers {
+            val service = secondArg<CardinalInitService>()
+            if (++initCalls == 1) service.onValidated(null, null) else service.onSetupCompleted("df-ref")
+        }
+        coEvery { challengePresenter.present(any(), any(), any()) } returns ChallengeResult.Completed("server-jwt")
+        val sut = buildSut()
+
+        assertIs<DeviceDataResult.Failed>(sut.collectDeviceData())
+        val result = sut.presentChallenge("mpi-tx-id", "challenge-payload")
+
+        assertIs<ChallengeResult.Completed>(result)
+        verify(exactly = 2) { cardinal.init(any(), any<CardinalInitService>()) }
+    }
+
+    @Test
+    fun `presentChallenge sets Cardinal up again after a failed challenge`() = runTest {
+        stubSetupCompleted()
+        coEvery { challengePresenter.present(any(), any(), any()) } returns
+            ChallengeResult.Failed(BraintreeException("Challenge failed"))
+        val sut = buildSut()
+        sut.collectDeviceData()
+
+        sut.presentChallenge("mpi-tx-id", "challenge-payload")
+        sut.presentChallenge("mpi-tx-id", "challenge-payload")
+
+        // The failure may mean the session is gone: once for device data, once before the second challenge.
+        verify(exactly = 2) { cardinal.init(any(), any<CardinalInitService>()) }
     }
 
     @Test
