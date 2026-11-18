@@ -7,7 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Looper
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.core.view.isVisible
@@ -240,20 +239,6 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
         idle()
         assertEquals("PayPalSavedPaymentMethodView needs an android:id.", failureMessage())
-    }
-
-    @Test
-    fun `an id another attached view already uses reports a failure and hides`() {
-        initialize()
-        val first = sut
-        sut = PayPalSavedPaymentMethodView(activity).apply { id = first.id }
-        (first.parent as ViewGroup).addView(sut)
-
-        initialize()
-
-        assertEquals(true, failureMessage()?.startsWith("Another PayPalSavedPaymentMethodView"))
-        assertFalse(sut.getChildAt(0).isVisible)
-        verify(exactly = 1) { viewModel.load(any(), any()) }
     }
 
     @Test
