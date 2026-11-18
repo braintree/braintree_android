@@ -10,6 +10,8 @@ import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
+import com.braintreepayments.api.core.MerchantRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -35,6 +37,9 @@ class VenmoLauncherUnitTest {
     private val pendingRequestString = "pending_request_string"
     private val options: BrowserSwitchOptions = mockk(relaxed = true)
 
+    private val authorization: Authorization = mockk()
+    private val merchantRepository = MerchantRepository().also { it.authorization = authorization }
+
     private lateinit var sut: VenmoLauncher
 
     private val appSwitchUrl = Uri.parse("http://example.com")
@@ -42,9 +47,10 @@ class VenmoLauncherUnitTest {
     @Before
     fun setup() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
+        every { paymentAuthRequestParams.authorization } returns authorization
         every { venmoRepository.venmoUrl } returns appSwitchUrl
 
-        sut = VenmoLauncher(browserSwitchClient, venmoRepository, lazy { analyticsClient })
+        sut = VenmoLauncher(browserSwitchClient, venmoRepository, lazy { analyticsClient }, merchantRepository)
     }
 
     @Test
@@ -54,6 +60,7 @@ class VenmoLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 eventName = VenmoAnalytics.APP_SWITCH_STARTED,
+                authorization = authorization,
                 analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
             )
         }
@@ -83,6 +90,7 @@ class VenmoLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 eventName = VenmoAnalytics.APP_SWITCH_SUCCEEDED,
+                authorization = authorization,
                 analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
             )
         }
@@ -113,6 +121,7 @@ class VenmoLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 eventName = VenmoAnalytics.APP_SWITCH_FAILED,
+                authorization = authorization,
                 analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
             )
         }
@@ -155,6 +164,7 @@ class VenmoLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 eventName = VenmoAnalytics.APP_SWITCH_FAILED,
+                authorization = authorization,
                 analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
             )
         }
@@ -167,6 +177,7 @@ class VenmoLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 eventName = VenmoAnalytics.HANDLE_RETURN_STARTED,
+                authorization = authorization,
                 analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
             )
         }
@@ -203,6 +214,7 @@ class VenmoLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 eventName = VenmoAnalytics.HANDLE_RETURN_SUCCEEDED,
+                authorization = authorization,
                 analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
             )
         }
@@ -235,6 +247,7 @@ class VenmoLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 eventName = VenmoAnalytics.HANDLE_RETURN_NO_RESULT,
+                authorization = authorization,
                 analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
             )
         }
@@ -250,6 +263,7 @@ class VenmoLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 eventName = VenmoAnalytics.HANDLE_RETURN_FAILED,
+                authorization = authorization,
                 analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
             )
         }
@@ -268,5 +282,153 @@ class VenmoLauncherUnitTest {
             captor.value.data.toString(),
             "https://play.google.com/store/apps/details?id=com.venmo"
         )
+    }
+
+    private fun createSut(
+        repository: MerchantRepository,
+        lazyClient: Lazy<AnalyticsClient> = lazy { analyticsClient }
+    ) = VenmoLauncher(browserSwitchClient, venmoRepository, lazyClient, repository)
+
+    private fun repositoryWith(auth: Authorization) = MerchantRepository().also { it.authorization = auth }
+
+    private fun launchStarted(launcher: VenmoLauncher, pendingRequest: String) {
+        every { browserSwitchClient.start(activity, options, true) } returns
+            BrowserSwitchStartResult.Started(pendingRequest)
+        launcher.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+    }
+
+    @Test
+    fun `when no authorization is available, launch and handleReturnToApp skip analytics and return results`() {
+        val failIfEvaluated: Lazy<AnalyticsClient> = lazy { throw AssertionError("evaluated") }
+        every { paymentAuthRequestParams.authorization } returns null
+        val launcher = createSut(MerchantRepository(), failIfEvaluated)
+        every { browserSwitchClient.start(activity, options, true) } returns
+            BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            BrowserSwitchFinalResult.NoResult
+
+        val pendingRequest =
+            launcher.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+        val result = launcher.handleReturnToApp(VenmoPendingRequest.Started(pendingRequestString), intent)
+
+        assertTrue(pendingRequest is VenmoPendingRequest.Started)
+        assertTrue(result is VenmoPaymentAuthResult.NoResult)
+    }
+
+    @Test
+    fun `launch events carry the request params authorization`() {
+        val other: Authorization = mockk()
+        val launcher = createSut(repositoryWith(other))
+
+        launchStarted(launcher, pendingRequestString)
+
+        verify { analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_STARTED, authorization, any()) }
+        verify { analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, authorization, any()) }
+        verify(exactly = 0) { analyticsClient.sendEvent(any(), other, any<AnalyticsEventParams>()) }
+    }
+
+    @Test
+    fun `handleReturnToApp events use the authorization of the launch that started the pending request`() {
+        val other: Authorization = mockk()
+        val launcher = createSut(repositoryWith(other))
+        launchStarted(launcher, pendingRequestString)
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            BrowserSwitchFinalResult.NoResult
+
+        launcher.handleReturnToApp(VenmoPendingRequest.Started(pendingRequestString), intent)
+
+        verify { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_STARTED, authorization, any()) }
+        verify { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_NO_RESULT, authorization, any()) }
+        verify(exactly = 0) { analyticsClient.sendEvent(any(), other, any<AnalyticsEventParams>()) }
+    }
+
+    @Test
+    fun `handleReturnToApp with an unknown pending request falls back to the merchant repository authorization`() {
+        val newest: Authorization = mockk()
+        val launcher = createSut(repositoryWith(newest))
+        launchStarted(launcher, pendingRequestString)
+        every { browserSwitchClient.completeRequest(intent, "other_request") } returns
+            BrowserSwitchFinalResult.NoResult
+
+        launcher.handleReturnToApp(VenmoPendingRequest.Started("other_request"), intent)
+
+        verify { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_STARTED, newest, any()) }
+        verify { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_NO_RESULT, newest, any()) }
+    }
+
+    @Test
+    fun `a failed launch does not remember the request`() {
+        val newest: Authorization = mockk()
+        val launcher = createSut(repositoryWith(newest))
+        every { browserSwitchClient.start(activity, options, true) } returns
+            BrowserSwitchStartResult.Failure(BrowserSwitchException("error"))
+        launcher.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            BrowserSwitchFinalResult.NoResult
+
+        launcher.handleReturnToApp(VenmoPendingRequest.Started(pendingRequestString), intent)
+
+        verify { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_STARTED, newest, any()) }
+    }
+
+    @Test
+    fun `a later launch replaces the remembered request only when it starts successfully`() {
+        val second: Authorization = mockk()
+        val newest: Authorization = mockk()
+        val launcher = createSut(repositoryWith(newest))
+        launchStarted(launcher, "first_request")
+
+        every { paymentAuthRequestParams.authorization } returns second
+        every { browserSwitchClient.start(activity, options, true) } returns
+            BrowserSwitchStartResult.Failure(BrowserSwitchException("error"))
+        launcher.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+        every { browserSwitchClient.completeRequest(intent, any()) } returns BrowserSwitchFinalResult.NoResult
+        launcher.handleReturnToApp(VenmoPendingRequest.Started("first_request"), intent)
+        verify { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_STARTED, authorization, any()) }
+
+        launchStarted(launcher, "second_request")
+        launcher.handleReturnToApp(VenmoPendingRequest.Started("first_request"), intent)
+        launcher.handleReturnToApp(VenmoPendingRequest.Started("second_request"), intent)
+
+        verify { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_STARTED, second, any()) }
+        verify { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_STARTED, newest, any()) }
+    }
+
+    @Test
+    fun `handleReturnToApp clears the remembered request after a success result`() {
+        val newest: Authorization = mockk()
+        val launcher = createSut(repositoryWith(newest))
+        launchStarted(launcher, pendingRequestString)
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            mockk<BrowserSwitchFinalResult.Success>()
+
+        launcher.handleReturnToApp(VenmoPendingRequest.Started(pendingRequestString), intent)
+        verify { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_SUCCEEDED, authorization, any()) }
+
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            BrowserSwitchFinalResult.NoResult
+        launcher.handleReturnToApp(VenmoPendingRequest.Started(pendingRequestString), intent)
+
+        verify { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_NO_RESULT, newest, any()) }
+        verify(exactly = 0) { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_NO_RESULT, authorization, any()) }
+    }
+
+    @Test
+    fun `handleReturnToApp clears the remembered request after a failure result`() {
+        val newest: Authorization = mockk()
+        val launcher = createSut(repositoryWith(newest))
+        launchStarted(launcher, pendingRequestString)
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            mockk<BrowserSwitchFinalResult.Failure> { every { error } returns BrowserSwitchException("error") }
+
+        launcher.handleReturnToApp(VenmoPendingRequest.Started(pendingRequestString), intent)
+        verify { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_FAILED, authorization, any()) }
+
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            BrowserSwitchFinalResult.NoResult
+        launcher.handleReturnToApp(VenmoPendingRequest.Started(pendingRequestString), intent)
+
+        verify { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_NO_RESULT, newest, any()) }
+        verify(exactly = 0) { analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_NO_RESULT, authorization, any()) }
     }
 }

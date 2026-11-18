@@ -42,6 +42,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -272,6 +273,8 @@ class PayPalInternalClientUnitTest {
         assertEquals("fake-token", params.contextId)
         assertEquals("sample-client-metadata-id", params.clientMetadataId)
         assertEquals(expectedUrl, params.approvalUrl)
+        assertSame(clientToken, params.authorization)
+        assertFalse(params.toString().contains(clientToken.toString()))
     }
 
     private fun createVaultRequest(): PayPalVaultRequest {
@@ -288,6 +291,8 @@ class PayPalInternalClientUnitTest {
         assertEquals("fake-ba-token", params.contextId)
         assertEquals("sample-client-metadata-id", params.clientMetadataId)
         assertEquals(expectedUrl, params.approvalUrl)
+        assertSame(clientToken, params.authorization)
+        assertFalse(params.toString().contains(clientToken.toString()))
     }
 
     @Test
