@@ -3,6 +3,7 @@ package com.braintreepayments.api.threedsecure
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
+import android.os.Looper
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.threedsecure.ThreeDSecureActivity.Companion.RESULT_COULD_NOT_START_CARDINAL
@@ -14,14 +15,34 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
+import org.junit.After
+import org.junit.Before
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class ThreeDSecureActivityUnitTest {
+
+    private val originalFactory = ThreeDSecureActivity.challengeObserverFactory
+
+    @Before
+    fun setUp() {
+        // The real CardinalChallengeObserver constructor requires a configured Cardinal SDK.
+        ThreeDSecureActivity.challengeObserverFactory = { null }
+    }
+
+    @After
+    fun tearDown() {
+        ThreeDSecureActivity.challengeObserverFactory = originalFactory
+    }
 
     @Test
     fun `onCreate with extras invokes cardinal with lookup data`() {
@@ -123,5 +144,31 @@ class ThreeDSecureActivityUnitTest {
         )
         assertNotNull(activityResult)
         assertEquals("SUCCESS", activityResult.actionCode.string)
+    }
+
+    // With no lookup extras, launchCardinalAuthChallenge finishes the Activity with
+    // RESULT_COULD_NOT_START_CARDINAL, which signals that onCreate scheduled the launch.
+    @Test
+    fun `onCreate with null savedInstanceState schedules the auth challenge launch`() {
+        val controller = Robolectric.buildActivity(ThreeDSecureActivity::class.java, Intent())
+
+        controller.create(null)
+        shadowOf(Looper.getMainLooper()).idle()
+
+        val activity = controller.get()
+        assertTrue(activity.isFinishing)
+        assertEquals(RESULT_COULD_NOT_START_CARDINAL, shadowOf(activity).resultCode)
+    }
+
+    @Test
+    fun `onCreate with non-null savedInstanceState does not relaunch the auth challenge`() {
+        val controller = Robolectric.buildActivity(ThreeDSecureActivity::class.java, Intent())
+
+        controller.create(Bundle())
+        shadowOf(Looper.getMainLooper()).idle()
+
+        val activity = controller.get()
+        assertFalse(activity.isFinishing)
+        assertNull(shadowOf(activity).resultIntent)
     }
 }

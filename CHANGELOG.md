@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ThreeDSecure
+  * Add `savedInstanceState` check to prevent orientation change bug that results in a failed challenge
+
 ## 5.35.0 (2026-11-10)
 
 * PayPal
