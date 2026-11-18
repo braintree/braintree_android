@@ -80,8 +80,7 @@ class BraintreeClient internal constructor(
         merchantRepository.let {
             it.applicationContext = applicationContext
             it.integrationType = integrationType
-            // shortcut: the singleton's authorization is now only a fallback for callers that have
-            // no client (launchers); remove once every caller passes its own authorization.
+            // Only the launchers read this, as a fallback when the owner of a returned pending request is unknown.
             it.authorization = authorization
             it.returnUrlScheme = returnUrlScheme
             if (appLinkReturnUri != null) {
