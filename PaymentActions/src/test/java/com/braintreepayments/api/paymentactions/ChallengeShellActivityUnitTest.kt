@@ -197,6 +197,36 @@ class ChallengeShellActivityUnitTest {
         assertTrue(controller.get().isFinishing)
     }
 
+    @Test
+    fun `the shell claims the challenge before starting it`() {
+        val challenge = pendingChallenge()
+        var stateWhenStarted: PendingChallenge.State? = null
+        registrar.onStart = { stateWhenStarted = challenge.state }
+
+        shell(register(challenge)).setup()
+        idleMainLooper()
+
+        // Already ISSUED when the provider is called: a concurrent complete() either wins before the
+        // claim, and the start is skipped, or lands after it, never between the check and the start.
+        assertEquals(PendingChallenge.State.ISSUED, stateWhenStarted)
+    }
+
+    @Test
+    fun `a challenge that ends on another thread before the posted start runs is never started`() {
+        val challenge = pendingChallenge()
+        val controller = shell(register(challenge)).create()
+
+        // For example, handleNextAction canceled on a background dispatcher right after the shell attached.
+        Thread { challenge.complete(ChallengeResult.Failed(BraintreeException("interrupted"))) }.apply {
+            start()
+            join()
+        }
+        idleMainLooper()
+
+        assertTrue(registrar.starts.isEmpty())
+        assertTrue(controller.get().isFinishing)
+    }
+
     /**
      * A [ChallengeRegistrar] that records what the shell does and lets a test deliver the provider's verdict.
      */
@@ -204,12 +234,14 @@ class ChallengeShellActivityUnitTest {
         val registeredActivities = mutableListOf<FragmentActivity>()
         val starts = mutableListOf<Pair<String, String>>()
         var startError: RuntimeException? = null
+        var onStart: (() -> Unit)? = null
         private var onResult: ((ChallengeResult) -> Unit)? = null
 
         override fun register(activity: FragmentActivity, onResult: (ChallengeResult) -> Unit): ChallengeStarter {
             registeredActivities += activity
             this.onResult = onResult
             return ChallengeStarter { transactionId, payload ->
+                onStart?.invoke()
                 startError?.let { throw it }
                 starts += transactionId to payload
             }

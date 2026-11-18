@@ -48,11 +48,12 @@ internal class ChallengeShellActivity : AppCompatActivity() {
     @Suppress("TooGenericExceptionCaught")
     private fun startChallenge(challenge: PendingChallenge, starter: ChallengeStarter) {
         // Skip if the shell closed or was recreated meanwhile; a recreated shell posts its own start.
-        if (isFinishing || isDestroyed || challenge.state != PendingChallenge.State.ATTACHED) return
+        if (isFinishing || isDestroyed) return
+        // Claim the start before calling the provider, so a challenge that ended meanwhile (e.g. canceled
+        // on another thread) is never shown.
+        if (!challenge.tryIssue()) return
         try {
             starter.start(challenge.transactionId, challenge.payload)
-            // Marked after the call, so a recreation before this line still starts the challenge.
-            challenge.markIssued()
         } catch (error: RuntimeException) {
             challenge.complete(ChallengeResult.Failed(BraintreeException(CHALLENGE_START_FAILED_MESSAGE, error)))
         }

@@ -45,7 +45,7 @@ class PendingChallengeUnitTest {
     @Test
     fun `attaching to a challenge that was already started succeeds and keeps it ISSUED`() {
         sut.attach()
-        sut.markIssued()
+        sut.tryIssue()
 
         assertTrue(sut.attach())
         assertEquals(PendingChallenge.State.ISSUED, sut.state)
@@ -60,28 +60,34 @@ class PendingChallengeUnitTest {
     }
 
     @Test
-    fun `markIssued moves an attached challenge to ISSUED`() {
+    fun `tryIssue claims an attached challenge and moves it to ISSUED`() {
         sut.attach()
 
-        sut.markIssued()
-
+        assertTrue(sut.tryIssue())
         assertEquals(PendingChallenge.State.ISSUED, sut.state)
     }
 
     @Test
-    fun `markIssued does nothing before the shell attaches`() {
-        sut.markIssued()
-
+    fun `tryIssue fails before the shell attaches`() {
+        assertFalse(sut.tryIssue())
         assertEquals(PendingChallenge.State.CREATED, sut.state)
     }
 
     @Test
-    fun `markIssued does nothing after the challenge ended`() {
+    fun `tryIssue fails once the challenge was already claimed`() {
+        sut.attach()
+        sut.tryIssue()
+
+        assertFalse(sut.tryIssue())
+        assertEquals(PendingChallenge.State.ISSUED, sut.state)
+    }
+
+    @Test
+    fun `tryIssue fails after the challenge ended`() {
         sut.attach()
         sut.complete(ChallengeResult.Abandoned)
 
-        sut.markIssued()
-
+        assertFalse(sut.tryIssue())
         assertEquals(PendingChallenge.State.COMPLETED, sut.state)
     }
 

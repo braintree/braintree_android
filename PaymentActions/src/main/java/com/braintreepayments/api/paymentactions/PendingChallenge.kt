@@ -43,9 +43,17 @@ internal class PendingChallenge(
         }
     }
 
-    /** Records that the challenge was started, so a recreated shell doesn't start it again. */
-    fun markIssued() = synchronized(lock) {
-        if (state == State.ATTACHED) state = State.ISSUED
+    /**
+     * Claims the start of the challenge by moving it from [State.ATTACHED] to [State.ISSUED]. Atomic with
+     * [complete], so a challenge that ended meanwhile is never started, and a recreated shell never starts
+     * it twice.
+     *
+     * @return `true` if the caller must start the challenge now.
+     */
+    fun tryIssue(): Boolean = synchronized(lock) {
+        if (state != State.ATTACHED) return false
+        state = State.ISSUED
+        true
     }
 
     /** Ends the challenge with [result] unless it already ended. Returns `true` if this call did. */
