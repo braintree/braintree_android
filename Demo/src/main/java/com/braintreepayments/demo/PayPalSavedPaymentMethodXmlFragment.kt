@@ -218,7 +218,7 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
         const val DEFAULT_AMOUNT = "10.00"
         val LOADING_TEXT = R.string.paypal_saved_payment_method_loading
         val LOAD_TEXT = R.string.paypal_saved_payment_method_load
-        const val CURRENCY_CODE = "USD"
+        const val CURRENCY_CODE = "EUR"
         const val KEY_CLIENT_TOKEN = "client_token"
         const val KEY_AMOUNT = "amount"
         const val APP_LINK_RETURN_URL = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"
