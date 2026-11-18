@@ -41,7 +41,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 /**
  * Shows the buyer's saved PayPal funding instrument and an optional Pay Later message, and lets the buyer change the
@@ -61,9 +60,8 @@ import java.util.UUID
  * in `onNewIntent`.
  *
  * The view needs an `android:id` that is stable across recreation (for example from the layout) and not used by another
- * `PayPalSavedPaymentMethodView` in the same activity or fragment. Otherwise [initialize] sends a failure to the
- * [PayPalTokenizeCallback] and the view is hidden. So it can't be used in list items, such as in a `RecyclerView`,
- * since the items would share an `android:id` and the second one fails. In a fragment, call [initialize] from
+ * `PayPalSavedPaymentMethodView` in the same activity or fragment, since views with the same id share one view model.
+ * So it can't be used in list items, such as in a `RecyclerView`. In a fragment, call [initialize] from
  * `onViewCreated` or later. The callbacks run only while the host is started. If the screen closes while an edit is
  * being completed, its result isn't delivered.
  *
@@ -117,8 +115,6 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
         }
 
     private var viewModel: PayPalSavedPaymentMethodViewModel? = null
-    /** So no other view with the same id shows the view model at the same time. */
-    private var attachment: ViewModelAttachment? = null
     private var payPalLauncher: PayPalLauncher? = null
     private var launchCallback: PayPalSavedPaymentMethodLaunchCallback? = null
     private var tokenizeCallback: PayPalTokenizeCallback? = null
@@ -128,9 +124,6 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     private var pendingReturn: Pair<PayPalPendingRequest.Started, Intent>? = null
     private var state = PayPalSavedPaymentMethodUiState()
     private var loadingDialog: EditLoadingDialog? = null
-
-    /** Identifies this view in [AttachedViews] without keeping a reference to it. */
-    private val instanceId = UUID.randomUUID().toString()
 
     /** Renders and delivers results only while attached. */
     private var attachedScope: CoroutineScope? = null
@@ -225,11 +218,10 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
             return
         }
         val viewModel = viewModel ?: return
-        if (attachment?.attach() == true) observeViewModel(viewModel) else fail(DUPLICATE_VIEW_ID_MESSAGE)
+        observeViewModel(viewModel)
     }
 
     override fun onDetachedFromWindow() {
-        attachment?.detach()
         attachedScope?.cancel()
         attachedScope = null
         loadingDialog?.dismiss()
@@ -254,26 +246,17 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
         val factory = viewModelFactory(setup.authorization, setup.appLinkReturnUrl, setup.deepLinkFallbackUrlScheme)
         val key = "PayPalSavedPaymentMethodView:$id"
         val viewModel = ViewModelProvider(owner, factory)[key, PayPalSavedPaymentMethodViewModel::class.java]
-        val attachedViews = ViewModelProvider(owner)[AttachedViews::class.java]
-        if (attachedViews.isAttachedToAnotherView(key, instanceId)) {
-            fail(DUPLICATE_VIEW_ID_MESSAGE)
-            return
-        }
         if (viewModel !== this.viewModel) unbindViewModel()
         this.viewModel = viewModel
-        val attachment = ViewModelAttachment(attachedViews, key, instanceId)
-        this.attachment = attachment
         request?.let { viewModel.load(it, style.showPayPalCreditMessaging) }
         pendingReturn?.let { (pendingRequest, intent) -> handleReturnToApp(pendingRequest, intent) }
         pendingReturn = null
         // Already observed when initialize is called again for the same view model, so the collectors aren't restarted.
-        if (isAttachedToWindow && attachment.attach() && attachedScope == null) observeViewModel(viewModel)
+        if (isAttachedToWindow && attachedScope == null) observeViewModel(viewModel)
     }
 
     /** Stops showing the current view model. */
     private fun unbindViewModel() {
-        attachment?.detach()
-        attachment = null
         viewModel = null
         attachedScope?.cancel()
         attachedScope = null
@@ -361,8 +344,6 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
         const val NO_ACTIVITY_RESULT_REGISTRY_MESSAGE =
             "PayPalSavedPaymentMethodView must be hosted in an activity that provides an ActivityResultRegistry."
         const val NO_VIEW_ID_MESSAGE = "PayPalSavedPaymentMethodView needs an android:id."
-        const val DUPLICATE_VIEW_ID_MESSAGE =
-            "Another PayPalSavedPaymentMethodView in this activity or fragment already uses this android:id."
     }
 }
 
