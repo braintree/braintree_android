@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -25,9 +26,10 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.xml.PayPalSavedPayment
 import com.braintreepayments.api.paypalsavedpaymentmethod.xml.PayPalSavedPaymentMethodView
 
 /**
- * Demonstrates the XML `PayPalSavedPaymentMethodView`. The component needs a client token generated with the buyer's
- * payment method ID, so paste one that carries a `paymentMethodIdJwt`. Unlike the Compose view, the merchant stores
- * the pending request, passes it back in `onResume`, and clears it once the result arrives.
+ * Demonstrates the XML `PayPalSavedPaymentMethodView`. The component needs a client token that carries the buyer's
+ * `paymentMethodIdJwt`: Load fetches one from the merchant server with the token saved by Vault PayPal Account, or uses
+ * a pasted one. Unlike the Compose view, the merchant stores the pending request, passes it back in `onResume`, and
+ * clears it once the result arrives.
  */
 @OptIn(ExperimentalBetaApi::class)
 class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
@@ -35,12 +37,35 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
     private lateinit var savedPaymentMethodView: PayPalSavedPaymentMethodView
     private lateinit var nonceView: TextView
     private lateinit var createTransactionButton: Button
+    private lateinit var vaultButton: Button
+    private lateinit var loadButton: Button
+    private lateinit var savedTokenView: TextView
+    private lateinit var vaultHelper: SavedPaymentMethodVaultHelper
 
     // The token and amount the component was last loaded with, kept so it can be set up again after recreation.
     private var loadedClientToken: String? = null
     private var loadedAmount: String = DEFAULT_AMOUNT
     private var styleConfig by mutableStateOf(PayPalSavedPaymentMethodStyleConfig())
     private var isStyleEditorOpen by mutableStateOf(false)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        vaultHelper = SavedPaymentMethodVaultHelper(this) { result ->
+            if (!isAdded || view == null) return@SavedPaymentMethodVaultHelper
+            vaultButton.showBusy(
+                isBusy = false,
+                busyText = R.string.paypal_saved_payment_method_vaulting,
+                idleText = R.string.paypal_saved_payment_method_vault,
+                isEnabledWhenIdle = Settings.isSandbox(requireContext())
+            )
+            result
+                .onSuccess {
+                    showSavedToken()
+                    showDialog(getString(R.string.paypal_saved_payment_method_vault_saved))
+                }
+                .onFailure { handleError(it as? Exception ?: Exception(it)) }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,14 +82,39 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
         // The field keeps the buyer's own amount when recreated.
         if (savedInstanceState == null) amountField.setText(DEFAULT_AMOUNT)
 
-        view.findViewById<Button>(R.id.load).setOnClickListener {
-            val clientToken = clientTokenField.text.toString().trim()
-            if (clientToken.isBlank()) {
-                showDialog(getString(R.string.paypal_saved_payment_method_missing_token))
+        val isSandbox = Settings.isSandbox(requireContext())
+        vaultButton = view.findViewById(R.id.vault)
+        vaultButton.isEnabled = isSandbox
+        vaultButton.setOnClickListener {
+            vaultButton.showBusy(
+                isBusy = true,
+                busyText = R.string.paypal_saved_payment_method_vaulting,
+                idleText = R.string.paypal_saved_payment_method_vault
+            )
+            vaultHelper.start()
+        }
+        // The Demo merchant is also used for Production testing, where this would vault a real PayPal account.
+        view.findViewById<TextView>(R.id.vault_caption).setText(
+            if (isSandbox) {
+                R.string.paypal_saved_payment_method_vault_caption
             } else {
-                nonceView.isVisible = false
-                createTransactionButton.isVisible = false
-                load(clientToken, amountField.text.toString().trim())
+                R.string.paypal_saved_payment_method_vault_sandbox_only
+            }
+        )
+
+        savedTokenView = view.findViewById(R.id.saved_token)
+
+        loadButton = view.findViewById(R.id.load)
+        loadButton.setOnClickListener {
+            loadButton.showBusy(isBusy = true, LOADING_TEXT, LOAD_TEXT)
+            SavedPaymentMethodVaultHelper.fetchClientToken(requireContext(), clientTokenField.text.toString()) {
+                if (this.view == null) return@fetchClientToken
+                loadButton.showBusy(isBusy = false, LOADING_TEXT, LOAD_TEXT)
+                it.onSuccess { clientToken ->
+                    nonceView.isVisible = false
+                    createTransactionButton.isVisible = false
+                    load(clientToken, amountField.text.toString().trim())
+                }.onFailure { error -> handleError(error as? Exception ?: Exception(error)) }
             }
         }
         view.findViewById<Button>(R.id.edit_style).setOnClickListener { isStyleEditorOpen = true }
@@ -88,6 +138,9 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        // Picks up a token entered in Settings.
+        showSavedToken()
+        vaultHelper.handleReturn()
         val store = PendingRequestStore.getInstance()
         store.getPayPalPendingRequest(requireContext())?.let { pendingRequest ->
             if (savedPaymentMethodView.handleReturnToApp(pendingRequest, requireActivity().intent)) {
@@ -100,6 +153,12 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
         super.onSaveInstanceState(outState)
         loadedClientToken?.let { outState.putString(KEY_CLIENT_TOKEN, it) }
         outState.putString(KEY_AMOUNT, loadedAmount)
+    }
+
+    private fun showSavedToken() {
+        savedTokenView.text = Settings.getSavedPaymentMethodToken(requireContext())
+            ?.let { getString(R.string.paypal_saved_payment_method_token_value, it) }
+            ?: getString(R.string.paypal_saved_payment_method_token_none)
     }
 
     private fun load(clientToken: String, amount: String) {
@@ -157,10 +216,23 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
 
     private companion object {
         const val DEFAULT_AMOUNT = "10.00"
+        val LOADING_TEXT = R.string.paypal_saved_payment_method_loading
+        val LOAD_TEXT = R.string.paypal_saved_payment_method_load
         const val CURRENCY_CODE = "USD"
         const val KEY_CLIENT_TOKEN = "client_token"
         const val KEY_AMOUNT = "amount"
         const val APP_LINK_RETURN_URL = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"
         const val DEEP_LINK_FALLBACK_URL_SCHEME = "com.braintreepayments.demo.braintree"
     }
+}
+
+// Disables the button and shows busyText while the action runs.
+private fun Button.showBusy(
+    isBusy: Boolean,
+    @StringRes busyText: Int,
+    @StringRes idleText: Int,
+    isEnabledWhenIdle: Boolean = true
+) {
+    isEnabled = !isBusy && isEnabledWhenIdle
+    setText(if (isBusy) busyText else idleText)
 }

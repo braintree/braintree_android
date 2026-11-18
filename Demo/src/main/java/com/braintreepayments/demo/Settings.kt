@@ -9,6 +9,7 @@ import androidx.core.content.edit
 object Settings {
 
     private const val ENVIRONMENT = "environment"
+    private const val SAVED_PAYMENT_METHOD_TOKEN = "paypal_saved_payment_method_token"
 
     const val SANDBOX_ENV_NAME = "Sandbox"
     private const val PRODUCTION_ENV_NAME = "Production"
@@ -76,6 +77,21 @@ object Settings {
     @JvmStatic
     fun getCustomerId(context: Context): String? {
         return getPreferences(context).getString("customer", null)
+    }
+
+    fun isSandbox(context: Context): Boolean = getEnvironment(context) == SANDBOX_ENV_NAME
+
+    /**
+     * The payment method token the saved payment method screens send as `preferred_payment_method_token`. Only used in
+     * Sandbox, where the Vault PayPal Account button creates it, so a stale token can't break Production requests.
+     */
+    fun getSavedPaymentMethodToken(context: Context): String? =
+        getPreferences(context).getString(SAVED_PAYMENT_METHOD_TOKEN, null)
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() && isSandbox(context) }
+
+    fun setSavedPaymentMethodToken(context: Context, token: String) {
+        getPreferences(context).edit { putString(SAVED_PAYMENT_METHOD_TOKEN, token) }
     }
 
     @JvmStatic

@@ -42,15 +42,33 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMeth
 import com.braintreepayments.api.paypalsavedpaymentmethod.compose.PayPalSavedPaymentMethodView
 
 /**
- * Demonstrates the Compose `PayPalSavedPaymentMethodView`. The component needs a client token generated with the
- * buyer's payment method ID, so paste one that carries a `paymentMethodIdJwt`.
+ * Demonstrates the Compose `PayPalSavedPaymentMethodView`. The component needs a client token that carries the buyer's
+ * `paymentMethodIdJwt`: Load fetches one from the merchant server with the token saved by Vault PayPal Account, or uses
+ * a pasted one.
  */
 class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
 
     private val nonceState = mutableStateOf<PayPalAccountNonce?>(null)
+    private val isVaulting = mutableStateOf(false)
+    private val savedToken = mutableStateOf<String?>(null)
+    private lateinit var vaultHelper: SavedPaymentMethodVaultHelper
 
     // Bumped on every resume, so a change made in the Demo settings applies when the buyer comes back here.
     private val resumeCount = mutableIntStateOf(0)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        vaultHelper = SavedPaymentMethodVaultHelper(this) { result ->
+            isVaulting.value = false
+            if (!isAdded) return@SavedPaymentMethodVaultHelper
+            result
+                .onSuccess {
+                    savedToken.value = it
+                    showDialog(getString(R.string.paypal_saved_payment_method_vault_saved))
+                }
+                .onFailure { handleError(it as? Exception ?: Exception(it)) }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,7 +90,9 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
         var loadedClientToken by rememberSaveable { mutableStateOf("") }
         var loadedAmount by rememberSaveable { mutableStateOf("") }
         var loadCount by rememberSaveable { mutableStateOf(0) }
+        var isLoading by remember { mutableStateOf(false) }
         val nonce by nonceState
+        val isSandbox = Settings.isSandbox(requireContext())
 
         val style = remember(styleConfig) { styleConfig.toStyle() }
         val checkoutRequest = remember(loadedAmount, resumeCount.intValue) { checkoutRequest(loadedAmount) }
@@ -88,6 +108,41 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
                 text = stringResource(R.string.paypal_saved_payment_method_compose_button),
                 style = MaterialTheme.typography.titleMedium
             )
+            OutlinedButton(
+                onClick = {
+                    isVaulting.value = true
+                    vaultHelper.start()
+                },
+                enabled = isSandbox && !isVaulting.value,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    stringResource(
+                        if (isVaulting.value) {
+                            R.string.paypal_saved_payment_method_vaulting
+                        } else {
+                            R.string.paypal_saved_payment_method_vault
+                        }
+                    )
+                )
+            }
+            // The Demo merchant is also used for Production testing, where this would vault a real PayPal account.
+            Text(
+                text = stringResource(
+                    if (isSandbox) {
+                        R.string.paypal_saved_payment_method_vault_caption
+                    } else {
+                        R.string.paypal_saved_payment_method_vault_sandbox_only
+                    }
+                ),
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = savedToken.value?.let { stringResource(R.string.paypal_saved_payment_method_token_value, it) }
+                    ?: stringResource(R.string.paypal_saved_payment_method_token_none),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            HorizontalDivider()
             OutlinedTextField(
                 value = clientToken,
                 onValueChange = { clientToken = it },
@@ -108,18 +163,32 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
             }
             Button(
                 onClick = {
-                    if (clientToken.isBlank()) {
-                        showDialog(getString(R.string.paypal_saved_payment_method_missing_token))
-                    } else {
-                        nonceState.value = null
-                        loadedClientToken = clientToken.trim()
-                        loadedAmount = amount.trim()
-                        loadCount++
+                    isLoading = true
+                    SavedPaymentMethodVaultHelper.fetchClientToken(requireContext(), clientToken) { result ->
+                        isLoading = false
+                        if (!isAdded) return@fetchClientToken
+                        result
+                            .onSuccess {
+                                nonceState.value = null
+                                loadedClientToken = it
+                                loadedAmount = amount.trim()
+                                loadCount++
+                            }
+                            .onFailure { handleError(it as? Exception ?: Exception(it)) }
                     }
                 },
+                enabled = !isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.paypal_saved_payment_method_load))
+                Text(
+                    stringResource(
+                        if (isLoading) {
+                            R.string.paypal_saved_payment_method_loading
+                        } else {
+                            R.string.paypal_saved_payment_method_load
+                        }
+                    )
+                )
             }
 
             if (loadedClientToken.isNotBlank()) {
@@ -158,6 +227,9 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         resumeCount.intValue++
+        // Picks up a token entered in Settings.
+        savedToken.value = Settings.getSavedPaymentMethodToken(requireContext())
+        vaultHelper.handleReturn()
     }
 
     private fun checkoutRequest(amount: String) = PayPalCheckoutRequest(

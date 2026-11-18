@@ -28,6 +28,12 @@
             android:summary="@string/customer_summary"
             android:defaultValue="@string/empty" />
 
+        <com.braintreepayments.demo.views.SummaryEditTestPreference
+            android:key="paypal_saved_payment_method_token"
+            android:title="@string/paypal_saved_payment_method_token"
+            android:summary="@string/paypal_saved_payment_method_token_summary"
+            android:defaultValue="@string/empty" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

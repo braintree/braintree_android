@@ -225,7 +225,7 @@ class MainFragment : BaseFragment() {
     }
 
     private fun launchPayPalSavedPaymentMethodCompose() {
-        // The component needs a client token with the buyer's payment method ID, which the screen asks for.
+        // The screen fetches its own client token, with the buyer's payment method token, when Load is tapped.
         val action = MainFragmentDirections.actionMainFragmentToPayPalSavedPaymentMethodComposeFragment()
         findNavController().navigate(action)
     }
