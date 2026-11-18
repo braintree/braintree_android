@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -33,7 +34,8 @@ import kotlin.math.roundToInt
 
 /**
  * A bottom sheet with every merchant-configurable style value, so the component can be re-themed at runtime. Each
- * value starts at the SDK default when it's switched on.
+ * value starts at the SDK default when it's switched on (the SDK's `paypal_saved_payment_method_style_default_*`
+ * dimens and colors).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,6 +46,8 @@ fun PayPalSavedPaymentMethodStyleEditor(
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
+        // Fully expanded, the sheet would otherwise run under the status bar.
+        modifier = Modifier.statusBarsPadding(),
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {
         Row(
@@ -126,13 +130,13 @@ fun PayPalSavedPaymentMethodStyleEditor(
             ) { onConfigChange(config.copy(cornerRadiusDp = it)) }
             OptionalColorRow(
                 title = R.string.paypal_saved_payment_method_style_border_color,
-                defaultColor = GRAY,
+                defaultColor = TRANSPARENT,
                 value = config.borderColor
             ) { onConfigChange(config.copy(borderColor = it)) }
             OptionalMetricRow(
                 title = R.string.paypal_saved_payment_method_style_border_width,
                 unit = "dp",
-                defaultValue = 1f,
+                defaultValue = 0f,
                 range = 0f..10f,
                 value = config.borderWidthDp
             ) { onConfigChange(config.copy(borderWidthDp = it)) }
@@ -154,7 +158,7 @@ fun PayPalSavedPaymentMethodStyleEditor(
             OptionalMetricRow(
                 title = R.string.paypal_saved_payment_method_style_label_start_margin,
                 unit = "dp",
-                defaultValue = 6f,
+                defaultValue = 12f,
                 value = config.labelMarginStartDp
             ) { onConfigChange(config.copy(labelMarginStartDp = it)) }
 
@@ -174,7 +178,7 @@ fun PayPalSavedPaymentMethodStyleEditor(
             OptionalMetricRow(
                 title = R.string.paypal_saved_payment_method_style_start_margin,
                 unit = "dp",
-                defaultValue = 12f,
+                defaultValue = 8f,
                 value = config.fundingInstrumentMarginStartDp
             ) { onConfigChange(config.copy(fundingInstrumentMarginStartDp = it)) }
 
@@ -263,6 +267,8 @@ private fun OptionalColorRow(
 }
 
 private const val DEFAULT_MAX_VALUE = 60f
+// SDK default border color.
+private const val TRANSPARENT = 0x00000000
 private const val WHITE = 0xFFFFFFFF.toInt()
 private const val DARK_GRAY = 0xFF222222.toInt()
 private const val GRAY = 0xFF8E8E93.toInt()
