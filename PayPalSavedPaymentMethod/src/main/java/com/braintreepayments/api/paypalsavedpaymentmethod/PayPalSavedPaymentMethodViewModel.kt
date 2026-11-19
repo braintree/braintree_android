@@ -70,19 +70,21 @@ internal class PayPalSavedPaymentMethodViewModel(
     // What the views asked for; null until the first load.
     private var inputs: Inputs? = null
     private var defaultFundingInstrumentJob: Job? = null
+    private var isDefaultFundingInstrumentLoaded = false
     private var updatedFundingInstrumentJob: Job? = null
 
     /**
      * Loads the default funding instrument and, if enabled, the Pay Later message. Called each time a view binds, so a
-     * failed load is retried and a shown one refreshed. After an edit the funding instrument isn't refetched, since the
-     * API still returns the one from before the edit; only an edit restored from [savedState] loads it once.
+     * failed load is retried; one that succeeded isn't fetched again, so a configuration change or returning to the
+     * screen makes no requests. After an edit the funding instrument isn't refetched, since the API still returns the
+     * one from before the edit; only an edit restored from [savedState] loads it once.
      */
     fun load(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
         val isFirstLoad = inputs == null
         inputs = Inputs(request, showCreditMessaging)
-        creditMessagingLoader.fetch(request, showCreditMessaging)
+        creditMessagingLoader.fetchIfNotShown(request, showCreditMessaging)
         if (!state.value.isEditCompleted) {
-            loadBuyerDefaultBillingAgreement()
+            if (!isDefaultFundingInstrumentLoaded) loadBuyerDefaultBillingAgreement()
         } else if (isFirstLoad) {
             loadBuyerUpdatedBillingAgreement()
         }
@@ -224,10 +226,10 @@ internal class PayPalSavedPaymentMethodViewModel(
                     PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT,
                     null,
                     merchantAccountId
-                ).toDisplayState()
+                ).toDisplayState().also { isDefaultFundingInstrumentLoaded = true }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                // A failed refresh keeps what's shown; only a failed first load shows the error.
+                // A failed retry keeps the error shown; only a failed first load sets it.
                 if (state.value.fundingInstrument != PayPalSavedPaymentMethodDisplayState.Loading) return@launch
                 e.toDisplayState()
             }

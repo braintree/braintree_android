@@ -124,17 +124,38 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `a failed refresh keeps the funding instrument and message shown`() = runTest(dispatcher) {
+    fun `attaching again after a successful load fetches nothing again`() = runTest(dispatcher) {
         loadAndSettle()
 
-        coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws UnknownHostException()
-        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } throws UnknownHostException()
         loadAndSettle()
 
         assertEquals(PayPalSavedPaymentMethodDisplayState.Content(CARD), sut.state.value.fundingInstrument)
         assertEquals(MESSAGE, sut.state.value.creditMessaging)
-        coVerify(exactly = 2) { client.fetchPaymentMethod(BUYER_DEFAULT, null, MERCHANT_ACCOUNT_ID) }
-        coVerify(exactly = 2) { client.fetchCreditPresentmentMessages(AMOUNT, "USD") }
+        coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_DEFAULT, null, MERCHANT_ACCOUNT_ID) }
+        coVerify(exactly = 1) { client.fetchCreditPresentmentMessages(AMOUNT, "USD") }
+    }
+
+    @Test
+    fun `a failed Pay Later load is retried when a view attaches again`() = runTest(dispatcher) {
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } throws UnknownHostException()
+        loadAndSettle()
+
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } returns MESSAGE_RESULT
+        loadAndSettle()
+
+        assertEquals(MESSAGE, sut.state.value.creditMessaging)
+        coVerify(exactly = 1) { client.fetchPaymentMethod(any(), any(), any()) }
+    }
+
+    @Test
+    fun `a Pay Later message turned off and on again is loaded when a view attaches`() = runTest(dispatcher) {
+        loadAndSettle()
+        sut.onRequestChanged(request(AMOUNT), showCreditMessaging = false)
+        advanceUntilIdle()
+
+        loadAndSettle()
+
+        assertEquals(MESSAGE, sut.state.value.creditMessaging)
     }
 
     @Test
