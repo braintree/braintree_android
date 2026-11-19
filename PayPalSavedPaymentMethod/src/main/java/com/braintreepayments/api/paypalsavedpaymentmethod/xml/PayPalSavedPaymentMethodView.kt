@@ -62,8 +62,9 @@ import kotlinx.coroutines.launch
  * The view needs an `android:id` that is stable across recreation (for example from the layout) and not used by another
  * `PayPalSavedPaymentMethodView` in the same activity or fragment, since views with the same id share one view model.
  * So it can't be used in list items, such as in a `RecyclerView`. In a fragment, call [initialize] from
- * `onViewCreated` or later. The callbacks run only while the host is started. If the screen closes while an edit is
- * being completed, its result isn't delivered.
+ * `onViewCreated` or later. The callbacks run only while the host is started, except a setup failure from [initialize],
+ * which is posted right after it returns and dropped if the view is detached first. If the screen closes while an edit
+ * is being completed, its result isn't delivered.
  *
  * Style it with the `paypalSavedPaymentMethod*` XML attributes or [style]; a style set in code replaces the attributes.
  */
@@ -124,6 +125,8 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     private var pendingReturn: Pair<PayPalPendingRequest.Started, Intent>? = null
     private var state = PayPalSavedPaymentMethodUiState()
     private var loadingDialog: EditLoadingDialog? = null
+    /** A setup failure posted by [fail] and not delivered yet; removed on detach so it doesn't outlive the view. */
+    private var pendingFailure: Runnable? = null
 
     /** Renders and delivers results only while attached. */
     private var attachedScope: CoroutineScope? = null
@@ -222,6 +225,8 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     }
 
     override fun onDetachedFromWindow() {
+        pendingFailure?.let { mainHandler.removeCallbacks(it) }
+        pendingFailure = null
         attachedScope?.cancel()
         attachedScope = null
         loadingDialog?.dismiss()
@@ -264,7 +269,7 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
 
     /**
      * Hides the view and reports why it can't be used. The failure is posted, so the callback never runs from inside
-     * [initialize] or [onAttachedToWindow].
+     * [initialize] or [onAttachedToWindow]. Only the latest failure is delivered, and none once the view is detached.
      */
     private fun fail(message: String) {
         unbindViewModel()
@@ -273,7 +278,13 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
         state = state.copy(fundingInstrument = PayPalSavedPaymentMethodDisplayState.Hidden, isEditing = false)
         render()
         val callback = tokenizeCallback
-        mainHandler.post { callback?.onPayPalResult(PayPalResult.Failure(BraintreeException(message))) }
+        pendingFailure?.let { mainHandler.removeCallbacks(it) }
+        val delivery = Runnable {
+            pendingFailure = null
+            callback?.onPayPalResult(PayPalResult.Failure(BraintreeException(message)))
+        }
+        pendingFailure = delivery
+        mainHandler.post(delivery)
     }
 
     /** Opens the PayPal paysheet when the buyer taps the funding instrument. */
