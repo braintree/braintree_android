@@ -1,16 +1,23 @@
 package com.braintreepayments.api.paymentactions
 
 import android.content.Context
+import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
+import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver
 import com.cardinalcommerce.shared.models.exceptions.InvalidInputException
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -24,6 +31,7 @@ import org.junit.Before
 import org.junit.Test
 import java.io.IOException
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertSame
@@ -33,6 +41,11 @@ class CardinalThreeDSecureProviderUnitTest {
 
     private val context = mockk<Context>(relaxed = true)
     private val cardinal = mockk<Cardinal>(relaxed = true)
+    private val challengeCoordinator = mockk<ChallengeCoordinator>()
+    private val activity = mockk<FragmentActivity>()
+    private val observer = mockk<CardinalChallengeObserver>()
+    private var observerActivity: FragmentActivity? = null
+    private var receiver: CardinalValidateReceiver? = null
 
     @Before
     fun setUp() {
@@ -54,6 +67,12 @@ class CardinalThreeDSecureProviderUnitTest {
     private fun buildSut(configuration: Configuration = configuration()) = CardinalThreeDSecureProvider(
         context,
         MockkBraintreeClientBuilder().configurationSuccess(configuration).build(),
+        challengeCoordinator,
+        createObserver = { activity, receiver ->
+            observerActivity = activity
+            this.receiver = receiver
+            observer
+        },
     )
 
     /** Makes Cardinal answer `init` by completing setup with [sessionId]. */
@@ -229,5 +248,202 @@ class CardinalThreeDSecureProviderUnitTest {
 
         assertSame(configurationError, assertIs<DeviceDataResult.Failed>(result).error)
         verify(exactly = 0) { cardinal.configure(any(), any()) }
+    }
+
+    @Test
+    fun `presentChallenge without a session sets Cardinal up, then presents with itself as the registrar`() = runTest {
+        stubSetupCompleted()
+        val challengeResult = ChallengeResult.Completed("server-jwt")
+        coEvery { challengeCoordinator.startChallenge(any(), any(), any()) } returns challengeResult
+        val sut = buildSut()
+
+        val result = sut.presentChallenge("mpi-tx-id", "challenge-payload")
+
+        assertSame(challengeResult, result)
+        coVerifyOrder {
+            cardinal.configure(context, any())
+            cardinal.init("cardinal-jwt", any<CardinalInitService>())
+            challengeCoordinator.startChallenge("mpi-tx-id", "challenge-payload", sut)
+        }
+    }
+
+    @Test
+    fun `presentChallenge with a missing JWT returns Failed without presenting the challenge`() = runTest {
+        val result = buildSut(configuration(jwt = null)).presentChallenge("mpi-tx-id", "challenge-payload")
+
+        val error = assertIs<BraintreeException>(assertIs<ChallengeResult.Failed>(result).error)
+        assertEquals(CardinalThreeDSecureProvider.MISSING_CARDINAL_JWT_MESSAGE, error.message)
+        coVerify(exactly = 0) { challengeCoordinator.startChallenge(any(), any(), any()) }
+    }
+
+    @Test
+    fun `presentChallenge returns Failed without presenting the challenge when setup fails`() = runTest {
+        every { cardinal.init(any(), any<CardinalInitService>()) } answers {
+            secondArg<CardinalInitService>().onValidated(null, null)
+        }
+
+        val result = buildSut().presentChallenge("mpi-tx-id", "challenge-payload")
+
+        val error = assertIs<BraintreeException>(assertIs<ChallengeResult.Failed>(result).error)
+        assertEquals(CardinalThreeDSecureProvider.CARDINAL_SETUP_VALIDATION_FAILED_MESSAGE, error.message)
+        coVerify(exactly = 0) { challengeCoordinator.startChallenge(any(), any(), any()) }
+    }
+
+    @Test
+    fun `presentChallenge continues on the device data session without setting Cardinal up again`() = runTest {
+        stubSetupCompleted()
+        coEvery { challengeCoordinator.startChallenge(any(), any(), any()) } returns ChallengeResult.Completed("server-jwt")
+        val sut = buildSut()
+
+        sut.collectDeviceData()
+        sut.presentChallenge("mpi-tx-id", "challenge-payload")
+
+        verify(exactly = 1) { cardinal.configure(any(), any()) }
+        verify(exactly = 1) { cardinal.init(any(), any<CardinalInitService>()) }
+        coVerify { challengeCoordinator.startChallenge("mpi-tx-id", "challenge-payload", sut) }
+    }
+
+    @Test
+    fun `presentChallenge sets Cardinal up when device data collection failed`() = runTest {
+        var initCalls = 0
+        every { cardinal.init(any(), any<CardinalInitService>()) } answers {
+            val service = secondArg<CardinalInitService>()
+            if (++initCalls == 1) service.onValidated(null, null) else service.onSetupCompleted("df-ref")
+        }
+        coEvery { challengeCoordinator.startChallenge(any(), any(), any()) } returns ChallengeResult.Completed("server-jwt")
+        val sut = buildSut()
+
+        assertIs<DeviceDataResult.Failed>(sut.collectDeviceData())
+        val result = sut.presentChallenge("mpi-tx-id", "challenge-payload")
+
+        assertIs<ChallengeResult.Completed>(result)
+        verify(exactly = 2) { cardinal.init(any(), any<CardinalInitService>()) }
+    }
+
+    @Test
+    fun `presentChallenge sets Cardinal up again after a failed challenge`() = runTest {
+        stubSetupCompleted()
+        coEvery { challengeCoordinator.startChallenge(any(), any(), any()) } returns
+            ChallengeResult.Failed(BraintreeException("Challenge failed"))
+        val sut = buildSut()
+        sut.collectDeviceData()
+
+        sut.presentChallenge("mpi-tx-id", "challenge-payload")
+        sut.presentChallenge("mpi-tx-id", "challenge-payload")
+
+        // The failure may mean the session is gone: once for device data, once before the second challenge.
+        verify(exactly = 2) { cardinal.init(any(), any<CardinalInitService>()) }
+    }
+
+    @Test
+    fun `the challenge watchdog outlasts Cardinal's own challenge timeout`() {
+        assertTrue(
+            CardinalThreeDSecureProvider.CHALLENGE_WATCHDOG_TIMEOUT.inWholeMinutes >
+                CardinalThreeDSecureProvider.CHALLENGE_TIMEOUT_MINUTES
+        )
+    }
+
+    private fun map(
+        actionCode: CardinalActionCode?,
+        serverJwt: String? = "server-jwt",
+        errorDescription: String? = null,
+    ) = CardinalThreeDSecureProvider.toChallengeResult(actionCode, serverJwt, errorDescription)
+
+    private fun ChallengeResult.errorMessage(): String? =
+        assertIs<BraintreeException>(assertIs<ChallengeResult.Failed>(this).error).message
+
+    @Test
+    fun `SUCCESS, NOACTION and FAILURE with a server JWT complete with that JWT`() {
+        listOf(CardinalActionCode.SUCCESS, CardinalActionCode.NOACTION, CardinalActionCode.FAILURE).forEach {
+            assertEquals(ChallengeResult.Completed("server-jwt"), map(it))
+        }
+    }
+
+    @Test
+    fun `SUCCESS, NOACTION and FAILURE without a server JWT fail`() {
+        listOf(CardinalActionCode.SUCCESS, CardinalActionCode.NOACTION, CardinalActionCode.FAILURE).forEach { code ->
+            listOf(null, "").forEach { jwt ->
+                val message = map(code, serverJwt = jwt).errorMessage()
+
+                assertEquals(CardinalThreeDSecureProvider.MISSING_SERVER_JWT_MESSAGE, message)
+            }
+        }
+    }
+
+    @Test
+    fun `CANCEL and TIMEOUT mean the customer abandoned the challenge`() {
+        assertSame(ChallengeResult.Abandoned, map(CardinalActionCode.CANCEL, serverJwt = null))
+        assertSame(ChallengeResult.Abandoned, map(CardinalActionCode.TIMEOUT, serverJwt = null))
+    }
+
+    @Test
+    fun `ERROR fails with Cardinal's error description`() {
+        val result = map(CardinalActionCode.ERROR, errorDescription = "Invalid transition")
+
+        assertEquals("Invalid transition", result.errorMessage())
+    }
+
+    @Test
+    fun `ERROR without an error description fails with the default message`() {
+        listOf(null, " ").forEach { description ->
+            val result = map(CardinalActionCode.ERROR, errorDescription = description)
+
+            assertEquals(CardinalThreeDSecureProvider.CHALLENGE_ERROR_MESSAGE, result.errorMessage())
+        }
+    }
+
+    @Test
+    fun `a missing action code fails as unrecognized`() {
+        val message = map(actionCode = null).errorMessage()
+
+        assertTrue(message!!.startsWith(CardinalThreeDSecureProvider.UNRECOGNIZED_ACTION_CODE_MESSAGE))
+    }
+
+    @Test
+    fun `register builds Cardinal's observer on the shell activity`() {
+        buildSut().register(activity) {}
+
+        assertSame(activity, observerActivity)
+    }
+
+    @Test
+    fun `the starter continues the challenge with Cardinal through the registered observer`() {
+        buildSut().register(activity) {}.start("mpi-tx-id", "challenge-payload")
+
+        verify { cardinal.cca_continue("mpi-tx-id", "challenge-payload", observer) }
+    }
+
+    @Test
+    fun `the starter throws when Cardinal rejects the challenge`() {
+        val cause = InvalidInputException("invalid payload", Throwable())
+        every { cardinal.cca_continue(any(), any(), any<CardinalChallengeObserver>()) } throws cause
+
+        val starter = buildSut().register(activity) {}
+
+        assertSame(cause, assertFailsWith<InvalidInputException> { starter.start("mpi-tx-id", "challenge-payload") })
+    }
+
+    @Test
+    fun `Cardinal's verdict reaches onResult as a ChallengeResult`() {
+        var result: ChallengeResult? = null
+        buildSut().register(activity) { result = it }
+        val validateResponse = mockk<ValidateResponse> {
+            every { actionCode } returns CardinalActionCode.SUCCESS
+            every { errorDescription } returns null
+        }
+
+        receiver!!.onValidated(mockk<Context>(), validateResponse, "server-jwt")
+
+        assertEquals(ChallengeResult.Completed("server-jwt"), result)
+    }
+
+    @Test
+    fun `a verdict without a ValidateResponse reaches onResult as a failure`() {
+        var result: ChallengeResult? = null
+        buildSut().register(activity) { result = it }
+
+        receiver!!.onValidated(mockk<Context>(), null, null)
+
+        assertIs<ChallengeResult.Failed>(result)
     }
 }

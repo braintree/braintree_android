@@ -254,11 +254,6 @@ class NextActionHandlerUnitTest {
     fun `handle with REQUIRES_CUSTOMER_ACTION stops at the boundary for every nextAction it can't resolve`() =
         runTest(testDispatcher) {
             val nextActions = listOf(
-                NextAction.ThreeDSecureChallenge(
-                    acsUrl = "https://acs.example.com",
-                    acsRenderingType = null,
-                    challengePayload = "payload",
-                ),
                 NextAction.Unrecognized(typeName = "PaymentActionRedirectUrl"),
                 null,
             )
@@ -274,6 +269,7 @@ class NextActionHandlerUnitTest {
                 coVerify(exactly = 0) { service.signalCustomerActionComplete(any()) }
             }
             coVerify(exactly = 0) { threeDSecureProvider.collectDeviceData() }
+            coVerify(exactly = 0) { threeDSecureProvider.presentChallenge(any(), any()) }
         }
 
     @Test
@@ -358,22 +354,20 @@ class NextActionHandlerUnitTest {
         }
 
     @Test
-    fun `handle with a challenge in the signal response returns CustomerActionRequired`() =
+    fun `handle with a challenge in the device data signal response presents it and continues`() =
         runTest(testDispatcher) {
             coEvery { service.getPaymentAction() } returns requiresDeviceData()
             stubDeviceDataCollected()
-            coEvery { service.signalCustomerActionComplete(ddcSignal) } returns success(
-                PaymentActionStatus.REQUIRES_CUSTOMER_ACTION,
-                nextAction = NextAction.ThreeDSecureChallenge(
-                    acsUrl = "https://acs.example.com",
-                    acsRenderingType = null,
-                    challengePayload = "payload",
-                ),
-            )
+            coEvery { service.signalCustomerActionComplete(ddcSignal) } returns requiresChallenge()
+            stubChallengeCompleted()
+            coEvery { service.signalCustomerActionComplete(challengeSignal) } returns
+                success(PaymentActionStatus.SUCCEEDED)
 
             val result = sut.handle()
 
-            assertEquals("pa123", assertIs<PaymentActionResult.CustomerActionRequired>(result).id)
+            assertEquals("pa123", assertIs<PaymentActionResult.Completed>(result).id)
+            coVerify(exactly = 1) { threeDSecureProvider.presentChallenge("mpi-tx-id", "challenge-payload") }
+            coVerify(exactly = 1) { service.getPaymentAction() }
         }
 
     @Test
@@ -443,5 +437,151 @@ class NextActionHandlerUnitTest {
             assertIs<PaymentActionResult.CustomerActionRequired>(result)
             coVerify(exactly = 1) { threeDSecureProvider.collectDeviceData() }
             coVerify(exactly = 2) { service.getPaymentAction() }
+        }
+
+    private val challenge = NextAction.ThreeDSecureChallenge(
+        acsUrl = "https://acs.example.com",
+        acsRenderingType = null,
+        challengePayload = "challenge-payload",
+        mpiTransactionId = "mpi-tx-id",
+    )
+    private val challengeSignal = CustomerCompletedAction.Challenge(cardinalAuthenticationJWT = "server-jwt")
+
+    private fun requiresChallenge(
+        nextAction: NextAction.ThreeDSecureChallenge = challenge,
+        version: Int? = null,
+    ) = success(PaymentActionStatus.REQUIRES_CUSTOMER_ACTION, version = version, nextAction = nextAction)
+
+    private fun stubChallengeCompleted() {
+        coEvery { threeDSecureProvider.presentChallenge(any(), any()) } returns ChallengeResult.Completed("server-jwt")
+    }
+
+    @Test
+    fun `handle with a challenge presents it, signals the JWT, and continues on the signal response`() =
+        runTest(testDispatcher) {
+            coEvery { service.getPaymentAction() } returns requiresChallenge()
+            stubChallengeCompleted()
+            coEvery { service.signalCustomerActionComplete(challengeSignal) } returns
+                success(PaymentActionStatus.READY_FOR_CONFIRMATION)
+
+            val result = sut.handle()
+
+            val outcome = assertIs<PaymentActionResult.ServerActionRequired>(result)
+            assertEquals(ServerAction.CONFIRM, outcome.serverAction)
+            coVerify(exactly = 1) { threeDSecureProvider.presentChallenge("mpi-tx-id", "challenge-payload") }
+            coVerify(exactly = 1) { service.signalCustomerActionComplete(challengeSignal) }
+            coVerify(exactly = 1) { service.getPaymentAction() }
+            coVerify(exactly = 0) { threeDSecureProvider.collectDeviceData() }
+        }
+
+    @Test
+    fun `handle with a challenge from the passed-in result presents it without fetching`() =
+        runTest(testDispatcher) {
+            stubChallengeCompleted()
+            coEvery { service.signalCustomerActionComplete(challengeSignal) } returns
+                success(PaymentActionStatus.SUCCEEDED)
+
+            val result = sut.handle(requiresChallenge())
+
+            assertIs<PaymentActionResult.Completed>(result)
+            coVerify(exactly = 0) { service.getPaymentAction() }
+        }
+
+    @Test
+    fun `handle with a challenge missing its mpiTransactionId returns Failure without presenting it`() =
+        runTest(testDispatcher) {
+            coEvery { service.getPaymentAction() } returns
+                requiresChallenge(challenge.copy(mpiTransactionId = null))
+
+            val result = sut.handle()
+
+            val error = assertIs<BraintreeException>(assertIs<PaymentActionResult.Failure>(result).error)
+            assertEquals(NextActionHandler.MISSING_MPI_TRANSACTION_ID_MESSAGE, error.message)
+            coVerify(exactly = 0) { threeDSecureProvider.presentChallenge(any(), any()) }
+            coVerify(exactly = 0) { service.signalCustomerActionComplete(any()) }
+        }
+
+    @Test
+    fun `handle with an abandoned challenge returns ThreeDSecureCanceled without signaling`() =
+        runTest(testDispatcher) {
+            coEvery { service.getPaymentAction() } returns requiresChallenge()
+            coEvery { threeDSecureProvider.presentChallenge(any(), any()) } returns ChallengeResult.Abandoned
+
+            val result = sut.handle()
+
+            assertEquals("pa123", assertIs<PaymentActionResult.ThreeDSecureCanceled>(result).id)
+            coVerify(exactly = 0) { service.signalCustomerActionComplete(any()) }
+        }
+
+    @Test
+    fun `a new handle call after an abandoned challenge presents the challenge again`() =
+        runTest(testDispatcher) {
+            coEvery { service.getPaymentAction() } returns requiresChallenge()
+            coEvery { threeDSecureProvider.presentChallenge(any(), any()) } returnsMany listOf(
+                ChallengeResult.Abandoned,
+                ChallengeResult.Completed("server-jwt"),
+            )
+            coEvery { service.signalCustomerActionComplete(challengeSignal) } returns
+                success(PaymentActionStatus.SUCCEEDED)
+
+            assertIs<PaymentActionResult.ThreeDSecureCanceled>(sut.handle())
+            val result = sut.handle()
+
+            // The once-per-call limit applies within a call only; each handle call starts fresh.
+            assertIs<PaymentActionResult.Completed>(result)
+            coVerify(exactly = 2) { threeDSecureProvider.presentChallenge("mpi-tx-id", "challenge-payload") }
+            coVerify(exactly = 1) { service.signalCustomerActionComplete(challengeSignal) }
+        }
+
+    @Test
+    fun `handle returns Failure without signaling when the challenge fails`() = runTest(testDispatcher) {
+        val error = BraintreeException("challenge failed")
+        coEvery { service.getPaymentAction() } returns requiresChallenge()
+        coEvery { threeDSecureProvider.presentChallenge(any(), any()) } returns ChallengeResult.Failed(error)
+
+        val result = sut.handle()
+
+        assertSame(error, assertIs<PaymentActionResult.Failure>(result).error)
+        coVerify(exactly = 0) { service.signalCustomerActionComplete(any()) }
+    }
+
+    @Test
+    fun `handle returns Failure when the challenge signal fails`() = runTest(testDispatcher) {
+        val error = IOException("Network error")
+        coEvery { service.getPaymentAction() } returns requiresChallenge()
+        stubChallengeCompleted()
+        coEvery { service.signalCustomerActionComplete(challengeSignal) } returns
+            PaymentActionServiceResult.Failure(error)
+
+        val result = sut.handle()
+
+        assertSame(error, assertIs<PaymentActionResult.Failure>(result).error)
+    }
+
+    @Test
+    fun `handle detects a version decrease in the challenge signal response`() = runTest(testDispatcher) {
+        coEvery { service.getPaymentAction() } returns requiresChallenge(version = 3)
+        stubChallengeCompleted()
+        coEvery { service.signalCustomerActionComplete(challengeSignal) } returns
+            success(PaymentActionStatus.SUCCEEDED, version = 2)
+
+        val result = sut.handle()
+
+        val error = assertIs<BraintreeException>(assertIs<PaymentActionResult.Failure>(result).error)
+        assertEquals(NextActionHandler.VERSION_ANOMALY_MESSAGE, error.message)
+    }
+
+    @Test
+    fun `handle returns CustomerActionRequired when the signal response requests the challenge again`() =
+        runTest(testDispatcher) {
+            coEvery { service.getPaymentAction() } returns requiresChallenge()
+            stubChallengeCompleted()
+            coEvery { service.signalCustomerActionComplete(challengeSignal) } returns requiresChallenge()
+
+            val result = sut.handle()
+
+            assertEquals("pa123", assertIs<PaymentActionResult.CustomerActionRequired>(result).id)
+            coVerify(exactly = 1) { threeDSecureProvider.presentChallenge(any(), any()) }
+            coVerify(exactly = 1) { service.signalCustomerActionComplete(challengeSignal) }
         }
 }

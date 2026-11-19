@@ -584,41 +584,80 @@ class PaymentActionsServiceUnitTest {
     @Test
     fun `when getPaymentAction returns a 3DS challenge nextAction, Success parses its fields`() =
         runTest(testDispatcher) {
-            val responseBody = """
-                {
-                    "data": {
-                        "paymentAction": {
-                            "id": "pa123",
-                            "status": "requires_customer_action",
-                            "nextAction": {
-                                "__typename": "PaymentActionThreeDSecureChallenge",
-                                "acsUrl": "https://acs.example.com",
-                                "acsRenderingType": "otp",
-                                "challengePayload": "payload-data"
-                            }
-                        }
-                    }
-                }
-            """.trimIndent()
+            val nextAction = parseChallenge(
+                """
+                    "acsUrl": "https://acs.example.com",
+                    "acsRenderingType": "otp",
+                    "challengePayload": "payload-data",
+                    "mpiTransactionId": "mpi-tx-id"
+                """
+            )
 
-            val braintreeClient = MockkBraintreeClientBuilder()
-                .sendGraphQLPostSuccessfulResponse(responseBody)
-                .build()
-
-            val service = PaymentActionsService(braintreeClient)
-            val result = service.getPaymentAction()
-            advanceUntilIdle()
-
-            val success = result as PaymentActionServiceResult.Success
             assertEquals(
                 NextAction.ThreeDSecureChallenge(
                     acsUrl = "https://acs.example.com",
                     acsRenderingType = "otp",
                     challengePayload = "payload-data",
+                    mpiTransactionId = "mpi-tx-id",
                 ),
-                success.paymentAction.nextAction,
+                nextAction,
             )
         }
+
+    @Test
+    fun `when a 3DS challenge's mpiTransactionId is absent, it parses as null`() = runTest(testDispatcher) {
+        val nextAction = parseChallenge(""" "acsUrl": "https://acs.example.com", "challengePayload": "payload" """)
+
+        assertEquals(null, nextAction.mpiTransactionId)
+    }
+
+    @Test
+    fun `when a 3DS challenge's mpiTransactionId is JSON null, it parses as null`() = runTest(testDispatcher) {
+        val nextAction = parseChallenge(
+            """ "acsUrl": "https://acs.example.com", "challengePayload": "payload", "mpiTransactionId": null """
+        )
+
+        assertEquals(null, nextAction.mpiTransactionId)
+    }
+
+    @Test
+    fun `when a 3DS challenge's mpiTransactionId is empty, it is kept as an empty string, as on iOS`() =
+        runTest(testDispatcher) {
+            val nextAction = parseChallenge(
+                """ "acsUrl": "https://acs.example.com", "challengePayload": "payload", "mpiTransactionId": "" """
+            )
+
+            assertEquals("", nextAction.mpiTransactionId)
+        }
+
+    /**
+     * Returns the [NextAction.ThreeDSecureChallenge] parsed from a `getPaymentAction` response whose challenge
+     * next action has the given JSON [fields].
+     */
+    private suspend fun parseChallenge(fields: String): NextAction.ThreeDSecureChallenge {
+        val responseBody = """
+            {
+                "data": {
+                    "paymentAction": {
+                        "id": "pa123",
+                        "status": "requires_customer_action",
+                        "nextAction": {
+                            "__typename": "PaymentActionThreeDSecureChallenge",
+                            $fields
+                        }
+                    }
+                }
+            }
+        """.trimIndent()
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .sendGraphQLPostSuccessfulResponse(responseBody)
+            .build()
+
+        val result = PaymentActionsService(braintreeClient).getPaymentAction()
+
+        val success = result as PaymentActionServiceResult.Success
+        return success.paymentAction.nextAction as NextAction.ThreeDSecureChallenge
+    }
 
     @Test
     fun `when getPaymentAction returns an unrecognized nextAction typename, Success returns Unrecognized`() =
@@ -737,6 +776,25 @@ class PaymentActionsServiceUnitTest {
                 braintreeClient.sendGraphQLPOST(withArg { actualRequestBody ->
                     assertTrue(
                         actualRequestBody.getString("query").normalizeWhitespace().contains("id status version")
+                    )
+                })
+            }
+        }
+
+    @Test
+    fun `when getPaymentAction is called, the query requests the challenge's mpiTransactionId`() =
+        runTest(testDispatcher) {
+            val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+            val service = PaymentActionsService(braintreeClient)
+
+            service.getPaymentAction()
+            advanceUntilIdle()
+
+            coVerify {
+                braintreeClient.sendGraphQLPOST(withArg { actualRequestBody ->
+                    assertTrue(
+                        actualRequestBody.getString("query").normalizeWhitespace()
+                            .contains("challengePayload mpiTransactionId")
                     )
                 })
             }

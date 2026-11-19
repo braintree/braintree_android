@@ -13,6 +13,13 @@ internal interface ThreeDSecureProvider {
      *   [DeviceDataResult.Failed] if setup could not complete.
      */
     suspend fun collectDeviceData(): DeviceDataResult
+
+    /**
+     * Presents the challenge and waits for the outcome.
+     *
+     * @param transactionId the `mpiTransactionId`.
+     */
+    suspend fun presentChallenge(transactionId: String, payload: String): ChallengeResult
 }
 
 /**
@@ -30,4 +37,17 @@ internal sealed class DeviceDataResult {
      * Device data collection could not complete.
      */
     data class Failed(val error: Exception) : DeviceDataResult()
+}
+
+/** Outcome of [ThreeDSecureProvider.presentChallenge]. */
+internal sealed class ChallengeResult {
+
+    /** A verdict for the server to decide on, including a failed authentication. */
+    data class Completed(val serverJwt: String) : ChallengeResult()
+
+    /** The customer left before a verdict. The server wasn't signaled. */
+    data object Abandoned : ChallengeResult()
+
+    /** The challenge couldn't be shown, or the provider reported an error. */
+    data class Failed(val error: Exception) : ChallengeResult()
 }

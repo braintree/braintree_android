@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- Hosts the 3D Secure challenge. -->
+        <activity
+            android:name=".ChallengeShellActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PaymentActions.Translucent.NoTitleBar.Fullscreen" />
+    </application>
+</manifest>
