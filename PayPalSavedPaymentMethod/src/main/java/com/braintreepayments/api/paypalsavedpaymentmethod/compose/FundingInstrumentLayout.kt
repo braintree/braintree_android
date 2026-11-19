@@ -60,9 +60,8 @@ private fun measureRow(
     constraints: Constraints,
     canStack: Boolean
 ): MeasuredRow {
-    val fullWidth = fundingInstrument?.maxIntrinsicWidth(Constraints.Infinity) ?: 0
     val isStacked = canStack && fundingInstrument != null && constraints.hasBoundedWidth &&
-        brand.widthOrZero + gapPx + fullWidth > constraints.maxWidth
+        brand.widthOrZero + gapPx + fundingInstrument.maxIntrinsicWidth(Constraints.Infinity) > constraints.maxWidth
     val fundingInstrumentX = if (isStacked) 0 else brand.widthOrZero + gapPx
     val fundingInstrumentConstraints = constraints.copy(maxWidth = constraints.widthFrom(fundingInstrumentX))
     return MeasuredRow(
