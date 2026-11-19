@@ -548,19 +548,16 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         }
 
     @Test
-    fun `a return with no result delivers nothing and isn't taken, so the real return completes later`() =
-        runTest(dispatcher) {
-            every { launcher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
+    fun `a return with no result is delivered as a cancel without completing the return`() = runTest(dispatcher) {
+        every { launcher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
 
-            val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
-            advanceUntilIdle()
+        val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
+        advanceUntilIdle()
 
-            assertEquals(PayPalSavedPaymentMethodReturnResult.NOT_TAKEN, handling)
-            assertFalse(sut.state.value.isEditCompleted)
-            // No cancel is queued ahead of the real result.
-            val success = completeReturn()
-            assertSame(success, sut.results.first())
-        }
+        assertEquals(PayPalSavedPaymentMethodReturnResult.TAKEN, handling)
+        assertSame(PayPalResult.Cancel, sut.results.first())
+        assertFalse(sut.state.value.isEditCompleted)
+    }
 
     @Test
     fun `a result whose delivery is cancelled reaches the next view`() = runTest(dispatcher) {

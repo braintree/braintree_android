@@ -31,10 +31,7 @@ import kotlinx.coroutines.launch
 
 /** What [PayPalSavedPaymentMethodViewModel.handleReturnToApp] did with a PayPal return. */
 internal enum class PayPalSavedPaymentMethodReturnResult {
-    /**
-     * Not taken, because an edit step is running or PayPal hasn't returned a result yet. Keep the pending request and
-     * pass it again.
-     */
+    /** Not taken, because an edit step is running. Keep the pending request and pass it again. */
     NOT_TAKEN,
 
     /** Taken without completing the return. Forget the pending request and leave the intent as it is. */
@@ -135,10 +132,9 @@ internal class PayPalSavedPaymentMethodViewModel(
 
     /**
      * Reads the PayPal return in [intent] and delivers the result through [results]. Tokenizing runs in the view
-     * model's scope, so recreating the view doesn't cancel or repeat it. A return with no result, for example when the
-     * app comes back while the paysheet is still open, delivers nothing and isn't taken, so the real return can still
-     * complete the edit, as on iOS. After a success the funding instrument the buyer picked is loaded. A return already
-     * completed, including before process death, isn't completed again.
+     * model's scope, so recreating the view doesn't cancel or repeat it. A return with no result, including the buyer
+     * closing the paysheet, is a [PayPalResult.Cancel], as in `PayPalButton`. After a success the funding instrument
+     * the buyer picked is loaded. A return already completed, including before process death, isn't completed again.
      */
     fun handleReturnToApp(
         pendingRequest: String,
@@ -173,7 +169,10 @@ internal class PayPalSavedPaymentMethodViewModel(
                 PayPalSavedPaymentMethodReturnResult.COMPLETED
             }
             is PayPalPaymentAuthResult.Failure -> failReturn(pendingRequest, authResult.error)
-            PayPalPaymentAuthResult.NoResult -> PayPalSavedPaymentMethodReturnResult.NOT_TAKEN
+            PayPalPaymentAuthResult.NoResult -> {
+                pendingResults.add(PayPalResult.Cancel)
+                PayPalSavedPaymentMethodReturnResult.TAKEN
+            }
         }
     }
 

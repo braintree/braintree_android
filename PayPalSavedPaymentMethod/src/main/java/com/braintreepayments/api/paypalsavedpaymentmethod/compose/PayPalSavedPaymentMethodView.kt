@@ -113,8 +113,8 @@ fun PayPalSavedPaymentMethodView(
  * authorization and return URLs are read once, as on iOS, so a refreshed authorization keeps the edit in progress.
  * The first load fetches the funding instrument and the Pay Later message; later request changes reload only the
  * message. The pending request is forgotten once its result is delivered, a cancel included, since every resume passes
- * it to the view model and would deliver the cancel again. A resume before PayPal returns, for example in split-screen
- * while the paysheet is open, isn't a result, so the pending request is kept for the real return. Results reach the
+ * it to the view model and would deliver the cancel again. A resume with no PayPal result, such as the buyer closing
+ * the paysheet, is delivered as a cancel, as in `PayPalButton`. Results reach the
  * callback only while the host is started; one that arrives while it's stopped is delivered on start, since the view
  * model keeps it until a view handles it.
  */
