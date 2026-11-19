@@ -79,16 +79,12 @@ object Settings {
         return getPreferences(context).getString("customer", null)
     }
 
-    fun isSandbox(context: Context): Boolean = getEnvironment(context) == SANDBOX_ENV_NAME
-
-    /**
-     * The payment method token the saved payment method screens send as `preferred_payment_method_token`. Only used in
-     * Sandbox, where the Vault PayPal Account button creates it, so a stale token can't break Production requests.
-     */
+    /** The payment method token the saved payment method screens send as `preferred_payment_method_token`. */
+    @JvmStatic
     fun getSavedPaymentMethodToken(context: Context): String? =
         getPreferences(context).getString(SAVED_PAYMENT_METHOD_TOKEN, null)
             ?.trim()
-            ?.takeIf { it.isNotEmpty() && isSandbox(context) }
+            ?.takeIf { it.isNotEmpty() }
 
     fun setSavedPaymentMethodToken(context: Context, token: String) {
         getPreferences(context).edit { putString(SAVED_PAYMENT_METHOD_TOKEN, token) }

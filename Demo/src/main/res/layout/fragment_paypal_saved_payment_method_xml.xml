@@ -20,6 +20,7 @@
             android:id="@+id/vault_caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@string/paypal_saved_payment_method_vault_caption"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
@@ -45,6 +46,15 @@
             android:hint="@string/paypal_saved_payment_method_amount_label"
             android:importantForAutofill="no"
             android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/currency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/paypal_saved_payment_method_currency_label"
+            android:importantForAutofill="no"
+            android:inputType="textCapCharacters"
+            android:maxLength="3" />
 
         <Button
             android:id="@+id/edit_style"

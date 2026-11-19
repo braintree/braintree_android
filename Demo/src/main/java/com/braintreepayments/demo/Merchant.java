@@ -20,6 +20,23 @@ public class Merchant {
     }
 
     /**
+     * Fetches the client token for the saved payment method screens: the pasted one when there is one, otherwise one
+     * from the merchant server, with the saved payment method token when there is one.
+     */
+    public void fetchSavedPaymentMethodClientToken(
+            Context context,
+            @Nullable String pastedClientToken,
+            final FetchClientTokenCallback listener
+    ) {
+        String pasted = pastedClientToken == null ? "" : pastedClientToken.trim();
+        if (!pasted.isEmpty()) {
+            listener.onResult(new FetchClientTokenResult.Success(pasted));
+            return;
+        }
+        fetchClientToken(context, Settings.getSavedPaymentMethodToken(context), listener);
+    }
+
+    /**
      * Fetches a client token. A {@code preferredPaymentMethodToken} is sent as {@code preferred_payment_method_token},
      * so the client token carries that payment method's {@code paymentMethodIdJwt}.
      */

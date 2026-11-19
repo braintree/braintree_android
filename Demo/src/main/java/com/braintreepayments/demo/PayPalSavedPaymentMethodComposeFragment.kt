@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -83,19 +84,22 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
     private fun SavedPaymentMethodScreen() {
         var clientToken by rememberSaveable { mutableStateOf("") }
         var amount by rememberSaveable { mutableStateOf(DEFAULT_AMOUNT) }
+        var currency by rememberSaveable { mutableStateOf(DEFAULT_CURRENCY) }
         var styleConfig by remember { mutableStateOf(PayPalSavedPaymentMethodStyleConfig()) }
         var isStyleEditorOpen by remember { mutableStateOf(false) }
-        // The token and amount the component was last loaded with. Only Load reads the fields, and each tap
+        // The token, amount and currency the component was last loaded with. Only Load reads the fields, and each tap
         // bumps loadCount so the component reloads from scratch, even with the same token.
         var loadedClientToken by rememberSaveable { mutableStateOf("") }
         var loadedAmount by rememberSaveable { mutableStateOf("") }
+        var loadedCurrency by rememberSaveable { mutableStateOf(DEFAULT_CURRENCY) }
         var loadCount by rememberSaveable { mutableStateOf(0) }
         var isLoading by remember { mutableStateOf(false) }
         val nonce by nonceState
-        val isSandbox = Settings.isSandbox(requireContext())
 
         val style = remember(styleConfig) { styleConfig.toStyle() }
-        val checkoutRequest = remember(loadedAmount, resumeCount.intValue) { checkoutRequest(loadedAmount) }
+        val checkoutRequest = remember(loadedAmount, loadedCurrency, resumeCount.intValue) {
+            checkoutRequest(loadedAmount, loadedCurrency)
+        }
 
         Column(
             modifier = Modifier
@@ -113,7 +117,7 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
                     isVaulting.value = true
                     vaultHelper.start()
                 },
-                enabled = isSandbox && !isVaulting.value,
+                enabled = !isVaulting.value,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
@@ -126,15 +130,8 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
                     )
                 )
             }
-            // The Demo merchant is also used for Production testing, where this would vault a real PayPal account.
             Text(
-                text = stringResource(
-                    if (isSandbox) {
-                        R.string.paypal_saved_payment_method_vault_caption
-                    } else {
-                        R.string.paypal_saved_payment_method_vault_sandbox_only
-                    }
-                ),
+                text = stringResource(R.string.paypal_saved_payment_method_vault_caption),
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
@@ -158,23 +155,47 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
             )
+            OutlinedTextField(
+                value = currency,
+                onValueChange = { currency = it },
+                label = { Text(stringResource(R.string.paypal_saved_payment_method_currency_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters)
+            )
             OutlinedButton(onClick = { isStyleEditorOpen = true }, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.paypal_saved_payment_method_edit_style))
             }
             Button(
                 onClick = {
+                    val loadAmount = validAmountOrNull(amount, DEFAULT_AMOUNT)
+                    val loadCurrency = validCurrencyOrNull(currency, DEFAULT_CURRENCY)
+                    if (loadAmount == null || loadCurrency == null) {
+                        showDialog(
+                            getString(
+                                if (loadAmount == null) {
+                                    R.string.paypal_saved_payment_method_invalid_amount
+                                } else {
+                                    R.string.paypal_saved_payment_method_invalid_currency
+                                }
+                            )
+                        )
+                        return@Button
+                    }
                     isLoading = true
-                    SavedPaymentMethodVaultHelper.fetchClientToken(requireContext(), clientToken) { result ->
+                    Merchant().fetchSavedPaymentMethodClientToken(requireContext(), clientToken) { result ->
                         isLoading = false
-                        if (!isAdded) return@fetchClientToken
-                        result
-                            .onSuccess {
+                        if (!isAdded) return@fetchSavedPaymentMethodClientToken
+                        when (result) {
+                            is FetchClientTokenResult.Success -> {
                                 nonceState.value = null
-                                loadedClientToken = it
-                                loadedAmount = amount.trim()
+                                loadedClientToken = result.clientToken
+                                loadedAmount = loadAmount
+                                loadedCurrency = loadCurrency
                                 loadCount++
                             }
-                            .onFailure { handleError(it as? Exception ?: Exception(it)) }
+                            is FetchClientTokenResult.Error -> handleError(result.error)
+                        }
                     }
                 },
                 enabled = !isLoading,
@@ -196,7 +217,7 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
                 key(loadCount) {
                     PayPalSavedPaymentMethodView(
                         payPalCheckoutRequest = checkoutRequest,
-                        request = PayPalSavedPaymentMethodRequest(amount = loadedAmount, currencyCode = CURRENCY_CODE),
+                        request = PayPalSavedPaymentMethodRequest(amount = loadedAmount, currencyCode = loadedCurrency),
                         authorization = loadedClientToken,
                         appLinkReturnUrl = APP_LINK_RETURN_URL.toUri(),
                         modifier = Modifier.fillMaxWidth(),
@@ -232,10 +253,10 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
         vaultHelper.handleReturn()
     }
 
-    private fun checkoutRequest(amount: String) = PayPalCheckoutRequest(
+    private fun checkoutRequest(amount: String, currency: String) = PayPalCheckoutRequest(
         amount = amount,
         hasUserLocationConsent = true,
-        currencyCode = CURRENCY_CODE,
+        currencyCode = currency,
         enablePayPalAppSwitch = Settings.isPayPalAppSwithEnabled(requireContext()),
         userAction = if (Settings.isPayPalUseractionCommitEnabled(requireContext())) {
             PayPalPaymentUserAction.USER_ACTION_COMMIT
@@ -264,9 +285,22 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
 
     private companion object {
         const val DEFAULT_AMOUNT = "10.00"
-        const val CURRENCY_CODE = "EUR"
+        // The Demo merchant's PayPal account is French, so PayPal returns no Pay Later message for USD.
+        const val DEFAULT_CURRENCY = "EUR"
         const val CLIENT_TOKEN_MAX_LINES = 4
         const val APP_LINK_RETURN_URL = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"
         const val DEEP_LINK_FALLBACK_URL_SCHEME = "com.braintreepayments.demo.braintree"
     }
 }
+
+// Empty falls back to the default amount; anything that isn't a positive number is rejected.
+private fun validAmountOrNull(text: String, defaultAmount: String): String? =
+    text.trim().ifEmpty { defaultAmount }.takeIf { it.toBigDecimalOrNull()?.signum() == 1 }
+
+// Empty falls back to the default currency; anything that isn't three letters is rejected.
+private fun validCurrencyOrNull(text: String, defaultCurrency: String): String? =
+    text.trim().uppercase().ifEmpty { defaultCurrency }
+        .takeIf { it.length == CURRENCY_CODE_LENGTH && it.all(Char::isLetter) }
+
+// ISO 4217 currency codes have three letters.
+private const val CURRENCY_CODE_LENGTH = 3
