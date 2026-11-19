@@ -242,6 +242,38 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
+    fun `a setup failure isn't delivered once the view is detached`() {
+        sut = PayPalSavedPaymentMethodView(activity).apply { activity.setContentView(this) }
+        initialize(settle = false)
+
+        activity.setContentView(View(activity))
+        idle()
+
+        assertTrue(delivered.isEmpty())
+    }
+
+    @Test
+    fun `a setup failure isn't delivered once the activity is destroyed`() {
+        sut = PayPalSavedPaymentMethodView(activity).apply { activity.setContentView(this) }
+        initialize(settle = false)
+
+        activityController.pause().stop().destroy()
+        idle()
+
+        assertTrue(delivered.isEmpty())
+    }
+
+    @Test
+    fun `initializing again before a setup failure is delivered reports it once`() {
+        sut = PayPalSavedPaymentMethodView(activity).apply { activity.setContentView(this) }
+
+        initialize(settle = false)
+        initialize()
+
+        assertEquals("PayPalSavedPaymentMethodView needs an android:id.", failureMessage())
+    }
+
+    @Test
     fun `outside a view tree the view model is found on attach, and a return handled before then completes`() {
         sut = PayPalSavedPaymentMethodView(activity).apply { id = View.generateViewId() }
         initialize()
