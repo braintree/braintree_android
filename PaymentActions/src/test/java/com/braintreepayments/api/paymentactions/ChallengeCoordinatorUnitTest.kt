@@ -39,7 +39,7 @@ import kotlin.time.Duration.Companion.minutes
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-class ChallengePresenterUnitTest {
+class ChallengeCoordinatorUnitTest {
 
     private val context = mockk<Context>(relaxed = true)
     private val registrar = ChallengeRegistrar { _, _ -> ChallengeStarter { _, _ -> } }
@@ -63,13 +63,13 @@ class ChallengePresenterUnitTest {
         startedTokens.forEach(PendingChallenges::remove)
     }
 
-    private val sut = ChallengePresenter(
+    private val sut = ChallengeCoordinator(
         context,
         watchdogTimeout = WATCHDOG_TIMEOUT,
         applicationStateProvider = { isApplicationActive },
     )
 
-    private suspend fun present() = sut.present("mpi-tx-id", "challenge-payload", registrar)
+    private suspend fun startChallenge() = sut.startChallenge("mpi-tx-id", "challenge-payload", registrar)
 
     /** A shell that attaches, then reports [result] after [delay]. */
     private fun TestScope.shellReporting(result: ChallengeResult, after: Duration = Duration.ZERO) {
@@ -86,10 +86,10 @@ class ChallengePresenterUnitTest {
     fun `present returns Failed without starting the shell when the app isn't active`() = runTest {
         isApplicationActive = false
 
-        val result = present()
+        val result = startChallenge()
 
         val error = assertIs<BraintreeException>(assertIs<ChallengeResult.Failed>(result).error)
-        assertEquals(ChallengePresenter.FOREGROUND_REQUIRED_MESSAGE, error.message)
+        assertEquals(ChallengeCoordinator.FOREGROUND_REQUIRED_MESSAGE, error.message)
         verify(exactly = 0) { context.startActivity(any()) }
     }
 
@@ -102,7 +102,7 @@ class ChallengePresenterUnitTest {
             challenge.complete(ChallengeResult.Abandoned)
         }
 
-        present()
+        startChallenge()
 
         val challenge = registered!!
         assertEquals("mpi-tx-id", challenge.transactionId)
@@ -114,7 +114,7 @@ class ChallengePresenterUnitTest {
     fun `present starts the shell from the application context as a new task`() = runTest {
         shellReporting(ChallengeResult.Abandoned)
 
-        present()
+        startChallenge()
 
         verify {
             context.startActivity(match { intent ->
@@ -129,7 +129,7 @@ class ChallengePresenterUnitTest {
         val outcome = ChallengeResult.Completed("server-jwt")
         shellReporting(outcome, after = 1.minutes)
 
-        val result = present()
+        val result = startChallenge()
 
         assertSame(outcome, result)
         assertEquals(1.minutes.inWholeMilliseconds, currentTime)
@@ -139,18 +139,18 @@ class ChallengePresenterUnitTest {
     fun `present unregisters the challenge once it ends`() = runTest {
         shellReporting(ChallengeResult.Abandoned)
 
-        present()
+        startChallenge()
 
         assertNull(PendingChallenges.find(startedTokens.single()))
     }
 
     @Test
     fun `present returns Failed when the shell doesn't attach within the handshake timeout`() = runTest {
-        val result = present()
+        val result = startChallenge()
 
         val error = assertIs<BraintreeException>(assertIs<ChallengeResult.Failed>(result).error)
-        assertEquals(ChallengePresenter.CHALLENGE_NOT_SHOWN_MESSAGE, error.message)
-        assertEquals(ChallengePresenter.HANDSHAKE_TIMEOUT.inWholeMilliseconds, currentTime)
+        assertEquals(ChallengeCoordinator.CHALLENGE_NOT_SHOWN_MESSAGE, error.message)
+        assertEquals(ChallengeCoordinator.HANDSHAKE_TIMEOUT.inWholeMilliseconds, currentTime)
     }
 
     @Test
@@ -158,7 +158,7 @@ class ChallengePresenterUnitTest {
         var challenge: PendingChallenge? = null
         onShellStarted = { challenge = it }
 
-        present()
+        startChallenge()
 
         assertFalse(challenge!!.attach())
     }
@@ -171,10 +171,10 @@ class ChallengePresenterUnitTest {
             challenge = it
         }
 
-        val result = present()
+        val result = startChallenge()
 
         val error = assertIs<BraintreeException>(assertIs<ChallengeResult.Failed>(result).error)
-        assertEquals(ChallengePresenter.CHALLENGE_TIMED_OUT_MESSAGE, error.message)
+        assertEquals(ChallengeCoordinator.CHALLENGE_TIMED_OUT_MESSAGE, error.message)
         assertEquals(WATCHDOG_TIMEOUT.inWholeMilliseconds, currentTime)
         // Ending the challenge is what closes a live shell.
         assertEquals(PendingChallenge.State.COMPLETED, challenge!!.state)
@@ -185,10 +185,10 @@ class ChallengePresenterUnitTest {
         val cause = RuntimeException(TransactionTooLargeException())
         every { context.startActivity(any()) } throws cause
 
-        val result = present()
+        val result = startChallenge()
 
         val error = assertIs<BraintreeException>(assertIs<ChallengeResult.Failed>(result).error)
-        assertEquals(ChallengePresenter.SHELL_LAUNCH_FAILED_MESSAGE, error.message)
+        assertEquals(ChallengeCoordinator.SHELL_LAUNCH_FAILED_MESSAGE, error.message)
         assertSame(cause, error.cause)
     }
 
@@ -199,7 +199,7 @@ class ChallengePresenterUnitTest {
             it.attach()
             challenge = it
         }
-        val job = launch { present() }
+        val job = launch { startChallenge() }
         runCurrent()
 
         job.cancel()

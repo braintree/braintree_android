@@ -33,8 +33,8 @@ import kotlin.time.Duration.Companion.minutes
 internal class CardinalThreeDSecureProvider(
     private val appContext: Context,
     private val braintreeClient: BraintreeClient,
-    private val challengePresenter: ChallengePresenter =
-        ChallengePresenter(appContext, watchdogTimeout = CHALLENGE_WATCHDOG_TIMEOUT),
+    private val challengeCoordinator: ChallengeCoordinator =
+        ChallengeCoordinator(appContext, watchdogTimeout = CHALLENGE_WATCHDOG_TIMEOUT),
     private val createObserver: (FragmentActivity, CardinalValidateReceiver) -> CardinalChallengeObserver =
         ::CardinalChallengeObserver,
 ) : ThreeDSecureProvider, ChallengeRegistrar {
@@ -51,7 +51,7 @@ internal class CardinalThreeDSecureProvider(
             val setup = setUp()
             if (setup is DeviceDataResult.Failed) return ChallengeResult.Failed(setup.error)
         }
-        val result = challengePresenter.present(transactionId, payload, this)
+        val result = challengeCoordinator.startChallenge(transactionId, payload, this)
         // The session may be gone (e.g. another module called Cardinal.cleanup()), so set up again next time.
         if (result is ChallengeResult.Failed) hasSession = false
         return result

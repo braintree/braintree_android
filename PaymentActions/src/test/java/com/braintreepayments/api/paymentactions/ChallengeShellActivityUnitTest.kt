@@ -145,7 +145,7 @@ class ChallengeShellActivityUnitTest {
     }
 
     @Test
-    fun `the shell closes when the challenge ends elsewhere, such as the presenter's watchdog`() {
+    fun `the shell closes when the challenge ends elsewhere, such as the coordinator's watchdog`() {
         val challenge = pendingChallenge()
         val controller = shell(register(challenge)).setup()
         idleMainLooper()

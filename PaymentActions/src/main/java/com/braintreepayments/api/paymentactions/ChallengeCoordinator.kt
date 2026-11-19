@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.seconds
  *
  * @param watchdogTimeout set above the provider's own challenge timeout.
  */
-internal class ChallengePresenter(
+internal class ChallengeCoordinator(
     private val context: Context,
     private val watchdogTimeout: Duration,
     private val applicationStateProvider: ApplicationStateProviding = ActivityManagerApplicationStateProvider,
@@ -23,7 +23,7 @@ internal class ChallengePresenter(
 ) {
 
     /** Starts the shell and suspends until the challenge ends. */
-    suspend fun present(transactionId: String, payload: String, registrar: ChallengeRegistrar): ChallengeResult {
+    suspend fun startChallenge(transactionId: String, payload: String, registrar: ChallengeRegistrar): ChallengeResult {
         if (!applicationStateProvider.isApplicationActive()) {
             return ChallengeResult.Failed(BraintreeException(FOREGROUND_REQUIRED_MESSAGE))
         }

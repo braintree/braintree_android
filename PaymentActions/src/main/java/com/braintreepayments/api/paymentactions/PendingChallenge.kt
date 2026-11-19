@@ -5,7 +5,7 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * In-memory state for one challenge, shared by [ChallengePresenter] and [ChallengeShellActivity]. A
+ * In-memory state for one challenge, shared by [ChallengeCoordinator] and [ChallengeShellActivity]. A
  * recreated shell finds it again by token; after process death the token is gone.
  *
  * [State.CREATED] → [State.ATTACHED] → [State.ISSUED] → [State.COMPLETED]. The first [complete] wins.
