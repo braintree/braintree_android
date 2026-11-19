@@ -21,7 +21,7 @@ import java.util.UUID
 
 /**
  * Vaults a PayPal account through the Demo merchant server and saves its payment method token to the Demo settings,
- * so the saved payment method screens can fetch a client token that carries a `paymentMethodIdJwt`. Sandbox only.
+ * so the saved payment method screens can fetch a client token that carries a `paymentMethodIdJwt`.
  *
  * Create it in the fragment's `onCreate`, since [PayPalLauncher] registers for activity results, and call
  * [handleReturn] from `onResume`. Its pending request is kept apart from the component's, so the two flows don't
@@ -166,22 +166,5 @@ class SavedPaymentMethodVaultHelper(
         private const val APP_LINK_RETURN_URL =
             "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"
         private const val DEEP_LINK_FALLBACK_URL_SCHEME = "com.braintreepayments.demo.braintree"
-
-        /**
-         * Uses [pastedClientToken] when one is pasted, otherwise fetches one from the merchant server with the saved
-         * payment method token, so it carries that payment method's `paymentMethodIdJwt`.
-         */
-        fun fetchClientToken(context: Context, pastedClientToken: String, onResult: (Result<String>) -> Unit) {
-            if (pastedClientToken.isNotBlank()) {
-                onResult(Result.success(pastedClientToken.trim()))
-                return
-            }
-            Merchant().fetchClientToken(context, Settings.getSavedPaymentMethodToken(context)) { result ->
-                when (result) {
-                    is FetchClientTokenResult.Success -> onResult(Result.success(result.clientToken))
-                    is FetchClientTokenResult.Error -> onResult(Result.failure(result.error))
-                }
-            }
-        }
     }
 }

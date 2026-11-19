@@ -42,9 +42,11 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
     private lateinit var savedTokenView: TextView
     private lateinit var vaultHelper: SavedPaymentMethodVaultHelper
 
-    // The token and amount the component was last loaded with, kept so it can be set up again after recreation.
+    // The token, amount and currency the component was last loaded with, kept so it can be set up again after
+    // recreation.
     private var loadedClientToken: String? = null
     private var loadedAmount: String = DEFAULT_AMOUNT
+    private var loadedCurrency: String = DEFAULT_CURRENCY
     private var styleConfig by mutableStateOf(PayPalSavedPaymentMethodStyleConfig())
     private var isStyleEditorOpen by mutableStateOf(false)
 
@@ -52,12 +54,7 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         vaultHelper = SavedPaymentMethodVaultHelper(this) { result ->
             if (!isAdded || view == null) return@SavedPaymentMethodVaultHelper
-            vaultButton.showBusy(
-                isBusy = false,
-                busyText = R.string.paypal_saved_payment_method_vaulting,
-                idleText = R.string.paypal_saved_payment_method_vault,
-                isEnabledWhenIdle = Settings.isSandbox(requireContext())
-            )
+            vaultButton.showBusy(isBusy = false, VAULTING_TEXT, VAULT_TEXT)
             result
                 .onSuccess {
                     showSavedToken()
@@ -79,60 +76,48 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
         createTransactionButton = view.findViewById(R.id.create_transaction)
         val clientTokenField = view.findViewById<EditText>(R.id.client_token)
         val amountField = view.findViewById<EditText>(R.id.amount)
-        // The field keeps the buyer's own amount when recreated.
-        if (savedInstanceState == null) amountField.setText(DEFAULT_AMOUNT)
+        val currencyField = view.findViewById<EditText>(R.id.currency)
+        // The fields keep the buyer's own values when recreated.
+        if (savedInstanceState == null) {
+            amountField.setText(DEFAULT_AMOUNT)
+            currencyField.setText(DEFAULT_CURRENCY)
+        }
 
-        val isSandbox = Settings.isSandbox(requireContext())
         vaultButton = view.findViewById(R.id.vault)
-        vaultButton.isEnabled = isSandbox
         vaultButton.setOnClickListener {
-            vaultButton.showBusy(
-                isBusy = true,
-                busyText = R.string.paypal_saved_payment_method_vaulting,
-                idleText = R.string.paypal_saved_payment_method_vault
-            )
+            vaultButton.showBusy(isBusy = true, VAULTING_TEXT, VAULT_TEXT)
             vaultHelper.start()
         }
-        // The Demo merchant is also used for Production testing, where this would vault a real PayPal account.
-        view.findViewById<TextView>(R.id.vault_caption).setText(
-            if (isSandbox) {
-                R.string.paypal_saved_payment_method_vault_caption
-            } else {
-                R.string.paypal_saved_payment_method_vault_sandbox_only
-            }
-        )
 
         savedTokenView = view.findViewById(R.id.saved_token)
 
         loadButton = view.findViewById(R.id.load)
         loadButton.setOnClickListener {
+            val amount = validAmountOrNull(amountField.text.toString(), DEFAULT_AMOUNT)
+            val currency = validCurrencyOrNull(currencyField.text.toString(), DEFAULT_CURRENCY)
+            if (amount == null || currency == null) {
+                showDialog(getString(if (amount == null) INVALID_AMOUNT_TEXT else INVALID_CURRENCY_TEXT))
+                return@setOnClickListener
+            }
             loadButton.showBusy(isBusy = true, LOADING_TEXT, LOAD_TEXT)
-            SavedPaymentMethodVaultHelper.fetchClientToken(requireContext(), clientTokenField.text.toString()) {
-                if (this.view == null) return@fetchClientToken
+            Merchant().fetchSavedPaymentMethodClientToken(requireContext(), clientTokenField.text.toString()) {
+                if (this.view == null) return@fetchSavedPaymentMethodClientToken
                 loadButton.showBusy(isBusy = false, LOADING_TEXT, LOAD_TEXT)
-                it.onSuccess { clientToken ->
-                    nonceView.isVisible = false
-                    createTransactionButton.isVisible = false
-                    load(clientToken, amountField.text.toString().trim())
-                }.onFailure { error -> handleError(error as? Exception ?: Exception(error)) }
+                when (it) {
+                    is FetchClientTokenResult.Success -> {
+                        nonceView.isVisible = false
+                        createTransactionButton.isVisible = false
+                        load(it.clientToken, amount, currency)
+                    }
+                    is FetchClientTokenResult.Error -> handleError(it.error)
+                }
             }
         }
-        view.findViewById<Button>(R.id.edit_style).setOnClickListener { isStyleEditorOpen = true }
-        view.findViewById<ComposeView>(R.id.style_editor).setContent {
-            if (isStyleEditorOpen) {
-                PayPalSavedPaymentMethodStyleEditor(
-                    config = styleConfig,
-                    onConfigChange = {
-                        styleConfig = it
-                        savedPaymentMethodView.style = it.toStyle()
-                    },
-                    onDismiss = { isStyleEditorOpen = false }
-                )
-            }
-        }
+        setUpStyleEditor(view)
 
         savedInstanceState?.getString(KEY_CLIENT_TOKEN)?.let { clientToken ->
-            load(clientToken, savedInstanceState.getString(KEY_AMOUNT) ?: DEFAULT_AMOUNT)
+            val amount = savedInstanceState.getString(KEY_AMOUNT, DEFAULT_AMOUNT)
+            load(clientToken, amount, savedInstanceState.getString(KEY_CURRENCY, DEFAULT_CURRENCY))
         }
     }
 
@@ -153,6 +138,23 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
         super.onSaveInstanceState(outState)
         loadedClientToken?.let { outState.putString(KEY_CLIENT_TOKEN, it) }
         outState.putString(KEY_AMOUNT, loadedAmount)
+        outState.putString(KEY_CURRENCY, loadedCurrency)
+    }
+
+    private fun setUpStyleEditor(view: View) {
+        view.findViewById<Button>(R.id.edit_style).setOnClickListener { isStyleEditorOpen = true }
+        view.findViewById<ComposeView>(R.id.style_editor).setContent {
+            if (isStyleEditorOpen) {
+                PayPalSavedPaymentMethodStyleEditor(
+                    config = styleConfig,
+                    onConfigChange = {
+                        styleConfig = it
+                        savedPaymentMethodView.style = it.toStyle()
+                    },
+                    onDismiss = { isStyleEditorOpen = false }
+                )
+            }
+        }
     }
 
     private fun showSavedToken() {
@@ -161,25 +163,26 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
             ?: getString(R.string.paypal_saved_payment_method_token_none)
     }
 
-    private fun load(clientToken: String, amount: String) {
+    private fun load(clientToken: String, amount: String, currency: String) {
         loadedClientToken = clientToken
         loadedAmount = amount
+        loadedCurrency = currency
         savedPaymentMethodView.isVisible = true
         savedPaymentMethodView.initialize(
             authorization = clientToken,
             appLinkReturnUrl = APP_LINK_RETURN_URL.toUri(),
-            payPalCheckoutRequest = checkoutRequest(amount),
-            request = PayPalSavedPaymentMethodRequest(amount = amount, currencyCode = CURRENCY_CODE),
+            payPalCheckoutRequest = checkoutRequest(amount, currency),
+            request = PayPalSavedPaymentMethodRequest(amount = amount, currencyCode = currency),
             launchCallback = launchCallback,
             tokenizeCallback = tokenizeCallback,
             deepLinkFallbackUrlScheme = DEEP_LINK_FALLBACK_URL_SCHEME
         )
     }
 
-    private fun checkoutRequest(amount: String) = PayPalCheckoutRequest(
+    private fun checkoutRequest(amount: String, currency: String) = PayPalCheckoutRequest(
         amount = amount,
         hasUserLocationConsent = true,
-        currencyCode = CURRENCY_CODE,
+        currencyCode = currency,
         enablePayPalAppSwitch = Settings.isPayPalAppSwithEnabled(requireContext()),
         userAction = if (Settings.isPayPalUseractionCommitEnabled(requireContext())) {
             PayPalPaymentUserAction.USER_ACTION_COMMIT
@@ -216,23 +219,36 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
 
     private companion object {
         const val DEFAULT_AMOUNT = "10.00"
+        val VAULTING_TEXT = R.string.paypal_saved_payment_method_vaulting
+        val VAULT_TEXT = R.string.paypal_saved_payment_method_vault
+        val INVALID_AMOUNT_TEXT = R.string.paypal_saved_payment_method_invalid_amount
+        val INVALID_CURRENCY_TEXT = R.string.paypal_saved_payment_method_invalid_currency
         val LOADING_TEXT = R.string.paypal_saved_payment_method_loading
         val LOAD_TEXT = R.string.paypal_saved_payment_method_load
-        const val CURRENCY_CODE = "EUR"
+        // The Demo merchant's PayPal account is French, so PayPal returns no Pay Later message for USD.
+        const val DEFAULT_CURRENCY = "EUR"
         const val KEY_CLIENT_TOKEN = "client_token"
         const val KEY_AMOUNT = "amount"
+        const val KEY_CURRENCY = "currency"
         const val APP_LINK_RETURN_URL = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"
         const val DEEP_LINK_FALLBACK_URL_SCHEME = "com.braintreepayments.demo.braintree"
     }
 }
 
 // Disables the button and shows busyText while the action runs.
-private fun Button.showBusy(
-    isBusy: Boolean,
-    @StringRes busyText: Int,
-    @StringRes idleText: Int,
-    isEnabledWhenIdle: Boolean = true
-) {
-    isEnabled = !isBusy && isEnabledWhenIdle
+private fun Button.showBusy(isBusy: Boolean, @StringRes busyText: Int, @StringRes idleText: Int) {
+    isEnabled = !isBusy
     setText(if (isBusy) busyText else idleText)
 }
+
+// Empty falls back to the default amount; anything that isn't a positive number is rejected.
+private fun validAmountOrNull(text: String, defaultAmount: String): String? =
+    text.trim().ifEmpty { defaultAmount }.takeIf { it.toBigDecimalOrNull()?.signum() == 1 }
+
+// Empty falls back to the default currency; anything that isn't three letters is rejected.
+private fun validCurrencyOrNull(text: String, defaultCurrency: String): String? =
+    text.trim().uppercase().ifEmpty { defaultCurrency }
+        .takeIf { it.length == CURRENCY_CODE_LENGTH && it.all(Char::isLetter) }
+
+// ISO 4217 currency codes have three letters.
+private const val CURRENCY_CODE_LENGTH = 3
