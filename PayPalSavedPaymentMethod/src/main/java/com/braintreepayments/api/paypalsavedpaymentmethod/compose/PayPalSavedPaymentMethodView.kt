@@ -49,12 +49,18 @@ import java.util.UUID
  *
  * The [authorization] and return URLs are read when the component first appears, as on iOS, so a refreshed client
  * token doesn't lose the buyer's edit or a return from PayPal. To start over, for example for another buyer, key the
- * component on the authorization: `key(authorization) { PayPalSavedPaymentMethodView(...) }`.
+ * component on the authorization: `key(authorization) { PayPalSavedPaymentMethodView(...) }`. That creates a new
+ * instance, so the previous buyer's edit and pending return are dropped.
+ *
+ * The authorization is also held by the SDK's shared merchant configuration, which another `BraintreeClient` created
+ * later, for example for a different payment method, overwrites. Use the same authorization for every SDK client in the
+ * screen, or this component's requests use the other one.
  *
  * State is kept in the hosting activity or navigation destination until it's destroyed, so show one per screen, not
- * one per list item, and keep it in the composition for as long as the screen is shown. Removing it and adding it back
- * starts a new instance that doesn't know about an edit completed by the earlier one. If the screen closes while the
- * edit is being completed, its result isn't delivered.
+ * one per list item, and keep it in the composition for as long as the screen is shown. Removing it and adding it back,
+ * for example when a bottom sheet is closed and reopened, or when the `key(authorization)` above changes, starts a new
+ * instance that loads the funding instrument from before the edit; the edit's result went to the earlier instance. If
+ * the screen closes while the edit is being completed, its result isn't delivered.
  *
  * @param payPalCheckoutRequest the checkout the edited funding instrument applies to.
  * @param request the amount and currency for the Pay Later message, and an optional merchant account. A change reloads
