@@ -226,8 +226,10 @@ sealed class PaymentActionResult {
     class CustomerActionRequired(val id: String, ) : PaymentActionResult()
 
     /**
-     * The customer left the 3D Secure challenge (canceled it, or it timed out). The Payment Action is
-     * unchanged; submit the payment method again to retry.
+     * The customer left the 3D Secure challenge: they canceled it, or the challenge's own time limit ran
+     * out. The Payment Action is unchanged; submit the payment method again to retry.
+     *
+     * If the challenge stops responding, the SDK stops waiting and returns [Failure] instead.
      */
     class ThreeDSecureCanceled(val id: String) : PaymentActionResult()
     class Failure(val error: Throwable) : PaymentActionResult()
