@@ -1,0 +1,151 @@
+package com.braintreepayments.api.paypalsavedpaymentmethod.compose
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.paypalsavedpaymentmethod.R
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.showsFundingInstrumentRow
+import com.braintreepayments.api.paypalsavedpaymentmethod.state.visibleWith
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
+
+/**
+ * Renders the component from its display states: the PayPal logo and label, the funding instrument chip and the
+ * Pay Later message. Stateless. Renders nothing when hidden, or when only the logo and label would show and the
+ * merchant hid both. The style is resolved again on a configuration change the activity handles itself (dark mode,
+ * font scale, locale), and the merchant's height is a minimum so large text isn't clipped. While loading, the shimmer
+ * takes the funding instrument's place and never stacks.
+ */
+@OptIn(ExperimentalBetaApi::class)
+@Composable
+internal fun PayPalSavedPaymentMethodContent(
+    fundingInstrumentState: PayPalSavedPaymentMethodDisplayState,
+    creditMessagingState: PayPalCreditMessagingDisplayState,
+    style: PayPalSavedPaymentMethodViewStyle,
+    onEditClick: () -> Unit,
+    onLearnMoreClick: (PayPalCreditMessagingContent.LearnMore) -> Unit,
+    modifier: Modifier = Modifier,
+    editEnabled: Boolean = true,
+    isEditCompleted: Boolean = false
+) {
+    if (fundingInstrumentState == PayPalSavedPaymentMethodDisplayState.Hidden) return
+
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val resolvedStyle = remember(style, context, configuration) {
+        PayPalSavedPaymentMethodStyleResolver(context, style)
+    }
+    val showsBrandMark = resolvedStyle.showPayPalLogo || resolvedStyle.showPayPalLabel
+    if (!fundingInstrumentState.showsFundingInstrumentRow && !showsBrandMark) return
+    val visibleCreditMessagingState = creditMessagingState.visibleWith(fundingInstrumentState, isEditCompleted)
+    val showCreditMessaging = resolvedStyle.showPayPalCreditMessaging &&
+        visibleCreditMessagingState != PayPalCreditMessagingDisplayState.Hidden
+    val labelGap = resolvedStyle.labelMarginStartDp.dp
+    val fundingInstrumentGap = resolvedStyle.fundingInstrumentMarginStartDp.dp
+    val creditMessagingIndent = resolvedStyle.creditMessagingIndent()
+    val creditMessagingSpacing = dimensionResource(R.dimen.paypal_saved_payment_method_credit_messaging_top_spacing)
+    val creditMessaging: @Composable () -> Unit = {
+        if (showCreditMessaging) {
+            CreditMessagingRow(
+                state = visibleCreditMessagingState,
+                resolvedStyle = resolvedStyle,
+                onLearnMoreClick = onLearnMoreClick,
+                modifier = Modifier.testTag(CREDIT_MESSAGING_TEST_TAG)
+            )
+        }
+    }
+
+    Card(
+        modifier = modifier.heightIn(min = resolvedStyle.heightDp?.dp ?: 0.dp),
+        shape = RoundedCornerShape(resolvedStyle.cornerRadiusDp.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(resolvedStyle.backgroundColor)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = if (resolvedStyle.borderWidthDp > 0f) {
+            BorderStroke(resolvedStyle.borderWidthDp.dp, Color(resolvedStyle.borderColor))
+        } else {
+            null
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = resolvedStyle.horizontalPaddingDp.dp,
+                    vertical = resolvedStyle.verticalPaddingDp.dp
+                )
+        ) {
+            val isLoading = fundingInstrumentState == PayPalSavedPaymentMethodDisplayState.Loading
+            FundingInstrumentLayout(
+                gap = fundingInstrumentGap,
+                stackedSpacing = dimensionResource(R.dimen.paypal_saved_payment_method_stacked_layout_spacing),
+                brand = { PayPalBrandMark(resolvedStyle, labelGap) },
+                fundingInstrument = {
+                    if (isLoading) {
+                        // Tagged here: the placeholder replaces its own modifier's semantics.
+                        Box(modifier = Modifier.testTag(FUNDING_INSTRUMENT_SHIMMER_TEST_TAG)) {
+                            ShimmerPlaceholder(
+                                contentDescription =
+                                    stringResource(R.string.paypal_saved_payment_method_loading_content_description)
+                            )
+                        }
+                    } else if (fundingInstrumentState.showsFundingInstrumentRow) {
+                        FundingInstrumentChip(
+                            state = fundingInstrumentState,
+                            resolvedStyle = resolvedStyle,
+                            editEnabled = editEnabled,
+                            onEditClick = onEditClick,
+                            modifier = Modifier.testTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG)
+                        )
+                    }
+                },
+                below = creditMessaging,
+                belowSpacing = creditMessagingSpacing,
+                belowIndent = creditMessagingIndent,
+                canStack = !isLoading
+            )
+        }
+    }
+}
+
+/**
+ * Where the Pay Later message starts: under the label, or at the leading edge without the logo. With the logo shown
+ * and the label hidden it's `null`, meaning it lines up with the funding instrument.
+ */
+private fun PayPalSavedPaymentMethodStyleResolver.creditMessagingIndent(): Dp? = when {
+    !showPayPalLogo -> 0.dp
+    showPayPalLabel -> logoWidthDp.dp + labelMarginStartDp.dp
+    else -> null
+}
+
+/** The merchant's font, or the default. */
+internal val PayPalSavedPaymentMethodStyleResolver.fontFamily: FontFamily
+    get() = fontResId?.let { FontFamily(Font(it)) } ?: FontFamily.Default
+
+// Tags to find the parts in tests.
+internal const val BRAND_MARK_TEST_TAG = "paypal_saved_payment_method_brand_mark"
+internal const val FUNDING_INSTRUMENT_SHIMMER_TEST_TAG = "paypal_saved_payment_method_funding_instrument_shimmer"
+internal const val FUNDING_INSTRUMENT_CHIP_TEST_TAG = "paypal_saved_payment_method_funding_instrument_chip"
+internal const val CREDIT_MESSAGING_TEST_TAG = "paypal_saved_payment_method_credit_messaging"

@@ -34,6 +34,17 @@ val payPalClient =  PayPalClient(
 )
 ```
 
+### Receive the Return in a Running Activity
+
+When PayPal returns to an activity that is already running, for example one with `launchMode="singleTop"`, Android delivers the return in `onNewIntent`. Call `setIntent(intent)` there, so components that read the activity's intent, such as `PayPalSavedPaymentMethodView`, see the return. Without it, the buyer's approval isn't found and the result is reported as a cancel.
+
+```kotlin
+override fun onNewIntent(intent: Intent) {
+    super.onNewIntent(intent)
+    setIntent(intent)
+}
+```
+
 ### Verify App Link Setup
 
 Ensure app links are setup properly by [Verifying App Link Setup](https://developer.android.com/training/app-links/verify-applinks)
