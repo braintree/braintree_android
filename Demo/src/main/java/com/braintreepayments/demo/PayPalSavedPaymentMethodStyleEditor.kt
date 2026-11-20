@@ -33,9 +33,10 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
 /**
- * A bottom sheet with every merchant-configurable style value, so the component can be re-themed at runtime. Each
- * value starts at the SDK default when it's switched on (the SDK's `paypal_saved_payment_method_style_default_*`
- * dimens and colors).
+ * A bottom sheet with every merchant-configurable style value, so the component can be re-themed at runtime. A value
+ * switched on starts at the SDK default (the SDK's `paypal_saved_payment_method_style_default_*` dimens and colors).
+ * Height, base font size and link color have no SDK default, since unset means wrap content, each element's own size,
+ * and the text color underlined, so they start at a sample value.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

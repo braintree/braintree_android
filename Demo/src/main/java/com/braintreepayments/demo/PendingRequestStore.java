@@ -17,6 +17,8 @@ public class PendingRequestStore {
     static final String LOCAL_PAYMENT_PENDING_REQUEST_KEY = "LOCAL_PAYMENT_PENDING_REQUEST";
     static final String SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY = "SEPA_DIRECT_DEBIT_PENDING_REQUEST";
     static final String VENMO_PENDING_REQUEST_KEY = "VENMO_PENDING_REQUEST";
+    // Kept apart from PAYPAL_PENDING_REQUEST_KEY, so another PayPal screen's request never reaches the component.
+    static final String PAYPAL_SAVED_PAYMENT_METHOD_PENDING_REQUEST_KEY = "PAYPAL_SAVED_PAYMENT_METHOD_PENDING_REQUEST";
 
     private static final PendingRequestStore INSTANCE = new PendingRequestStore();
 
@@ -73,6 +75,23 @@ public class PendingRequestStore {
 
     public void clearPayLaterPendingRequest(Context context) {
         remove(PAYPAL_PAY_LATER_PENDING_REQUEST_KEY, context);
+    }
+
+    public void putPayPalSavedPaymentMethodPendingRequest(Context context,
+                                                          PayPalPendingRequest.Started pendingRequest) {
+        put(PAYPAL_SAVED_PAYMENT_METHOD_PENDING_REQUEST_KEY, pendingRequest.getPendingRequestString(), context);
+    }
+
+    public PayPalPendingRequest.Started getPayPalSavedPaymentMethodPendingRequest(Context context) {
+        String requestString = get(PAYPAL_SAVED_PAYMENT_METHOD_PENDING_REQUEST_KEY, context);
+        if (requestString != null) {
+            return new PayPalPendingRequest.Started(requestString);
+        }
+        return null;
+    }
+
+    public void clearPayPalSavedPaymentMethodPendingRequest(Context context) {
+        remove(PAYPAL_SAVED_PAYMENT_METHOD_PENDING_REQUEST_KEY, context);
     }
 
     public void putLocalPaymentPendingRequest(Context context,

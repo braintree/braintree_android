@@ -9,10 +9,12 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPay
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodCreditMessagingStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodFundingInstrumentStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
+import java.io.Serializable
 
 /**
  * The values of `PayPalSavedPaymentMethodViewStyle`, flattened so each one can be edited on its own. A `null` value
- * is left unset on the style, so the SDK applies its own default.
+ * is left unset on the style, so the SDK applies its own default. Serializable, so the screens keep it across
+ * recreation.
  */
 data class PayPalSavedPaymentMethodStyleConfig(
     val showPayPalLogo: Boolean = true,
@@ -35,7 +37,7 @@ data class PayPalSavedPaymentMethodStyleConfig(
     val fundingInstrumentMarginStartDp: Float? = null,
     val creditMessagingFontSizeSp: Float? = null,
     @ColorInt val creditMessagingLinkColor: Int? = null
-) {
+) : Serializable {
 
     @OptIn(ExperimentalBetaApi::class)
     fun toStyle() = PayPalSavedPaymentMethodViewStyle(
@@ -67,4 +69,8 @@ data class PayPalSavedPaymentMethodStyleConfig(
             )
         )
     )
+
+    private companion object {
+        private const val serialVersionUID = 1L
+    }
 }
