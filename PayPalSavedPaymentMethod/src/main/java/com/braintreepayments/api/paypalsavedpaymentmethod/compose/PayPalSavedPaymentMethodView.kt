@@ -150,7 +150,8 @@ internal fun PayPalSavedPaymentMethodView(
         }
         return
     }
-    val payPalLauncher = remember(registry) { PayPalLauncher(registry) }
+    // A key that survives recreation, so a result that arrives meanwhile reaches the new launcher.
+    val payPalLauncher = remember(registry) { PayPalLauncher(registry, viewModelKey) }
 
     val viewModel: PayPalSavedPaymentMethodViewModel = viewModel(key = viewModelKey, factory = factory)
     val state by viewModel.state.collectAsStateWithLifecycle()

@@ -7,6 +7,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Looper
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivityResultRegistryOwner
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.ActivityResultRegistryOwner
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.core.app.ActivityOptionsCompat
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.neverEqualPolicy
 import androidx.compose.ui.Modifier
@@ -42,6 +49,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPay
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,6 +83,19 @@ class PayPalSavedPaymentMethodViewUnitTest {
     private val viewModel = mockk<PayPalSavedPaymentMethodViewModel>(relaxed = true)
     private val authorizations = mutableListOf<String>()
     private val delivered = mutableListOf<PayPalResult>()
+    private val registry = spyk(
+        object : ActivityResultRegistry() {
+            override fun <I, O> onLaunch(
+                requestCode: Int,
+                contract: ActivityResultContract<I, O>,
+                input: I,
+                options: ActivityOptionsCompat?
+            ) = Unit
+        }
+    )
+    private val registryOwner = object : ActivityResultRegistryOwner {
+        override val activityResultRegistry = registry
+    }
     // Never equal, so setting equal inputs still recomposes, as a parent passing a new but equal request would.
     private val inputs = mutableStateOf(Inputs(), neverEqualPolicy())
 
@@ -85,25 +106,27 @@ class PayPalSavedPaymentMethodViewUnitTest {
         every { viewModel.handleReturnToApp(any(), any(), any()) } returns PayPalSavedPaymentMethodReturnResult.TAKEN
         restorationTester.setContent {
             val current = inputs.value
-            PayPalSavedPaymentMethodView(
-                payPalCheckoutRequest = CHECKOUT,
-                request = current.request,
-                authorization = current.authorization,
-                appLinkReturnUrl = RETURN_URL,
-                modifier = Modifier,
-                deepLinkFallbackUrlScheme = null,
-                style = PayPalSavedPaymentMethodViewStyle(),
-                paypalTokenizeCallback = { delivered += it },
-                viewModelFactory = { authorization, _, _ ->
-                    object : ViewModelProvider.Factory {
-                        @Suppress("UNCHECKED_CAST")
-                        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                            authorizations += authorization
-                            return viewModel as T
+            CompositionLocalProvider(LocalActivityResultRegistryOwner provides registryOwner) {
+                PayPalSavedPaymentMethodView(
+                    payPalCheckoutRequest = CHECKOUT,
+                    request = current.request,
+                    authorization = current.authorization,
+                    appLinkReturnUrl = RETURN_URL,
+                    modifier = Modifier,
+                    deepLinkFallbackUrlScheme = null,
+                    style = PayPalSavedPaymentMethodViewStyle(),
+                    paypalTokenizeCallback = { delivered += it },
+                    viewModelFactory = { authorization, _, _ ->
+                        object : ViewModelProvider.Factory {
+                            @Suppress("UNCHECKED_CAST")
+                            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+                                authorizations += authorization
+                                return viewModel as T
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
         composeTestRule.waitForIdle()
     }
@@ -230,6 +253,17 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
+    fun `the browser switch result key survives restoring the saved state`() {
+        val keyBeforeRestore = registeredKeys().single()
+
+        restorationTester.emulateSavedInstanceStateRestore()
+        composeTestRule.waitForIdle()
+
+        // A new launcher registers again with the same key, so an Auth Tab result reaches it.
+        assertEquals(listOf(keyBeforeRestore, keyBeforeRestore), registeredKeys())
+    }
+
+    @Test
     fun `a pending request the view model drops is passed again on the next resume, then forgotten`() {
         every { viewModel.handleReturnToApp("pending", any(), any()) } returnsMany
             listOf(PayPalSavedPaymentMethodReturnResult.NOT_TAKEN, PayPalSavedPaymentMethodReturnResult.TAKEN)
@@ -313,6 +347,19 @@ class PayPalSavedPaymentMethodViewUnitTest {
             error.message
         )
         assertEquals(0, createdViewModels)
+    }
+
+    // The keys the launcher's browser switch client registered its Activity result under.
+    private fun registeredKeys(): List<String> {
+        val keys = mutableListOf<String>()
+        verify(atLeast = 0) {
+            registry.register(
+                capture(keys),
+                any<ActivityResultContract<Any?, Any?>>(),
+                any<ActivityResultCallback<Any?>>()
+            )
+        }
+        return keys
     }
 
     // Taps the chip, whose edit returns [pending].
