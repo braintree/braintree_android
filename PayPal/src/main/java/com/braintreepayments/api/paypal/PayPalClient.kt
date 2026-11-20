@@ -163,8 +163,8 @@ class PayPalClient internal constructor(
      * Edit in the PayPal saved payment method view.
      *
      * The client token's payment method ID JWT is sent with this request only, to seed the edit order;
-     * [payPalCheckoutRequest] is not modified. Callers must make sure the client token carries a JWT, otherwise this
-     * runs as a regular checkout.
+     * [payPalCheckoutRequest] is not modified. Returns a [PayPalPaymentAuthRequest.Failure] if the authorization has no
+     * JWT when the request is sent.
      *
      * @param context               Android Context
      * @param payPalCheckoutRequest a [PayPalCheckoutRequest] used to customize the request.
