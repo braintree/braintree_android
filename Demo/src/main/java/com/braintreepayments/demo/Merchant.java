@@ -3,6 +3,8 @@ package com.braintreepayments.demo;
 import android.content.Context;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import com.braintreepayments.demo.models.ClientToken;
 
 import java.util.Locale;
@@ -14,13 +16,42 @@ import retrofit2.Response;
 public class Merchant {
 
     public void fetchClientToken(Context context, final FetchClientTokenCallback listener) {
+        fetchClientToken(context, null, listener);
+    }
+
+    /**
+     * Fetches the client token for the saved payment method screens: the pasted one when there is one, otherwise one
+     * from the merchant server, with the saved payment method token when there is one.
+     */
+    public void fetchSavedPaymentMethodClientToken(
+            Context context,
+            @Nullable String pastedClientToken,
+            final FetchClientTokenCallback listener
+    ) {
+        String pasted = pastedClientToken == null ? "" : pastedClientToken.trim();
+        if (!pasted.isEmpty()) {
+            listener.onResult(new FetchClientTokenResult.Success(pasted));
+            return;
+        }
+        fetchClientToken(context, Settings.getSavedPaymentMethodToken(context), listener);
+    }
+
+    /**
+     * Fetches a client token. A {@code preferredPaymentMethodToken} is sent as {@code preferred_payment_method_token},
+     * so the client token carries that payment method's {@code paymentMethodIdJwt}.
+     */
+    public void fetchClientToken(
+            Context context,
+            @Nullable String preferredPaymentMethodToken,
+            final FetchClientTokenCallback listener
+    ) {
 
         String customerId = Settings.getCustomerId(context);
         String merchantAccountId = Settings.getMerchantAccountId(context);
 
         DemoApplication
                 .getApiClient(context)
-                .getClientToken(customerId, merchantAccountId)
+                .getClientToken(customerId, merchantAccountId, preferredPaymentMethodToken)
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(Call<ClientToken> call, Response<ClientToken> response) {

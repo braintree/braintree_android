@@ -58,6 +58,12 @@ class MainFragment : BaseFragment() {
                                 PaymentModuleButton(R.string.shopper_insights_button) { launchShopperInsights() }
                                 PaymentModuleButton(R.string.shopper_insights_v2_button) { launchShopperInsightsV2() }
                                 PaymentModuleButton(R.string.paypal_messaging_button) { launchPayPalMessaging() }
+                                PaymentModuleButton(R.string.paypal_saved_payment_method_compose_button) {
+                                    launchPayPalSavedPaymentMethodCompose()
+                                }
+                                PaymentModuleButton(R.string.paypal_saved_payment_method_xml_button) {
+                                    launchPayPalSavedPaymentMethodXml()
+                                }
                                 Spacer(modifier = Modifier.height(4.dp))
                             }
 
@@ -216,6 +222,17 @@ class MainFragment : BaseFragment() {
             action.setAuthString(authString)
             findNavController().navigate(action)
         }
+    }
+
+    private fun launchPayPalSavedPaymentMethodCompose() {
+        // The screen fetches its own client token, with the buyer's payment method token, when Load is tapped.
+        val action = MainFragmentDirections.actionMainFragmentToPayPalSavedPaymentMethodComposeFragment()
+        findNavController().navigate(action)
+    }
+
+    private fun launchPayPalSavedPaymentMethodXml() {
+        val action = MainFragmentDirections.actionMainFragmentToPayPalSavedPaymentMethodXmlFragment()
+        findNavController().navigate(action)
     }
 
     private fun launchComposeUIComponents() {

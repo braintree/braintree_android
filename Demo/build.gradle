@@ -80,6 +80,7 @@ dependencies {
     implementation project(':PayPal')
     implementation project(':DataCollector')
     implementation project(':PayPalMessaging')
+    implementation project(':PayPalSavedPaymentMethod')
     implementation project(':ShopperInsights')
     implementation project(':SEPADirectDebit')
     implementation project(':ThreeDSecure')

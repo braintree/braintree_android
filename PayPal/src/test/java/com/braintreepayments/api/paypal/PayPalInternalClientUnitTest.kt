@@ -1242,7 +1242,7 @@ class PayPalInternalClientUnitTest {
         }
 
     @Test
-    fun `sendRequest with editBillingAgreement omits the jwt when the client token has none`() =
+    fun `sendRequest with editBillingAgreement fails without sending when the client token has no jwt`() =
         runTest(testDispatcher) {
             every { clientToken.bearer } returns "client-token-bearer"
             every { clientToken.paymentMethodIdJwt } returns null
@@ -1250,13 +1250,16 @@ class PayPalInternalClientUnitTest {
             val slot = slot<String>()
             val sut = createSutWithMocks(captureRequestBody = slot)
 
-            sut.sendRequest(context, PayPalCheckoutRequest("1.00", true), configuration, editBillingAgreement = true)
+            val thrown = assertFailsWith<BraintreeException> {
+                sut.sendRequest(context, PayPalCheckoutRequest("1.00", true), configuration, editBillingAgreement = true)
+            }
 
-            assertFalse(JSONObject(slot.captured).has("edit_billing_agreement_jwt"))
+            assertEquals(PayPalInternalClient.MISSING_PAYMENT_METHOD_ID_JWT_MESSAGE, thrown.message)
+            assertFalse(slot.isCaptured)
         }
 
     @Test
-    fun `sendRequest with editBillingAgreement omits the jwt for a tokenization key`() =
+    fun `sendRequest with editBillingAgreement fails without sending for a tokenization key`() =
         runTest(testDispatcher) {
             every { tokenizationKey.bearer } returns "tokenization-key-bearer"
             val slot = slot<String>()
@@ -1264,9 +1267,11 @@ class PayPalInternalClientUnitTest {
             // createSutWithMocks defaults the authorization to the client token, so override it afterwards.
             every { merchantRepository.authorization } returns tokenizationKey
 
-            sut.sendRequest(context, PayPalCheckoutRequest("1.00", true), configuration, editBillingAgreement = true)
+            assertFailsWith<BraintreeException> {
+                sut.sendRequest(context, PayPalCheckoutRequest("1.00", true), configuration, editBillingAgreement = true)
+            }
 
-            assertFalse(JSONObject(slot.captured).has("edit_billing_agreement_jwt"))
+            assertFalse(slot.isCaptured)
         }
 
     @Test
