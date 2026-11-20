@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.net.toUri
+import androidx.core.os.BundleCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -24,6 +25,12 @@ import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
 import com.braintreepayments.api.paypalsavedpaymentmethod.xml.PayPalSavedPaymentMethodLaunchCallback
 import com.braintreepayments.api.paypalsavedpaymentmethod.xml.PayPalSavedPaymentMethodView
+import com.braintreepayments.demo.SavedPaymentMethodDemo.APP_LINK_RETURN_URL
+import com.braintreepayments.demo.SavedPaymentMethodDemo.DEEP_LINK_FALLBACK_URL_SCHEME
+import com.braintreepayments.demo.SavedPaymentMethodDemo.DEFAULT_AMOUNT
+import com.braintreepayments.demo.SavedPaymentMethodDemo.DEFAULT_CURRENCY
+import com.braintreepayments.demo.SavedPaymentMethodDemo.validAmountOrNull
+import com.braintreepayments.demo.SavedPaymentMethodDemo.validCurrencyOrNull
 
 /**
  * Demonstrates the XML `PayPalSavedPaymentMethodView`. The component needs a client token that carries the buyer's
@@ -93,8 +100,8 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
 
         loadButton = view.findViewById(R.id.load)
         loadButton.setOnClickListener {
-            val amount = validAmountOrNull(amountField.text.toString(), DEFAULT_AMOUNT)
-            val currency = validCurrencyOrNull(currencyField.text.toString(), DEFAULT_CURRENCY)
+            val amount = validAmountOrNull(amountField.text.toString())
+            val currency = validCurrencyOrNull(currencyField.text.toString())
             if (amount == null || currency == null) {
                 showDialog(getString(if (amount == null) INVALID_AMOUNT_TEXT else INVALID_CURRENCY_TEXT))
                 return@setOnClickListener
@@ -113,6 +120,12 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
                 }
             }
         }
+        savedInstanceState?.let {
+            BundleCompat.getSerializable(it, KEY_STYLE_CONFIG, PayPalSavedPaymentMethodStyleConfig::class.java)
+        }?.let { restored ->
+            styleConfig = restored
+            savedPaymentMethodView.style = restored.toStyle()
+        }
         setUpStyleEditor(view)
 
         savedInstanceState?.getString(KEY_CLIENT_TOKEN)?.let { clientToken ->
@@ -127,18 +140,20 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
         showSavedToken()
         vaultHelper.handleReturn()
         val store = PendingRequestStore.getInstance()
-        store.getPayPalPendingRequest(requireContext())?.let { pendingRequest ->
+        store.getPayPalSavedPaymentMethodPendingRequest(requireContext())?.let { pendingRequest ->
             if (savedPaymentMethodView.handleReturnToApp(pendingRequest, requireActivity().intent)) {
-                store.clearPayPalPendingRequest(requireContext())
+                store.clearPayPalSavedPaymentMethodPendingRequest(requireContext())
             }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        // A client token in the saved state is acceptable for the Demo; an app shouldn't persist one this way.
         loadedClientToken?.let { outState.putString(KEY_CLIENT_TOKEN, it) }
         outState.putString(KEY_AMOUNT, loadedAmount)
         outState.putString(KEY_CURRENCY, loadedCurrency)
+        outState.putSerializable(KEY_STYLE_CONFIG, styleConfig)
     }
 
     private fun setUpStyleEditor(view: View) {
@@ -192,11 +207,11 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
     )
 
     private val launchCallback = PayPalSavedPaymentMethodLaunchCallback { pendingRequest ->
-        PendingRequestStore.getInstance().putPayPalPendingRequest(requireContext(), pendingRequest)
+        PendingRequestStore.getInstance().putPayPalSavedPaymentMethodPendingRequest(requireContext(), pendingRequest)
     }
 
     private val tokenizeCallback = PayPalTokenizeCallback { result ->
-        PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext())
+        PendingRequestStore.getInstance().clearPayPalSavedPaymentMethodPendingRequest(requireContext())
         when (result) {
             is PayPalResult.Success -> showNonce(result.nonce)
             is PayPalResult.Cancel -> handleError(Exception(getString(R.string.paypal_saved_payment_method_canceled)))
@@ -218,20 +233,16 @@ class PayPalSavedPaymentMethodXmlFragment : BaseFragment() {
     }
 
     private companion object {
-        const val DEFAULT_AMOUNT = "10.00"
         val VAULTING_TEXT = R.string.paypal_saved_payment_method_vaulting
         val VAULT_TEXT = R.string.paypal_saved_payment_method_vault
         val INVALID_AMOUNT_TEXT = R.string.paypal_saved_payment_method_invalid_amount
         val INVALID_CURRENCY_TEXT = R.string.paypal_saved_payment_method_invalid_currency
         val LOADING_TEXT = R.string.paypal_saved_payment_method_loading
         val LOAD_TEXT = R.string.paypal_saved_payment_method_load
-        // The Demo merchant's PayPal account is French, so PayPal returns no Pay Later message for USD.
-        const val DEFAULT_CURRENCY = "EUR"
         const val KEY_CLIENT_TOKEN = "client_token"
         const val KEY_AMOUNT = "amount"
         const val KEY_CURRENCY = "currency"
-        const val APP_LINK_RETURN_URL = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"
-        const val DEEP_LINK_FALLBACK_URL_SCHEME = "com.braintreepayments.demo.braintree"
+        const val KEY_STYLE_CONFIG = "style_config"
     }
 }
 
@@ -240,15 +251,3 @@ private fun Button.showBusy(isBusy: Boolean, @StringRes busyText: Int, @StringRe
     isEnabled = !isBusy
     setText(if (isBusy) busyText else idleText)
 }
-
-// Empty falls back to the default amount; anything that isn't a positive number is rejected.
-private fun validAmountOrNull(text: String, defaultAmount: String): String? =
-    text.trim().ifEmpty { defaultAmount }.takeIf { it.toBigDecimalOrNull()?.signum() == 1 }
-
-// Empty falls back to the default currency; anything that isn't three letters is rejected.
-private fun validCurrencyOrNull(text: String, defaultCurrency: String): String? =
-    text.trim().uppercase().ifEmpty { defaultCurrency }
-        .takeIf { it.length == CURRENCY_CODE_LENGTH && it.all(Char::isLetter) }
-
-// ISO 4217 currency codes have three letters.
-private const val CURRENCY_CODE_LENGTH = 3

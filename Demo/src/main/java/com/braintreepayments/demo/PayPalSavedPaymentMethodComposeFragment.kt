@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -41,6 +40,12 @@ import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
 import com.braintreepayments.api.paypalsavedpaymentmethod.compose.PayPalSavedPaymentMethodView
+import com.braintreepayments.demo.SavedPaymentMethodDemo.APP_LINK_RETURN_URL
+import com.braintreepayments.demo.SavedPaymentMethodDemo.DEEP_LINK_FALLBACK_URL_SCHEME
+import com.braintreepayments.demo.SavedPaymentMethodDemo.DEFAULT_AMOUNT
+import com.braintreepayments.demo.SavedPaymentMethodDemo.DEFAULT_CURRENCY
+import com.braintreepayments.demo.SavedPaymentMethodDemo.validAmountOrNull
+import com.braintreepayments.demo.SavedPaymentMethodDemo.validCurrencyOrNull
 
 /**
  * Demonstrates the Compose `PayPalSavedPaymentMethodView`. The component needs a client token that carries the buyer's
@@ -53,9 +58,6 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
     private val isVaulting = mutableStateOf(false)
     private val savedToken = mutableStateOf<String?>(null)
     private lateinit var vaultHelper: SavedPaymentMethodVaultHelper
-
-    // Bumped on every resume, so a change made in the Demo settings applies when the buyer comes back here.
-    private val resumeCount = mutableIntStateOf(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,7 +87,7 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
         var clientToken by rememberSaveable { mutableStateOf("") }
         var amount by rememberSaveable { mutableStateOf(DEFAULT_AMOUNT) }
         var currency by rememberSaveable { mutableStateOf(DEFAULT_CURRENCY) }
-        var styleConfig by remember { mutableStateOf(PayPalSavedPaymentMethodStyleConfig()) }
+        var styleConfig by rememberSaveable { mutableStateOf(PayPalSavedPaymentMethodStyleConfig()) }
         var isStyleEditorOpen by remember { mutableStateOf(false) }
         // The token, amount and currency the component was last loaded with. Only Load reads the fields, and each tap
         // bumps loadCount so the component reloads from scratch, even with the same token.
@@ -97,7 +99,8 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
         val nonce by nonceState
 
         val style = remember(styleConfig) { styleConfig.toStyle() }
-        val checkoutRequest = remember(loadedAmount, loadedCurrency, resumeCount.intValue) {
+        // Built on Load, as in the XML screen, so a change in the Demo settings applies on the next Load.
+        val checkoutRequest = remember(loadedAmount, loadedCurrency, loadCount) {
             checkoutRequest(loadedAmount, loadedCurrency)
         }
 
@@ -168,8 +171,8 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
             }
             Button(
                 onClick = {
-                    val loadAmount = validAmountOrNull(amount, DEFAULT_AMOUNT)
-                    val loadCurrency = validCurrencyOrNull(currency, DEFAULT_CURRENCY)
+                    val loadAmount = validAmountOrNull(amount)
+                    val loadCurrency = validCurrencyOrNull(currency)
                     if (loadAmount == null || loadCurrency == null) {
                         showDialog(
                             getString(
@@ -247,7 +250,6 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        resumeCount.intValue++
         // Picks up a token entered in Settings.
         savedToken.value = Settings.getSavedPaymentMethodToken(requireContext())
         vaultHelper.handleReturn()
@@ -284,23 +286,6 @@ class PayPalSavedPaymentMethodComposeFragment : BaseFragment() {
     }
 
     private companion object {
-        const val DEFAULT_AMOUNT = "10.00"
-        // The Demo merchant's PayPal account is French, so PayPal returns no Pay Later message for USD.
-        const val DEFAULT_CURRENCY = "EUR"
         const val CLIENT_TOKEN_MAX_LINES = 4
-        const val APP_LINK_RETURN_URL = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"
-        const val DEEP_LINK_FALLBACK_URL_SCHEME = "com.braintreepayments.demo.braintree"
     }
 }
-
-// Empty falls back to the default amount; anything that isn't a positive number is rejected.
-private fun validAmountOrNull(text: String, defaultAmount: String): String? =
-    text.trim().ifEmpty { defaultAmount }.takeIf { it.toBigDecimalOrNull()?.signum() == 1 }
-
-// Empty falls back to the default currency; anything that isn't three letters is rejected.
-private fun validCurrencyOrNull(text: String, defaultCurrency: String): String? =
-    text.trim().uppercase().ifEmpty { defaultCurrency }
-        .takeIf { it.length == CURRENCY_CODE_LENGTH && it.all(Char::isLetter) }
-
-// ISO 4217 currency codes have three letters.
-private const val CURRENCY_CODE_LENGTH = 3
