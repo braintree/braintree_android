@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import com.google.gson.Gson
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
@@ -12,6 +13,8 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalVaultRequest
+import com.braintreepayments.demo.SavedPaymentMethodDemo.APP_LINK_RETURN_URL
+import com.braintreepayments.demo.SavedPaymentMethodDemo.DEEP_LINK_FALLBACK_URL_SCHEME
 import com.braintreepayments.demo.models.PaymentMethodToken
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -86,14 +89,17 @@ class SavedPaymentMethodVaultHelper(
         )
         payPalClient(authorization).createPaymentAuthRequest(context, request) { authRequest ->
             when (authRequest) {
-                is PayPalPaymentAuthRequest.ReadyToLaunch ->
-                    when (val pendingRequest = payPalLauncher.launch(fragment.requireActivity(), authRequest)) {
+                is PayPalPaymentAuthRequest.ReadyToLaunch -> {
+                    // The buyer may have left the screen while the client token and the request were created.
+                    val activity = fragment.activity ?: return@createPaymentAuthRequest
+                    when (val pendingRequest = payPalLauncher.launch(activity, authRequest)) {
                         is PayPalPendingRequest.Started -> preferences.edit {
                             putString(KEY_PENDING_REQUEST, pendingRequest.pendingRequestString)
                             putString(KEY_AUTHORIZATION, authorization)
                         }
                         is PayPalPendingRequest.Failure -> onResult(Result.failure(pendingRequest.error))
                     }
+                }
                 is PayPalPaymentAuthRequest.Failure -> onResult(Result.failure(authRequest.error))
             }
         }
@@ -101,7 +107,8 @@ class SavedPaymentMethodVaultHelper(
 
     /**
      * The merchant server rejects vaulting a nonce to a customer other than the client token's ("Customer ID is
-     * invalid"), so it's vaulted to the Customer setting. Without one, a new customer is created first.
+     * invalid"), so it's vaulted to the Customer setting. Without one, a new customer is created first. It isn't saved,
+     * since the server doesn't tie the payment method token to a customer when generating the client token.
      */
     private fun vault(nonce: String) {
         val customerId = Settings.getCustomerId(context)?.trim()
@@ -132,7 +139,8 @@ class SavedPaymentMethodVaultHelper(
                     val body = response.body()
                     val token = body?.token
                     if (token.isNullOrEmpty()) {
-                        val message = body?.message
+                        val message = body?.message?.takeIf { it.isNotBlank() }
+                            ?: response.errorBody()?.vaultMessageOrNull()
                             ?: context.getString(R.string.paypal_saved_payment_method_vault_failed)
                         onResult(Result.failure(Exception(message)))
                     } else {
@@ -145,6 +153,12 @@ class SavedPaymentMethodVaultHelper(
                     onResult(Result.failure(Exception(error)))
                 }
             })
+    }
+
+    // A failed vault sends its reason with an error status, so it's in the error body, not response.body().
+    private fun ResponseBody.vaultMessageOrNull(): String? = use {
+        runCatching { Gson().fromJson(charStream(), PaymentMethodToken::class.java)?.message }.getOrNull()
+            ?.takeIf { it.isNotBlank() }
     }
 
     private fun payPalClient(authorization: String) =
@@ -163,8 +177,5 @@ class SavedPaymentMethodVaultHelper(
         private const val PREFERENCES_NAME = "PAYPAL_SAVED_PAYMENT_METHOD_VAULT"
         private const val KEY_PENDING_REQUEST = "pending_request"
         private const val KEY_AUTHORIZATION = "authorization"
-        private const val APP_LINK_RETURN_URL =
-            "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"
-        private const val DEEP_LINK_FALLBACK_URL_SCHEME = "com.braintreepayments.demo.braintree"
     }
 }
