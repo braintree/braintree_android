@@ -4,6 +4,9 @@
 
 * ThreeDSecure
   * Add `savedInstanceState` check to prevent orientation change bug that results in a failed challenge
+* PayPalSavedPaymentMethod (BETA)
+  * Add `PayPalSavedPaymentMethodView` XML view that shows the buyer's saved PayPal funding instrument, with an optional Pay Later message, and lets the buyer change it in the PayPal paysheet. Configurable with `paypalSavedPaymentMethod*` XML attributes
+    * **Note:** This feature is currently in beta and may change or be removed in future releases.
 
 ## 5.35.0 (2026-11-10)
 

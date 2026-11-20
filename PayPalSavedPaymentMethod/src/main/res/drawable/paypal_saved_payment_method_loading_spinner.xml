@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The edit loading spinner: 48dp, 2dp stroke, Material arc motion. -->
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/paypal_saved_payment_method_loading_spinner_ring">
+    <target
+        android:name="rotation"
+        android:animation="@animator/paypal_saved_payment_method_loading_spinner_rotation" />
+    <target
+        android:name="arc"
+        android:animation="@animator/paypal_saved_payment_method_loading_spinner_trim" />
+</animated-vector>
