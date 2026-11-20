@@ -139,6 +139,18 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
+    fun `after the saved state is restored the view binds the same view model again and shows its state`() {
+        restorationTester.emulateSavedInstanceStateRestore()
+        composeTestRule.waitForIdle()
+
+        // Found again by its saved key, not created again. The view model skips the fetch once it has loaded.
+        assertEquals(1, authorizations.size)
+        verify(exactly = 2) { viewModel.load(REQUEST, true) }
+        composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG)
+            .assertContentDescriptionEquals("Visa, ending in 1 2 3 4")
+    }
+
+    @Test
     fun `a new request is passed to the view model`() {
         inputs.value = inputs.value.copy(request = PayPalSavedPaymentMethodRequest("20.00", "USD"))
         composeTestRule.waitForIdle()
