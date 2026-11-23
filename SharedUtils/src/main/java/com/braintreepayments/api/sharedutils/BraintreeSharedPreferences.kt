@@ -57,6 +57,12 @@ class BraintreeSharedPreferences(
             .apply()
     }
 
+    fun remove(vararg keys: String) {
+        val editor = sharedPreferences.edit()
+        keys.forEach { editor.remove(it) }
+        editor.apply()
+    }
+
     fun clearSharedPreferences() {
         sharedPreferences.edit().clear().apply()
     }

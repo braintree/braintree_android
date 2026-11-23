@@ -17,6 +17,10 @@ internal object PayPalAnalytics {
     const val HANDLE_RETURN_SUCCEEDED = "paypal:tokenize:handle-return:succeeded"
     const val HANDLE_RETURN_FAILED = "paypal:tokenize:handle-return:failed"
     const val HANDLE_RETURN_NO_RESULT = "paypal:tokenize:handle-return:no-result"
+    const val HANDLE_RETURN_PENDING_REQUEST_RESTORED =
+        "paypal:tokenize:handle-return:pending-request-restored"
+    const val HANDLE_RETURN_NO_STORED_PENDING_REQUEST =
+        "paypal:tokenize:handle-return:no-stored-pending-request"
 
     // App Switch events
     const val APP_SWITCH_STARTED = "paypal:tokenize:app-switch:started"
