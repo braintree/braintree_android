@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayLaterButtonColor
@@ -54,6 +55,7 @@ fun PayLaterButton(
 ) {
     var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
     val analyticsClient = remember { AnalyticsClient.lazyInstance }
+    val analyticsAuthorization = remember(authorization) { Authorization.fromString(authorization) }
 
     PayPalButtonFlow(
         payPalRequest = payPalRequest,
@@ -64,7 +66,7 @@ fun PayLaterButton(
         paypalTokenizeCallback = paypalTokenizeCallback,
         onButtonSelected = {
             payPalRequest.shouldOfferPayLater = true
-            logButtonSelected(analyticsClient.value)
+            logButtonSelected(analyticsClient.value, analyticsAuthorization)
         }
     ) { enabled, onClick ->
         PayLaterButtonView(style = style, enabled = enabled, onClick = onClick)
@@ -72,22 +74,24 @@ fun PayLaterButton(
         LaunchedEffect(Unit) {
             if (shouldLogButtonPresentment) {
                 shouldLogButtonPresentment = false
-                logButtonPresented(analyticsClient.value)
+                logButtonPresented(analyticsClient.value, analyticsAuthorization)
             }
         }
     }
 }
 
-private fun logButtonPresented(analyticsClient: AnalyticsClient) {
+private fun logButtonPresented(analyticsClient: AnalyticsClient, authorization: Authorization) {
     analyticsClient.sendEvent(
         UIComponentsAnalytics.PAY_LATER_BUTTON_PRESENTED,
+        authorization,
         AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
     )
 }
 
-private fun logButtonSelected(analyticsClient: AnalyticsClient) {
+private fun logButtonSelected(analyticsClient: AnalyticsClient, authorization: Authorization) {
     analyticsClient.sendEvent(
         UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+        authorization,
         AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
     )
 }
