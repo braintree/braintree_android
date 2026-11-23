@@ -10,16 +10,13 @@ import androidx.core.view.marginStart
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 
 /**
- * The row with the PayPal logo and label (first child), the loading shimmer (second) and the funding instrument chip
- * (third). The chip sits next to the logo and label, its start margin apart, when it fits at its full width; otherwise
- * it goes below them. The shimmer always sits next to the logo and label and fills the rest of the row, or takes a
- * fixed width when the row's width isn't bounded.
+ * Lays out the logo and label, the loading shimmer and the funding instrument chip, its children in that order. The
+ * chip goes below the logo and label when it doesn't fit next to them at full width.
  */
 internal class FundingInstrumentRowLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : ViewGroup(context, attrs) {
-
     private val stackedSpacing =
         resources.getDimensionPixelSize(R.dimen.paypal_saved_payment_method_stacked_layout_spacing)
 

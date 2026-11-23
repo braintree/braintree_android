@@ -278,6 +278,33 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
+    fun `a repeat initialize with a changed request fetches the Pay Later message once`() = runTest(dispatcher) {
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } returns messageResult("Pay in 4")
+        sut.load(request("10.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        // What the view does on a repeat initialize: the request setter, then binding the view model.
+        sut.onRequestChanged(request("20.00"), showCreditMessaging = true)
+        sut.load(request("20.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { client.fetchCreditPresentmentMessages("20.00", any()) }
+    }
+
+    @Test
+    fun `a repeat initialize with the same request fetches nothing again`() = runTest(dispatcher) {
+        sut.load(request("10.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        sut.onRequestChanged(request("10.00"), showCreditMessaging = true)
+        sut.load(request("10.00"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { client.fetchCreditPresentmentMessages("10.00", any()) }
+        coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_DEFAULT, null, MERCHANT_ACCOUNT_ID) }
+    }
+
+    @Test
     fun `a Pay Later message turned off is hidden and not loaded`() = runTest(dispatcher) {
         loadAndSettle(amount = "10.00", showCreditMessaging = false)
 

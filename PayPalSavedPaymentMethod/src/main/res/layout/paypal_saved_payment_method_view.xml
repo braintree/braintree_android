@@ -25,8 +25,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_paypal_brand_logo"
-                tools:ignore="ContentDescription" />
+                android:contentDescription="@string/paypal_saved_payment_method_logo_content_description"
+                android:src="@drawable/ic_paypal_brand_logo" />
 
             <TextView
                 android:id="@+id/paypal_saved_payment_method_label"

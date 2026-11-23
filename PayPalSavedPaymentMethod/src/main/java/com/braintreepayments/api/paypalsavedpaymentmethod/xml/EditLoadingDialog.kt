@@ -12,16 +12,14 @@ import androidx.core.graphics.drawable.toDrawable
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 
 /**
- * Blocks the screen while the edit flow runs, so the buyer can't tap Edit twice. It shows only a spinner, since the
- * same loader shows while the order is created and while tokenizing, so no single message fits both. The spinner is a
- * drawable, because the platform spinner's stroke and padding can't be set, and it matches the Compose spinner. The
- * window's default dim and background are cleared, so only the translucent background shows.
+ * Blocks the screen while the edit runs, so the buyer can't tap Edit twice. Not cancelable unless the owner allows it;
+ * back then calls [onCancel].
  */
-internal class EditLoadingDialog(context: Context) : Dialog(context) {
-
+internal class EditLoadingDialog(context: Context, onCancel: () -> Unit) : Dialog(context) {
     init {
         setCancelable(false)
         setCanceledOnTouchOutside(false)
+        setOnCancelListener { onCancel() }
         val spinnerSize = context.resources.getDimensionPixelSize(
             R.dimen.paypal_saved_payment_method_loading_dialog_spinner_size
         )

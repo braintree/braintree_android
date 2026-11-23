@@ -5,13 +5,19 @@ package com.braintreepayments.api.paypalsavedpaymentmethod.xml
 import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.os.Looper
+import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -34,6 +40,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emitAll
@@ -105,6 +112,93 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
+    fun `the host's lifecycle ending cancels an edit being set up, even before the view detaches`() {
+        val host = object : LifecycleOwner {
+            override val lifecycle = LifecycleRegistry(this).apply { currentState = Lifecycle.State.RESUMED }
+        }
+        sut.setViewTreeLifecycleOwner(host)
+        var cancelled = false
+        coEvery { viewModel.startEdit(any(), any(), any()) } coAnswers {
+            try {
+                awaitCancellation()
+            } finally {
+                cancelled = true
+            }
+        }
+        initialize()
+        state.value = PayPalSavedPaymentMethodUiState(fundingInstrument = CARD_STATE)
+        idle()
+        chip().performClick()
+        idle()
+
+        host.lifecycle.currentState = Lifecycle.State.DESTROYED
+        idle()
+
+        assertTrue(cancelled)
+        assertTrue(delivered.isEmpty())
+    }
+
+    @Test
+    fun `detaching while the edit is being set up cancels it and calls neither callback`() {
+        var cancelled = false
+        coEvery { viewModel.startEdit(any(), any(), any()) } coAnswers {
+            try {
+                awaitCancellation()
+            } finally {
+                cancelled = true
+            }
+        }
+        initialize()
+        state.value = PayPalSavedPaymentMethodUiState(fundingInstrument = CARD_STATE)
+        idle()
+        chip().performClick()
+        idle()
+
+        activity.setContentView(View(activity))
+        idle()
+
+        assertTrue(cancelled)
+        assertTrue(launchedRequests.isEmpty())
+        assertTrue(delivered.isEmpty())
+    }
+
+    @Test
+    fun `back while the edit is being set up cancels it and reports a cancel`() {
+        var cancelled = false
+        coEvery { viewModel.startEdit(any(), any(), any()) } coAnswers {
+            state.value = state.value.copy(isEditing = true)
+            try {
+                awaitCancellation()
+            } finally {
+                cancelled = true
+            }
+        }
+        initialize()
+        state.value = PayPalSavedPaymentMethodUiState(fundingInstrument = CARD_STATE)
+        idle()
+        chip().performClick()
+        idle()
+
+        pressBack(ShadowDialog.getLatestDialog())
+        idle()
+
+        assertTrue(cancelled)
+        assertEquals(listOf<PayPalResult>(PayPalResult.Cancel), delivered)
+    }
+
+    @Test
+    fun `back doesn't close the loader while the approved edit is being completed`() {
+        initialize()
+        state.value = PayPalSavedPaymentMethodUiState(fundingInstrument = CARD_STATE, isEditing = true)
+        idle()
+
+        val loader = ShadowDialog.getLatestDialog()
+        pressBack(loader)
+
+        assertTrue(loader.isShowing)
+    }
+
+    @Test
     fun `a failed edit launch is reported to the tokenize callback`() {
         val error = BraintreeException("launch failed")
 
@@ -143,6 +237,77 @@ class PayPalSavedPaymentMethodViewUnitTest {
             assertEquals(canForget, sut.handleReturnToApp(pending, intent))
             assertEquals(dataAfter, intent.data)
         }
+    }
+
+    @Test
+    fun `a return with no PayPal result is delivered as a cancel, and the merchant can forget the request`() {
+        initialize()
+        every { viewModel.handleReturnToApp(any(), any(), any()) } answers {
+            results.tryEmit(PayPalResult.Cancel)
+            PayPalSavedPaymentMethodReturnResult.TAKEN
+        }
+
+        val canForget = sut.handleReturnToApp(PayPalPendingRequest.Started("pending"), Intent())
+        idle()
+
+        assertTrue(canForget)
+        assertEquals(listOf<PayPalResult>(PayPalResult.Cancel), delivered)
+    }
+
+    @Test
+    fun `rotating during an edit closes the loader and the new view shows it again`() {
+        initialize()
+        state.value = PayPalSavedPaymentMethodUiState(fundingInstrument = CARD_STATE, isEditing = true)
+        idle()
+        val before = ShadowDialog.getLatestDialog()
+        assertTrue(before.isShowing)
+
+        // The old view goes with the old activity; a new one with the same id binds the same view model.
+        activity.setContentView(View(activity))
+        val recreated = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
+        val sameId = sut.id
+        sut = PayPalSavedPaymentMethodView(recreated).apply {
+            id = sameId
+            recreated.setContentView(this)
+        }
+        initialize()
+
+        assertFalse(before.isShowing)
+        val after = ShadowDialog.getLatestDialog()
+        assertTrue(after !== before && after.isShowing)
+    }
+
+    @Test
+    fun `a repeat initialize with a changed request passes it to the view model once`() {
+        initialize()
+
+        initialize(request = PayPalSavedPaymentMethodRequest("20.00", "USD", "ma-1"))
+
+        verify(exactly = 1) { viewModel.onRequestChanged(match { it.amount == "20.00" }, true) }
+    }
+
+    @Test
+    fun `the launcher registers under the same key after the activity is recreated`() {
+        // Two activities stand in for one before and after recreation; the view keeps its id.
+        val keys = (1..2).map {
+            val host = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
+            val view = PayPalSavedPaymentMethodView(host).apply {
+                id = RECREATED_VIEW_ID
+                host.setContentView(this)
+            }
+            view.initialize(
+                authorization = "client-token",
+                appLinkReturnUrl = RETURN_URL,
+                payPalCheckoutRequest = PayPalCheckoutRequest(amount = "10.00", hasUserLocationConsent = true),
+                request = PayPalSavedPaymentMethodRequest("10.00", "USD"),
+                launchCallback = { },
+                tokenizeCallback = { }
+            )
+            host.registeredResultKeys()
+        }
+
+        assertTrue(keys[0].contains("PayPalSavedPaymentMethodView:$RECREATED_VIEW_ID"))
+        assertEquals(keys[0], keys[1])
     }
 
     @Test
@@ -209,14 +374,27 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
-    fun `outside an activity with an ActivityResultRegistry it reports a failure and hides`() {
-        sut = PayPalSavedPaymentMethodView(RuntimeEnvironment.getApplication())
+    fun `outside a ComponentActivity it reports a failure and hides`() {
+        sut = PayPalSavedPaymentMethodView(RuntimeEnvironment.getApplication()).apply { activity.setContentView(this) }
 
         initialize()
 
         assertTrue(delivered.single() is PayPalResult.Failure)
         assertFalse(sut.getChildAt(0).isVisible)
         assertEquals(0, createdViewModels)
+    }
+
+    @Test
+    fun `a setup failure before the view is attached is reported once it attaches`() {
+        sut = PayPalSavedPaymentMethodView(activity)
+
+        initialize()
+        assertTrue(delivered.isEmpty())
+
+        activity.setContentView(sut)
+        idle()
+
+        assertEquals("PayPalSavedPaymentMethodView needs an android:id.", failureMessage())
     }
 
     @Test
@@ -371,7 +549,11 @@ class PayPalSavedPaymentMethodViewUnitTest {
         activity.setContentView(this)
     }
 
-    private fun initialize(authorization: String = "client-token", settle: Boolean = true) {
+    private fun initialize(
+        authorization: String = "client-token",
+        settle: Boolean = true,
+        request: PayPalSavedPaymentMethodRequest = PayPalSavedPaymentMethodRequest("10.00", "USD", "ma-1")
+    ) {
         sut.viewModelFactory = { factoryAuthorization, _, _ ->
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
@@ -386,7 +568,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
             authorization = authorization,
             appLinkReturnUrl = RETURN_URL,
             payPalCheckoutRequest = PayPalCheckoutRequest(amount = "10.00", hasUserLocationConsent = true),
-            request = PayPalSavedPaymentMethodRequest("10.00", "USD", "ma-1"),
+            request = request,
             launchCallback = { launchedRequests += it },
             tokenizeCallback = { delivered += it }
         )
@@ -405,6 +587,11 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
     private fun idle() = shadowOf(Looper.getMainLooper()).idle()
 
+    private fun pressBack(dialog: Dialog) {
+        dialog.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK))
+        dialog.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK))
+    }
+
     private fun chip(): View = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_chip)
     private fun chipText(): TextView = sut.findViewById(R.id.paypal_saved_payment_method_funding_instrument_text)
     private fun creditMessaging(): View = sut.findViewById(R.id.paypal_saved_payment_method_credit_messaging)
@@ -417,3 +604,12 @@ class PayPalSavedPaymentMethodViewUnitTest {
         val MESSAGE_STATE = PayPalCreditMessagingDisplayState.Content(PayPalCreditMessagingContent("Pay in 4.", null))
     }
 }
+
+// The keys registered in the activity's result registry, read from its saved state.
+private fun ComponentActivity.registeredResultKeys(): List<String> {
+    val saved = Bundle()
+    activityResultRegistry.onSaveInstanceState(saved)
+    return saved.getStringArrayList("KEY_COMPONENT_ACTIVITY_REGISTERED_KEYS").orEmpty()
+}
+
+private const val RECREATED_VIEW_ID = 4242

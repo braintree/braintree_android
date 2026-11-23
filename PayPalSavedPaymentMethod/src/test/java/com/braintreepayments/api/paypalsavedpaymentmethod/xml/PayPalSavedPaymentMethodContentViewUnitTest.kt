@@ -22,11 +22,14 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPayme
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalLabelStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalLogoStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodContainerStyle
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodFundingInstrumentStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -163,6 +166,43 @@ class PayPalSavedPaymentMethodContentViewUnitTest {
     }
 
     @Test
+    fun `in a right-to-left layout Pay Later lines up with the label from the right edge`() {
+        sut.layoutDirection = View.LAYOUT_DIRECTION_RTL
+        render(CARD_STATE, MESSAGE_STATE)
+
+        layOut()
+
+        // The label's start padding is the gap after the logo, so its text ends that far from its right edge.
+        assertEquals(endInContent(label) - label.paddingStart, endInContent(creditMessaging))
+    }
+
+    // A dense screen, where the chip is smaller than the 48dp target in pixels.
+    @Config(qualifiers = "xxhdpi")
+    @Test
+    fun `a chip at the container's edge still gets a touch target, clipped to the container`() {
+        var edits = 0
+        sut.onEditClick = { edits++ }
+        Robolectric.buildActivity(ComponentActivity::class.java).setup().get().setContentView(sut)
+        // No padding and a stacked chip, so the chip sits on the bottom edge and its target would extend past it.
+        val wideLogoNoPadding = PayPalSavedPaymentMethodViewStyle(
+            showPayPalLabel = false,
+            container = PayPalSavedPaymentMethodContainerStyle(
+                verticalPaddingDp = 0f,
+                logo = PayPalLogoStyle(widthDp = 260f)
+            )
+        )
+        render(CARD_STATE, style = wideLogoNoPadding)
+        layOut(width = NARROW_WIDTH)
+        val chipBounds = Rect(0, 0, chip.width, chip.height).also { sut.offsetDescendantRectToMyCoords(chip, it) }
+        assertEquals(sut.height, chipBounds.bottom)
+        assertTrue("the chip is smaller than the target", chipBounds.height() < 48f.dpToPx(context.resources))
+
+        tap(chipBounds.centerX().toFloat(), chipBounds.top - 2f)
+
+        assertEquals(1, edits)
+    }
+
+    @Test
     fun `the logo is read as PayPal logo and the label as PayPal`() {
         render(CARD_STATE)
         assertEquals("PayPal logo", logo.contentDescription)
@@ -227,6 +267,30 @@ class PayPalSavedPaymentMethodContentViewUnitTest {
 
         assertNull(sut.touchDelegate)
     }
+
+    @Test
+    fun `the touch target is rebuilt only when the chip moves`() {
+        render(CARD_STATE)
+        layOut()
+        val first = sut.touchDelegate
+
+        render(CARD_STATE)
+        layOut()
+        assertSame(first, sut.touchDelegate)
+
+        val widerGap = PayPalSavedPaymentMethodViewStyle(
+            container = PayPalSavedPaymentMethodContainerStyle(
+                fundingInstrument = PayPalSavedPaymentMethodFundingInstrumentStyle(marginStartDp = 40f)
+            )
+        )
+        render(CARD_STATE, style = widerGap)
+        layOut()
+        assertNotSame(first, sut.touchDelegate)
+    }
+
+    // Where [view] ends (its right edge) within the content view.
+    private fun endInContent(view: View): Int =
+        Rect(0, 0, view.width, view.height).also { sut.offsetDescendantRectToMyCoords(view, it) }.right
 
     // Where [view] starts within the content view.
     private fun startInContent(view: View): Int =

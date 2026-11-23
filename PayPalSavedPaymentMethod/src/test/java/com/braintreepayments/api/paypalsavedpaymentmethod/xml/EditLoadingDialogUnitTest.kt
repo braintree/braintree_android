@@ -19,7 +19,7 @@ import org.robolectric.RobolectricTestRunner
 class EditLoadingDialogUnitTest {
 
     private val activity = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
-    private val sut = EditLoadingDialog(activity).apply { show() }
+    private val sut = EditLoadingDialog(activity) { }.apply { show() }
     private val root = sut.findViewById<ViewGroup>(android.R.id.content).getChildAt(0) as FrameLayout
     private val spinner = root.getChildAt(0) as ProgressBar
 
