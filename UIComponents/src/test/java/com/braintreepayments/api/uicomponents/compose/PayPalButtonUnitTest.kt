@@ -108,7 +108,7 @@ class PayPalButtonUnitTest {
         setContent()
 
         verify(exactly = 0) {
-            analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED, any())
+            analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED, any<AnalyticsEventParams>())
         }
     }
 

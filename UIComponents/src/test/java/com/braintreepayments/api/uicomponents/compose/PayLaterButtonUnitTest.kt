@@ -165,7 +165,13 @@ class PayLaterButtonUnitTest {
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
             )
         }
-        verify(exactly = 0) { analyticsClient.sendEvent(UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED, any(), any()) }
+        verify(exactly = 0) {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+                any<AnalyticsEventParams>(),
+                any()
+            )
+        }
     }
 
     @Test

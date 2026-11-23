@@ -427,7 +427,11 @@ class PayLaterButtonUnitTest {
         authCallback.captured.onPayPalPaymentAuthRequest(mockk<PayPalPaymentAuthRequest.ReadyToLaunch>())
 
         verify(exactly = 0) {
-            analyticsClient.sendEvent(UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED, any(), any())
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+                any<AnalyticsEventParams>(),
+                any()
+            )
         }
     }
 
