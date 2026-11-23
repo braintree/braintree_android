@@ -8,6 +8,9 @@ internal object UIComponentsAnalytics {
     const val VENMO_BUTTON_PRESENTED = "ui-components:venmo-button:presented"
     const val VENMO_BUTTON_SELECTED = "ui-components:venmo-button:selected"
 
+    const val PAY_LATER_BUTTON_PRESENTED = "ui-components:pay-later-button:presented"
+    const val PAY_LATER_BUTTON_SELECTED = "ui-components:pay-later-button:selected"
+
     const val CARD_FIELDS_PRESENTED = "ui-components:card-fields:presented"
     const val CARD_FIELDS_VALIDATED = "ui-components:card-fields:validated"
 

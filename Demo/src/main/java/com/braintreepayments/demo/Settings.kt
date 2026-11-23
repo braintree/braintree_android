@@ -19,7 +19,6 @@ object Settings {
     private const val SANDBOX_BASE_SERVER_URL = "https://braintree-demo-merchant-63b7a2204f6e.herokuapp.com"
     private const val SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
 
-    private const val LOCAL_PAYMENTS_TOKENIZATION_KEY = "sandbox_d54x7ckf_hh4cpc39zq4rgjcg"
     private const val XO_SANDBOX_TOKENIZATION_KEY = "sandbox_rz48bqvw_jcyycfw6f9j4nj9c"
 
     private var sharedPreferences: SharedPreferences? = null
@@ -114,16 +113,6 @@ object Settings {
             SANDBOX_ENV_NAME -> XO_SANDBOX_TOKENIZATION_KEY
             PRODUCTION_ENV_NAME -> PRODUCTION_TOKENIZATION_KEY
             else -> null
-        }
-    }
-
-    @JvmStatic
-    fun getLocalPaymentsTokenizationKey(context: Context): String? {
-        val environment = getEnvironment(context)
-        return if (SANDBOX_ENV_NAME == environment) {
-            LOCAL_PAYMENTS_TOKENIZATION_KEY
-        } else {
-            null
         }
     }
 

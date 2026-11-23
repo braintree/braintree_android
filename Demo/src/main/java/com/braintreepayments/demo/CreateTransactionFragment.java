@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.braintreepayments.api.core.PaymentMethodNonce;
+import com.braintreepayments.api.localpayment.LocalPaymentNonce;
 import com.braintreepayments.demo.models.Transaction;
 
 import retrofit2.Call;
@@ -92,7 +93,13 @@ public class CreateTransactionFragment extends Fragment {
         String nonceString = nonce.getString();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
 
-        if (Settings.isThreeDSecureEnabled(activity) && Settings.isThreeDSecureRequired(activity)) {
+        if (nonce instanceof LocalPaymentNonce) {
+            // iDEAL is authorized in EUR, so the sale must use the EUR merchant account and the authorized amount.
+            DemoApplication
+                    .getApiClient(activity)
+                    .createTransaction(nonceString, "1.00", "ideal_eur")
+                    .enqueue(callback);
+        } else if (Settings.isThreeDSecureEnabled(activity) && Settings.isThreeDSecureRequired(activity)) {
             DemoApplication
                     .getApiClient(activity)
                     .createTransaction(
