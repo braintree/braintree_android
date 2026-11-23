@@ -67,7 +67,7 @@ class CardinalThreeDSecureProviderUnitTest {
     private fun buildSut(configuration: Configuration = configuration()) = CardinalThreeDSecureProvider(
         context,
         MockkBraintreeClientBuilder().configurationSuccess(configuration).build(),
-        challengeCoordinator,
+        challengeCoordinator = challengeCoordinator,
         createObserver = { activity, receiver ->
             observerActivity = activity
             this.receiver = receiver
