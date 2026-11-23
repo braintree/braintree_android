@@ -20,18 +20,20 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        challengeObserver =
-            CardinalChallengeObserver(this) { _, validateResponse: ValidateResponse?, s: String? ->
-                handleValidated(cardinalClient, validateResponse, s)
-            }
+        challengeObserver = challengeObserverFactory(this)
 
         /**
          * Here, we schedule the 3DS auth challenge launch to run immediately after onCreate() is
          * complete. This gives the CardinalValidateReceiver callback a chance to run before 3DS
          * is initiated.
+         *
+         * When the Activity is recreated (e.g. on rotation), savedInstanceState is non-null and
+         * the challenge is already in progress, so we must not call cca_continue again.
          */
-        Handler(Looper.getMainLooper()).post {
-            launchCardinalAuthChallenge(cardinalClient)
+        if (savedInstanceState == null) {
+            Handler(Looper.getMainLooper()).post {
+                launchCardinalAuthChallenge(cardinalClient)
+            }
         }
     }
 
@@ -90,6 +92,18 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
     }
 
     companion object {
+        /**
+         * Creates the [CardinalChallengeObserver] for an Activity. Replaceable in tests because the
+         * real constructor requires a configured Cardinal SDK.
+         */
+        @VisibleForTesting
+        internal var challengeObserverFactory: (ThreeDSecureActivity) -> CardinalChallengeObserver? =
+            { activity ->
+                CardinalChallengeObserver(activity) { _, validateResponse: ValidateResponse?, s: String? ->
+                    activity.handleValidated(activity.cardinalClient, validateResponse, s)
+                }
+            }
+
         const val EXTRA_ERROR_MESSAGE: String =
             "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_ERROR_MESSAGE"
         const val EXTRA_THREE_D_SECURE_RESULT: String =

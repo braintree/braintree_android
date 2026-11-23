@@ -13,6 +13,7 @@ public class PendingRequestStore {
     static final String PREFERENCES_KEY = "PENDING_REQUEST_SHARED_PREFERENCES";
 
     static final String PAYPAL_PENDING_REQUEST_KEY = "PAYPAL_PENDING_REQUEST";
+    static final String PAYPAL_PAY_LATER_PENDING_REQUEST_KEY = "PAYPAL_PAY_LATER_PENDING_REQUEST";
     static final String LOCAL_PAYMENT_PENDING_REQUEST_KEY = "LOCAL_PAYMENT_PENDING_REQUEST";
     static final String SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY = "SEPA_DIRECT_DEBIT_PENDING_REQUEST";
     static final String VENMO_PENDING_REQUEST_KEY = "VENMO_PENDING_REQUEST";
@@ -55,6 +56,23 @@ public class PendingRequestStore {
 
     public void clearPayPalPendingRequest(Context context) {
         remove(PAYPAL_PENDING_REQUEST_KEY, context);
+    }
+
+    public void putPayLaterPendingRequest(Context context,
+                                          PayPalPendingRequest.Started pendingRequest) {
+        put(PAYPAL_PAY_LATER_PENDING_REQUEST_KEY, pendingRequest.getPendingRequestString(), context);
+    }
+
+    public PayPalPendingRequest.Started getPayLaterPendingRequest(Context context) {
+        String requestString = get(PAYPAL_PAY_LATER_PENDING_REQUEST_KEY, context);
+        if (requestString != null) {
+            return new PayPalPendingRequest.Started(requestString);
+        }
+        return null;
+    }
+
+    public void clearPayLaterPendingRequest(Context context) {
+        remove(PAYPAL_PAY_LATER_PENDING_REQUEST_KEY, context);
     }
 
     public void putLocalPaymentPendingRequest(Context context,

@@ -16,7 +16,7 @@ This document lists the runtime dependencies (both internal module dependencies 
 
 ## browser-switch Dependencies
 
-`com.braintreepayments.api:browser-switch:3.5.1` is declared as a dependency of `BraintreeCore`. Its own runtime dependencies are:
+`com.braintreepayments.api:browser-switch:3.7.0` is declared as a dependency of `BraintreeCore`. Its own runtime dependencies are:
 
 | Dependency | Version |
 |---|---|
@@ -31,7 +31,7 @@ This document lists the runtime dependencies (both internal module dependencies 
 | Dependency | Version |
 |---|---|
 | `:SharedUtils` | — |
-| `com.braintreepayments.api:browser-switch` | 3.5.1 |
+| `com.braintreepayments.api:browser-switch` | 3.7.0 |
 | `org.jetbrains.kotlinx:kotlinx-coroutines-core` | 1.7.1 |
 | `androidx.appcompat:appcompat` | 1.6.0 |
 | `androidx.work:work-runtime` | 2.8.1 |

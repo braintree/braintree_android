@@ -3,13 +3,31 @@
 ## unreleased
 
 * UIComponents
-    * Fix `VenmoButton` not re-enabling after failure in `createPaymentAuthRequest`, `venmoLauncher.launch()`, or when the hosting Activity is null
     * Use the latest `authorization` in Compose `PayPalButton` and `VenmoButton`
+* ThreeDSecure
+  * Add `savedInstanceState` check to prevent orientation change bug that results in a failed challenge
 * BraintreeCore
   * Fix new clients overwriting existing clients' authorization; recreate clients with the new authorization after login, logout, or fetching a new client token, including ViewModel/DI-scoped clients
   * Fix new clients overwriting custom `returnUrlScheme` values in `LocalPaymentClient` or `SEPADirectDebitClient`
   * Fix analytics events using the most recently created client's authorization
   * Update all Braintree modules to the same version; older modules still use the most recently created client's authorization
+
+## 5.35.0 (2026-11-10)
+
+* PayPal
+  * Add `PayPalLauncher(ActivityResultRegistry, String)` constructor with a `resultKey` parameter, allowing the Auth Tab result to be delivered after the Activity is recreated
+* Venmo
+  * Add `VenmoLauncher(ActivityResultRegistry, String)` constructor with a `resultKey` parameter, allowing the Auth Tab result to be delivered after the Activity is recreated
+* UIComponents
+    * Fix Compose `PayPalButton`, `PayLaterButton`, and `VenmoButton` not returning a result when the Activity is recreated while the browser is open
+    * Fix `VenmoButton` not re-enabling after failure in `createPaymentAuthRequest`, `venmoLauncher.launch()`, or when the hosting Activity is null
+    * Fix `PayPalButton` returning a cancel instead of a result when the Activity is recreated while the browser is open
+    * Fix XML `VenmoButton` returning a cancel instead of a result when the Activity is recreated while the browser is open
+    * Fix `PayPalButton` and compose `PayPalButton` stuck in loading on failed auth request
+    * Change `PayPalButton` to re-renable only after tokenization is complete
+    * Add `PayLaterButton` and compose support to generate a PayPal-PayLater branded button for launching the PayLater flow
+* BraintreeCore
+    * Update Browser Switch version to 3.7.0
 
 ## 5.34.0 (2026-10-29)
 
