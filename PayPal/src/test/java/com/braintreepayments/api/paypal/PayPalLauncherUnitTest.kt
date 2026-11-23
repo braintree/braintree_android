@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
@@ -17,8 +18,10 @@ import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.json.JSONException
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -43,6 +46,8 @@ class PayPalLauncherUnitTest {
     private val isBillingAgreement = true
     private val isPurchase = true
     private val recurringBillingPlanType = PayPalRecurringBillingPlanType.RECURRING.name
+    private val pendingRequestStore: PayPalPendingRequestStore = mockk(relaxed = true)
+    private val context: Context = mockk(relaxed = true)
 
     private lateinit var sut: PayPalLauncher
 
@@ -63,7 +68,8 @@ class PayPalLauncherUnitTest {
             getAppSwitchUseCase = getAppSwitchUseCase,
             resolvePayPalUseCase = resolvePayPalUseCase,
             lazyAnalyticsClient = lazy { analyticsClient },
-            analyticsParamRepository = analyticsParamRepository
+            analyticsParamRepository = analyticsParamRepository,
+            pendingRequestStoreProvider = { pendingRequestStore }
         )
     }
 
@@ -563,5 +569,139 @@ class PayPalLauncherUnitTest {
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
         verify { browserSwitchClient.start(activity, options, false) }
+    }
+
+    // Pending request persistence (process death recovery)
+
+    @Test
+    fun `when launch starts successfully, the pending request is persisted`() {
+        every { browserSwitchClient.start(activity, options, any()) } returns
+            BrowserSwitchStartResult.Started(pendingRequestString)
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify { pendingRequestStore.save(pendingRequestString) }
+    }
+
+    @Test
+    fun `when launch fails, the pending request is not persisted`() {
+        every { browserSwitchClient.start(activity, options, any()) } returns
+            BrowserSwitchStartResult.Failure(BrowserSwitchException("error"))
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify(exactly = 0) { pendingRequestStore.save(any()) }
+    }
+
+    @Test
+    fun `handleReturnToApp with context restores the stored pending request and returns success`() {
+        every { pendingRequestStore.get() } returns pendingRequestString
+        val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            browserSwitchFinalResult
+
+        val result = sut.handleReturnToApp(context, intent)
+
+        assertTrue(result is PayPalPaymentAuthResult.Success)
+        assertSame(
+            browserSwitchFinalResult,
+            (result as PayPalPaymentAuthResult.Success).browserSwitchSuccess
+        )
+        verifyOrder {
+            browserSwitchClient.restorePendingRequest(pendingRequestString)
+            browserSwitchClient.completeRequest(intent, pendingRequestString)
+            pendingRequestStore.clear()
+        }
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.HANDLE_RETURN_PENDING_REQUEST_RESTORED,
+                AnalyticsEventParams(contextId = paymentToken, appSwitchUrl = approvalUrl)
+            )
+        }
+    }
+
+    @Test
+    fun `handleReturnToApp with context clears the stored pending request on failure`() {
+        every { pendingRequestStore.get() } returns pendingRequestString
+        val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Failure>()
+        val exception = BrowserSwitchException("error")
+        every { browserSwitchFinalResult.error } returns exception
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            browserSwitchFinalResult
+
+        val result = sut.handleReturnToApp(context, intent)
+
+        assertTrue(result is PayPalPaymentAuthResult.Failure)
+        assertSame(exception, (result as PayPalPaymentAuthResult.Failure).error)
+        verify { pendingRequestStore.clear() }
+    }
+
+    @Test
+    fun `handleReturnToApp with context keeps the stored pending request on no result`() {
+        every { pendingRequestStore.get() } returns pendingRequestString
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            BrowserSwitchFinalResult.NoResult
+
+        val result = sut.handleReturnToApp(context, intent)
+
+        assertSame(PayPalPaymentAuthResult.NoResult, result)
+        verify(exactly = 0) { pendingRequestStore.clear() }
+    }
+
+    @Test
+    fun `handleReturnToApp with context returns no result when nothing is stored`() {
+        every { pendingRequestStore.get() } returns null
+
+        val result = sut.handleReturnToApp(context, intent)
+
+        assertSame(PayPalPaymentAuthResult.NoResult, result)
+        verify(exactly = 0) { browserSwitchClient.completeRequest(any(), any()) }
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.HANDLE_RETURN_NO_STORED_PENDING_REQUEST,
+                AnalyticsEventParams(contextId = paymentToken, appSwitchUrl = approvalUrl)
+            )
+        }
+    }
+
+    @Test
+    fun `handleReturnToApp with context and no intent data does not send analytics when nothing is stored`() {
+        every { pendingRequestStore.get() } returns null
+        every { intent.data } returns null
+
+        val result = sut.handleReturnToApp(context, intent)
+
+        assertSame(PayPalPaymentAuthResult.NoResult, result)
+        verify(exactly = 0) { analyticsClient.sendEvent(any(), any()) }
+    }
+
+    @Test
+    fun `handleReturnToApp with context returns failure and clears store when stored request is invalid`() {
+        every { pendingRequestStore.get() } returns pendingRequestString
+        val exception = BrowserSwitchException("invalid")
+        every { browserSwitchClient.restorePendingRequest(pendingRequestString) } throws exception
+
+        val result = sut.handleReturnToApp(context, intent)
+
+        assertTrue(result is PayPalPaymentAuthResult.Failure)
+        assertSame(exception, (result as PayPalPaymentAuthResult.Failure).error)
+        verify { pendingRequestStore.clear() }
+        verify(exactly = 0) { browserSwitchClient.completeRequest(any(), any()) }
+    }
+
+    @Test
+    fun `getStoredPendingRequest returns the stored pending request`() {
+        every { pendingRequestStore.get() } returns pendingRequestString
+
+        val result = sut.getStoredPendingRequest(context)
+
+        assertEquals(pendingRequestString, result?.pendingRequestString)
+    }
+
+    @Test
+    fun `getStoredPendingRequest returns null when nothing is stored`() {
+        every { pendingRequestStore.get() } returns null
+
+        assertNull(sut.getStoredPendingRequest(context))
     }
 }

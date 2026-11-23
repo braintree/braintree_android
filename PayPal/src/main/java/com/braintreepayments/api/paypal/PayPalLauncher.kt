@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal
 
+import android.content.Context
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCaller
@@ -25,8 +26,15 @@ class PayPalLauncher internal constructor(
     private val resolvePayPalUseCase: ResolvePayPalUseCase =
         ResolvePayPalUseCase(MerchantRepository.instance),
     lazyAnalyticsClient: Lazy<AnalyticsClient>,
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
+    private val pendingRequestStoreProvider: (Context) -> PayPalPendingRequestStore =
+        { PayPalPendingRequestStore.getInstance(it) }
 ) {
+    private var pendingRequestStore: PayPalPendingRequestStore? = null
+
+    private fun getPendingRequestStore(context: Context): PayPalPendingRequestStore =
+        pendingRequestStore ?: pendingRequestStoreProvider(context).also { pendingRequestStore = it }
+
     /**
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
      * @param caller Optional ActivityResultCaller parameter. If provided, it will be passed to BrowserSwitchClient
@@ -139,6 +147,9 @@ class PayPalLauncher internal constructor(
                     eventName = event,
                     analyticsEventParams = analyticsEventParams
                 )
+                // Persist so the flow can be completed after process death; see
+                // handleReturnToApp(Context, Intent).
+                getPendingRequestStore(activity).save(request.pendingRequest)
                 PayPalPendingRequest.Started(request.pendingRequest)
             }
         }
@@ -180,11 +191,13 @@ class PayPalLauncher internal constructor(
             val browserSwitchResult = browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)
         ) {
             is BrowserSwitchFinalResult.Success -> {
+                pendingRequestStore?.clear()
                 analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED, analyticsEventParams)
                 PayPalPaymentAuthResult.Success(browserSwitchResult)
             }
 
             is BrowserSwitchFinalResult.Failure -> {
+                pendingRequestStore?.clear()
                 analyticsClient.sendEvent(
                     PayPalAnalytics.HANDLE_RETURN_FAILED,
                     analyticsEventParams.copy(
@@ -200,6 +213,72 @@ class PayPalLauncher internal constructor(
             }
         }
     }
+
+    /**
+     * Captures and delivers the result of a PayPal authentication flow using the pending request
+     * that the SDK persisted when [launch] was called, so the merchant app does not need to store
+     * and restore it.
+     *
+     * Use this overload to make the flow resilient to process death: if Android terminates your
+     * app while the user is in the PayPal app or browser (common on low-memory devices during App
+     * Switch), the return deep link / App Link starts a new process and is delivered to
+     * `onCreate()` rather than `onNewIntent()`. Call this method from `onCreate()` (with
+     * `getIntent()`) as well as from `onResume()` / `onNewIntent()` so the result is not lost.
+     *
+     * The stored pending request is cleared once a [PayPalPaymentAuthResult.Success] or
+     * [PayPalPaymentAuthResult.Failure] is returned, is replaced by the next call to [launch], and
+     * expires automatically.
+     *
+     * @param context any [Context]; the application context is used to read the stored request
+     * @param intent  the intent that delivered the return deep link / App Link to your app
+     * @return a [PayPalPaymentAuthResult.Success] that should be passed to [PayPalClient.tokenize],
+     * [PayPalPaymentAuthResult.Failure], or [PayPalPaymentAuthResult.NoResult] if there is no
+     * stored pending request or the intent does not contain a PayPal result.
+     */
+    fun handleReturnToApp(context: Context, intent: Intent): PayPalPaymentAuthResult {
+        val store = getPendingRequestStore(context)
+        val contextId = intent.data?.getQueryParameter("ba_token") ?: intent.data?.getQueryParameter("token")
+        val analyticsEventParams = AnalyticsEventParams(
+            contextId = contextId,
+            appSwitchUrl = intent.data?.toString()
+        )
+
+        val pendingRequestString = store.get()
+        if (pendingRequestString == null) {
+            // Only report when a return URL actually arrived; calls from onResume()/onCreate()
+            // without a PayPal flow in progress are expected and should not be tracked.
+            if (intent.data != null) {
+                analyticsClient.sendEvent(
+                    PayPalAnalytics.HANDLE_RETURN_NO_STORED_PENDING_REQUEST,
+                    analyticsEventParams
+                )
+            }
+            return PayPalPaymentAuthResult.NoResult
+        }
+
+        try {
+            // Required for Auth Tab results delivered after the Activity is recreated; a no-op for
+            // App Switch and Custom Tabs, which match the return URL against the pending request.
+            browserSwitchClient.restorePendingRequest(pendingRequestString)
+        } catch (e: BrowserSwitchException) {
+            store.clear()
+            analyticsClient.sendEvent(
+                PayPalAnalytics.HANDLE_RETURN_FAILED,
+                analyticsEventParams.copy(errorDescription = e.message)
+            )
+            return PayPalPaymentAuthResult.Failure(e)
+        }
+
+        analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_PENDING_REQUEST_RESTORED, analyticsEventParams)
+        return handleReturnToApp(PayPalPendingRequest.Started(pendingRequestString), intent)
+    }
+
+    /**
+     * @return the pending request persisted by the SDK during [launch], or null if there is none
+     * or it has expired. Useful to detect, after a cold start, that a PayPal flow is in progress.
+     */
+    fun getStoredPendingRequest(context: Context): PayPalPendingRequest.Started? =
+        getPendingRequestStore(context).get()?.let { PayPalPendingRequest.Started(it) }
 
     private fun sendLaunchFailureEventAndReturn(
         error: Exception,

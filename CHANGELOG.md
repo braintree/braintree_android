@@ -2,6 +2,10 @@
 
 ## unreleased
 
+* PayPal
+  * `PayPalLauncher` now persists the pending request when `launch()` succeeds
+  * Add `PayPalLauncher.handleReturnToApp(Context, Intent)` to complete the PayPal flow from the SDK-persisted pending request, so the result is not lost if the app process is terminated while the user is in the PayPal app or browser (e.g. App Switch on low-memory devices)
+  * Add `PayPalLauncher.getStoredPendingRequest(Context)`
 * ThreeDSecure
   * Add `savedInstanceState` check to prevent orientation change bug that results in a failed challenge
 
