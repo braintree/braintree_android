@@ -89,6 +89,9 @@ This document lists the runtime dependencies (both internal module dependencies 
 | `:BraintreeCore` | — |
 | `org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk` | 2.2.7-7 |
 | `androidx.annotation:annotation` | 1.7.0 |
+| `androidx.appcompat:appcompat` | 1.6.0 |
+| `androidx.activity:activity` | 1.9.0 |
+| `androidx.lifecycle:lifecycle-runtime-ktx` | 2.6.2 |
 | `org.jetbrains.kotlinx:kotlinx-coroutines-core` | 1.7.1 |
 
 ### AmericanExpress

@@ -135,11 +135,15 @@ internal sealed class NextAction {
 
     /**
      * A 3D Secure challenge must be presented to the customer.
+     *
+     * @property mpiTransactionId Cardinal's transaction id. `null` when the server omits it (lookup
+     *   skipped); the challenge can't be presented then.
      */
     data class ThreeDSecureChallenge(
         val acsUrl: String,
         val acsRenderingType: String?,
         val challengePayload: String,
+        val mpiTransactionId: String?,
     ) : NextAction()
 
     /**
@@ -220,6 +224,14 @@ sealed class PaymentActionResult {
 
     class PaymentMethodRequired(val id: String) : PaymentActionResult()
     class CustomerActionRequired(val id: String, ) : PaymentActionResult()
+
+    /**
+     * The customer left the 3D Secure challenge: they canceled it, or the challenge's own time limit ran
+     * out. The Payment Action is unchanged; submit the payment method again to retry.
+     *
+     * If the challenge stops responding, the SDK stops waiting and returns [Failure] instead.
+     */
+    class ThreeDSecureCanceled(val id: String) : PaymentActionResult()
     class Failure(val error: Throwable) : PaymentActionResult()
     class Processing(val id: String): PaymentActionResult()
 
