@@ -3,6 +3,7 @@ package com.braintreepayments.api.paymentactions
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.VisibleForTesting
 import android.content.pm.PackageManager
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
@@ -40,7 +41,8 @@ import kotlin.time.Duration.Companion.minutes
  *
  * Cardinal on Android is a process-wide singleton. [collectDeviceData] starts a new Cardinal session and
  * [presentChallenge] continues on it, as the legacy flow does. [presentChallenge] sets Cardinal up again
- * only when this provider has no session in this process, e.g. after process death.
+ * only when this process has no session, e.g. after process death, and cleans Cardinal up once the
+ * challenge ends.
  *
  * @param launchOptions the merchant's options for presenting the challenge, applied at every setup.
  * @param createObserver replaced in tests; the real constructor needs a set-up Cardinal SDK.
@@ -55,10 +57,6 @@ internal class CardinalThreeDSecureProvider(
         ::CardinalChallengeObserver,
 ) : ThreeDSecureProvider, ChallengeRegistrar {
 
-    /** Whether the live Cardinal session in this process is one this provider set up. */
-    @Volatile
-    private var hasSession = false
-
     override suspend fun collectDeviceData(): DeviceDataResult = setUp()
 
     override suspend fun presentChallenge(transactionId: String, payload: String): ChallengeResult {
@@ -67,10 +65,14 @@ internal class CardinalThreeDSecureProvider(
             val setup = setUp()
             if (setup is DeviceDataResult.Failed) return ChallengeResult.Failed(setup.error)
         }
-        val result = challengeCoordinator.startChallenge(transactionId, payload, this)
-        // The session may be gone (e.g. another module called Cardinal.cleanup()), so set up again next time.
-        if (result is ChallengeResult.Failed) hasSession = false
-        return result
+        try {
+            return challengeCoordinator.startChallenge(transactionId, payload, this)
+        } finally {
+            // Release Cardinal after every outcome. This drops its references to the
+            // observer and the shell Activity. The next challenge sets Cardinal up again.
+            hasSession = false
+            Cardinal.getInstance().cleanup()
+        }
     }
 
     override fun register(activity: FragmentActivity, onResult: (ChallengeResult) -> Unit): ChallengeStarter {
@@ -201,6 +203,14 @@ internal class CardinalThreeDSecureProvider(
     }
 
     companion object {
+        /**
+         * Whether this process has a Cardinal session this SDK set up. Process-wide, like Cardinal's session,
+         * so a provider built for a recreated Activity continues on the device data session.
+         */
+        @Volatile
+        @VisibleForTesting
+        internal var hasSession = false
+
         private const val PRODUCTION_ENVIRONMENT = "production"
         internal const val REQUEST_TIMEOUT_MS = 8_000
 

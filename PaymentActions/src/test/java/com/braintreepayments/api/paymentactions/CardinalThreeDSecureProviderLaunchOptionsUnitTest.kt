@@ -57,6 +57,8 @@ class CardinalThreeDSecureProviderLaunchOptionsUnitTest {
     fun setUp() {
         mockkStatic(Cardinal::class)
         every { Cardinal.getInstance() } returns cardinal
+        // Each test starts as a new process
+        CardinalThreeDSecureProvider.hasSession = false
         every { cardinal.configure(any(), capture(configured)) } just Runs
         every { cardinal.init(any(), any<CardinalInitService>()) } answers {
             secondArg<CardinalInitService>().onSetupCompleted("df-ref")
@@ -66,6 +68,7 @@ class CardinalThreeDSecureProviderLaunchOptionsUnitTest {
     @After
     fun tearDown() {
         unmockkStatic(Cardinal::class)
+        CardinalThreeDSecureProvider.hasSession = false
     }
 
     private fun buildSut(options: PaymentActionThreeDSecureOptions) = CardinalThreeDSecureProvider(

@@ -15,6 +15,7 @@ import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver
 import com.cardinalcommerce.shared.models.exceptions.InvalidInputException
+import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
@@ -30,6 +31,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -47,15 +49,26 @@ class CardinalThreeDSecureProviderUnitTest {
     private var observerActivity: FragmentActivity? = null
     private var receiver: CardinalValidateReceiver? = null
 
+    /** Every way a challenge can end, including the coordinator's watchdog. */
+    private val challengeOutcomes = listOf(
+        ChallengeResult.Completed("server-jwt"),
+        ChallengeResult.Abandoned,
+        ChallengeResult.Failed(BraintreeException("Cardinal reported an error")),
+        ChallengeResult.Failed(BraintreeException(ChallengeCoordinator.CHALLENGE_TIMED_OUT_MESSAGE)),
+    )
+
     @Before
     fun setUp() {
         mockkStatic(Cardinal::class)
         every { Cardinal.getInstance() } returns cardinal
+        // Each test starts as a new process
+        CardinalThreeDSecureProvider.hasSession = false
     }
 
     @After
     fun tearDown() {
         unmockkStatic(Cardinal::class)
+        CardinalThreeDSecureProvider.hasSession = false
     }
 
     private fun configuration(environment: String = "sandbox", jwt: String? = "cardinal-jwt") =
@@ -335,18 +348,117 @@ class CardinalThreeDSecureProviderUnitTest {
     }
 
     @Test
-    fun `presentChallenge sets Cardinal up again after a failed challenge`() = runTest {
+    fun `a challenge through a new provider continues on the device data session of an earlier one`() = runTest {
         stubSetupCompleted()
-        coEvery { challengeCoordinator.startChallenge(any(), any(), any()) } returns
-            ChallengeResult.Failed(BraintreeException("Challenge failed"))
+        coEvery { challengeCoordinator.startChallenge(any(), any(), any()) } returns ChallengeResult.Completed("server-jwt")
+        // For example, the merchant builds a new PaymentActionsClient after the Activity is recreated.
+        val beforeRecreation = buildSut()
+        val afterRecreation = buildSut()
+
+        beforeRecreation.collectDeviceData()
+        afterRecreation.presentChallenge("mpi-tx-id", "challenge-payload")
+
+        verify(exactly = 1) { cardinal.configure(any(), any()) }
+        verify(exactly = 1) { cardinal.init(any(), any<CardinalInitService>()) }
+        coVerify { challengeCoordinator.startChallenge("mpi-tx-id", "challenge-payload", afterRecreation) }
+    }
+
+    @Test
+    fun `a challenge in a new process sets Cardinal up before presenting`() = runTest {
+        stubSetupCompleted()
+        coEvery { challengeCoordinator.startChallenge(any(), any(), any()) } returns ChallengeResult.Completed("server-jwt")
+        buildSut().collectDeviceData()
+        // A new process starts without a session, whatever the previous process had.
+        CardinalThreeDSecureProvider.hasSession = false
+        val sut = buildSut()
+
+        sut.presentChallenge("mpi-tx-id", "challenge-payload")
+
+        coVerifyOrder {
+            cardinal.init(any(), any<CardinalInitService>())
+            cardinal.init(any(), any<CardinalInitService>())
+            challengeCoordinator.startChallenge("mpi-tx-id", "challenge-payload", sut)
+        }
+    }
+
+    @Test
+    fun `presentChallenge cleans Cardinal up after the challenge, whatever the outcome`() = runTest {
+        stubSetupCompleted()
+        val sut = buildSut()
+
+        challengeOutcomes.forEach { outcome ->
+            coEvery { challengeCoordinator.startChallenge(any(), any(), any()) } coAnswers {
+                // Cleanup only once the challenge has ended, never while it can still start.
+                verify(exactly = 0) { cardinal.cleanup() }
+                outcome
+            }
+            sut.collectDeviceData()
+
+            val result = sut.presentChallenge("mpi-tx-id", "challenge-payload")
+
+            assertSame(outcome, result)
+            verify(exactly = 1) { cardinal.cleanup() }
+            assertFalse(CardinalThreeDSecureProvider.hasSession)
+            clearMocks(cardinal, answers = false)
+        }
+    }
+
+    @Test
+    fun `presentChallenge cleans Cardinal up when the challenge is canceled`() = runTest {
+        stubSetupCompleted()
+        coEvery { challengeCoordinator.startChallenge(any(), any(), any()) } throws CancellationException("canceled")
         val sut = buildSut()
         sut.collectDeviceData()
 
-        sut.presentChallenge("mpi-tx-id", "challenge-payload")
-        sut.presentChallenge("mpi-tx-id", "challenge-payload")
+        assertFailsWith<CancellationException> { sut.presentChallenge("mpi-tx-id", "challenge-payload") }
 
-        // The failure may mean the session is gone: once for device data, once before the second challenge.
-        verify(exactly = 2) { cardinal.init(any(), any<CardinalInitService>()) }
+        verify { cardinal.cleanup() }
+        assertFalse(CardinalThreeDSecureProvider.hasSession)
+    }
+
+    @Test
+    fun `the challenge after a cleanup sets Cardinal up first, whatever the outcome`() = runTest {
+        stubSetupCompleted()
+        val sut = buildSut()
+
+        challengeOutcomes.forEach { outcome ->
+            clearMocks(cardinal, challengeCoordinator, answers = false)
+            coEvery { challengeCoordinator.startChallenge(any(), any(), any()) } returnsMany
+                listOf(outcome, ChallengeResult.Completed("server-jwt"))
+            sut.collectDeviceData()
+
+            sut.presentChallenge("mpi-tx-id", "challenge-payload")
+            sut.presentChallenge("mpi-tx-id-2", "challenge-payload-2")
+
+            coVerifyOrder {
+                cardinal.init(any(), any<CardinalInitService>())
+                challengeCoordinator.startChallenge("mpi-tx-id", "challenge-payload", sut)
+                cardinal.cleanup()
+                cardinal.init(any(), any<CardinalInitService>())
+                challengeCoordinator.startChallenge("mpi-tx-id-2", "challenge-payload-2", sut)
+            }
+        }
+    }
+
+    @Test
+    fun `presentChallenge doesn't clean Cardinal up when setup fails before the challenge`() = runTest {
+        every { cardinal.init(any(), any<CardinalInitService>()) } answers {
+            secondArg<CardinalInitService>().onValidated(null, null)
+        }
+
+        buildSut().presentChallenge("mpi-tx-id", "challenge-payload")
+
+        verify(exactly = 0) { cardinal.cleanup() }
+    }
+
+    @Test
+    fun `collectDeviceData never cleans Cardinal up, so the challenge can continue on its session`() = runTest {
+        stubSetupCompleted()
+
+        buildSut().collectDeviceData()
+
+        verify(exactly = 0) { cardinal.cleanup() }
+        assertTrue(CardinalThreeDSecureProvider.hasSession)
     }
 
     @Test

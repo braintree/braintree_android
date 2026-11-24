@@ -33,9 +33,12 @@ internal class ChallengeShellActivity : AppCompatActivity() {
         // Registered on every onCreate so a result that arrives after a recreation reaches this instance.
         val starter = challenge.registrar.register(this) { result -> challenge.complete(result) }
 
-        // Close the shell however the challenge ends.
+        // Close the shell however the challenge ends. Close the provider's challenge screen first: Android
+        // doesn't finish it when the shell finishes, so a challenge the SDK ends (watchdog, cancellation)
+        // would leave a screen whose result goes nowhere. A no-op if the provider already closed it.
         lifecycleScope.launch {
             challenge.awaitOutcome()
+            challenge.challengeScreenRequestCode?.let(::finishActivity)
             finish()
         }
 
@@ -57,6 +60,18 @@ internal class ChallengeShellActivity : AppCompatActivity() {
         } catch (error: RuntimeException) {
             challenge.complete(ChallengeResult.Failed(BraintreeException(CHALLENGE_START_FAILED_MESSAGE, error)))
         }
+    }
+
+    /**
+     * Records the request code of the provider's challenge screen so the shell can finish it. Cardinal starts
+     * that screen through this Activity's result registry, which reaches this method (androidx.activity
+     * 1.9.0 calls it through `ActivityCompat.startActivityForResult`).
+     */
+    @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
+    override fun startActivityForResult(intent: Intent, requestCode: Int, options: Bundle?) {
+        // A negative code is a plain startActivity, which expects no result.
+        if (requestCode >= 0) pendingChallenge?.challengeScreenRequestCode = requestCode
+        super.startActivityForResult(intent, requestCode, options)
     }
 
     override fun onDestroy() {

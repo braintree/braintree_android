@@ -2,6 +2,7 @@ package com.braintreepayments.api.paymentactions
 
 import android.content.Intent
 import android.os.Looper
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.core.BraintreeException
@@ -14,13 +15,17 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.android.controller.ActivityController
+import org.robolectric.annotation.Config
+import org.robolectric.shadow.api.Shadow
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
+@Config(shadows = [RecordingShadowActivity::class])
 class ChallengeShellActivityUnitTest {
 
     private val registrar = FakeChallengeRegistrar()
@@ -44,6 +49,16 @@ class ChallengeShellActivityUnitTest {
     private fun idleMainLooper() = shadowOf(Looper.getMainLooper()).idle()
 
     private fun PendingChallenge.outcome(): ChallengeResult = runBlocking { withTimeout(1_000) { awaitOutcome() } }
+
+    private fun ChallengeShellActivity.closeCalls() = Shadow.extract<RecordingShadowActivity>(this).closeCalls
+
+    /** Ends [challenge] from a background thread, as the coordinator's watchdog or a cancellation does. */
+    private fun endFromBackground(challenge: PendingChallenge, message: String) {
+        Thread { challenge.complete(ChallengeResult.Failed(BraintreeException(message))) }.apply {
+            start()
+            join()
+        }
+    }
 
     @Test
     fun `a shell with an unknown token finishes without touching the provider`() {
@@ -227,6 +242,88 @@ class ChallengeShellActivityUnitTest {
         assertTrue(controller.get().isFinishing)
     }
 
+    @Test
+    fun `the provider's challenge screen, launched through the result registry, reaches the shell's startActivityForResult`() {
+        // Pins androidx.activity's routing: if an upgrade stops calling startActivityForResult, this fails.
+        registrar.launchScreenThroughRegistry = true
+        val challenge = pendingChallenge()
+
+        val controller = shell(register(challenge)).setup()
+        idleMainLooper()
+
+        val launched = shadowOf(controller.get()).nextStartedActivityForResult
+        assertEquals(CHALLENGE_SCREEN_ACTION, launched.intent.action)
+        assertEquals(launched.requestCode, challenge.challengeScreenRequestCode)
+    }
+
+    @Test
+    fun `a plain startActivity from the shell isn't taken for the challenge screen`() {
+        val challenge = pendingChallenge()
+        val controller = shell(register(challenge)).setup()
+        idleMainLooper()
+
+        controller.get().startActivity(Intent(CHALLENGE_SCREEN_ACTION))
+
+        assertNull(challenge.challengeScreenRequestCode)
+    }
+
+    @Test
+    fun `when the watchdog ends the challenge, the challenge screen is finished before the shell`() {
+        registrar.launchScreenThroughRegistry = true
+        val challenge = pendingChallenge()
+        val controller = shell(register(challenge)).setup()
+        idleMainLooper()
+
+        endFromBackground(challenge, ChallengeCoordinator.CHALLENGE_TIMED_OUT_MESSAGE)
+        idleMainLooper()
+
+        val requestCode = challenge.challengeScreenRequestCode!!
+        assertEquals(listOf("finishActivity($requestCode)", "finish"), controller.get().closeCalls())
+    }
+
+    @Test
+    fun `when handleNextAction is canceled mid-challenge, the challenge screen is finished before the shell`() {
+        registrar.launchScreenThroughRegistry = true
+        val challenge = pendingChallenge()
+        val controller = shell(register(challenge)).setup()
+        idleMainLooper()
+
+        endFromBackground(challenge, ChallengeCoordinator.CHALLENGE_INTERRUPTED_MESSAGE)
+        idleMainLooper()
+
+        val requestCode = challenge.challengeScreenRequestCode!!
+        assertEquals(listOf("finishActivity($requestCode)", "finish"), controller.get().closeCalls())
+    }
+
+    @Test
+    fun `a shell recreated during the challenge still finishes the challenge screen`() {
+        registrar.launchScreenThroughRegistry = true
+        val challenge = pendingChallenge()
+        val controller = shell(register(challenge)).setup()
+        idleMainLooper()
+        val requestCode = challenge.challengeScreenRequestCode!!
+
+        // A rotation while Cardinal's screen is up, then the watchdog ends the challenge.
+        controller.recreate()
+        idleMainLooper()
+        endFromBackground(challenge, ChallengeCoordinator.CHALLENGE_TIMED_OUT_MESSAGE)
+        idleMainLooper()
+
+        assertEquals(listOf("finishActivity($requestCode)", "finish"), controller.get().closeCalls())
+    }
+
+    @Test
+    fun `a shell that never launched a challenge screen just finishes when the challenge ends`() {
+        val challenge = pendingChallenge()
+        val controller = shell(register(challenge)).setup()
+        idleMainLooper()
+
+        endFromBackground(challenge, ChallengeCoordinator.CHALLENGE_TIMED_OUT_MESSAGE)
+        idleMainLooper()
+
+        assertEquals(listOf("finish"), controller.get().closeCalls())
+    }
+
     /**
      * A [ChallengeRegistrar] that records what the shell does and lets a test deliver the provider's verdict.
      */
@@ -235,20 +332,33 @@ class ChallengeShellActivityUnitTest {
         val starts = mutableListOf<Pair<String, String>>()
         var startError: RuntimeException? = null
         var onStart: (() -> Unit)? = null
+
+        /** Launches a challenge screen for a result the way Cardinal does, through the Activity's result registry. */
+        var launchScreenThroughRegistry = false
         private var onResult: ((ChallengeResult) -> Unit)? = null
 
         override fun register(activity: FragmentActivity, onResult: (ChallengeResult) -> Unit): ChallengeStarter {
             registeredActivities += activity
             this.onResult = onResult
+            val launcher = if (launchScreenThroughRegistry) {
+                activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+            } else {
+                null
+            }
             return ChallengeStarter { transactionId, payload ->
                 onStart?.invoke()
                 startError?.let { throw it }
                 starts += transactionId to payload
+                launcher?.launch(Intent(CHALLENGE_SCREEN_ACTION))
             }
         }
 
         fun deliver(result: ChallengeResult) {
             onResult!!.invoke(result)
         }
+    }
+
+    private companion object {
+        const val CHALLENGE_SCREEN_ACTION = "com.example.CHALLENGE_SCREEN"
     }
 }
