@@ -3,11 +3,13 @@ package com.braintreepayments.api.paypalsavedpaymentmethod
 import android.content.Context
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.withStarted
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -70,41 +72,57 @@ internal class PayPalSavedPaymentMethodViewModel(
     // What the views asked for; null until the first load.
     private var inputs: Inputs? = null
     private var defaultFundingInstrumentJob: Job? = null
+    private var isDefaultFundingInstrumentLoaded = false
     private var updatedFundingInstrumentJob: Job? = null
 
     /**
      * Loads the default funding instrument and, if enabled, the Pay Later message. Called each time a view binds, so a
-     * failed load is retried and a shown one refreshed. After an edit the funding instrument isn't refetched, since the
+     * failed load is retried; one that succeeded or is still running isn't fetched again, so a configuration change or
+     * returning to the screen makes no new requests. After an edit the funding instrument isn't refetched, since the
      * API still returns the one from before the edit; only an edit restored from [savedState] loads it once.
      */
     fun load(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
         val isFirstLoad = inputs == null
         inputs = Inputs(request, showCreditMessaging)
-        creditMessagingLoader.fetch(request, showCreditMessaging)
+        creditMessagingLoader.fetchIfNotShown(request, showCreditMessaging)
         if (!state.value.isEditCompleted) {
-            loadBuyerDefaultBillingAgreement()
+            if (!isDefaultFundingInstrumentLoaded && defaultFundingInstrumentJob?.isActive != true) {
+                loadBuyerDefaultBillingAgreement()
+            }
         } else if (isFirstLoad) {
             loadBuyerUpdatedBillingAgreement()
         }
     }
 
-    /** Reloads or hides the Pay Later message when the request or its setting changes. Does nothing before [load]. */
+    /**
+     * Reloads or hides the Pay Later message when the request or its setting changes, and reloads the funding
+     * instrument when the merchant account changes, since it's resolved against that account. Does nothing before
+     * [load].
+     */
     fun onRequestChanged(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
+        val previous = inputs ?: return
         val changed = Inputs(request, showCreditMessaging)
-        if (inputs != null && inputs != changed) {
-            inputs = changed
-            creditMessagingLoader.fetch(request, showCreditMessaging)
+        if (previous == changed) return
+        inputs = changed
+        creditMessagingLoader.fetch(request, showCreditMessaging)
+        if (request.merchantAccountId != previous.request.merchantAccountId && !state.value.isEditCompleted) {
+            isDefaultFundingInstrumentLoaded = false
+            _state.update { it.copy(fundingInstrument = PayPalSavedPaymentMethodDisplayState.Loading) }
+            loadBuyerDefaultBillingAgreement()
         }
     }
 
     /**
      * Opens the PayPal paysheet from [context]'s activity. Returns the pending request to keep, a failure to report,
-     * or `null` if an edit step is already running or the activity closed meanwhile.
+     * or `null` if an edit step is already running or the activity closed meanwhile. The paysheet opens, and the
+     * result returns, only while [hostLifecycle] is started, so a buyer who leaves during setup isn't sent to PayPal
+     * from the background; if the host is destroyed first, this is cancelled.
      */
     suspend fun startEdit(
         context: Context,
         payPalLauncher: PayPalLauncher,
-        payPalCheckoutRequest: PayPalCheckoutRequest
+        payPalCheckoutRequest: PayPalCheckoutRequest,
+        hostLifecycle: Lifecycle
     ): PayPalPendingRequest? {
         // TODO: send the edit flow analytics events, here and in handleReturnToApp, once the catalog is approved.
         if (state.value.isEditing) return null
@@ -112,19 +130,22 @@ internal class PayPalSavedPaymentMethodViewModel(
             ?: return PayPalPendingRequest.Failure(BraintreeException(NO_COMPONENT_ACTIVITY_MESSAGE))
         _state.update { it.copy(isEditing = true) }
         return try {
-            when (val authRequest = client.createEditFundingInstrumentAuthRequest(context, payPalCheckoutRequest)) {
-                // There's no view left to return to.
-                is PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch ->
-                    if (activity.isFinishing || activity.isDestroyed) {
-                        null
-                    } else {
-                        payPalLauncher.launch(activity, authRequest.paymentAuthRequest)
-                    }
-                is PayPalSavedPaymentMethodAuthRequest.Failure -> PayPalPendingRequest.Failure(authRequest.error)
+            val authRequest = client.createEditFundingInstrumentAuthRequest(context, payPalCheckoutRequest)
+            hostLifecycle.withStarted {
+                when (authRequest) {
+                    // There's no view left to return to.
+                    is PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch ->
+                        if (activity.isFinishing || activity.isDestroyed) {
+                            null
+                        } else {
+                            payPalLauncher.launch(activity, authRequest.paymentAuthRequest)
+                        }
+                    is PayPalSavedPaymentMethodAuthRequest.Failure -> PayPalPendingRequest.Failure(authRequest.error)
+                }
             }
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            PayPalPendingRequest.Failure(e)
+            hostLifecycle.withStarted { PayPalPendingRequest.Failure(e) }
         } finally {
             _state.update { it.copy(isEditing = false) }
         }
@@ -132,9 +153,9 @@ internal class PayPalSavedPaymentMethodViewModel(
 
     /**
      * Reads the PayPal return in [intent] and delivers the result through [results]. Tokenizing runs in the view
-     * model's scope, so recreating the view doesn't cancel or repeat it. A return with no result is a
-     * [PayPalResult.Cancel] and can be completed later. After a success the funding instrument the buyer picked is
-     * loaded. A return already completed, including before process death, isn't completed again.
+     * model's scope, so recreating the view doesn't cancel or repeat it. A return with no result, including the buyer
+     * closing the paysheet, is a [PayPalResult.Cancel], as in `PayPalButton`. After a success the funding instrument
+     * the buyer picked is loaded. A return already completed, including before process death, isn't completed again.
      */
     fun handleReturnToApp(
         pendingRequest: String,
@@ -224,10 +245,10 @@ internal class PayPalSavedPaymentMethodViewModel(
                     PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT,
                     null,
                     merchantAccountId
-                ).toDisplayState()
+                ).toDisplayState().also { isDefaultFundingInstrumentLoaded = true }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                // A failed refresh keeps what's shown; only a failed first load shows the error.
+                // A failed retry keeps the error shown; only a failed first load sets it.
                 if (state.value.fundingInstrument != PayPalSavedPaymentMethodDisplayState.Loading) return@launch
                 e.toDisplayState()
             }

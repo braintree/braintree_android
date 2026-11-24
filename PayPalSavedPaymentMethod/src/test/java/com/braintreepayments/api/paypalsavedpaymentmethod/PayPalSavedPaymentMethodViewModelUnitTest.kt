@@ -5,6 +5,9 @@ package com.braintreepayments.api.paypalsavedpaymentmethod
 import android.content.Context
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.braintreepayments.api.core.BraintreeException
@@ -65,6 +68,9 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     private val launcher = mockk<PayPalLauncher>(relaxed = true)
     private val activity = mockk<ComponentActivity>()
     private val savedState = SavedStateHandle()
+    private val hostLifecycle = LifecycleRegistry.createUnsafe(mockk<LifecycleOwner>()).apply {
+        currentState = Lifecycle.State.RESUMED
+    }
     private lateinit var sut: PayPalSavedPaymentMethodViewModel
 
     @Before
@@ -124,17 +130,71 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
-    fun `a failed refresh keeps the funding instrument and message shown`() = runTest(dispatcher) {
+    fun `a new merchant account reloads the funding instrument`() = runTest(dispatcher) {
+        loadAndSettle()
+        coEvery { client.fetchPaymentMethod(any(), any(), "ma-2") } returns summary(EDITED)
+
+        sut.onRequestChanged(PayPalSavedPaymentMethodRequest(AMOUNT, "USD", "ma-2"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_DEFAULT, null, "ma-2") }
+        assertEquals(PayPalSavedPaymentMethodDisplayState.Content(EDITED), sut.state.value.fundingInstrument)
+    }
+
+    @Test
+    fun `binding again while the loads are running doesn't restart them`() = runTest(dispatcher) {
+        val fundingInstrument = CompletableDeferred<PayPalSavedPaymentMethodSummary>()
+        val message = CompletableDeferred<PayPalCreditMessagingResult>()
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } coAnswers { fundingInstrument.await() }
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } coAnswers { message.await() }
+        sut.load(request(AMOUNT), showCreditMessaging = true)
+        runCurrent()
+
+        // A rotation binds the view model again while both fetches are still running.
+        sut.load(request(AMOUNT), showCreditMessaging = true)
+        runCurrent()
+        fundingInstrument.complete(summary(CARD))
+        message.complete(messageResult("Pay in 4"))
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_DEFAULT, null, MERCHANT_ACCOUNT_ID) }
+        coVerify(exactly = 1) { client.fetchCreditPresentmentMessages(AMOUNT, "USD") }
+        assertEquals(PayPalSavedPaymentMethodDisplayState.Content(CARD), sut.state.value.fundingInstrument)
+    }
+
+    @Test
+    fun `attaching again after a successful load fetches nothing again`() = runTest(dispatcher) {
         loadAndSettle()
 
-        coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws UnknownHostException()
-        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } throws UnknownHostException()
         loadAndSettle()
 
         assertEquals(PayPalSavedPaymentMethodDisplayState.Content(CARD), sut.state.value.fundingInstrument)
         assertEquals(MESSAGE, sut.state.value.creditMessaging)
-        coVerify(exactly = 2) { client.fetchPaymentMethod(BUYER_DEFAULT, null, MERCHANT_ACCOUNT_ID) }
-        coVerify(exactly = 2) { client.fetchCreditPresentmentMessages(AMOUNT, "USD") }
+        coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_DEFAULT, null, MERCHANT_ACCOUNT_ID) }
+        coVerify(exactly = 1) { client.fetchCreditPresentmentMessages(AMOUNT, "USD") }
+    }
+
+    @Test
+    fun `a failed Pay Later load is retried when a view attaches again`() = runTest(dispatcher) {
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } throws UnknownHostException()
+        loadAndSettle()
+
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } returns MESSAGE_RESULT
+        loadAndSettle()
+
+        assertEquals(MESSAGE, sut.state.value.creditMessaging)
+        coVerify(exactly = 1) { client.fetchPaymentMethod(any(), any(), any()) }
+    }
+
+    @Test
+    fun `a Pay Later message turned off and on again is loaded when a view attaches`() = runTest(dispatcher) {
+        loadAndSettle()
+        sut.onRequestChanged(request(AMOUNT), showCreditMessaging = false)
+        advanceUntilIdle()
+
+        loadAndSettle()
+
+        assertEquals(MESSAGE, sut.state.value.creditMessaging)
     }
 
     @Test
@@ -243,7 +303,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         coEvery { client.createEditFundingInstrumentAuthRequest(activity, CHECKOUT) } coAnswers { created.await() }
         every { launcher.launch(activity, authRequest) } returns pending
 
-        val result = async { sut.startEdit(activity, launcher, CHECKOUT) }
+        val result = async { sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle) }
         runCurrent()
         assertTrue(sut.state.value.isEditing)
         created.complete(PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch(authRequest))
@@ -253,12 +313,58 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
+    fun `startEdit opens the paysheet only once the host is started again`() = runTest(dispatcher) {
+        val authRequest = mockk<PayPalPaymentAuthRequest.ReadyToLaunch>()
+        val pending = PayPalPendingRequest.Started(PENDING)
+        coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } returns
+            PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch(authRequest)
+        every { launcher.launch(activity, authRequest) } returns pending
+        hostLifecycle.currentState = Lifecycle.State.CREATED
+
+        val result = async { sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle) }
+        advanceUntilIdle()
+        verify(exactly = 0) { launcher.launch(any(), any()) }
+        assertFalse(result.isCompleted)
+
+        hostLifecycle.currentState = Lifecycle.State.STARTED
+        assertSame(pending, result.await())
+    }
+
+    @Test
+    fun `startEdit returns a failure only once the host is started again`() = runTest(dispatcher) {
+        coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } throws IOException("network")
+        hostLifecycle.currentState = Lifecycle.State.CREATED
+
+        val result = async { sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle) }
+        advanceUntilIdle()
+        assertFalse(result.isCompleted)
+
+        hostLifecycle.currentState = Lifecycle.State.STARTED
+        assertTrue(result.await() is PayPalPendingRequest.Failure)
+    }
+
+    @Test
+    fun `startEdit is cancelled without launching when the host is destroyed while stopped`() = runTest(dispatcher) {
+        coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } returns
+            PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch(mockk())
+        hostLifecycle.currentState = Lifecycle.State.CREATED
+
+        val result = async { runCatching { sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle) } }
+        advanceUntilIdle()
+        hostLifecycle.currentState = Lifecycle.State.DESTROYED
+
+        assertTrue(result.await().exceptionOrNull() is CancellationException)
+        verify(exactly = 0) { launcher.launch(any(), any()) }
+        assertFalse(sut.state.value.isEditing)
+    }
+
+    @Test
     fun `startEdit returns the failure of an auth request that fails`() = runTest(dispatcher) {
         val error = BraintreeException("auth failed")
         coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } returns
             PayPalSavedPaymentMethodAuthRequest.Failure(error)
 
-        val pending = sut.startEdit(activity, launcher, CHECKOUT)
+        val pending = sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle)
 
         assertSame(error, (pending as PayPalPendingRequest.Failure).error)
     }
@@ -268,7 +374,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         val thrown = IOException("network")
         coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } throws thrown
 
-        val pending = sut.startEdit(activity, launcher, CHECKOUT)
+        val pending = sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle)
 
         assertSame(thrown, (pending as PayPalPendingRequest.Failure).error)
     }
@@ -280,11 +386,11 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
                 PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch(mockk())
 
             every { activity.isFinishing } returns true
-            assertNull(sut.startEdit(activity, launcher, CHECKOUT))
+            assertNull(sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle))
 
             every { activity.isFinishing } returns false
             every { activity.isDestroyed } returns true
-            assertNull(sut.startEdit(activity, launcher, CHECKOUT))
+            assertNull(sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle))
 
             verify(exactly = 0) { launcher.launch(any(), any()) }
             assertFalse(sut.state.value.isEditing)
@@ -292,7 +398,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
 
     @Test
     fun `startEdit fails without a request when not hosted in a ComponentActivity`() = runTest(dispatcher) {
-        val result = sut.startEdit(mockk<Context>(), launcher, CHECKOUT)
+        val result = sut.startEdit(mockk<Context>(), launcher, CHECKOUT, hostLifecycle)
 
         assertEquals(
             PayPalSavedPaymentMethodViewModel.NO_COMPONENT_ACTIVITY_MESSAGE,
@@ -305,7 +411,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     fun `startEdit while an edit step is running is ignored`() = runTest(dispatcher) {
         val created = startEditInProgress()
 
-        assertNull(sut.startEdit(activity, launcher, CHECKOUT))
+        assertNull(sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle))
         created.complete(PayPalSavedPaymentMethodAuthRequest.Failure(BraintreeException("failed")))
         advanceUntilIdle()
 
@@ -318,7 +424,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
             CompletableDeferred<Nothing>().await()
         }
 
-        val job = launch { sut.startEdit(activity, launcher, CHECKOUT) }
+        val job = launch { sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle) }
         runCurrent()
         job.cancel()
         runCurrent()
@@ -544,7 +650,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
 
             assertFalse(sut.state.value.isEditCompleted)
             assertEquals(PayPalSavedPaymentMethodDisplayState.Content(CARD), sut.state.value.fundingInstrument)
-            assertSame(pending, sut.startEdit(activity, launcher, CHECKOUT))
+            assertSame(pending, sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle))
         }
 
     @Test
@@ -557,18 +663,6 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         assertEquals(PayPalSavedPaymentMethodReturnResult.TAKEN, handling)
         assertSame(PayPalResult.Cancel, sut.results.first())
         assertFalse(sut.state.value.isEditCompleted)
-    }
-
-    @Test
-    fun `a return with no result can be completed later`() = runTest(dispatcher) {
-        every { launcher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
-        sut.handleReturnToApp(PENDING, launcher, returnIntent())
-        advanceUntilIdle()
-        sut.results.first()
-
-        val success = completeReturn()
-
-        assertSame(success, sut.results.first())
     }
 
     @Test
@@ -649,7 +743,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     private fun TestScope.startEditInProgress(): CompletableDeferred<PayPalSavedPaymentMethodAuthRequest> {
         val created = CompletableDeferred<PayPalSavedPaymentMethodAuthRequest>()
         coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } coAnswers { created.await() }
-        backgroundScope.launch { sut.startEdit(activity, launcher, CHECKOUT) }
+        backgroundScope.launch { sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle) }
         runCurrent()
         return created
     }

@@ -31,8 +31,11 @@ internal class CreditMessagingLoader(
     // The latest is replayed, so one asked for before the collector starts isn't lost.
     private val requests = MutableSharedFlow<Requested>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-    // The request the shown message was quoted for.
-    private var quotedFor: PayPalSavedPaymentMethodRequest? = null
+    // The request whose message was loaded and is shown; null when none is.
+    private var loadedRequest: PayPalSavedPaymentMethodRequest? = null
+
+    // The request whose message is being fetched; null when none is.
+    private var inFlightRequest: PayPalSavedPaymentMethodRequest? = null
 
     init {
         // collectLatest cancels the fetch for older requests.
@@ -44,25 +47,38 @@ internal class CreditMessagingLoader(
         requests.tryEmit(Requested(request, showCreditMessaging))
     }
 
+    /** Like [fetch], but keeps a message already loaded or being fetched for [request] instead of fetching it again. */
+    fun fetchIfNotShown(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
+        if (!showCreditMessaging || (request != loadedRequest && request != inFlightRequest)) {
+            fetch(request, showCreditMessaging)
+        }
+    }
+
     private suspend fun show(requested: Requested) {
         val hidden = PayPalCreditMessagingDisplayState.Hidden
         // Hidden when turned off, and after an edit, since the offer no longer applies.
         if (!requested.showCreditMessaging || state.value.isEditCompleted) {
+            // Nothing is shown any more, so turning the message back on fetches it.
+            loadedRequest = null
             state.update { it.copy(creditMessaging = hidden) }
             return
         }
         val request = requested.request
+        inFlightRequest = request
         val creditMessaging = try {
             client.fetchCreditPresentmentMessages(request.amount, request.currencyCode).toDisplayState()
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            // A failed refresh for the same request keeps the message; any other failure hides it.
-            if (request == quotedFor) return
-            hidden
+            // Hidden, and not recorded as loaded, so the next view that binds retries it.
+            loadedRequest = null
+            state.update { it.copy(creditMessaging = hidden) }
+            return
+        } finally {
+            inFlightRequest = null
         }
         // An edit that completed during the fetch has already hidden the offer.
         if (state.value.isEditCompleted) return
-        quotedFor = request
+        loadedRequest = request
         state.update { it.copy(creditMessaging = creditMessaging) }
     }
 }
