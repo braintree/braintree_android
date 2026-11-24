@@ -407,7 +407,7 @@ class FundingInstrumentChipViewUnitTest {
     private fun email(isEditable: Boolean) = PayPalSavedPaymentMethodDisplayState.NoFundingInstrument(EMAIL, isEditable)
 
     private fun paymentMethod(type: PayPalSavedPaymentMethodType) = PayPalSavedPaymentMethod(
-        type = type,
+        rawType = type.rawValue,
         label = "Visa",
         imageUrl = null,
         lastDigits = "1234",
@@ -415,7 +415,7 @@ class FundingInstrumentChipViewUnitTest {
     )
 
     private fun payPalCredit() = PayPalSavedPaymentMethod(
-        type = PayPalSavedPaymentMethodType.PAYPAL_CREDIT,
+        rawType = PayPalSavedPaymentMethodType.PAYPAL_CREDIT.rawValue,
         label = "PayPal Credit",
         imageUrl = null,
         lastDigits = null,

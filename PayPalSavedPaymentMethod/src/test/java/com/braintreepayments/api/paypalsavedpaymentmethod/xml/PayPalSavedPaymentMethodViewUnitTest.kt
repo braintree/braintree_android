@@ -612,7 +612,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     private companion object {
         val RETURN_URL: Uri = Uri.parse("https://merchant.example.com")
         val CARD_STATE = PayPalSavedPaymentMethodDisplayState.Content(
-            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD, "Visa", null, "1234", null)
+            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD.rawValue, "Visa", null, "1234", null)
         )
         val MESSAGE_STATE = PayPalCreditMessagingDisplayState.Content(PayPalCreditMessagingContent("Pay in 4.", null))
     }

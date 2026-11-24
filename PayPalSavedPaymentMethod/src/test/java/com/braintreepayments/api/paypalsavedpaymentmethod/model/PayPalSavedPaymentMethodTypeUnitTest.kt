@@ -14,6 +14,8 @@ class PayPalSavedPaymentMethodTypeUnitTest {
             PayPalSavedPaymentMethodType.PAYPAL_CREDIT,
             PayPalSavedPaymentMethodType.fromRawValue("PAYPAL_CREDIT")
         )
+        assertEquals(PayPalSavedPaymentMethodType.BALANCE, PayPalSavedPaymentMethodType.fromRawValue("BALANCE"))
+        assertEquals(PayPalSavedPaymentMethodType.PAYPAL_DEBIT_CARD, PayPalSavedPaymentMethodType.fromRawValue("PPDC"))
     }
 
     @Test

@@ -12,7 +12,7 @@ import org.junit.Test
 class PayPalSavedPaymentMethodDisplayLogicUnitTest {
 
     private val card = PayPalSavedPaymentMethod(
-        type = PayPalSavedPaymentMethodType.CARD,
+        rawType = PayPalSavedPaymentMethodType.CARD.rawValue,
         label = "Visa",
         imageUrl = null,
         lastDigits = "1234",
@@ -22,19 +22,23 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
     @Test
     fun `iconRes returns the card and bank icons`() {
         assertEquals(R.drawable.ic_fi_card_placeholder, card.iconRes())
-        assertEquals(R.drawable.ic_fi_bank_placeholder, card.copy(type = PayPalSavedPaymentMethodType.BANK).iconRes())
+        assertEquals(
+            R.drawable.ic_fi_bank_placeholder,
+            card.copy(rawType = PayPalSavedPaymentMethodType.BANK.rawValue).iconRes()
+        )
     }
 
     @Test
     fun `iconRes returns null for PayPal Credit and unknown types`() {
-        assertNull(card.copy(type = PayPalSavedPaymentMethodType.PAYPAL_CREDIT).iconRes())
-        assertNull(card.copy(type = null).iconRes())
+        assertNull(card.copy(rawType = PayPalSavedPaymentMethodType.PAYPAL_CREDIT.rawValue).iconRes())
+        assertNull(card.copy(rawType = "SOMETHING_NEW").iconRes())
     }
 
     @Test
     fun `a card or bank with a subtype shows its label, without digits or an icon`() {
         listOf(PayPalSavedPaymentMethodType.CARD, PayPalSavedPaymentMethodType.BANK).forEach { type ->
-            val payPalProduct = card.copy(type = type, label = "PayPal Debit Card", subtype = "PAYPAL_DEBIT")
+            val payPalProduct =
+                card.copy(rawType = type.rawValue, label = "PayPal Debit Card", subtype = "PAYPAL_DEBIT")
 
             assertNull(payPalProduct.lastDigitsOrNull())
             assertNull(payPalProduct.spokenLastDigitsOrNull())
@@ -55,19 +59,19 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
     @Test
     fun `lastDigitsOrNull returns the last digits for a card or bank`() {
         assertEquals("1234", card.lastDigitsOrNull())
-        assertEquals("1234", card.copy(type = PayPalSavedPaymentMethodType.BANK).lastDigitsOrNull())
+        assertEquals("1234", card.copy(rawType = PayPalSavedPaymentMethodType.BANK.rawValue).lastDigitsOrNull())
     }
 
     @Test
     fun `lastDigitsOrNull returns null for PayPal Credit placeholder digits`() {
-        val payPalCredit = card.copy(type = PayPalSavedPaymentMethodType.PAYPAL_CREDIT, lastDigits = "0000")
+        val payPalCredit = card.copy(rawType = PayPalSavedPaymentMethodType.PAYPAL_CREDIT.rawValue, lastDigits = "0000")
 
         assertNull(payPalCredit.lastDigitsOrNull())
     }
 
     @Test
     fun `lastDigitsOrNull returns null for an unknown type`() {
-        assertNull(card.copy(type = null).lastDigitsOrNull())
+        assertNull(card.copy(rawType = "SOMETHING_NEW").lastDigitsOrNull())
     }
 
     @Test
@@ -79,12 +83,15 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
     @Test
     fun `spokenLastDigitsOrNull separates the digits so each is read on its own`() {
         assertEquals("1 2 3 4", card.spokenLastDigitsOrNull())
-        assertEquals("1 2 3 4", card.copy(type = PayPalSavedPaymentMethodType.BANK).spokenLastDigitsOrNull())
+        assertEquals(
+            "1 2 3 4",
+            card.copy(rawType = PayPalSavedPaymentMethodType.BANK.rawValue).spokenLastDigitsOrNull()
+        )
     }
 
     @Test
     fun `spokenLastDigitsOrNull returns null when the label is read on its own`() {
-        val payPalCredit = card.copy(type = PayPalSavedPaymentMethodType.PAYPAL_CREDIT, lastDigits = "0000")
+        val payPalCredit = card.copy(rawType = PayPalSavedPaymentMethodType.PAYPAL_CREDIT.rawValue, lastDigits = "0000")
 
         assertNull(payPalCredit.spokenLastDigitsOrNull())
         assertNull(card.copy(lastDigits = null).spokenLastDigitsOrNull())
@@ -100,7 +107,11 @@ class PayPalSavedPaymentMethodDisplayLogicUnitTest {
     @Test
     fun `accessibilityLabel reads the label alone when there are no last digits to read`() {
         val payPalCredit = PayPalSavedPaymentMethodDisplayState.Content(
-            card.copy(type = PayPalSavedPaymentMethodType.PAYPAL_CREDIT, label = "PayPal Credit", lastDigits = "0000")
+            card.copy(
+                rawType = PayPalSavedPaymentMethodType.PAYPAL_CREDIT.rawValue,
+                label = "PayPal Credit",
+                lastDigits = "0000"
+            )
         )
 
         assertEquals("PayPal Credit", payPalCredit.accessibilityLabel(null, ::endingIn))

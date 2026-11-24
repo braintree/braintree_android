@@ -339,7 +339,7 @@ class PayPalSavedPaymentMethodContentUnitTest {
     // The chip alone, showing a funding instrument of [type] whose card art comes from [imageLoader].
     private fun renderChip(type: PayPalSavedPaymentMethodType, imageLoader: ImageLoader) {
         val withArt = PayPalSavedPaymentMethodDisplayState.Content(
-            PayPalSavedPaymentMethod(type, "Visa", ART_URL, "1234", null)
+            PayPalSavedPaymentMethod(type.rawValue, "Visa", ART_URL, "1234", null)
         )
         composeTestRule.setContent {
             FundingInstrumentChip(
@@ -431,10 +431,16 @@ class PayPalSavedPaymentMethodContentUnitTest {
         const val TEXT_COLOR = AndroidColor.RED
         const val LINK_COLOR = AndroidColor.BLUE
         val CARD = PayPalSavedPaymentMethodDisplayState.Content(
-            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD, "Visa", null, "1234", null)
+            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD.rawValue, "Visa", null, "1234", null)
         )
         val PAYPAL_CREDIT = PayPalSavedPaymentMethodDisplayState.Content(
-            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.PAYPAL_CREDIT, "PayPal Credit", null, null, null)
+            PayPalSavedPaymentMethod(
+                PayPalSavedPaymentMethodType.PAYPAL_CREDIT.rawValue,
+                "PayPal Credit",
+                null,
+                null,
+                null
+            )
         )
         val LONG_EMAIL = PayPalSavedPaymentMethodDisplayState.NoFundingInstrument(
             "a.very.long.buyer.email.address@example.com",

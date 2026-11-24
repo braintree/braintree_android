@@ -60,11 +60,13 @@ internal data class PayPalFundingInstrumentDetailsGraphQLBody(
                         editable
                     }
                     paymentMethods {
+                        id
                         label
                         imageUrl
                         lastDigits
                         type
                         subtype
+                        cardBrand
                     }
                 }
             }

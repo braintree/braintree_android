@@ -398,7 +398,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
         val REQUEST = PayPalSavedPaymentMethodRequest("10.00", "USD")
         val CHECKOUT = PayPalCheckoutRequest(amount = "10.00", hasUserLocationConsent = true)
         val CARD_STATE = PayPalSavedPaymentMethodDisplayState.Content(
-            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD, "Visa", null, "1234", null)
+            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD.rawValue, "Visa", null, "1234", null)
         )
     }
 }

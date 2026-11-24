@@ -53,7 +53,7 @@ class PayPalCreditMessagingVisibilityUnitTest {
     private companion object {
         const val EMAIL = "buyer@example.com"
         val CARD_METHOD = PayPalSavedPaymentMethod(
-            type = PayPalSavedPaymentMethodType.CARD,
+            rawType = PayPalSavedPaymentMethodType.CARD.rawValue,
             label = "Visa",
             imageUrl = null,
             lastDigits = "1234",

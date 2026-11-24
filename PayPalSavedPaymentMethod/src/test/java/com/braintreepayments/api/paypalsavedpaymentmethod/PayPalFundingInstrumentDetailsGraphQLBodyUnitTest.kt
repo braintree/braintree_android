@@ -86,7 +86,7 @@ class PayPalFundingInstrumentDetailsGraphQLBodyUnitTest {
             "query PaypalFundingInstrumentDetails(\$input: PayPalFundingInstrumentDetailsInput!){" +
                 "paypalFundingInstrumentDetails(input: \$input){" +
                 "payer{email editable}" +
-                "paymentMethods{label imageUrl lastDigits type subtype}" +
+                "paymentMethods{id label imageUrl lastDigits type subtype cardBrand}" +
                 "}}",
             query.normalized()
         )

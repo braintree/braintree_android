@@ -808,8 +808,8 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         val BUYER_DEFAULT = PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT
         val BUYER_UPDATED = PayPalFundingInstrumentFetchType.BUYER_UPDATED_BILLING_AGREEMENT
         val CHECKOUT = PayPalCheckoutRequest(amount = AMOUNT, hasUserLocationConsent = true)
-        val CARD = PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD, "Visa", null, "1234", null)
-        val EDITED = PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.BANK, "Chase", null, "9876", null)
+        val CARD = PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD.rawValue, "Visa", null, "1234", null)
+        val EDITED = PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.BANK.rawValue, "Chase", null, "9876", null)
         val MESSAGE_RESULT = messageResult("Pay in 4")
         val MESSAGE = message("Pay in 4")
 

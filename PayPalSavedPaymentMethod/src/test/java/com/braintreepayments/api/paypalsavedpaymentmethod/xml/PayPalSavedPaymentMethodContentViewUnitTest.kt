@@ -326,7 +326,7 @@ class PayPalSavedPaymentMethodContentViewUnitTest {
 
     private companion object {
         val CARD_STATE = PayPalSavedPaymentMethodDisplayState.Content(
-            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD, "Visa", null, "1234", null)
+            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD.rawValue, "Visa", null, "1234", null)
         )
         const val NARROW_WIDTH = 300
         val LOGO_ONLY = PayPalSavedPaymentMethodViewStyle(showPayPalLabel = false)
