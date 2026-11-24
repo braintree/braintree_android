@@ -8,6 +8,7 @@ import androidx.lifecycle.Lifecycle
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.venmo.VenmoClient
 import com.braintreepayments.api.venmo.VenmoLauncher
 import com.braintreepayments.api.venmo.VenmoPaymentAuthRequestCallback
@@ -61,7 +62,8 @@ class VenmoButtonUnitTest {
                 venmoTokenizeCallback = VenmoTokenizeCallback { results.add(it) },
                 launcherFactory = { _, _ -> venmoLauncher },
                 clientFactory = { venmoClient },
-                analyticsClientProvider = { analyticsClient }
+                analyticsClientProvider = { analyticsClient },
+                authorization = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
             )
         }
     }
@@ -95,6 +97,7 @@ class VenmoButtonUnitTest {
         verify(exactly = 1) {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.VENMO_BUTTON_PRESENTED,
+                Authorization.fromString("sandbox_tmxhyf7d_dcpspy2brwdjr3qn"),
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
             )
         }
@@ -108,6 +111,7 @@ class VenmoButtonUnitTest {
         verify {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.VENMO_BUTTON_SELECTED,
+                Authorization.fromString("sandbox_tmxhyf7d_dcpspy2brwdjr3qn"),
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
             )
         }

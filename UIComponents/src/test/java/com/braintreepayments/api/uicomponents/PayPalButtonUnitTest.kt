@@ -1,11 +1,13 @@
 package com.braintreepayments.api.uicomponents
 
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
@@ -19,10 +21,11 @@ import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.runs
 import io.mockk.slot
-import io.mockk.unmockkObject
+import io.mockk.unmockkAll
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.After
@@ -45,6 +48,7 @@ class PayPalButtonUnitTest {
     private val payPalRequest = PayPalCheckoutRequest("1.00", true)
     private val launchCallback: PayPalLaunchCallback = mockk(relaxed = true)
     private val callback: PayPalTokenizeCallback = mockk(relaxed = true)
+    private val analyticsAuthorization = Authorization.fromString("sandbox_tmxhyf7d_dcpspy2brwdjr3qn")
 
     private val pendingRequest = PayPalPendingRequest.Started("test-pending-request")
     private val intent = Intent()
@@ -68,7 +72,7 @@ class PayPalButtonUnitTest {
 
     @After
     fun tearDown() {
-        unmockkObject(AnalyticsClient.Companion)
+        unmockkAll()
     }
 
     private fun captureAuthRequestCallback(): CapturingSlot<PayPalPaymentAuthCallback> {
@@ -80,8 +84,16 @@ class PayPalButtonUnitTest {
     }
 
     private fun buttonWithActivity(): PayPalButton {
-        val activity = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
-        return PayPalButton(activity, mockPayPalClient, mockPayPalLauncher).also {
+        val activity = Robolectric.buildActivity(ComponentActivity::class.java).create().get()
+        mockkConstructor(PayPalClient::class, PayPalLauncher::class)
+        every { anyConstructed<PayPalClient>().createPaymentAuthRequest(any(), any(), any()) } answers {
+            mockPayPalClient.createPaymentAuthRequest(firstArg(), secondArg(), thirdArg())
+        }
+        every { anyConstructed<PayPalLauncher>().launch(any(), any()) } answers {
+            mockPayPalLauncher.launch(firstArg(), secondArg())
+        }
+        return PayPalButton(activity).also {
+            it.initialize(activity, "sandbox_tmxhyf7d_dcpspy2brwdjr3qn", Uri.parse("https://example.com/return"))
             it.payPalLaunchCallback = launchCallback
             it.setPayPalRequest(payPalRequest)
         }
@@ -149,6 +161,7 @@ class PayPalButtonUnitTest {
         verify {
             mockAnalyticsClient.sendEvent(
                 UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED,
+                analyticsAuthorization,
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
             )
         }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.paypal.PayPalRequest
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
@@ -50,6 +51,7 @@ fun PayPalButton(
 ) {
     var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
     val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
+    val analyticsAuthorization = remember(authorization) { Authorization.fromString(authorization) }
 
     PayPalButtonFlow(
         payPalRequest = payPalRequest,
@@ -58,29 +60,31 @@ fun PayPalButton(
         deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme,
         pendingRequestRepository = pendingRequestRepository,
         paypalTokenizeCallback = paypalTokenizeCallback,
-        onButtonSelected = { logButtonSelected(analyticsClient) }
+        onButtonSelected = { logButtonSelected(analyticsClient, analyticsAuthorization) }
     ) { enabled, onClick ->
         PayPalButtonView(style = style, enabled = enabled, onClick = onClick)
 
         LaunchedEffect(Unit) {
             if (shouldLogButtonPresentment) {
                 shouldLogButtonPresentment = false
-                logButtonPresented(analyticsClient)
+                logButtonPresented(analyticsClient, analyticsAuthorization)
             }
         }
     }
 }
 
-private fun logButtonPresented(analyticsClient: AnalyticsClient) {
+private fun logButtonPresented(analyticsClient: AnalyticsClient, authorization: Authorization) {
     analyticsClient.sendEvent(
         UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED,
+        authorization,
         AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
     )
 }
 
-private fun logButtonSelected(analyticsClient: AnalyticsClient) {
+private fun logButtonSelected(analyticsClient: AnalyticsClient, authorization: Authorization) {
     analyticsClient.sendEvent(
         UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED,
+        authorization,
         AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
     )
 }

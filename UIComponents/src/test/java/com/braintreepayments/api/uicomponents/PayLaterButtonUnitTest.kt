@@ -12,6 +12,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
@@ -24,10 +25,11 @@ import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.runs
 import io.mockk.slot
-import io.mockk.unmockkObject
+import io.mockk.unmockkAll
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.After
@@ -54,6 +56,7 @@ class PayLaterButtonUnitTest {
     private val authCallback = slot<PayPalPaymentAuthCallback>()
     private val launchResults = mutableListOf<PayPalPendingRequest>()
     private val request = PayPalCheckoutRequest("10.00", true)
+    private val tokenizationKey = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
 
     @Before
     fun setUp() {
@@ -62,11 +65,27 @@ class PayLaterButtonUnitTest {
         every { mockPayPalLauncher.restorePendingRequest(any()) } just runs
         mockkObject(AnalyticsClient.Companion)
         every { AnalyticsClient.lazyInstance } returns lazyOf(analyticsClient)
+        mockkConstructor(PayPalClient::class, PayPalLauncher::class)
+        every { anyConstructed<PayPalClient>().createPaymentAuthRequest(any(), any(), any()) } answers {
+            mockPayPalClient.createPaymentAuthRequest(firstArg(), secondArg(), thirdArg())
+        }
+        every { anyConstructed<PayPalClient>().tokenize(any(), any()) } answers {
+            mockPayPalClient.tokenize(firstArg(), secondArg())
+        }
+        every { anyConstructed<PayPalLauncher>().launch(any(), any()) } answers {
+            mockPayPalLauncher.launch(firstArg(), secondArg())
+        }
+        every { anyConstructed<PayPalLauncher>().restorePendingRequest(any()) } answers {
+            mockPayPalLauncher.restorePendingRequest(firstArg())
+        }
+        every { anyConstructed<PayPalLauncher>().handleReturnToApp(any(), any()) } answers {
+            mockPayPalLauncher.handleReturnToApp(firstArg(), secondArg())
+        }
     }
 
     @After
     fun tearDown() {
-        unmockkObject(AnalyticsClient.Companion)
+        unmockkAll()
     }
 
     // region PayLaterButtonColor
@@ -388,7 +407,7 @@ class PayLaterButtonUnitTest {
     fun `initialize sends the presented analytics event`() {
         PayLaterButton(context).initialize(
             activityResultCaller = Robolectric.buildActivity(ComponentActivity::class.java).create().get(),
-            authorization = "sandbox_tokenization_key",
+            authorization = tokenizationKey,
             appLinkReturnUrl = Uri.parse("https://example.com/return"),
             deepLinkFallbackUrlScheme = "com.braintreepayments.demo"
         )
@@ -396,6 +415,7 @@ class PayLaterButtonUnitTest {
         verify(exactly = 1) {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.PAY_LATER_BUTTON_PRESENTED,
+                Authorization.fromString(tokenizationKey),
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
             )
         }
@@ -414,6 +434,7 @@ class PayLaterButtonUnitTest {
         verify(exactly = 1) {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+                Authorization.fromString(tokenizationKey),
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
             )
         }
@@ -429,9 +450,38 @@ class PayLaterButtonUnitTest {
         verify(exactly = 0) {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+                any<Authorization>(),
                 any<AnalyticsEventParams>(),
                 any()
             )
+        }
+    }
+
+    @Test
+    fun `analytics use each buttons initialization authorization`() {
+        val otherKey = "sandbox_9dbg82cq_dcpspy2brwdjr3qn"
+        val firstButton = buttonWith(activity())
+        val secondButton = buttonWith(activity(), authorization = otherKey)
+        every { mockPayPalLauncher.launch(any(), any()) } returns PayPalPendingRequest.Started("pending-request")
+
+        listOf(firstButton, secondButton).forEach { button ->
+            button.performClick()
+            authCallback.captured.onPayPalPaymentAuthRequest(mockk<PayPalPaymentAuthRequest.ReadyToLaunch>())
+        }
+
+        listOf(tokenizationKey, otherKey).forEach { authorization ->
+            verify(exactly = 1) {
+                analyticsClient.sendEvent(
+                    UIComponentsAnalytics.PAY_LATER_BUTTON_PRESENTED,
+                    Authorization.fromString(authorization),
+                    AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+                )
+                analyticsClient.sendEvent(
+                    UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+                    Authorization.fromString(authorization),
+                    AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+                )
+            }
         }
     }
 
@@ -439,10 +489,17 @@ class PayLaterButtonUnitTest {
 
     private fun activity() = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
 
-    private fun buttonWith(buttonContext: Context, withCallback: Boolean = true) =
+    private fun buttonWith(
+        buttonContext: Context,
+        withCallback: Boolean = true,
+        authorization: String = tokenizationKey
+    ) =
         PayLaterButton(buttonContext).apply {
-            payPalClient = mockPayPalClient
-            payPalLauncher = mockPayPalLauncher
+            initialize(
+                activityResultCaller = Robolectric.buildActivity(ComponentActivity::class.java).create().get(),
+                authorization = authorization,
+                appLinkReturnUrl = Uri.parse("https://example.com/return")
+            )
             if (withCallback) payPalLaunchCallback = PayPalLaunchCallback { launchResults.add(it) }
             setPayPalRequest(request)
         }

@@ -2,6 +2,7 @@ package com.braintreepayments.api.uicomponents.compose
 
 import android.net.Uri
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -9,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
@@ -53,6 +55,7 @@ class PayLaterButtonUnitTest {
     private val requestSlot = slot<PayPalRequest>()
     private var shouldOfferPayLaterAtCreate: Boolean? = null
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
+    private val authorization = mutableStateOf("sandbox_tmxhyf7d_dcpspy2brwdjr3qn")
 
     @Before
     fun setUp() {
@@ -78,7 +81,7 @@ class PayLaterButtonUnitTest {
             PayLaterButton(
                 style = PayLaterButtonColor.Blue,
                 payPalRequest = request,
-                authorization = "sandbox_tokenization_key",
+                authorization = authorization.value,
                 appLinkReturnUrl = Uri.parse("https://example.com/return"),
                 deepLinkFallbackUrlScheme = "com.example.app",
                 pendingRequestRepository = repository,
@@ -162,12 +165,14 @@ class PayLaterButtonUnitTest {
         verify(exactly = 1) {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.PAY_LATER_BUTTON_PRESENTED,
+                Authorization.fromString(authorization.value),
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
             )
         }
         verify(exactly = 0) {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+                any<Authorization>(),
                 any<AnalyticsEventParams>(),
                 any()
             )
@@ -185,7 +190,43 @@ class PayLaterButtonUnitTest {
         verify(exactly = 1) {
             analyticsClient.sendEvent(
                 UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+                Authorization.fromString(authorization.value),
                 AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
+            )
+        }
+    }
+
+    @Test
+    fun `recomposed authorization is used for selection without repeating presentment`() {
+        val initialAuthorization = authorization.value
+        setPayLaterButton()
+
+        composeRule.runOnIdle { authorization.value = "sandbox_9dbg82cq_dcpspy2brwdjr3qn" }
+        composeRule.waitForIdle()
+        click()
+
+        verify(exactly = 1) {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.PAY_LATER_BUTTON_PRESENTED,
+                Authorization.fromString(initialAuthorization),
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
+            )
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+                Authorization.fromString(authorization.value),
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_COMPOSE)
+            )
+        }
+        verify(exactly = 0) {
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.PAY_LATER_BUTTON_PRESENTED,
+                Authorization.fromString(authorization.value),
+                any<AnalyticsEventParams>()
+            )
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.PAY_LATER_BUTTON_SELECTED,
+                Authorization.fromString(initialAuthorization),
+                any<AnalyticsEventParams>()
             )
         }
     }

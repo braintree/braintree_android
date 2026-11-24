@@ -10,6 +10,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.card.CardClient
 import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.uicomponents.R
 import com.braintreepayments.api.uicomponents.cardfields.CardBrand
 import com.braintreepayments.api.uicomponents.cardfields.CardFieldsViewModel
@@ -224,6 +225,7 @@ class CardFieldsUnitTest {
             mutableStateOf("".asTextFieldValue()),
             mutableStateOf(cvv.asTextFieldValue()),
             mockk<CardClient>(relaxed = true),
+            authorization = Authorization.fromString("sandbox_tmxhyf7d_dcpspy2brwdjr3qn"),
             analyticsClient = analyticsClient
         )
     }
