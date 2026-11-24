@@ -99,10 +99,10 @@ internal class PayPalInternalClient(
     }
 
     /**
-     * Adds the client token's payment method ID JWT to checkout bodies in the View/Edit Funding Instrument flow. Vault
-     * bodies are unchanged.
+     * Adds the client token's payment method ID JWT to checkout bodies in the View/Edit Funding Instrument flow, and
+     * fails if the authorization has none. Vault bodies are unchanged.
      */
-    @Throws(JSONException::class)
+    @Throws(JSONException::class, BraintreeException::class)
     private fun createRequestBody(
         payPalRequest: PayPalRequest,
         configuration: Configuration,
@@ -120,7 +120,9 @@ internal class PayPalInternalClient(
                 cancelUrl = cancelUrl,
                 appLink = appLink,
                 editBillingAgreementJwt = if (editBillingAgreement) {
+                    // Read with the body it's sent in: without it the edit would silently run as a regular checkout.
                     (authorization as? ClientToken)?.paymentMethodIdJwt
+                        ?: throw BraintreeException(MISSING_PAYMENT_METHOD_ID_JWT_MESSAGE)
                 } else {
                     null
                 }
@@ -264,5 +266,7 @@ internal class PayPalInternalClient(
         private const val CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource"
         private const val SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement"
         private const val BYTES_PER_MB = 1024L * 1024L
+        const val MISSING_PAYMENT_METHOD_ID_JWT_MESSAGE =
+            "The View/Edit Funding Instrument flow requires a client token with a payment method ID JWT."
     }
 }
