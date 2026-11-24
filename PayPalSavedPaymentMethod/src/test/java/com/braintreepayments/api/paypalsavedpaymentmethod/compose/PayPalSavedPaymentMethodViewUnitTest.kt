@@ -376,7 +376,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
     // Taps the chip, whose edit returns [pending].
     private fun startEdit(pending: PayPalPendingRequest = PayPalPendingRequest.Started("pending")) {
-        coEvery { viewModel.startEdit(any(), any(), any()) } returns pending
+        coEvery { viewModel.startEdit(any(), any(), any(), any()) } returns pending
         composeTestRule.onNodeWithTag(FUNDING_INSTRUMENT_CHIP_TEST_TAG).performClick()
         composeTestRule.waitForIdle()
     }

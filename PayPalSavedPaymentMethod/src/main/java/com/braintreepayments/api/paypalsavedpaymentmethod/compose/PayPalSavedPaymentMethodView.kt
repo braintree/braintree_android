@@ -192,7 +192,9 @@ internal fun PayPalSavedPaymentMethodView(
         isEditCompleted = state.isEditCompleted,
         onEditClick = {
             coroutineScope.launch {
-                when (val pending = viewModel.startEdit(context, payPalLauncher, currentCheckoutRequest)) {
+                val pending =
+                    viewModel.startEdit(context, payPalLauncher, currentCheckoutRequest, lifecycleOwner.lifecycle)
+                when (pending) {
                     is PayPalPendingRequest.Started -> launchedPendingRequest = pending.pendingRequestString
                     is PayPalPendingRequest.Failure ->
                         currentCallback.onPayPalResult(PayPalResult.Failure(pending.error))

@@ -3,11 +3,13 @@ package com.braintreepayments.api.paypalsavedpaymentmethod
 import android.content.Context
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.withStarted
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -112,12 +114,15 @@ internal class PayPalSavedPaymentMethodViewModel(
 
     /**
      * Opens the PayPal paysheet from [context]'s activity. Returns the pending request to keep, a failure to report,
-     * or `null` if an edit step is already running or the activity closed meanwhile.
+     * or `null` if an edit step is already running or the activity closed meanwhile. The paysheet opens, and the
+     * result returns, only while [hostLifecycle] is started, so a buyer who leaves during setup isn't sent to PayPal
+     * from the background; if the host is destroyed first, this is cancelled.
      */
     suspend fun startEdit(
         context: Context,
         payPalLauncher: PayPalLauncher,
-        payPalCheckoutRequest: PayPalCheckoutRequest
+        payPalCheckoutRequest: PayPalCheckoutRequest,
+        hostLifecycle: Lifecycle
     ): PayPalPendingRequest? {
         // TODO: send the edit flow analytics events, here and in handleReturnToApp, once the catalog is approved.
         if (state.value.isEditing) return null
@@ -125,19 +130,22 @@ internal class PayPalSavedPaymentMethodViewModel(
             ?: return PayPalPendingRequest.Failure(BraintreeException(NO_COMPONENT_ACTIVITY_MESSAGE))
         _state.update { it.copy(isEditing = true) }
         return try {
-            when (val authRequest = client.createEditFundingInstrumentAuthRequest(context, payPalCheckoutRequest)) {
-                // There's no view left to return to.
-                is PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch ->
-                    if (activity.isFinishing || activity.isDestroyed) {
-                        null
-                    } else {
-                        payPalLauncher.launch(activity, authRequest.paymentAuthRequest)
-                    }
-                is PayPalSavedPaymentMethodAuthRequest.Failure -> PayPalPendingRequest.Failure(authRequest.error)
+            val authRequest = client.createEditFundingInstrumentAuthRequest(context, payPalCheckoutRequest)
+            hostLifecycle.withStarted {
+                when (authRequest) {
+                    // There's no view left to return to.
+                    is PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch ->
+                        if (activity.isFinishing || activity.isDestroyed) {
+                            null
+                        } else {
+                            payPalLauncher.launch(activity, authRequest.paymentAuthRequest)
+                        }
+                    is PayPalSavedPaymentMethodAuthRequest.Failure -> PayPalPendingRequest.Failure(authRequest.error)
+                }
             }
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            PayPalPendingRequest.Failure(e)
+            hostLifecycle.withStarted { PayPalPendingRequest.Failure(e) }
         } finally {
             _state.update { it.copy(isEditing = false) }
         }
