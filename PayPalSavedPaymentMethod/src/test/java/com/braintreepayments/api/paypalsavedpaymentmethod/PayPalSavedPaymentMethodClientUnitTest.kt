@@ -273,7 +273,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
             listOf(
                 "BRAND_BRAINTREE",
                 "EXPERIENCE_ANDROID_SDK",
-                "EXPERIENCE_VIEW_EDIT_FI",
+                "EXPERIENCE_VIEW_EDIT_FUNDING_INSTRUMENT",
                 "EXPERIENCE_EXTERNAL_DIRECT"
             ),
             flowContext.getJSONArray("attributes").toStringList()
