@@ -6,6 +6,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
  * Exceptions thrown by the PayPal saved payment method module.
+ *
+ * Note: **This feature is in beta. Its public API may change in future releases.**
  */
 @ExperimentalBetaApi
 sealed class PayPalSavedPaymentMethodException(

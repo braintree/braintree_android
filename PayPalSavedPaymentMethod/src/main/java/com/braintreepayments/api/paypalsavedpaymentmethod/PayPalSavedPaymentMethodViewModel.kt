@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 /** What [PayPalSavedPaymentMethodViewModel.handleReturnToApp] did with a PayPal return. */
 internal enum class PayPalSavedPaymentMethodReturnResult {
@@ -61,6 +62,10 @@ internal class PayPalSavedPaymentMethodViewModel(
         PayPalSavedPaymentMethodUiState(isEditCompleted = savedState[IS_EDIT_COMPLETED_KEY] ?: false)
     )
     val state: StateFlow<PayPalSavedPaymentMethodUiState> = _state.asStateFlow()
+
+    /** Keys the PayPal launcher's activity result: unique to this view model, and kept across process death. */
+    val resultKey: String = savedState.get<String>(RESULT_KEY_KEY)
+        ?: UUID.randomUUID().toString().also { savedState[RESULT_KEY_KEY] = it }
 
     private val pendingResults = PendingResults()
     private val completedReturns = CompletedReturns(savedState)
@@ -307,5 +312,6 @@ internal class PayPalSavedPaymentMethodViewModel(
         const val NO_INTENT_MESSAGE = "Unable to read the return from PayPal: no intent was given."
         private const val IS_EDIT_COMPLETED_KEY = "is_edit_completed"
         private const val EDITED_ORDER_ID_KEY = "edited_order_id"
+        private const val RESULT_KEY_KEY = "result_key"
     }
 }

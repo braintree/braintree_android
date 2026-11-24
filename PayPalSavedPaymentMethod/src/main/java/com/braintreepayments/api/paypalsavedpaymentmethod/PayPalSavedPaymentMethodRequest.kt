@@ -10,6 +10,8 @@ import java.util.Objects
  * Values must match the `PayPalCheckoutRequest` passed to the component; the merchant keeps them in sync. If they
  * differ, the Pay Later message is quoted for a different amount.
  *
+ * Note: **This feature is in beta. Its public API may change in future releases.**
+ *
  * @param amount The order amount, for example `"55.00"`.
  * @param currencyCode The ISO-4217 currency code for [amount]. If the checkout request's is `null`, pass the merchant
  * account's currency.

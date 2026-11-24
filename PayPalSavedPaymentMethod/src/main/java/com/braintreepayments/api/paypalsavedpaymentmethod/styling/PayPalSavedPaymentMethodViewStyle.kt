@@ -7,6 +7,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 /**
  * Style and visibility configuration for the PayPal Saved Payment Method component.
  *
+ * Note: **This feature is in beta. Its public API may change in future releases.**
+ *
  * All styling properties default to `null`, meaning the SDK-provided default is used. Sizes and spacing below 0 are
  * treated as 0.
  *
@@ -30,6 +32,8 @@ class PayPalSavedPaymentMethodViewStyle @JvmOverloads constructor(
 /**
  * Shared colors and typography used across the PayPal Saved Payment Method component.
  *
+ * Note: **This feature is in beta. Its public API may change in future releases.**
+ *
  * [backgroundColor] and [textColor] fall back to their SDK defaults independently (white background, dark text). When
  * overriding one, set the other as well so the text keeps enough contrast, for example light text on a dark
  * background.
@@ -52,6 +56,8 @@ class PayPalSavedPaymentMethodAppearance @JvmOverloads constructor(
 
 /**
  * Dimensions, spacing, shape, border, and internal layout of the PayPal Saved Payment Method component.
+ *
+ * Note: **This feature is in beta. Its public API may change in future releases.**
  *
  * @property heightDp minimum height of the container, in dp. Null wraps the content. The container is never smaller
  * than its content, so 0 or less behaves like null.
@@ -86,6 +92,8 @@ class PayPalSavedPaymentMethodContainerStyle @JvmOverloads constructor(
 /**
  * Sizing of the PayPal logo.
  *
+ * Note: **This feature is in beta. Its public API may change in future releases.**
+ *
  * @property widthDp side of the square box the PayPal logo is drawn in, in dp; the logo scales to fit and keeps its
  * aspect ratio. Null uses the SDK default.
  */
@@ -96,6 +104,8 @@ class PayPalLogoStyle @JvmOverloads constructor(
 
 /**
  * Typography and positioning of the "PayPal" text label.
+ *
+ * Note: **This feature is in beta. Its public API may change in future releases.**
  *
  * @property fontSizeSp font size of the "PayPal" label, in sp. Null uses
  * [PayPalSavedPaymentMethodAppearance.baseFontSizeSp], then the SDK default.
@@ -110,6 +120,8 @@ class PayPalLabelStyle @JvmOverloads constructor(
 
 /**
  * Styling and positioning of the saved payment method and its edit affordance.
+ *
+ * Note: **This feature is in beta. Its public API may change in future releases.**
  *
  * @property textFontSizeSp font size of the saved payment method text, in sp. Null uses
  * [PayPalSavedPaymentMethodAppearance.baseFontSizeSp], then the SDK default.
@@ -126,6 +138,8 @@ class PayPalSavedPaymentMethodFundingInstrumentStyle @JvmOverloads constructor(
 
 /**
  * Styling of the Pay Later / credit messaging.
+ *
+ * Note: **This feature is in beta. Its public API may change in future releases.**
  *
  * @property fontSizeSp font size of the credit messaging text, in sp. Null uses
  * [PayPalSavedPaymentMethodAppearance.baseFontSizeSp], then the SDK default.

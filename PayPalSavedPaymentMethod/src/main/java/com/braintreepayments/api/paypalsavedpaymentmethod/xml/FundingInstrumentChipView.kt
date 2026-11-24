@@ -44,7 +44,6 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     private val imageLoader: ImageLoader = ImageLoader.getInstance()
 ) : LinearLayout(context, attrs) {
-
     private val iconContainer: View
     private val iconShimmer: ShimmerPlaceholderView
     private val iconView: ImageView
@@ -53,13 +52,10 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
     private var isEditable = false
     private var boundIcon: Pair<String?, Int?>? = null
 
-    // Not tied to attach, so card art bound before the view is attached still loads. Cancelled on detach.
     private var iconScope: CoroutineScope? = null
     private var iconJob: Job? = null
     private val editActionLabel = context.getString(R.string.paypal_saved_payment_method_edit_action_label)
 
-    // A fixed dark ripple, kept inside the rounded corners. The theme's ripple is light on a dark theme and would
-    // barely show on the chip's fixed light background.
     private val clickFeedback = RippleDrawable(
         ColorStateList.valueOf(
             ContextCompat.getColor(context, R.color.paypal_saved_payment_method_funding_instrument_chip_ripple)
@@ -118,7 +114,6 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
             context.getString(R.string.paypal_saved_payment_method_funding_instrument_ending_in, label, spokenDigits)
         }
         if (isEditable) {
-            // performClick() and accessibility clicks still reach the listener while the chip is disabled.
             setOnClickListener { if (isEnabled) onEditClick() }
             ViewCompat.replaceAccessibilityAction(this, AccessibilityActionCompat.ACTION_CLICK, editActionLabel, null)
         } else {
@@ -126,8 +121,6 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
             ViewCompat.removeAccessibilityAction(this, AccessibilityNodeInfoCompat.ACTION_CLICK)
         }
         isClickable = isEditable
-        // Before Android 8 a clickable view isn't focusable, so keyboard and D-pad users couldn't reach the edit
-        // action.
         isFocusable = isEditable
         isEnabled = editEnabled
         foreground = if (isEditable) clickFeedback else null
@@ -164,7 +157,6 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        // Card art whose load was cancelled by an earlier detach is loaded again.
         val (url, fallbackIcon) = boundIcon ?: return
         val validUrl = url.asHttpsUrlOrNull()
         if (validUrl != null && iconShimmer.isVisible && iconJob?.isActive != true) loadIcon(validUrl, fallbackIcon)
@@ -176,9 +168,7 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
         super.onDetachedFromWindow()
     }
 
-    // Card art with a shimmer while it loads, and the generic icon if it fails to load. A cached image shows at once.
     private fun bindIcon(url: String?, @DrawableRes fallbackIcon: Int?) {
-        // Re-rendering with the same icon keeps the current image instead of reloading it.
         if (boundIcon == url to fallbackIcon) return
         boundIcon = url to fallbackIcon
         iconJob?.cancel()
@@ -210,7 +200,6 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
 
     private fun showIcon(bitmap: Bitmap?, @DrawableRes fallbackIcon: Int?) {
         iconShimmer.isVisible = false
-        // Art that fails to load with no generic icon to fall back to leaves no empty space, as on iOS.
         iconContainer.isVisible = bitmap != null || fallbackIcon != null
         when {
             bitmap != null -> iconView.setImageBitmap(bitmap)
@@ -219,7 +208,6 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
         }
     }
 
-    // The chip's rounded shape, used for its background and to keep the ripple inside its corners.
     private fun chipShape(@ColorInt color: Int) = GradientDrawable().apply {
         cornerRadius = resources.getDimension(R.dimen.paypal_saved_payment_method_funding_instrument_chip_corner_radius)
         setColor(color)

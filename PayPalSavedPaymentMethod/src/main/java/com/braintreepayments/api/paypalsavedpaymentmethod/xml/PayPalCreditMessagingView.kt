@@ -30,7 +30,6 @@ internal class PayPalCreditMessagingView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
-
     private val shimmerView: ShimmerPlaceholderView
     private val textView: TextView
 
@@ -47,19 +46,12 @@ internal class PayPalCreditMessagingView @JvmOverloads constructor(
         shimmerView = findViewById(R.id.paypal_saved_payment_method_credit_messaging_shimmer)
         textView = findViewById(R.id.paypal_saved_payment_method_credit_messaging_text)
         textView.movementMethod = LinkMovementMethod.getInstance()
-        // No highlight behind the link while it's tapped.
         textView.highlightColor = Color.TRANSPARENT
-        // Before Android 8, TalkBack can't open a custom ClickableSpan such as the "Learn more" link without this.
         ViewCompat.enableAccessibleClickableSpanSupport(textView)
-        // The movement method makes the text long-clickable, but a long press does nothing, so TalkBack shouldn't
-        // offer it.
         textView.isLongClickable = false
     }
 
-    /**
-     * Shows [state]; [PayPalCreditMessagingDisplayState.Hidden] hides the whole row. Returns early when [state] and
-     * [resolvedStyle] are the ones already shown; [onLearnMoreClick] is still updated.
-     */
+    /** Shows [state]; [PayPalCreditMessagingDisplayState.Hidden] hides the whole row. */
     fun bind(
         state: PayPalCreditMessagingDisplayState,
         resolvedStyle: PayPalSavedPaymentMethodStyleResolver,
@@ -83,17 +75,12 @@ internal class PayPalCreditMessagingView @JvmOverloads constructor(
         }
     }
 
-    // TalkBack's double tap clicks the whole text, not the link, so the click opens "Learn more". A message without
-    // the link isn't announced as something to double tap.
     private fun bindAccessibilityClick(
         learnMore: PayPalCreditMessagingContent.LearnMore?,
         onLearnMoreClick: (PayPalCreditMessagingContent.LearnMore) -> Unit
     ) {
         textView.isClickable = learnMore != null
-        // The movement method made the text focusable; only a message with the link is a keyboard or D-pad stop.
         textView.isFocusable = learnMore != null
-        // A focused text has no link selected, so the movement method ignores the confirm keys. They open the link here
-        // instead, like a tap on it. Touches are unchanged.
         textView.setOnKeyListener(learnMore?.let { link -> learnMoreKeyListener(link, onLearnMoreClick) })
         if (learnMore != null) {
             ViewCompat.replaceAccessibilityAction(
@@ -128,7 +115,6 @@ private val CONFIRM_KEYS = setOf(
     KeyEvent.KEYCODE_SPACE
 )
 
-// The "Learn more" link is bold. Without a merchant [linkColor] it's underlined in the [textColor], as on iOS.
 private fun PayPalCreditMessagingContent.toSpannable(
     @ColorInt linkColor: Int?,
     @ColorInt textColor: Int,
