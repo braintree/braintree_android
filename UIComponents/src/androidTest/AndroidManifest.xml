@@ -10,9 +10,5 @@
             android:name="com.braintreepayments.api.uicomponents.cardfields.CardFieldsTestActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat" />
-        <activity
-            android:name="com.braintreepayments.api.uicomponents.compose.ButtonFlowTestActivity"
-            android:exported="true"
-            android:launchMode="singleTop" />
     </application>
 </manifest>
