@@ -277,9 +277,12 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
         val viewModel = viewModel ?: return
         val payPalLauncher = payPalLauncher ?: return
         val payPalCheckoutRequest = payPalCheckoutRequest ?: return
-        val scope = attachedScope ?: return
+        val scope = attachedScope
+        val hostLifecycle = hostLifecycleOwner()?.lifecycle
+        if (scope == null || hostLifecycle == null) return
         editJob = scope.launch {
-            when (val pendingRequest = viewModel.startEdit(context, payPalLauncher, payPalCheckoutRequest)) {
+            val pendingRequest = viewModel.startEdit(context, payPalLauncher, payPalCheckoutRequest, hostLifecycle)
+            when (pendingRequest) {
                 is PayPalPendingRequest.Started -> launchCallback?.onPayPalPendingRequest(pendingRequest)
                 is PayPalPendingRequest.Failure ->
                     tokenizeCallback?.onPayPalResult(PayPalResult.Failure(pendingRequest.error))
@@ -295,7 +298,7 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     private fun observeViewModel(viewModel: PayPalSavedPaymentMethodViewModel) {
         attachedScope?.cancel()
         attachedScope = null
-        val owner = findViewTreeLifecycleOwner() ?: context.findActivity() as? LifecycleOwner ?: return
+        val owner = hostLifecycleOwner() ?: return
         val hostJob = owner.lifecycleScope.coroutineContext.job
         attachedScope = CoroutineScope(SupervisorJob(hostJob) + Dispatchers.Main).also { scope ->
             scope.launch {
@@ -311,6 +314,9 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
             }
         }
     }
+
+    private fun hostLifecycleOwner(): LifecycleOwner? =
+        findViewTreeLifecycleOwner() ?: context.findActivity() as? LifecycleOwner
 
     /** Renders the state. The loading dialog shows only while attached, so it can't be left open. */
     private fun render() {

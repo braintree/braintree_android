@@ -118,7 +118,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
         }
         sut.setViewTreeLifecycleOwner(host)
         var cancelled = false
-        coEvery { viewModel.startEdit(any(), any(), any()) } coAnswers {
+        coEvery { viewModel.startEdit(any(), any(), any(), any()) } coAnswers {
             try {
                 awaitCancellation()
             } finally {
@@ -141,7 +141,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     @Test
     fun `detaching while the edit is being set up cancels it and calls neither callback`() {
         var cancelled = false
-        coEvery { viewModel.startEdit(any(), any(), any()) } coAnswers {
+        coEvery { viewModel.startEdit(any(), any(), any(), any()) } coAnswers {
             try {
                 awaitCancellation()
             } finally {
@@ -165,7 +165,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     @Test
     fun `back while the edit is being set up cancels it and reports a cancel`() {
         var cancelled = false
-        coEvery { viewModel.startEdit(any(), any(), any()) } coAnswers {
+        coEvery { viewModel.startEdit(any(), any(), any(), any()) } coAnswers {
             state.value = state.value.copy(isEditing = true)
             try {
                 awaitCancellation()
@@ -577,7 +577,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
     // Initializes with a card and taps it; the edit returns [pending].
     private fun tapChip(pending: PayPalPendingRequest) {
-        coEvery { viewModel.startEdit(any(), any(), any()) } returns pending
+        coEvery { viewModel.startEdit(any(), any(), any(), any()) } returns pending
         initialize()
         state.value = PayPalSavedPaymentMethodUiState(fundingInstrument = CARD_STATE)
         idle()
