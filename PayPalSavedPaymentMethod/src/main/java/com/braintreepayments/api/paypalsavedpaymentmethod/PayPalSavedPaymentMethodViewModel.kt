@@ -75,27 +75,38 @@ internal class PayPalSavedPaymentMethodViewModel(
 
     /**
      * Loads the default funding instrument and, if enabled, the Pay Later message. Called each time a view binds, so a
-     * failed load is retried; one that succeeded isn't fetched again, so a configuration change or returning to the
-     * screen makes no requests. After an edit the funding instrument isn't refetched, since the API still returns the
-     * one from before the edit; only an edit restored from [savedState] loads it once.
+     * failed load is retried; one that succeeded or is still running isn't fetched again, so a configuration change or
+     * returning to the screen makes no new requests. After an edit the funding instrument isn't refetched, since the
+     * API still returns the one from before the edit; only an edit restored from [savedState] loads it once.
      */
     fun load(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
         val isFirstLoad = inputs == null
         inputs = Inputs(request, showCreditMessaging)
         creditMessagingLoader.fetchIfNotShown(request, showCreditMessaging)
         if (!state.value.isEditCompleted) {
-            if (!isDefaultFundingInstrumentLoaded) loadBuyerDefaultBillingAgreement()
+            if (!isDefaultFundingInstrumentLoaded && defaultFundingInstrumentJob?.isActive != true) {
+                loadBuyerDefaultBillingAgreement()
+            }
         } else if (isFirstLoad) {
             loadBuyerUpdatedBillingAgreement()
         }
     }
 
-    /** Reloads or hides the Pay Later message when the request or its setting changes. Does nothing before [load]. */
+    /**
+     * Reloads or hides the Pay Later message when the request or its setting changes, and reloads the funding
+     * instrument when the merchant account changes, since it's resolved against that account. Does nothing before
+     * [load].
+     */
     fun onRequestChanged(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
+        val previous = inputs ?: return
         val changed = Inputs(request, showCreditMessaging)
-        if (inputs != null && inputs != changed) {
-            inputs = changed
-            creditMessagingLoader.fetch(request, showCreditMessaging)
+        if (previous == changed) return
+        inputs = changed
+        creditMessagingLoader.fetch(request, showCreditMessaging)
+        if (request.merchantAccountId != previous.request.merchantAccountId && !state.value.isEditCompleted) {
+            isDefaultFundingInstrumentLoaded = false
+            _state.update { it.copy(fundingInstrument = PayPalSavedPaymentMethodDisplayState.Loading) }
+            loadBuyerDefaultBillingAgreement()
         }
     }
 

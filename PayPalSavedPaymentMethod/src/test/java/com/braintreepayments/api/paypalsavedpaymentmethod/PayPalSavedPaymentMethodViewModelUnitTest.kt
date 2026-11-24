@@ -124,6 +124,39 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
+    fun `a new merchant account reloads the funding instrument`() = runTest(dispatcher) {
+        loadAndSettle()
+        coEvery { client.fetchPaymentMethod(any(), any(), "ma-2") } returns summary(EDITED)
+
+        sut.onRequestChanged(PayPalSavedPaymentMethodRequest(AMOUNT, "USD", "ma-2"), showCreditMessaging = true)
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_DEFAULT, null, "ma-2") }
+        assertEquals(PayPalSavedPaymentMethodDisplayState.Content(EDITED), sut.state.value.fundingInstrument)
+    }
+
+    @Test
+    fun `binding again while the loads are running doesn't restart them`() = runTest(dispatcher) {
+        val fundingInstrument = CompletableDeferred<PayPalSavedPaymentMethodSummary>()
+        val message = CompletableDeferred<PayPalCreditMessagingResult>()
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } coAnswers { fundingInstrument.await() }
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } coAnswers { message.await() }
+        sut.load(request(AMOUNT), showCreditMessaging = true)
+        runCurrent()
+
+        // A rotation binds the view model again while both fetches are still running.
+        sut.load(request(AMOUNT), showCreditMessaging = true)
+        runCurrent()
+        fundingInstrument.complete(summary(CARD))
+        message.complete(messageResult("Pay in 4"))
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { client.fetchPaymentMethod(BUYER_DEFAULT, null, MERCHANT_ACCOUNT_ID) }
+        coVerify(exactly = 1) { client.fetchCreditPresentmentMessages(AMOUNT, "USD") }
+        assertEquals(PayPalSavedPaymentMethodDisplayState.Content(CARD), sut.state.value.fundingInstrument)
+    }
+
+    @Test
     fun `attaching again after a successful load fetches nothing again`() = runTest(dispatcher) {
         loadAndSettle()
 

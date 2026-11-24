@@ -34,6 +34,9 @@ internal class CreditMessagingLoader(
     // The request whose message was loaded and is shown; null when none is.
     private var loadedRequest: PayPalSavedPaymentMethodRequest? = null
 
+    // The request whose message is being fetched; null when none is.
+    private var inFlightRequest: PayPalSavedPaymentMethodRequest? = null
+
     init {
         // collectLatest cancels the fetch for older requests.
         scope.launch { requests.collectLatest { show(it) } }
@@ -44,9 +47,11 @@ internal class CreditMessagingLoader(
         requests.tryEmit(Requested(request, showCreditMessaging))
     }
 
-    /** Like [fetch], but keeps a message already loaded for [request] instead of fetching it again. */
+    /** Like [fetch], but keeps a message already loaded or being fetched for [request] instead of fetching it again. */
     fun fetchIfNotShown(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
-        if (!showCreditMessaging || request != loadedRequest) fetch(request, showCreditMessaging)
+        if (!showCreditMessaging || (request != loadedRequest && request != inFlightRequest)) {
+            fetch(request, showCreditMessaging)
+        }
     }
 
     private suspend fun show(requested: Requested) {
@@ -59,6 +64,7 @@ internal class CreditMessagingLoader(
             return
         }
         val request = requested.request
+        inFlightRequest = request
         val creditMessaging = try {
             client.fetchCreditPresentmentMessages(request.amount, request.currencyCode).toDisplayState()
         } catch (e: Exception) {
@@ -67,6 +73,8 @@ internal class CreditMessagingLoader(
             loadedRequest = null
             state.update { it.copy(creditMessaging = hidden) }
             return
+        } finally {
+            inFlightRequest = null
         }
         // An edit that completed during the fetch has already hidden the offer.
         if (state.value.isEditCompleted) return
