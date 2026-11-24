@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.view.KeyEvent
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.core.view.isVisible
@@ -17,7 +18,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -74,6 +78,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     init {
         every { viewModel.state } returns state
         every { viewModel.results } returns results
+        every { viewModel.resultKey } returns "result-key"
         every { viewModel.handleReturnToApp(any(), any(), any()) } returns
             PayPalSavedPaymentMethodReturnResult.TAKEN
     }
@@ -288,26 +293,34 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
     @Test
     fun `the launcher registers under the same key after the activity is recreated`() {
-        // Two activities stand in for one before and after recreation; the view keeps its id.
-        val keys = (1..2).map {
-            val host = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
-            val view = PayPalSavedPaymentMethodView(host).apply {
-                id = RECREATED_VIEW_ID
-                host.setContentView(this)
-            }
-            view.initialize(
-                authorization = "client-token",
-                appLinkReturnUrl = RETURN_URL,
-                payPalCheckoutRequest = PayPalCheckoutRequest(amount = "10.00", hasUserLocationConsent = true),
-                request = PayPalSavedPaymentMethodRequest("10.00", "USD"),
-                launchCallback = { },
-                tokenizeCallback = { }
-            )
-            host.registeredResultKeys()
-        }
+        val controller = Robolectric.buildActivity(ComponentActivity::class.java).setup()
+        controller.get().showRealView(RECREATED_VIEW_ID)
+        val before = controller.get().savedPaymentMethodResultKeys()
 
-        assertTrue(keys[0].contains("PayPalSavedPaymentMethodView:$RECREATED_VIEW_ID"))
-        assertEquals(keys[0], keys[1])
+        controller.recreate()
+        controller.get().showRealView(RECREATED_VIEW_ID)
+
+        assertEquals(1, before.size)
+        assertEquals(before, controller.get().savedPaymentMethodResultKeys())
+    }
+
+    @Test
+    fun `same-id views under different view model owners register different result keys`() {
+        val host = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
+        val container = LinearLayout(host).also { host.setContentView(it) }
+
+        repeat(2) {
+            val owner = object : ViewModelStoreOwner {
+                override val viewModelStore = ViewModelStore()
+            }
+            container.addView(PayPalSavedPaymentMethodView(host).apply {
+                id = RECREATED_VIEW_ID
+                setViewTreeViewModelStoreOwner(owner)
+            })
+        }
+        (0 until container.childCount).forEach { (container.getChildAt(it) as PayPalSavedPaymentMethodView).setUp() }
+
+        assertEquals(2, host.savedPaymentMethodResultKeys().toSet().size)
     }
 
     @Test
@@ -605,11 +618,28 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 }
 
-// The keys registered in the activity's result registry, read from its saved state.
-private fun ComponentActivity.registeredResultKeys(): List<String> {
+// The saved payment method keys registered in the activity's result registry, read from its saved state.
+private fun ComponentActivity.savedPaymentMethodResultKeys(): List<String> {
     val saved = Bundle()
     activityResultRegistry.onSaveInstanceState(saved)
     return saved.getStringArrayList("KEY_COMPONENT_ACTIVITY_REGISTERED_KEYS").orEmpty()
+        .filter { it.startsWith("PayPalSavedPaymentMethodView:") }
 }
+
+// Shows a view with the real view model, as a merchant would.
+private fun ComponentActivity.showRealView(viewId: Int) {
+    val view = PayPalSavedPaymentMethodView(this).apply { id = viewId }
+    setContentView(view)
+    view.setUp()
+}
+
+private fun PayPalSavedPaymentMethodView.setUp() = initialize(
+    authorization = "client-token",
+    appLinkReturnUrl = Uri.parse("https://merchant.example.com"),
+    payPalCheckoutRequest = PayPalCheckoutRequest(amount = "10.00", hasUserLocationConsent = true),
+    request = PayPalSavedPaymentMethodRequest("10.00", "USD"),
+    launchCallback = { },
+    tokenizeCallback = { }
+)
 
 private const val RECREATED_VIEW_ID = 4242

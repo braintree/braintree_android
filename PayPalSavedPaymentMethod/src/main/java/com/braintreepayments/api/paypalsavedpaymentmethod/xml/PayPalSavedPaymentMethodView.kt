@@ -166,9 +166,6 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
             activity == null -> fail(NO_COMPONENT_ACTIVITY_MESSAGE)
             id == NO_ID -> fail(NO_VIEW_ID_MESSAGE)
             else -> {
-                if (payPalLauncher == null) {
-                    payPalLauncher = PayPalLauncher(activity.activityResultRegistry, "$VIEW_MODEL_KEY_PREFIX$id")
-                }
                 if (setup == null) setup = Setup(authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
                 val owner = viewModelStoreOwner()
                 if (owner != null) bindViewModel(owner) else unbindViewModel()
@@ -190,13 +187,13 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
      * isn't attached yet; keep it and pass it again on the next `onResume`.
      */
     fun handleReturnToApp(pendingRequest: PayPalPendingRequest.Started, intent: Intent): Boolean {
-        val payPalLauncher = payPalLauncher ?: return false
         val setup = setup ?: return false
         val viewModel = viewModel
         if (viewModel == null) {
             pendingReturn = pendingRequest to intent
             return false
         }
+        val payPalLauncher = payPalLauncher ?: return false
         return when (viewModel.handleReturnToApp(pendingRequest.pendingRequestString, payPalLauncher, intent)) {
             PayPalSavedPaymentMethodReturnResult.NOT_TAKEN -> false
             PayPalSavedPaymentMethodReturnResult.TAKEN -> true
@@ -242,6 +239,13 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
         val viewModel = ViewModelProvider(owner, factory)[key, PayPalSavedPaymentMethodViewModel::class.java]
         if (viewModel !== this.viewModel) unbindViewModel()
         this.viewModel = viewModel
+        // Keyed by the view model, not the view id, so same-id views in different fragments don't share a result.
+        // Kept on a later bind, since the paysheet's result goes to the launcher that opened it.
+        if (payPalLauncher == null) {
+            (context.findActivity() as? ComponentActivity)?.let {
+                payPalLauncher = PayPalLauncher(it.activityResultRegistry, VIEW_MODEL_KEY_PREFIX + viewModel.resultKey)
+            }
+        }
         request?.let { viewModel.load(it, style.showPayPalCreditMessaging) }
         pendingReturn?.let { (pendingRequest, intent) -> handleReturnToApp(pendingRequest, intent) }
         pendingReturn = null
