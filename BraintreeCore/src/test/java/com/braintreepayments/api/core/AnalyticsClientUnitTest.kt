@@ -52,7 +52,19 @@ class AnalyticsClientUnitTest {
         buttonType = "button-type",
         buttonOrder = "button-order",
         pageType = "page-type",
-        uiType = "compose"
+        uiType = "compose",
+        buttonSessionId = "button-session-id",
+        isEditFiFlow = true,
+        savedMethodType = "CARD",
+        savedMethodId = "CC-123",
+        savedMethodBrand = "VISA",
+        presentmentMessageType = "PLST_SQ",
+        renderTrigger = "sticky_fi",
+        shownContent = "funding_instrument",
+        renderedLogo = true,
+        renderedLabel = true,
+        renderedEditTag = true,
+        renderedMessageSlot = false
     )
 
     private val expectedAnalyticsEvent = AnalyticsEvent(
@@ -76,7 +88,19 @@ class AnalyticsClientUnitTest {
         didPayPalServerAttemptAppSwitch = true,
         didSdkAttemptAppSwitch = true,
         fundingSource = fundingSource,
-        uiType = uiType
+        uiType = uiType,
+        buttonSessionId = analyticsEventParams.buttonSessionId,
+        isEditFiFlow = analyticsEventParams.isEditFiFlow,
+        savedMethodType = analyticsEventParams.savedMethodType,
+        savedMethodId = analyticsEventParams.savedMethodId,
+        savedMethodBrand = analyticsEventParams.savedMethodBrand,
+        presentmentMessageType = analyticsEventParams.presentmentMessageType,
+        renderTrigger = analyticsEventParams.renderTrigger,
+        shownContent = analyticsEventParams.shownContent,
+        renderedLogo = analyticsEventParams.renderedLogo,
+        renderedLabel = analyticsEventParams.renderedLabel,
+        renderedEditTag = analyticsEventParams.renderedEditTag,
+        renderedMessageSlot = analyticsEventParams.renderedMessageSlot
     )
 
     @Before

@@ -107,6 +107,18 @@ internal class AnalyticsApi(
             .putOpt(FPTI_KEY_UI_INTEGRATION_TYPE, event.uiType)
             .putOpt(FPTI_KEY_IS_BILLING_AGREEMENT, event.shouldRequestBillingAgreement)
             .putOpt(FPTI_KEY_BILLING_PLAN_TYPE, event.recurringBillingPlanType)
+            .putOpt(FPTI_KEY_BUTTON_SESSION_ID, event.buttonSessionId)
+            .putOpt(FPTI_KEY_IS_EDIT_FI, event.isEditFiFlow)
+            .putOpt(FPTI_KEY_SAVED_METHOD_TYPE, event.savedMethodType)
+            .putOpt(FPTI_KEY_SAVED_METHOD_ID, event.savedMethodId)
+            .putOpt(FPTI_KEY_SAVED_METHOD_BRAND, event.savedMethodBrand)
+            .putOpt(FPTI_KEY_PRESENTMENT_MESSAGE_TYPE, event.presentmentMessageType)
+            .putOpt(FPTI_KEY_RENDER_TRIGGER, event.renderTrigger)
+            .putOpt(FPTI_KEY_SHOWN_CONTENT, event.shownContent)
+            .putOpt(FPTI_KEY_RENDERED_LOGO, event.renderedLogo)
+            .putOpt(FPTI_KEY_RENDERED_LABEL, event.renderedLabel)
+            .putOpt(FPTI_KEY_RENDERED_EDIT_TAG, event.renderedEditTag)
+            .putOpt(FPTI_KEY_RENDERED_MESSAGE_SLOT, event.renderedMessageSlot)
     }
 
     @Throws(JSONException::class)
@@ -169,6 +181,18 @@ internal class AnalyticsApi(
         private const val FPTI_KEY_UI_INTEGRATION_TYPE = "ui_type"
         private const val FPTI_KEY_IS_BILLING_AGREEMENT = "is_billing_agreement"
         private const val FPTI_KEY_BILLING_PLAN_TYPE = "billing_plan_type"
+        private const val FPTI_KEY_BUTTON_SESSION_ID = "button_session_id"
+        private const val FPTI_KEY_IS_EDIT_FI = "is_edit_fi"
+        private const val FPTI_KEY_SAVED_METHOD_TYPE = "saved_method_type"
+        private const val FPTI_KEY_SAVED_METHOD_ID = "saved_method_id"
+        private const val FPTI_KEY_SAVED_METHOD_BRAND = "saved_method_brand"
+        private const val FPTI_KEY_PRESENTMENT_MESSAGE_TYPE = "presentment_message_type"
+        private const val FPTI_KEY_RENDER_TRIGGER = "render_trigger"
+        private const val FPTI_KEY_SHOWN_CONTENT = "shown_content"
+        private const val FPTI_KEY_RENDERED_LOGO = "rendered_logo"
+        private const val FPTI_KEY_RENDERED_LABEL = "rendered_label"
+        private const val FPTI_KEY_RENDERED_EDIT_TAG = "rendered_edit_tag"
+        private const val FPTI_KEY_RENDERED_MESSAGE_SLOT = "rendered_message_slot"
 
         private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
         private const val FPTI_BATCH_KEY_PAYPAL_INSTALLED = "paypal_installed"

@@ -179,6 +179,56 @@ class AnalyticsApiUnitTest {
     }
 
     @Test
+    fun `the saved payment method fields are sent with their FPTI keys, and left out when not set`() = runTest {
+        every { merchantRepository.authorization } returns tokenizationKey
+        val savedPaymentMethodEvent = tokenizationKeyEvent.copy(
+            buttonSessionId = "button-session-id",
+            isEditFiFlow = true,
+            savedMethodType = "CARD",
+            savedMethodId = "CC-123",
+            savedMethodBrand = "VISA",
+            presentmentMessageType = "PLST_SQ",
+            renderTrigger = "sticky_fi",
+            shownContent = "funding_instrument",
+            renderedLogo = true,
+            renderedLabel = false,
+            renderedEditTag = true,
+            renderedMessageSlot = false
+        )
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        sut = createAnalyticsApi(testDispatcher, TestScope(testDispatcher))
+
+        sut.execute(listOf(savedPaymentMethodEvent, tokenizationKeyEvent), configuration)
+        advanceUntilIdle()
+
+        coVerify {
+            httpClient.post(
+                path = any(),
+                data = withArg {
+                    val events = JSONObject(it).getJSONArray("events").getJSONObject(0).getJSONArray("event_params")
+                    val sent = events.getJSONObject(0)
+                    assertEquals("button-session-id", sent.getString("button_session_id"))
+                    assertEquals(true, sent.getBoolean("is_edit_fi"))
+                    assertEquals("CARD", sent.getString("saved_method_type"))
+                    assertEquals("CC-123", sent.getString("saved_method_id"))
+                    assertEquals("VISA", sent.getString("saved_method_brand"))
+                    assertEquals("PLST_SQ", sent.getString("presentment_message_type"))
+                    assertEquals("sticky_fi", sent.getString("render_trigger"))
+                    assertEquals("funding_instrument", sent.getString("shown_content"))
+                    assertEquals(true, sent.getBoolean("rendered_logo"))
+                    assertEquals(false, sent.getBoolean("rendered_label"))
+                    assertEquals(true, sent.getBoolean("rendered_edit_tag"))
+                    assertEquals(false, sent.getBoolean("rendered_message_slot"))
+                    val other = events.getJSONObject(1)
+                    SAVED_PAYMENT_METHOD_KEYS.forEach { key -> assertEquals(false, other.has(key)) }
+                },
+                configuration = null,
+                authorization = tokenizationKey
+            )
+        }
+    }
+
+    @Test
     fun `when httpClient post throws UnknownHostException, execute does not crash`() = runTest {
         every { merchantRepository.authorization } returns tokenizationKey
         coEvery {
@@ -335,5 +385,13 @@ class AnalyticsApiUnitTest {
 
             else -> throw IllegalArgumentException("invalid Authorization")
         }
+    }
+
+    private companion object {
+        val SAVED_PAYMENT_METHOD_KEYS = listOf(
+            "button_session_id", "is_edit_fi", "saved_method_type", "saved_method_id", "saved_method_brand",
+            "presentment_message_type", "render_trigger", "shown_content", "rendered_logo", "rendered_label",
+            "rendered_edit_tag", "rendered_message_slot"
+        )
     }
 }
