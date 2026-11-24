@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.ActivityResultRegistry
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -89,6 +90,8 @@ class PayPalLauncher internal constructor(
             contextId = contextId,
             appSwitchUrl = paymentAuthRequest.requestParams.approvalUrl,
             isVaultRequest = paymentAuthRequest.requestParams.isVaultRequest,
+            isEditFiFlow = paymentAuthRequest.requestParams.isEditFiFlow,
+            buttonSessionId = paymentAuthRequest.requestParams.buttonSessionId,
         )
 
         setLaunchAnalyticAttributes(paymentAuthRequest.requestParams)
@@ -167,11 +170,25 @@ class PayPalLauncher internal constructor(
     fun handleReturnToApp(
         pendingRequest: PayPalPendingRequest.Started,
         intent: Intent
+    ): PayPalPaymentAuthResult = handleReturnToApp(pendingRequest, intent, isEditFiFlow = false, buttonSessionId = null)
+
+    /**
+     * [handleReturnToApp] for the saved payment method edit flow, whose return events are sent with `is_edit_fi` and
+     * [buttonSessionId]. They're passed in, since the flow is only known from the request once the return is read.
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun handleReturnToApp(
+        pendingRequest: PayPalPendingRequest.Started,
+        intent: Intent,
+        isEditFiFlow: Boolean,
+        buttonSessionId: String?
     ): PayPalPaymentAuthResult {
         val contextId = intent.data?.getQueryParameter("ba_token") ?: intent.data?.getQueryParameter("token")
         val analyticsEventParams = AnalyticsEventParams(
             contextId = contextId,
-            appSwitchUrl = intent.data?.toString()
+            appSwitchUrl = intent.data?.toString(),
+            isEditFiFlow = isEditFiFlow,
+            buttonSessionId = buttonSessionId
         )
 
         analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, analyticsEventParams)

@@ -196,6 +196,7 @@ class PayPalClientUnitTest {
             braintreeClient.sendAnalyticsEvent(
                 PayPalAnalytics.TOKENIZATION_STARTED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     isVaultRequest = true,
                     shopperSessionId = "test-shopper-session-id"
                 ),
@@ -403,6 +404,7 @@ class PayPalClientUnitTest {
         )
 
         val params = AnalyticsEventParams(
+            isEditFiFlow = false,
             isVaultRequest = false,
             errorDescription = PayPalClient.Companion.PAYPAL_NOT_ENABLED_MESSAGE
         )
@@ -442,6 +444,7 @@ class PayPalClientUnitTest {
         assertEquals(authError, (request as PayPalPaymentAuthRequest.Failure).error)
 
         val params = AnalyticsEventParams(
+            isEditFiFlow = false,
             isVaultRequest = false,
             errorDescription = errorMessage
         )
@@ -475,6 +478,7 @@ class PayPalClientUnitTest {
         assertEquals(authError, (request as PayPalPaymentAuthRequest.Failure).error)
 
         val params = AnalyticsEventParams(
+            isEditFiFlow = false,
             isVaultRequest = true,
             errorDescription = errorMessage
         )
@@ -593,6 +597,102 @@ class PayPalClientUnitTest {
                     editBillingAgreement = true
                 )
             }
+        }
+
+    @Test
+    fun `createPaymentAuthRequestForEditFi sends is_edit_fi and the buttonSessionId, and keeps them for the return`() =
+        runTest(testDispatcher) {
+            val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true)
+            val paymentAuthRequest = PayPalPaymentAuthRequestParams(
+                payPalCheckoutRequest,
+                null,
+                "https://example.com/approval/url",
+                "sample-client-metadata-id",
+                null,
+                "https://example.com/success/url"
+            )
+            val payPalInternalClient = MockkPayPalInternalClientBuilder()
+                .sendRequestSuccess(paymentAuthRequest)
+                .build()
+            val braintreeClient =
+                MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
+            val sut = testPaypalClient(braintreeClient, payPalInternalClient, testDispatcher, this)
+
+            val result = sut.createPaymentAuthRequestForEditFi(activity, payPalCheckoutRequest, "button-session-id")
+
+            val params = (result as PayPalPaymentAuthRequest.ReadyToLaunch).requestParams
+            assertTrue(params.isEditFiFlow)
+            assertEquals("button-session-id", params.buttonSessionId)
+            val metadata = params.browserSwitchOptions!!.metadata!!
+            assertTrue(metadata.getBoolean("is-edit-fi-flow"))
+            assertEquals("button-session-id", metadata.getString("button-session-id"))
+            verify {
+                braintreeClient.sendAnalyticsEvent(
+                    PayPalAnalytics.TOKENIZATION_STARTED,
+                    AnalyticsEventParams(isEditFiFlow = true, buttonSessionId = "button-session-id"),
+                    true
+                )
+            }
+        }
+
+    @Test
+    fun `createPaymentAuthRequest sends is_edit_fi as false, without a buttonSessionId`() = runTest(testDispatcher) {
+        val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true)
+        val paymentAuthRequest = PayPalPaymentAuthRequestParams(
+            payPalCheckoutRequest,
+            null,
+            "https://example.com/approval/url",
+            "sample-client-metadata-id",
+            null,
+            "https://example.com/success/url"
+        )
+        val payPalInternalClient = MockkPayPalInternalClientBuilder()
+            .sendRequestSuccess(paymentAuthRequest)
+            .build()
+        val braintreeClient =
+            MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
+        val sut = testPaypalClient(braintreeClient, payPalInternalClient, testDispatcher, this)
+
+        val result = sut.createPaymentAuthRequest(activity, payPalCheckoutRequest)
+
+        val metadata = (result as PayPalPaymentAuthRequest.ReadyToLaunch).requestParams.browserSwitchOptions!!.metadata!!
+        assertFalse(metadata.getBoolean("is-edit-fi-flow"))
+        assertFalse(metadata.has("button-session-id"))
+        verify {
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.TOKENIZATION_STARTED,
+                AnalyticsEventParams(isEditFiFlow = false),
+                true
+            )
+        }
+    }
+
+    @Test
+    fun `tokenize sends is_edit_fi and the buttonSessionId kept in the browser switch metadata`() =
+        runTest(testDispatcher) {
+            val payPalInternalClient =
+                MockkPayPalInternalClientBuilder().tokenizeSuccess(mockk(relaxed = true)).build()
+            val approvalUrl = "sample-scheme://onetouch/v1/success?token=EC-HERMES-SANDBOX-EC-TOKEN"
+            val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>()
+            every { browserSwitchResult.requestMetadata } returns
+                JSONObject().put("approval-url", approvalUrl)
+                    .put("success-url", "https://example.com/success")
+                    .put("payment-type", "single-payment")
+                    .put("is-edit-fi-flow", true)
+                    .put("button-session-id", "button-session-id")
+            every { browserSwitchResult.returnUrl } returns Uri.parse(approvalUrl)
+            val braintreeClient = MockkBraintreeClientBuilder().build()
+            val sut = testPaypalClient(braintreeClient, payPalInternalClient, testDispatcher, this)
+
+            sut.tokenize(PayPalPaymentAuthResult.Success(browserSwitchResult))
+
+            val params = AnalyticsEventParams(
+                contextId = "EC-HERMES-SANDBOX-EC-TOKEN",
+                appSwitchUrl = approvalUrl,
+                isEditFiFlow = true,
+                buttonSessionId = "button-session-id"
+            )
+            verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params, true) }
         }
 
     @Test
@@ -813,6 +913,7 @@ class PayPalClientUnitTest {
         assertTrue(result is PayPalResult.Cancel)
 
         val params = AnalyticsEventParams(
+            isEditFiFlow = false,
             contextId = null,
             isVaultRequest = false,
             appSwitchUrl = approvalUrl
@@ -861,6 +962,7 @@ class PayPalClientUnitTest {
         assertEquals(payPalAccountNonce, (result as PayPalResult.Success).nonce)
 
         val params = AnalyticsEventParams(
+            isEditFiFlow = false,
             contextId = "EC-HERMES-SANDBOX-EC-TOKEN",
             isVaultRequest = false,
             appSwitchUrl = approvalUrl
@@ -901,7 +1003,7 @@ class PayPalClientUnitTest {
         val result = slot.captured
         assertTrue(result is PayPalResult.Cancel)
 
-        val params = AnalyticsEventParams(appSwitchUrl = approvalUrl)
+        val params = AnalyticsEventParams(appSwitchUrl = approvalUrl, isEditFiFlow = false)
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_CANCELED, params, true) }
     }
 
@@ -937,7 +1039,7 @@ class PayPalClientUnitTest {
         val result = slot.captured
         assertTrue(result is PayPalResult.Cancel)
 
-        val params = AnalyticsEventParams(appSwitchUrl = approvalUrl)
+        val params = AnalyticsEventParams(appSwitchUrl = approvalUrl, isEditFiFlow = false)
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params, true) }
     }
 
@@ -963,6 +1065,7 @@ class PayPalClientUnitTest {
         assertEquals(error, (request as PayPalPaymentAuthRequest.Failure).error)
 
         val params = AnalyticsEventParams(
+            isEditFiFlow = false,
             isVaultRequest = false,
             errorDescription = error.message
         )

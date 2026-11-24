@@ -150,7 +150,7 @@ class PayPalClient internal constructor(
     fun createPaymentAuthRequestForEditFi(
         context: Context,
         payPalCheckoutRequest: PayPalCheckoutRequest,
-        callback: PayPalPaymentAuthCallback,
+        callback: PayPalPaymentAuthCallback
     ) {
         coroutineScope.launch {
             val result = createPaymentAuthRequestForEditFi(context, payPalCheckoutRequest)
@@ -166,16 +166,20 @@ class PayPalClient internal constructor(
      * [payPalCheckoutRequest] is not modified. Callers must make sure the client token carries a JWT, otherwise this
      * runs as a regular checkout.
      *
+     * The analytics events of this flow, through to [tokenize], are sent with `is_edit_fi` and [buttonSessionId].
+     *
      * @param context               Android Context
      * @param payPalCheckoutRequest a [PayPalCheckoutRequest] used to customize the request.
+     * @param buttonSessionId       the saved payment method component's render ID, sent on the analytics events.
      * @return [PayPalPaymentAuthRequest]
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     suspend fun createPaymentAuthRequestForEditFi(
         context: Context,
-        payPalCheckoutRequest: PayPalCheckoutRequest
+        payPalCheckoutRequest: PayPalCheckoutRequest,
+        buttonSessionId: String? = null
     ): PayPalPaymentAuthRequest =
-        createPaymentAuthRequestInternal(context, payPalCheckoutRequest, editBillingAgreement = true)
+        createPaymentAuthRequestInternal(context, payPalCheckoutRequest, editBillingAgreement = true, buttonSessionId)
 
     /**
      * Starts the PayPal payment flow by creating a [PayPalPaymentAuthRequestParams] to be
@@ -199,7 +203,8 @@ class PayPalClient internal constructor(
     private suspend fun createPaymentAuthRequestInternal(
         context: Context,
         payPalRequest: PayPalRequest,
-        editBillingAgreement: Boolean
+        editBillingAgreement: Boolean,
+        buttonSessionId: String? = null
     ): PayPalPaymentAuthRequest {
         shopperSessionId = payPalRequest.shopperSessionId
         isVaultRequest = payPalRequest is PayPalVaultRequest
@@ -207,7 +212,9 @@ class PayPalClient internal constructor(
         val analyticsEventParams = AnalyticsEventParams(
             contextId = null,
             isVaultRequest = isVaultRequest,
-            shopperSessionId = shopperSessionId
+            shopperSessionId = shopperSessionId,
+            isEditFiFlow = editBillingAgreement,
+            buttonSessionId = buttonSessionId
         )
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsEventParams)
 
@@ -221,7 +228,7 @@ class PayPalClient internal constructor(
                 )
                 return requestFailure
             } else {
-                return sendPayPalRequest(context, payPalRequest, configuration, editBillingAgreement)
+                return sendPayPalRequest(context, payPalRequest, configuration, analyticsEventParams)
             }
         } catch (e: Exception) {
             if (e is CancellationException) throw e
@@ -238,21 +245,18 @@ class PayPalClient internal constructor(
         context: Context,
         payPalRequest: PayPalRequest,
         configuration: Configuration,
-        editBillingAgreement: Boolean
+        startedEventParams: AnalyticsEventParams
     ): PayPalPaymentAuthRequest {
+        val isEditFiFlow = startedEventParams.isEditFiFlow == true
         return try {
             val payPalResponse = internalPayPalClient.sendRequest(
                 context,
                 payPalRequest,
                 configuration,
-                editBillingAgreement
-            )
+                isEditFiFlow
+            ).copy(isEditFiFlow = isEditFiFlow, buttonSessionId = startedEventParams.buttonSessionId)
 
-            val analyticsEventParams = AnalyticsEventParams(
-                contextId = payPalResponse.contextId,
-                isVaultRequest = isVaultRequest,
-                shopperSessionId = shopperSessionId
-            )
+            val analyticsEventParams = startedEventParams.copy(contextId = payPalResponse.contextId)
 
             try {
                 payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
@@ -270,14 +274,7 @@ class PayPalClient internal constructor(
         } catch (exception: Exception) {
             if (exception is CancellationException) throw exception
             val failure = PayPalPaymentAuthRequest.Failure(exception)
-            sendCreatePaymentAuthFailureEvent(
-                failure,
-                AnalyticsEventParams(
-                    contextId = null,
-                    isVaultRequest = isVaultRequest,
-                    shopperSessionId = shopperSessionId
-                )
-            )
+            sendCreatePaymentAuthFailureEvent(failure, startedEventParams)
             failure
         }
     }
@@ -300,6 +297,8 @@ class PayPalClient internal constructor(
             put("merchant-account-id", paymentAuthRequest.merchantAccountId)
             put("source", "paypal-browser")
             put("intent", paymentAuthRequest.intent)
+            put(IS_EDIT_FI_FLOW_KEY, paymentAuthRequest.isEditFiFlow)
+            putOpt(BUTTON_SESSION_ID_KEY, paymentAuthRequest.buttonSessionId)
         }
 
         val approvalUri = Uri.parse(paymentAuthRequest.approvalUrl)
@@ -377,7 +376,9 @@ class PayPalClient internal constructor(
             contextId = contextId,
             isVaultRequest = isVaultRequest,
             shopperSessionId = shopperSessionId,
-            appSwitchUrl = paymentAuthResult.browserSwitchSuccess.returnUrl.toString()
+            appSwitchUrl = paymentAuthResult.browserSwitchSuccess.returnUrl.toString(),
+            isEditFiFlow = metadata?.optBoolean(IS_EDIT_FI_FLOW_KEY, false) ?: false,
+            buttonSessionId = Json.optString(metadata, BUTTON_SESSION_ID_KEY, null)
         )
 
         return try {
@@ -494,5 +495,9 @@ class PayPalClient internal constructor(
             "for more information."
 
         internal const val BROWSER_SWITCH_EXCEPTION_MESSAGE = "The response contained inconsistent data."
+
+        // Browser switch metadata, so the return knows the flow it belongs to.
+        private const val IS_EDIT_FI_FLOW_KEY = "is-edit-fi-flow"
+        private const val BUTTON_SESSION_ID_KEY = "button-session-id"
     }
 }
