@@ -9,6 +9,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalsavedpaymentmethod.R
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalLabelStyle
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodContainerStyle
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodStyleResolver
 import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
 import org.junit.Assert.assertEquals
@@ -51,6 +53,19 @@ class FundingInstrumentRowLayoutUnitTest {
         assertTrue(row.isStacked)
         assertTrue(chip.top >= brand.bottom)
         assertEquals(0, chip.left)
+        assertTrue(chip.right <= NARROW)
+    }
+
+    @Test
+    fun `a logo and label wider than the row are kept within it`() {
+        val hugeLabel = PayPalSavedPaymentMethodViewStyle(
+            container = PayPalSavedPaymentMethodContainerStyle(label = PayPalLabelStyle(fontSizeSp = 200f))
+        )
+        render(email("buyer@example.com"), hugeLabel)
+
+        layout(NARROW)
+
+        assertTrue(brand.right <= NARROW)
         assertTrue(chip.right <= NARROW)
     }
 

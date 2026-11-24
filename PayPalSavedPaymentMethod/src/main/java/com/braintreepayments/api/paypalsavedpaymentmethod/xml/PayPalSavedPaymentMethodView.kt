@@ -294,6 +294,7 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
      */
     private fun observeViewModel(viewModel: PayPalSavedPaymentMethodViewModel) {
         attachedScope?.cancel()
+        attachedScope = null
         val owner = findViewTreeLifecycleOwner() ?: context.findActivity() as? LifecycleOwner ?: return
         val hostJob = owner.lifecycleScope.coroutineContext.job
         attachedScope = CoroutineScope(SupervisorJob(hostJob) + Dispatchers.Main).also { scope ->

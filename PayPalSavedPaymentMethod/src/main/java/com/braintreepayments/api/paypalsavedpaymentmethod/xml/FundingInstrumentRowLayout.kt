@@ -32,7 +32,8 @@ internal class FundingInstrumentRowLayout @JvmOverloads constructor(
         val isBounded = MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.UNSPECIFIED
         val maxWidth = MeasureSpec.getSize(widthMeasureSpec)
 
-        brand.measure(UNSPECIFIED, UNSPECIFIED)
+        val upToRowWidth = if (isBounded) MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.AT_MOST) else UNSPECIFIED
+        brand.measure(upToRowWidth, UNSPECIFIED)
         val brandWidth = if (brand.isGone) 0 else brand.measuredWidth
         val brandHeight = if (brand.isGone) 0 else brand.measuredHeight
         isStacked = false
