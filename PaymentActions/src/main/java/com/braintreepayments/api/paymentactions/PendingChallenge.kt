@@ -27,6 +27,13 @@ internal class PendingChallenge(
         private set
 
     /**
+     * Request code of the provider's challenge screen, which the shell starts for a result. Kept here, not
+     * on the shell, so a recreated shell can still close that screen.
+     */
+    @Volatile
+    var challengeScreenRequestCode: Int? = null
+
+    /**
      * Called in every shell `onCreate`; the first call completes the handshake.
      *
      * @return `false` if the challenge already ended, so the shell must finish.
