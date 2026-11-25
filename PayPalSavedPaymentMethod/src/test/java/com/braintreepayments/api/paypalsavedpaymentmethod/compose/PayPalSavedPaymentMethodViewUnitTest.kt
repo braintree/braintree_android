@@ -179,7 +179,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
-    fun `a refreshed authorization keeps the view model, as on iOS`() {
+    fun `a refreshed authorization keeps the view model`() {
         inputs.value = inputs.value.copy(authorization = "refreshed-client-token")
         composeTestRule.waitForIdle()
 

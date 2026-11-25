@@ -42,8 +42,8 @@ internal data class PayPalSavedPaymentMethod(
 
         /**
          * Parses a single entry of the `paymentMethods` array. Returns `null` when the entry is not an object or has
-         * a blank `label`, since there is nothing meaningful to display. An entry without a `type` is kept, as on iOS,
-         * with a `null` [type].
+         * a blank `label`, since there is nothing meaningful to display. An entry without a `type` is kept, with a
+         * `null` [type].
          */
         fun fromJson(json: JSONObject?): PayPalSavedPaymentMethod? {
             if (json == null) return null

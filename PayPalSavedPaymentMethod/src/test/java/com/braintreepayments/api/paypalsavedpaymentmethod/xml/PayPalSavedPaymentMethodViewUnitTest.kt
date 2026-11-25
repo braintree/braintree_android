@@ -549,7 +549,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
-    fun `a refreshed authorization keeps the view model, as on iOS`() {
+    fun `a refreshed authorization keeps the view model`() {
         initialize()
 
         initialize(authorization = "refreshed-client-token")

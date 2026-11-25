@@ -92,7 +92,6 @@ internal class PayPalSavedPaymentMethodViewModel(
     // A funding instrument shown since the last render, so each is reported once, not on every re-render.
     private var isFundingInstrumentUnreported = false
 
-    // The Pay Later message last reported as presented.
     private var reportedCreditMessage: PayPalCreditMessagingContent? = null
 
     // Why the latest Pay Later message can't be shown, until reported.
@@ -106,7 +105,7 @@ internal class PayPalSavedPaymentMethodViewModel(
      */
     fun load(request: PayPalSavedPaymentMethodRequest, showCreditMessaging: Boolean) {
         val isFirstLoad = inputs == null
-        // Once per button_session_id, as on iOS, so a view model restored after process death doesn't send it again.
+        // Once per button_session_id, so a view model restored after process death doesn't send it again.
         if (savedState.get<Boolean>(RENDER_STARTED_KEY) != true) {
             savedState[RENDER_STARTED_KEY] = true
             client.sendAnalyticsEvent(PayPalSavedPaymentMethodAnalytics.RENDER_STARTED)
@@ -243,7 +242,7 @@ internal class PayPalSavedPaymentMethodViewModel(
 
     /**
      * Called by the views each time they render [state]. Reports a newly shown funding instrument and Pay Later message
-     * once each, as on iOS, so re-rendering, for example after rotation, sends nothing new. Loading isn't a render.
+     * once each, so re-rendering, for example after rotation, sends nothing new. Loading isn't a render.
      */
     fun onRendered(style: PayPalSavedPaymentMethodViewStyle) {
         val current = state.value
@@ -325,7 +324,6 @@ internal class PayPalSavedPaymentMethodViewModel(
         )
     }
 
-    // [orderId] is the approved order a post-edit fetch was for.
     private fun sendFundingInstrumentFailed(error: Exception, renderTrigger: String, orderId: String?) {
         client.sendAnalyticsEvent(
             PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_FAILED,
