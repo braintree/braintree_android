@@ -1,11 +1,17 @@
 package com.braintreepayments.api.paymentactions
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.InvalidArgumentException
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver
@@ -13,7 +19,15 @@ import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParame
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver
+import com.cardinalcommerce.shared.models.enums.ButtonType
+import com.cardinalcommerce.shared.models.exceptions.InvalidInputException
+import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization
+import com.cardinalcommerce.shared.userinterfaces.LabelCustomization
+import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization
+import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization
+import com.cardinalcommerce.shared.userinterfaces.UiCustomization
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.json.JSONArray
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
@@ -21,18 +35,20 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 /**
- * [ThreeDSecureProvider] backed by the Cardinal Mobile SDK, and the only class that touches Cardinal.
- * It's also the [ChallengeRegistrar] the challenge shell uses to reach Cardinal.
+ * [ThreeDSecureProvider] backed by the Cardinal Mobile SDK. This file is the only place that touches
+ * Cardinal. The provider is also the [ChallengeRegistrar] the challenge shell uses to reach Cardinal.
  *
  * Cardinal on Android is a process-wide singleton. [collectDeviceData] starts a new Cardinal session and
  * [presentChallenge] continues on it, as the legacy flow does. [presentChallenge] sets Cardinal up again
  * only when this provider has no session in this process, e.g. after process death.
  *
+ * @param launchOptions the merchant's options for presenting the challenge, applied at every setup.
  * @param createObserver replaced in tests; the real constructor needs a set-up Cardinal SDK.
  */
 internal class CardinalThreeDSecureProvider(
     private val appContext: Context,
     private val braintreeClient: BraintreeClient,
+    private val launchOptions: PaymentActionThreeDSecureOptions = PaymentActionThreeDSecureOptions(),
     private val challengeCoordinator: ChallengeCoordinator =
         ChallengeCoordinator(appContext, watchdogTimeout = CHALLENGE_WATCHDOG_TIMEOUT),
     private val createObserver: (FragmentActivity, CardinalValidateReceiver) -> CardinalChallengeObserver =
@@ -79,6 +95,14 @@ internal class CardinalThreeDSecureProvider(
      */
     @Suppress("TooGenericExceptionCaught")
     private suspend fun setUp(): DeviceDataResult {
+        // Checked first: if no activity here handles the URL, a bank app can't bring the customer back.
+        val requestorAppUrl = launchOptions.requestorAppUrl
+        if (requestorAppUrl != null && !isHandledByThisApp(requestorAppUrl)) {
+            return DeviceDataResult.Failed(
+                InvalidArgumentException(requestorAppUrlNotHandledMessage(requestorAppUrl))
+            )
+        }
+
         // Read lazily so merchants who never reach 3D Secure never fail on missing 3DS configuration.
         val configuration = try {
             braintreeClient.getConfiguration()
@@ -92,14 +116,21 @@ internal class CardinalThreeDSecureProvider(
             return DeviceDataResult.Failed(BraintreeException(MISSING_CARDINAL_JWT_MESSAGE))
         }
 
+        // Mapped apart from configure() so a merchant can tell their own input from a Cardinal failure.
+        val parameters = try {
+            cardinalParameters(configuration.environment)
+        } catch (error: RejectedCustomizationException) {
+            return DeviceDataResult.Failed(InvalidArgumentException(rejectedCustomizationMessage(error.part)))
+        }
+
         return try {
             // A new setup replaces any earlier session; there's no session until this one completes.
             hasSession = false
-            Cardinal.getInstance().configure(appContext, cardinalParameters(configuration.environment))
+            Cardinal.getInstance().configure(appContext, parameters)
             setUpSession(jwt).also { hasSession = it is DeviceDataResult.Collected }
         } catch (error: RuntimeException) {
             if (error is CancellationException) throw error
-            DeviceDataResult.Failed(BraintreeException(CARDINAL_SETUP_ERROR_MESSAGE, error))
+            DeviceDataResult.Failed(BraintreeException(cardinalSetupErrorMessage(error), error))
         }
     }
 
@@ -133,6 +164,21 @@ internal class CardinalThreeDSecureProvider(
             Cardinal.getInstance().init(jwt, initService)
         }
 
+    /**
+     * Whether an activity in this app opens [url] from an implicit `VIEW` intent, as a bank app would open it.
+     * The activity must be exported and need no permission, or the bank app can't start it.
+     */
+    @SuppressLint("QueryPermissionsNeeded")
+    private fun isHandledByThisApp(url: String): Boolean {
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri()).setPackage(appContext.packageName)
+        // A bank app opens the URL with startActivity(), which only reaches intent filters that declare the
+        // DEFAULT category. MATCH_DEFAULT_ONLY applies the same rule here, so this check matches what the
+        // bank app will see.
+        val activity = appContext.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            ?.activityInfo ?: return false
+        return activity.exported && activity.permission == null
+    }
+
     private fun cardinalParameters(braintreeEnvironment: String?): CardinalConfigurationParameters {
         val isProduction = PRODUCTION_ENVIRONMENT.equals(braintreeEnvironment, ignoreCase = true)
         return CardinalConfigurationParameters().apply {
@@ -143,8 +189,14 @@ internal class CardinalThreeDSecureProvider(
             // receives a dfReferenceId whose device data is still in flight.
             isEnableDFSync = true
             isEnableLogging = !isProduction
-            // Legacy default
-            uiType = CardinalUiType.BOTH
+
+            // Options left null keep Cardinal's defaults
+            uiType = launchOptions.uiType.toCardinal()
+            launchOptions.renderTypes?.let { renderTypes ->
+                renderType = JSONArray().apply { renderTypes.forEach { put(it.toCardinal()) } }
+            }
+            launchOptions.uiCustomization?.let { uiCustomization = it.toCardinal() }
+            launchOptions.requestorAppUrl?.let { threeDSRequestorAppURL = it }
         }
     }
 
@@ -168,6 +220,25 @@ internal class CardinalThreeDSecureProvider(
         internal const val CHALLENGE_ERROR_MESSAGE = "Cardinal reported an error during the 3D Secure challenge."
         internal const val UNRECOGNIZED_ACTION_CODE_MESSAGE =
             "Cardinal returned a 3D Secure action code this SDK version does not recognize:"
+
+        internal fun rejectedCustomizationMessage(part: String) =
+            "Cardinal rejected $part in the PaymentActionThreeDSecureOptions uiCustomization. Check its values."
+
+        internal fun cardinalSetupErrorMessage(error: Throwable) = withDetail(CARDINAL_SETUP_ERROR_MESSAGE, error)
+
+        /**
+         * Appends what went wrong to [message]. Cardinal's InvalidInputException message is only its class
+         * name, so the detail is read from the cause first, falling back to [error]'s own message.
+         */
+        private fun withDetail(message: String, error: Throwable): String {
+            val detail = (error.cause?.message ?: error.message)?.takeIf { it.isNotBlank() }
+            return if (detail == null) message else "$message $detail"
+        }
+
+        internal fun requestorAppUrlNotHandledMessage(url: String) =
+            "No activity in this app that other apps can open handles the 3D Secure requestorAppUrl \"$url\". " +
+                "Declare an intent filter for it with the VIEW action, the DEFAULT category and a matching <data> " +
+                "element on an activity with android:exported=\"true\" and no android:permission."
 
         /** Maps every action code, including unknown ones, so the loop never waits on an unmapped code. */
         internal fun toChallengeResult(
@@ -194,3 +265,97 @@ internal class CardinalThreeDSecureProvider(
         }
     }
 }
+
+// Maps the public launch options onto Cardinal's types
+
+private fun PaymentActionThreeDSecureUiType.toCardinal(): CardinalUiType = when (this) {
+    PaymentActionThreeDSecureUiType.NATIVE -> CardinalUiType.NATIVE
+    PaymentActionThreeDSecureUiType.HTML -> CardinalUiType.HTML
+    PaymentActionThreeDSecureUiType.BOTH -> CardinalUiType.BOTH
+}
+
+private fun PaymentActionThreeDSecureRenderType.toCardinal(): CardinalRenderType = when (this) {
+    PaymentActionThreeDSecureRenderType.OTP -> CardinalRenderType.OTP
+    PaymentActionThreeDSecureRenderType.SINGLE_SELECT -> CardinalRenderType.SINGLE_SELECT
+    PaymentActionThreeDSecureRenderType.MULTI_SELECT -> CardinalRenderType.MULTI_SELECT
+    PaymentActionThreeDSecureRenderType.OOB -> CardinalRenderType.OOB
+    PaymentActionThreeDSecureRenderType.RENDER_HTML -> CardinalRenderType.HTML
+}
+
+private fun PaymentActionThreeDSecureButtonType.toCardinal(): ButtonType = when (this) {
+    PaymentActionThreeDSecureButtonType.BUTTON_TYPE_VERIFY -> ButtonType.VERIFY
+    PaymentActionThreeDSecureButtonType.BUTTON_TYPE_CONTINUE -> ButtonType.CONTINUE
+    PaymentActionThreeDSecureButtonType.BUTTON_TYPE_NEXT -> ButtonType.NEXT
+    PaymentActionThreeDSecureButtonType.BUTTON_TYPE_CANCEL -> ButtonType.CANCEL
+    PaymentActionThreeDSecureButtonType.BUTTON_TYPE_RESEND -> ButtonType.RESEND
+}
+
+private fun PaymentActionThreeDSecureUiCustomization.toCardinal(): UiCustomization =
+    UiCustomization().also { cardinal ->
+        buttonCustomizations.forEach { (type, button) ->
+            rejectedAs("buttonCustomizations[$type]") {
+                cardinal.setButtonCustomization(button.toCardinal(), type.toCardinal())
+            }
+        }
+        labelCustomization?.let { rejectedAs("labelCustomization") { cardinal.labelCustomization = it.toCardinal() } }
+        textBoxCustomization?.let {
+            rejectedAs("textBoxCustomization") { cardinal.textBoxCustomization = it.toCardinal() }
+        }
+        toolbarCustomization?.let {
+            rejectedAs("toolbarCustomization") { cardinal.toolbarCustomization = it.toCardinal() }
+        }
+    }
+
+/** Thrown while mapping the UI customization; [part] names the customization Cardinal rejected. */
+private class RejectedCustomizationException(val part: String, cause: Throwable) : RuntimeException(cause)
+
+/**
+ * Names the customization Cardinal rejects. */
+private inline fun rejectedAs(part: String, map: () -> Unit) {
+    try {
+        map()
+    } catch (error: InvalidInputException) {
+        throw RejectedCustomizationException(part, error)
+    }
+}
+
+// In the customizations below, a null text or a 0 number means "not set", so Cardinal keeps its default.
+
+private fun PaymentActionThreeDSecureButtonCustomization.toCardinal(): ButtonCustomization =
+    ButtonCustomization().also { cardinal ->
+        textFontName?.let { cardinal.textFontName = it }
+        textColor?.let { cardinal.textColor = it }
+        if (textFontSize != 0) cardinal.textFontSize = textFontSize
+        backgroundColor?.let { cardinal.backgroundColor = it }
+        if (cornerRadius != 0) cardinal.cornerRadius = cornerRadius
+    }
+
+private fun PaymentActionThreeDSecureLabelCustomization.toCardinal(): LabelCustomization =
+    LabelCustomization().also { cardinal ->
+        textFontName?.let { cardinal.textFontName = it }
+        textColor?.let { cardinal.textColor = it }
+        if (textFontSize != 0) cardinal.textFontSize = textFontSize
+        headingTextColor?.let { cardinal.headingTextColor = it }
+        headingTextFontName?.let { cardinal.headingTextFontName = it }
+        if (headingTextFontSize != 0) cardinal.headingTextFontSize = headingTextFontSize
+    }
+
+private fun PaymentActionThreeDSecureTextBoxCustomization.toCardinal(): TextBoxCustomization =
+    TextBoxCustomization().also { cardinal ->
+        textFontName?.let { cardinal.textFontName = it }
+        textColor?.let { cardinal.textColor = it }
+        if (textFontSize != 0) cardinal.textFontSize = textFontSize
+        if (borderWidth != 0) cardinal.borderWidth = borderWidth
+        borderColor?.let { cardinal.borderColor = it }
+        if (cornerRadius != 0) cardinal.cornerRadius = cornerRadius
+    }
+
+private fun PaymentActionThreeDSecureToolbarCustomization.toCardinal(): ToolbarCustomization =
+    ToolbarCustomization().also { cardinal ->
+        textFontName?.let { cardinal.textFontName = it }
+        textColor?.let { cardinal.textColor = it }
+        if (textFontSize != 0) cardinal.textFontSize = textFontSize
+        backgroundColor?.let { cardinal.backgroundColor = it }
+        headerText?.let { cardinal.headerText = it }
+        buttonText?.let { cardinal.buttonText = it }
+    }

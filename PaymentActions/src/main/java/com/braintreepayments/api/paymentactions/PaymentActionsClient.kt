@@ -50,17 +50,30 @@ class PaymentActionsClient internal constructor(
      *
      * @param context an Android [Context]
      * @param authorization a Client Token used to authenticate
+     * @param threeDSecureLaunchOptions how the 3D Secure challenge is presented. They apply to every call
+     *   this client makes, so if the app is killed, create the client again with the same options. These
+     *   aren't the server-side `threeDSecureOptions` set when the Payment Action is created.
      */
-    constructor(context: Context, authorization: String) : this(
+    @JvmOverloads
+    constructor(
+        context: Context,
+        authorization: String,
+        threeDSecureLaunchOptions: PaymentActionThreeDSecureOptions = PaymentActionThreeDSecureOptions(),
+    ) : this(
         context.applicationContext,
         BraintreeClient(context, authorization),
+        threeDSecureLaunchOptions,
     )
 
     // BraintreeClient doesn't expose its context, so the 3D Secure provider is built here, where
     // both the application context and the BraintreeClient are in hand.
-    private constructor(applicationContext: Context, braintreeClient: BraintreeClient) : this(
+    private constructor(
+        applicationContext: Context,
+        braintreeClient: BraintreeClient,
+        threeDSecureLaunchOptions: PaymentActionThreeDSecureOptions,
+    ) : this(
         braintreeClient,
-        CardinalThreeDSecureProvider(applicationContext, braintreeClient),
+        CardinalThreeDSecureProvider(applicationContext, braintreeClient, threeDSecureLaunchOptions),
     )
 
     /**
