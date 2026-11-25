@@ -321,7 +321,7 @@ internal class PayPalSavedPaymentMethodViewModel(
         unreportedCreditMessagingFailure = null
         client.sendAnalyticsEvent(
             PayPalSavedPaymentMethodAnalytics.CREDIT_MESSAGING_FAILED,
-            AnalyticsEventParams(errorDescription = failure.message)
+            AnalyticsEventParams(errorDescription = failure.analyticsDescription())
         )
     }
 
@@ -329,7 +329,11 @@ internal class PayPalSavedPaymentMethodViewModel(
     private fun sendFundingInstrumentFailed(error: Exception, renderTrigger: String, orderId: String?) {
         client.sendAnalyticsEvent(
             PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_FAILED,
-            AnalyticsEventParams(contextId = orderId, errorDescription = error.message, renderTrigger = renderTrigger)
+            AnalyticsEventParams(
+                contextId = orderId,
+                errorDescription = error.analyticsDescription(),
+                renderTrigger = renderTrigger
+            )
         )
     }
 
@@ -490,3 +494,6 @@ private fun PayPalSavedPaymentMethod?.savedMethodParams() = AnalyticsEventParams
     savedMethodId = this?.id,
     savedMethodBrand = this?.cardBrand
 )
+
+// An exception without a message is described by its type, so the failed event always says why.
+private fun Exception.analyticsDescription(): String = message ?: javaClass.simpleName

@@ -994,6 +994,16 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     }
 
     @Test
+    fun `a failure without a message is described by its type`() = runTest(dispatcher) {
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws IllegalStateException()
+
+        loadAndSettle()
+
+        val params = eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_FAILED).single()
+        assertEquals("IllegalStateException", params.errorDescription)
+    }
+
+    @Test
     fun `a canceled load sends no failed event`() = runTest(dispatcher) {
         coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws CancellationException()
 
