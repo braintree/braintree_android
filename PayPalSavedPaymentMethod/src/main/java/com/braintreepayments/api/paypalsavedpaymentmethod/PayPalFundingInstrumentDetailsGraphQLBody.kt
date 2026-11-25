@@ -8,6 +8,7 @@ import org.json.JSONObject
  * [orderId] or [merchantAccountId] is omitted from the request.
  *
  * @property fundingInstrumentType Which funding instrument to resolve.
+ * @property buttonSessionId The saved payment method component's render ID, linking PayPal's events with the SDK's.
  * @property paymentMethodIdJwt The client token's payment method ID JWT. Sent for
  * [PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT].
  * @property orderId The approved checkout order ID. Sent for
@@ -16,6 +17,7 @@ import org.json.JSONObject
  */
 internal data class PayPalFundingInstrumentDetailsGraphQLBody(
     val fundingInstrumentType: PayPalFundingInstrumentFetchType,
+    val buttonSessionId: String,
     val paymentMethodIdJwt: String?,
     val orderId: String?,
     val merchantAccountId: String?
@@ -32,6 +34,7 @@ internal data class PayPalFundingInstrumentDetailsGraphQLBody(
             .putOpt(PAYMENT_METHOD_ID_JWT_KEY, paymentMethodIdJwt.nullIfBlank())
             .putOpt(ORDER_ID_KEY, orderId.nullIfBlank())
             .putOpt(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId.nullIfBlank())
+            .put(BUTTON_SESSION_ID_KEY, buttonSessionId)
 
         return JSONObject()
             .put(GraphQLConstants.Keys.QUERY, QUERY)
@@ -48,6 +51,7 @@ internal data class PayPalFundingInstrumentDetailsGraphQLBody(
         const val PAYMENT_METHOD_ID_JWT_KEY = "paymentMethodIdJwt"
         const val ORDER_ID_KEY = "orderId"
         const val MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId"
+        const val BUTTON_SESSION_ID_KEY = "buttonSessionId"
 
         const val INTEGRATION_CHANNEL = "BT_NATIVE_SDK"
         const val OS_TYPE = "ANDROID"

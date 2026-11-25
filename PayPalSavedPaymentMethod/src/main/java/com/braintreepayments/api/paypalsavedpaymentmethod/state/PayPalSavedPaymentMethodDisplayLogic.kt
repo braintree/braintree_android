@@ -64,13 +64,18 @@ internal fun PayPalCreditMessagingDisplayState.visibleWith(
     if (isEditCompleted || this == PayPalCreditMessagingDisplayState.Hidden) {
         return PayPalCreditMessagingDisplayState.Hidden
     }
-    return when (fundingInstrumentState) {
-        PayPalSavedPaymentMethodDisplayState.Loading -> PayPalCreditMessagingDisplayState.Loading
-        is PayPalSavedPaymentMethodDisplayState.Content -> this
-        is PayPalSavedPaymentMethodDisplayState.NoFundingInstrument ->
-            if (fundingInstrumentState.isEditable) this else PayPalCreditMessagingDisplayState.Hidden
-        PayPalSavedPaymentMethodDisplayState.NoNetwork,
-        PayPalSavedPaymentMethodDisplayState.Error,
-        PayPalSavedPaymentMethodDisplayState.Hidden -> PayPalCreditMessagingDisplayState.Hidden
+    return when {
+        fundingInstrumentState == PayPalSavedPaymentMethodDisplayState.Loading ->
+            PayPalCreditMessagingDisplayState.Loading
+        fundingInstrumentState.leavesRoomForCreditMessaging -> this
+        else -> PayPalCreditMessagingDisplayState.Hidden
     }
 }
+
+/** Whether the Pay Later row fits below this funding instrument state, whatever the message's own state. */
+internal val PayPalSavedPaymentMethodDisplayState.leavesRoomForCreditMessaging: Boolean
+    get() = when (this) {
+        is PayPalSavedPaymentMethodDisplayState.Content -> true
+        is PayPalSavedPaymentMethodDisplayState.NoFundingInstrument -> isEditable
+        else -> false
+    }

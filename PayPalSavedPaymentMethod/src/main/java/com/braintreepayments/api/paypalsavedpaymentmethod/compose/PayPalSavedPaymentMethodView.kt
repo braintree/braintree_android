@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.compose
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.LocalActivityResultRegistryOwner
@@ -28,6 +29,7 @@ import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodAnalytics
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodClient
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
@@ -94,18 +96,24 @@ fun PayPalSavedPaymentMethodView(
         deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme,
         style = style,
         paypalTokenizeCallback = paypalTokenizeCallback,
-        viewModelFactory = { factoryAuthorization, factoryAppLinkReturnUrl, factoryDeepLinkFallbackUrlScheme ->
-            PayPalSavedPaymentMethodViewModel.Factory {
-                PayPalSavedPaymentMethodClient(
-                    applicationContext,
-                    factoryAuthorization,
-                    factoryAppLinkReturnUrl,
-                    factoryDeepLinkFallbackUrlScheme
-                )
-            }
-        }
+        viewModelFactory = defaultViewModelFactory(applicationContext)
     )
 }
+
+/** The view model factory of the public component. Its client gets the application context and sends `compose`. */
+internal fun defaultViewModelFactory(applicationContext: Context): (String, Uri, String?) -> ViewModelProvider.Factory =
+    { authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme ->
+        PayPalSavedPaymentMethodViewModel.Factory { buttonSessionId ->
+            PayPalSavedPaymentMethodClient(
+                applicationContext,
+                authorization,
+                appLinkReturnUrl,
+                deepLinkFallbackUrlScheme,
+                PayPalSavedPaymentMethodAnalytics.UI_TYPE_COMPOSE,
+                buttonSessionId
+            )
+        }
+    }
 
 /**
  * The component with the view model injectable, for tests. The instance ID and the pending request of an edit are
@@ -202,9 +210,15 @@ internal fun PayPalSavedPaymentMethodView(
                 }
             }
         },
-        onLearnMoreClick = { learnMore -> context.openLearnMore(learnMore) },
+        onLearnMoreClick = { learnMore ->
+            viewModel.onLearnMoreSelected()
+            context.openLearnMore(learnMore)
+        },
         modifier = modifier
     )
+    LaunchedEffect(viewModel, state) {
+        viewModel.onRendered(style)
+    }
 
     if (state.isEditing) {
         LoadingDialog()

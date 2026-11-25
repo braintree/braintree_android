@@ -10,6 +10,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypal.PayPalAccountNonce
@@ -28,6 +29,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPayme
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingContent
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalCreditMessagingDisplayState
 import com.braintreepayments.api.paypalsavedpaymentmethod.state.PayPalSavedPaymentMethodDisplayState
+import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPaymentMethodViewStyle
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -71,6 +73,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     private val hostLifecycle = LifecycleRegistry.createUnsafe(mockk<LifecycleOwner>()).apply {
         currentState = Lifecycle.State.RESUMED
     }
+    private val events = mutableListOf<Pair<String, AnalyticsEventParams>>()
     private lateinit var sut: PayPalSavedPaymentMethodViewModel
 
     @Before
@@ -81,6 +84,10 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         coEvery { client.fetchCreditPresentmentMessages(any(), any()) } returns MESSAGE_RESULT
         every { activity.isFinishing } returns false
         every { activity.isDestroyed } returns false
+        every { client.buttonSessionId } returns BUTTON_SESSION_ID
+        every { client.sendAnalyticsEvent(any(), any()) } answers {
+            events += firstArg<String>() to secondArg<AnalyticsEventParams>()
+        }
         sut = newViewModel()
     }
 
@@ -479,6 +486,23 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         }
 
     @Test
+    fun `a return is read as an edit FI flow with this component's button session ID`() = runTest(dispatcher) {
+        val intent = returnIntent()
+        givenReturn(success(ORDER_ID))
+
+        sut.handleReturnToApp(PENDING, launcher, intent)
+
+        verify {
+            launcher.handleReturnToApp(
+                match { (it as PayPalPendingRequest.Started).pendingRequestString == PENDING },
+                intent,
+                true,
+                BUTTON_SESSION_ID
+            )
+        }
+    }
+
+    @Test
     fun `after an edit the Pay Later message is hidden and isn't loaded again`() = runTest(dispatcher) {
         loadAndSettle()
 
@@ -556,7 +580,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
     @Test
     fun `a failed return is delivered and completes the return`() = runTest(dispatcher) {
         val error = BraintreeException("return failed")
-        every { launcher.handleReturnToApp(any(), any()) } returns authFailure(error)
+        every { launcher.handleReturnToApp(any(), any(), any(), any()) } returns authFailure(error)
 
         val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
         advanceUntilIdle()
@@ -606,7 +630,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
             advanceUntilIdle()
 
             assertEquals(PayPalSavedPaymentMethodReturnResult.COMPLETED, handling)
-            verify(exactly = 1) { launcher.handleReturnToApp(any(), any()) }
+            verify(exactly = 1) { launcher.handleReturnToApp(any(), any(), any(), any()) }
             coVerify(exactly = 1) { client.tokenize(any<PayPalPaymentAuthResult.Success>()) }
         }
 
@@ -628,7 +652,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
             val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
 
             assertEquals(PayPalSavedPaymentMethodReturnResult.COMPLETED, handling)
-            verify(exactly = 1) { launcher.handleReturnToApp(any(), any()) }
+            verify(exactly = 1) { launcher.handleReturnToApp(any(), any(), any(), any()) }
         }
 
     @Test
@@ -642,13 +666,13 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
             created.complete(PayPalSavedPaymentMethodAuthRequest.Failure(BraintreeException("failed")))
             advanceUntilIdle()
 
-            verify(exactly = 0) { launcher.handleReturnToApp(any(), any()) }
+            verify(exactly = 0) { launcher.handleReturnToApp(any(), any(), any(), any()) }
         }
 
     @Test
     fun `a return interrupted while tokenizing isn't completed again`() = runTest(dispatcher) {
         val authResult = mockk<PayPalPaymentAuthResult.Success>()
-        every { launcher.handleReturnToApp(any(), any()) } returns authResult
+        every { launcher.handleReturnToApp(any(), any(), any(), any()) } returns authResult
         coEvery { client.tokenize(authResult) } coAnswers { CompletableDeferred<PayPalResult>().await() }
         sut.handleReturnToApp(PENDING, launcher, returnIntent())
         runCurrent()
@@ -656,14 +680,14 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         newViewModel().handleReturnToApp(PENDING, launcher, returnIntent())
         runCurrent()
 
-        verify(exactly = 1) { launcher.handleReturnToApp(any(), any()) }
+        verify(exactly = 1) { launcher.handleReturnToApp(any(), any(), any(), any()) }
     }
 
     @Test
     fun `an edit interrupted by process death shows the original funding instrument and can be started again`() =
         runTest(dispatcher) {
             val authResult = mockk<PayPalPaymentAuthResult.Success>()
-            every { launcher.handleReturnToApp(any(), any()) } returns authResult
+            every { launcher.handleReturnToApp(any(), any(), any(), any()) } returns authResult
             coEvery { client.tokenize(authResult) } coAnswers { CompletableDeferred<PayPalResult>().await() }
             sut.handleReturnToApp(PENDING, launcher, returnIntent())
             runCurrent()
@@ -682,7 +706,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
 
     @Test
     fun `a return with no result is delivered as a cancel without completing the return`() = runTest(dispatcher) {
-        every { launcher.handleReturnToApp(any(), any()) } returns PayPalPaymentAuthResult.NoResult
+        every { launcher.handleReturnToApp(any(), any(), any(), any()) } returns PayPalPaymentAuthResult.NoResult
 
         val handling = sut.handleReturnToApp(PENDING, launcher, returnIntent())
         advanceUntilIdle()
@@ -751,6 +775,351 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
             assertEquals(PayPalSavedPaymentMethodDisplayState.Content(CARD), sut.state.value.fundingInstrument)
         }
 
+    @Test
+    fun `the factory creates the client with a new button session id`() {
+        val ids = mutableListOf<String>()
+        val factory = PayPalSavedPaymentMethodViewModel.Factory { id ->
+            ids.add(id)
+            client
+        }
+
+        factory.create(PayPalSavedPaymentMethodViewModel::class.java, CreationExtras.Empty)
+        factory.create(PayPalSavedPaymentMethodViewModel::class.java, CreationExtras.Empty)
+
+        assertEquals(2, ids.size)
+        assertTrue(ids.all { it.matches(Regex("[0-9a-f]{32}")) })
+        assertNotEquals(ids[0], ids[1])
+    }
+
+    @Test
+    fun `render started isn't sent again by a view model restored while the paysheet was open`() =
+        runTest(dispatcher) {
+            loadAndSettle()
+            sut = newViewModel()
+
+            loadAndSettle()
+
+            assertEquals(1, eventsNamed(PayPalSavedPaymentMethodAnalytics.RENDER_STARTED).size)
+        }
+
+    @Test
+    fun `render started is sent once per view model, not on every load`() = runTest(dispatcher) {
+        loadAndSettle()
+        loadAndSettle()
+
+        assertEquals(1, eventsNamed(PayPalSavedPaymentMethodAnalytics.RENDER_STARTED).size)
+    }
+
+    @Test
+    fun `tapping the funding instrument sends edit selected with the funding instrument`() = runTest(dispatcher) {
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } returns summary(IDENTIFIED_CARD)
+        loadAndSettle()
+        coEvery { client.createEditFundingInstrumentAuthRequest(any(), any()) } returns
+            PayPalSavedPaymentMethodAuthRequest.Failure(BraintreeException("failed"))
+
+        sut.startEdit(activity, launcher, CHECKOUT, hostLifecycle)
+
+        val params = eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_EDIT_SELECTED).single()
+        assertSavedMethod(params)
+    }
+
+    @Test
+    fun `tapping Learn more sends learn more selected with the presentment message type`() = runTest(dispatcher) {
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } returns TYPED_MESSAGE_RESULT
+        loadAndSettle()
+
+        sut.onLearnMoreSelected()
+
+        val params = eventsNamed(PayPalSavedPaymentMethodAnalytics.CREDIT_MESSAGING_LEARN_MORE_SELECTED).single()
+        assertEquals("PLST_SQ", params.presentmentMessageType)
+    }
+
+    @Test
+    fun `a render after the first load sends render presented, then funding instrument presented, once`() =
+        runTest(dispatcher) {
+            coEvery { client.fetchPaymentMethod(any(), any(), any()) } returns summary(IDENTIFIED_CARD)
+            loadAndSettle()
+
+            sut.onRendered(STYLE)
+            sut.onRendered(STYLE)
+
+            val rendered = events.map { it.first }.filter { it != PayPalSavedPaymentMethodAnalytics.RENDER_STARTED }
+            assertEquals(
+                listOf(
+                    PayPalSavedPaymentMethodAnalytics.RENDER_PRESENTED,
+                    PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_PRESENTED,
+                    PayPalSavedPaymentMethodAnalytics.CREDIT_MESSAGING_PRESENTED
+                ),
+                rendered
+            )
+            val presented = eventsNamed(PayPalSavedPaymentMethodAnalytics.RENDER_PRESENTED).single()
+            assertEquals("sticky_fi", presented.renderTrigger)
+            assertEquals("funding_instrument", presented.shownContent)
+            assertEquals(true, presented.renderedLogo)
+            assertEquals(true, presented.renderedLabel)
+            assertEquals(true, presented.renderedEditTag)
+            assertEquals(true, presented.renderedMessageSlot)
+            val fundingInstrument = eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_PRESENTED).single()
+            assertSavedMethod(fundingInstrument)
+            assertEquals("sticky_fi", fundingInstrument.renderTrigger)
+            assertNull(fundingInstrument.contextId)
+        }
+
+    @Test
+    fun `a render after an edit sends funding instrument presented with the approved order ID`() =
+        runTest(dispatcher) {
+            loadAndSettle()
+            sut.onRendered(STYLE)
+            events.clear()
+
+            completeReturn()
+            sut.onRendered(STYLE)
+
+            val presented = eventsNamed(PayPalSavedPaymentMethodAnalytics.RENDER_PRESENTED).single()
+            assertEquals("fi_from_approved_checkout", presented.renderTrigger)
+            assertEquals(false, presented.renderedMessageSlot)
+            val fundingInstrument = eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_PRESENTED).single()
+            assertEquals("fi_from_approved_checkout", fundingInstrument.renderTrigger)
+            assertEquals(ORDER_ID, fundingInstrument.contextId)
+            assertEquals("BANK", fundingInstrument.savedMethodType)
+        }
+
+    @Test
+    fun `a render of a type this SDK doesn't recognize sends the raw type`() = runTest(dispatcher) {
+        val unknown = PayPalSavedPaymentMethod("SOMETHING_NEW", "Something", null, null, null)
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } returns summary(unknown)
+        loadAndSettle()
+
+        sut.onRendered(STYLE)
+
+        val params = eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_PRESENTED).single()
+        assertEquals("SOMETHING_NEW", params.savedMethodType)
+    }
+
+    @Test
+    fun `a render of the buyer's email sends email only, with the edit tag PayPal allows`() = runTest(dispatcher) {
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } returns
+            PayPalSavedPaymentMethodSummary(emptyList(), PayPalPayer("buyer@example.com", isEditable = false))
+        loadAndSettle()
+
+        sut.onRendered(STYLE)
+
+        val presented = eventsNamed(PayPalSavedPaymentMethodAnalytics.RENDER_PRESENTED).single()
+        assertEquals("email_only", presented.shownContent)
+        assertEquals(false, presented.renderedEditTag)
+        assertEquals(false, presented.renderedMessageSlot)
+        assertTrue(eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_PRESENTED).isEmpty())
+    }
+
+    @Test
+    fun `a render of only the brand sends brand only, or hidden when the logo and label are off`() =
+        runTest(dispatcher) {
+            coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws BraintreeException("boom")
+            loadAndSettle()
+            sut.onRendered(STYLE)
+            val noBrand = PayPalSavedPaymentMethodViewModel(SavedStateHandle(), client)
+            noBrand.load(request(AMOUNT), showCreditMessaging = true)
+            advanceUntilIdle()
+
+            noBrand.onRendered(
+                PayPalSavedPaymentMethodViewStyle(showPayPalLogo = false, showPayPalLabel = false)
+            )
+
+            val presented = eventsNamed(PayPalSavedPaymentMethodAnalytics.RENDER_PRESENTED)
+            assertEquals(listOf("brand_only", "hidden"), presented.map { it.shownContent })
+            assertEquals(listOf(false, false), presented.map { it.renderedEditTag })
+            assertTrue(eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_PRESENTED).isEmpty())
+        }
+
+    @Test
+    fun `a render while the edited funding instrument is loading sends nothing, until it is shown`() =
+        runTest(dispatcher) {
+            loadAndSettle()
+            sut.onRendered(STYLE)
+            val gate = CompletableDeferred<PayPalSavedPaymentMethodSummary>()
+            coEvery { client.fetchPaymentMethod(any(), ORDER_ID, any()) } coAnswers { gate.await() }
+            completeReturn()
+            assertEquals(PayPalSavedPaymentMethodDisplayState.Loading, sut.state.value.fundingInstrument)
+            events.clear()
+
+            sut.onRendered(STYLE)
+            assertTrue(events.isEmpty())
+
+            gate.complete(summary(EDITED))
+            advanceUntilIdle()
+            sut.onRendered(STYLE)
+            assertEquals(1, eventsNamed(PayPalSavedPaymentMethodAnalytics.RENDER_PRESENTED).size)
+        }
+
+    @Test
+    fun `a refetch of the same funding instrument sends nothing new`() = runTest(dispatcher) {
+        loadAndSettle()
+        sut.onRendered(STYLE)
+        events.clear()
+
+        loadAndSettle()
+        sut.onRendered(STYLE)
+
+        assertTrue(eventsNamed(PayPalSavedPaymentMethodAnalytics.RENDER_PRESENTED).isEmpty())
+        assertTrue(eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_PRESENTED).isEmpty())
+    }
+
+    @Test
+    fun `a funding instrument loaded on a retry is reported on the next render`() = runTest(dispatcher) {
+        // A successful load isn't fetched again, so a new funding instrument only arrives on a retry.
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws BraintreeException("boom")
+        loadAndSettle()
+        sut.onRendered(STYLE)
+        events.clear()
+
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } returns summary(EDITED)
+        loadAndSettle()
+        sut.onRendered(STYLE)
+
+        assertEquals(1, eventsNamed(PayPalSavedPaymentMethodAnalytics.RENDER_PRESENTED).size)
+        val presented = eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_PRESENTED).single()
+        assertEquals("BANK", presented.savedMethodType)
+    }
+
+    @Test
+    fun `a failed first load sends funding instrument failed for the sticky FI`() = runTest(dispatcher) {
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws BraintreeException("boom")
+
+        loadAndSettle()
+
+        val params = eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_FAILED).single()
+        assertEquals("boom", params.errorDescription)
+        assertEquals("sticky_fi", params.renderTrigger)
+        assertNull(params.contextId)
+    }
+
+    @Test
+    fun `a canceled load sends no failed event`() = runTest(dispatcher) {
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws CancellationException()
+
+        loadAndSettle()
+
+        assertTrue(eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_FAILED).isEmpty())
+    }
+
+    @Test
+    fun `a failed refresh while the funding instrument is shown sends no failed event`() = runTest(dispatcher) {
+        loadAndSettle()
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws BraintreeException("boom")
+
+        loadAndSettle()
+
+        assertTrue(eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_FAILED).isEmpty())
+    }
+
+    @Test
+    fun `a failed load of the edited funding instrument sends funding instrument failed with the order ID`() =
+        runTest(dispatcher) {
+            loadAndSettle()
+            coEvery { client.fetchPaymentMethod(BUYER_UPDATED, ORDER_ID, any()) } throws BraintreeException("boom")
+
+            completeReturn()
+
+            val params = eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_FAILED).single()
+            assertEquals("boom", params.errorDescription)
+            assertEquals("fi_from_approved_checkout", params.renderTrigger)
+            assertEquals(ORDER_ID, params.contextId)
+        }
+
+    @Test
+    fun `an edit that returns no order ID sends funding instrument failed`() = runTest(dispatcher) {
+        loadAndSettle()
+
+        completeReturn(success(paymentId = null))
+
+        val params = eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_FAILED).single()
+        assertEquals(PayPalSavedPaymentMethodException.MissingOrderId().message, params.errorDescription)
+        assertEquals("fi_from_approved_checkout", params.renderTrigger)
+        assertNull(params.contextId)
+    }
+
+    @Test
+    fun `a shown Pay Later message sends credit messaging presented with its type, once`() = runTest(dispatcher) {
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } returns TYPED_MESSAGE_RESULT
+        loadAndSettle()
+
+        sut.onRendered(STYLE)
+        sut.onRendered(STYLE)
+
+        val params = eventsNamed(PayPalSavedPaymentMethodAnalytics.CREDIT_MESSAGING_PRESENTED).single()
+        assertEquals("PLST_SQ", params.presentmentMessageType)
+    }
+
+    @Test
+    fun `a failed Pay Later load sends credit messaging failed with the reason, once`() = runTest(dispatcher) {
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } throws BraintreeException("boom")
+        loadAndSettle()
+
+        sut.onRendered(STYLE)
+        sut.onRendered(STYLE)
+
+        val params = eventsNamed(PayPalSavedPaymentMethodAnalytics.CREDIT_MESSAGING_FAILED).single()
+        assertEquals("boom", params.errorDescription)
+    }
+
+    @Test
+    fun `a Pay Later message with no main text sends credit messaging failed`() = runTest(dispatcher) {
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } returns messageResult("")
+        loadAndSettle()
+
+        sut.onRendered(STYLE)
+
+        val params = eventsNamed(PayPalSavedPaymentMethodAnalytics.CREDIT_MESSAGING_FAILED).single()
+        assertEquals(PayPalSavedPaymentMethodException.MissingPreferredMessage().message, params.errorDescription)
+    }
+
+    @Test
+    fun `a failed Pay Later refresh for the same request sends no failed event`() = runTest(dispatcher) {
+        loadAndSettle()
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } throws BraintreeException("boom")
+
+        loadAndSettle()
+        sut.onRendered(STYLE)
+
+        assertTrue(eventsNamed(PayPalSavedPaymentMethodAnalytics.CREDIT_MESSAGING_FAILED).isEmpty())
+    }
+
+    @Test
+    fun `a Pay Later failure before the funding instrument loads is sent once it loads`() = runTest(dispatcher) {
+        val fundingInstrument = CompletableDeferred<PayPalSavedPaymentMethodSummary>()
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } coAnswers { fundingInstrument.await() }
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } throws BraintreeException("boom")
+        loadAndSettle()
+        sut.onRendered(STYLE)
+        assertTrue(eventsNamed(PayPalSavedPaymentMethodAnalytics.CREDIT_MESSAGING_FAILED).isEmpty())
+
+        fundingInstrument.complete(summary(CARD))
+        advanceUntilIdle()
+        sut.onRendered(STYLE)
+
+        assertEquals(1, eventsNamed(PayPalSavedPaymentMethodAnalytics.CREDIT_MESSAGING_FAILED).size)
+    }
+
+    @Test
+    fun `a Pay Later failure isn't sent when only the brand shows, since its row is hidden`() = runTest(dispatcher) {
+        coEvery { client.fetchPaymentMethod(any(), any(), any()) } throws BraintreeException("boom")
+        coEvery { client.fetchCreditPresentmentMessages(any(), any()) } throws BraintreeException("boom")
+        loadAndSettle()
+
+        sut.onRendered(STYLE)
+
+        assertTrue(eventsNamed(PayPalSavedPaymentMethodAnalytics.CREDIT_MESSAGING_FAILED).isEmpty())
+    }
+
+    private fun eventsNamed(name: String): List<AnalyticsEventParams> =
+        events.filter { it.first == name }.map { it.second }
+
+    private fun assertSavedMethod(params: AnalyticsEventParams) {
+        assertEquals("CARD", params.savedMethodType)
+        assertEquals("CC-123", params.savedMethodId)
+        assertEquals("VISA", params.savedMethodBrand)
+    }
+
     private fun newViewModel() = PayPalSavedPaymentMethodViewModel(savedState, client)
 
     private fun TestScope.loadAndSettle(amount: String = AMOUNT, showCreditMessaging: Boolean = true) {
@@ -779,7 +1148,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
 
     private fun givenReturn(tokenized: PayPalResult): PayPalResult {
         val authResult = mockk<PayPalPaymentAuthResult.Success>()
-        every { launcher.handleReturnToApp(any(), any()) } returns authResult
+        every { launcher.handleReturnToApp(any(), any(), any(), any()) } returns authResult
         coEvery { client.tokenize(authResult) } returns tokenized
         return tokenized
     }
@@ -802,6 +1171,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
 
     private companion object {
         const val PENDING = "pending"
+        const val BUTTON_SESSION_ID = "button-session-id"
         const val ORDER_ID = "order-1"
         const val MERCHANT_ACCOUNT_ID = "ma-1"
         const val AMOUNT = "55.00"
@@ -811,6 +1181,9 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         val CARD = PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD.rawValue, "Visa", null, "1234", null)
         val EDITED = PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.BANK.rawValue, "Chase", null, "9876", null)
         val MESSAGE_RESULT = messageResult("Pay in 4")
+        val TYPED_MESSAGE_RESULT = messageResult("Pay in 4").copy(messageType = "PLST_SQ")
+        val IDENTIFIED_CARD = CARD.copy(id = "CC-123", cardBrand = "VISA")
+        val STYLE = PayPalSavedPaymentMethodViewStyle()
         val MESSAGE = message("Pay in 4")
 
         fun messageResult(text: String) = PayPalCreditMessagingResult(

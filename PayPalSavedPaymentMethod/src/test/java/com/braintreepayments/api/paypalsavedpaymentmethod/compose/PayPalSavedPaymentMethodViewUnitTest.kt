@@ -151,6 +151,14 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
+    fun `each rendered state is reported to the view model with the style`() {
+        state.value = state.value.copy(isEditing = false, isEditCompleted = true)
+        composeTestRule.waitForIdle()
+
+        verify(exactly = 2) { viewModel.onRendered(any()) }
+    }
+
+    @Test
     fun `a new request is passed to the view model`() {
         inputs.value = inputs.value.copy(request = PayPalSavedPaymentMethodRequest("20.00", "USD"))
         composeTestRule.waitForIdle()

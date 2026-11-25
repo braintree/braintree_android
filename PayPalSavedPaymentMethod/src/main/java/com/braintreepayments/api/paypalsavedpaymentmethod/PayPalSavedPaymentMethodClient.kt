@@ -2,6 +2,7 @@ package com.braintreepayments.api.paypalsavedpaymentmethod
 
 import android.content.Context
 import android.net.Uri
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ClientToken
@@ -18,6 +19,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.model.PayPalSavedPayme
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.UUID
 
 /**
  * Fetches what to display for a buyer's vaulted PayPal payment method: the buyer's saved funding instrument, and the
@@ -25,13 +27,16 @@ import org.json.JSONObject
  * with `PayPalLauncher` between [createEditFundingInstrumentAuthRequest] and [tokenize].
  *
  * Requires a client token generated with the buyer's payment method ID. A tokenization key carries no
- * `paymentMethodIdJwt`, so the saved funding instrument cannot be resolved.
+ * `paymentMethodIdJwt`, so the saved funding instrument cannot be resolved. [buttonSessionId] goes on its fetches,
+ * its analytics events and the PayPal events of its edit, so PayPal can link them.
  */
 @OptIn(ExperimentalBetaApi::class)
 internal class PayPalSavedPaymentMethodClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val payPalClient: PayPalClient,
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    val buttonSessionId: String = newButtonSessionId(),
+    private val uiType: String? = null
 ) {
 
     /**
@@ -44,18 +49,23 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
         context: Context,
         authorization: String,
         appLinkReturnUrl: Uri,
-        deepLinkFallbackUrlScheme: String? = null
+        deepLinkFallbackUrlScheme: String? = null,
+        uiType: String? = null,
+        buttonSessionId: String = newButtonSessionId()
     ) : this(
         BraintreeClient(
             context = context,
             authorization = authorization,
             deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme,
             appLinkReturnUri = appLinkReturnUrl
-        )
+        ),
+        uiType,
+        buttonSessionId
     )
 
     // One BraintreeClient, shared with PayPalClient.
-    private constructor(braintreeClient: BraintreeClient) : this(braintreeClient, PayPalClient(braintreeClient))
+    private constructor(braintreeClient: BraintreeClient, uiType: String?, buttonSessionId: String) :
+        this(braintreeClient, PayPalClient(braintreeClient), buttonSessionId = buttonSessionId, uiType = uiType)
 
     /**
      * Starts the edit flow by creating the PayPal auth request, seeded with the buyer's billing agreement. Launch it
@@ -82,7 +92,8 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
                 PayPalSavedPaymentMethodException.MissingPaymentMethodIdJwt()
             )
         }
-        return when (val request = payPalClient.createPaymentAuthRequestForEditFi(context, payPalCheckoutRequest)) {
+        val request = payPalClient.createPaymentAuthRequestForEditFi(context, payPalCheckoutRequest, buttonSessionId)
+        return when (request) {
             is PayPalPaymentAuthRequest.ReadyToLaunch -> PayPalSavedPaymentMethodAuthRequest.ReadyToLaunch(request)
             is PayPalPaymentAuthRequest.Failure -> PayPalSavedPaymentMethodAuthRequest.Failure(request.error)
         }
@@ -122,7 +133,6 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
         orderId: String? = null,
         merchantAccountId: String? = null
     ): PayPalSavedPaymentMethodSummary {
-        // TODO: send the default and updated billing agreement analytics events once the catalog is approved.
         val clientToken = requireClientToken()
 
         // The API rejects the request unless exactly the identity field matching the fetch type is sent.
@@ -133,6 +143,7 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
 
                 PayPalFundingInstrumentDetailsGraphQLBody(
                     fundingInstrumentType = fundingInstrumentType,
+                    buttonSessionId = buttonSessionId,
                     paymentMethodIdJwt = paymentMethodIdJwt,
                     orderId = null,
                     merchantAccountId = merchantAccountId
@@ -144,6 +155,7 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
 
                 PayPalFundingInstrumentDetailsGraphQLBody(
                     fundingInstrumentType = fundingInstrumentType,
+                    buttonSessionId = buttonSessionId,
                     paymentMethodIdJwt = null,
                     orderId = orderId,
                     merchantAccountId = merchantAccountId
@@ -194,7 +206,6 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
         amount: String,
         currencyCode: String
     ): PayPalCreditMessagingResult {
-        // TODO: send the credit messaging analytics events once the catalog is approved.
         requireClientToken()
 
         val configuration = braintreeClient.getConfiguration()
@@ -214,6 +225,11 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
             ?: throw PayPalSavedPaymentMethodException.MissingPreferredMessage()
     }
 
+    /** Sends [eventName] with [params], this component's [buttonSessionId] and its UI type. */
+    fun sendAnalyticsEvent(eventName: String, params: AnalyticsEventParams = AnalyticsEventParams()) {
+        braintreeClient.sendAnalyticsEvent(eventName, params.copy(buttonSessionId = buttonSessionId, uiType = uiType))
+    }
+
     private fun requireClientToken(): ClientToken =
         merchantRepository.authorization as? ClientToken
             ?: throw PayPalSavedPaymentMethodException.InvalidAuthorization()
@@ -229,3 +245,6 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
         const val CREDIT_PRESENTMENT_MESSAGES_PATH = "/v2/credit/fetch-presentment-messages"
     }
 }
+
+/** A new render ID: a UUID without dashes, the format of the SDK's `session_id`. */
+internal fun newButtonSessionId(): String = UUID.randomUUID().toString().replace("-", "")

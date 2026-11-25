@@ -74,9 +74,17 @@ class PayPalFundingInstrumentDetailsGraphQLBodyUnitTest {
     }
 
     @Test
+    fun `toJson sends the buttonSessionId`() {
+        val input = input(PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT)
+
+        assertEquals("button-session-id", input.getString("buttonSessionId"))
+    }
+
+    @Test
     fun `toJson sends the PaypalFundingInstrumentDetails query`() {
         val query = PayPalFundingInstrumentDetailsGraphQLBody(
             fundingInstrumentType = PayPalFundingInstrumentFetchType.BUYER_DEFAULT_BILLING_AGREEMENT,
+            buttonSessionId = "button-session-id",
             paymentMethodIdJwt = null,
             orderId = null,
             merchantAccountId = null
@@ -99,6 +107,7 @@ class PayPalFundingInstrumentDetailsGraphQLBodyUnitTest {
         merchantAccountId: String? = null
     ): JSONObject = PayPalFundingInstrumentDetailsGraphQLBody(
         fundingInstrumentType = fundingInstrumentType,
+        buttonSessionId = "button-session-id",
         paymentMethodIdJwt = paymentMethodIdJwt,
         orderId = orderId,
         merchantAccountId = merchantAccountId
