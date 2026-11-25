@@ -756,6 +756,40 @@ class PayPalClientUnitTest {
     }
 
     @Test
+    fun `the callback createPaymentAuthRequestForEditFi sends the buttonSessionId too`() = runTest(testDispatcher) {
+        val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true)
+        val paymentAuthRequest = PayPalPaymentAuthRequestParams(
+            payPalCheckoutRequest,
+            null,
+            "https://example.com/approval/url",
+            "sample-client-metadata-id",
+            null,
+            "https://example.com/success/url"
+        )
+        val payPalInternalClient = MockkPayPalInternalClientBuilder()
+            .sendRequestSuccess(paymentAuthRequest)
+            .build()
+        val braintreeClient =
+            MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
+        val sut = testPaypalClient(braintreeClient, payPalInternalClient, testDispatcher, this)
+
+        sut.createPaymentAuthRequestForEditFi(activity, payPalCheckoutRequest, paymentAuthCallback, "button-session-id")
+        advanceUntilIdle()
+
+        val slot = slot<PayPalPaymentAuthRequest>()
+        verify { paymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
+        val params = (slot.captured as PayPalPaymentAuthRequest.ReadyToLaunch).requestParams
+        assertEquals("button-session-id", params.buttonSessionId)
+        verify {
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.TOKENIZATION_STARTED,
+                AnalyticsEventParams(isEditFiFlow = true, buttonSessionId = "button-session-id"),
+                true
+            )
+        }
+    }
+
+    @Test
     fun `when createPaymentAuthRequestForEditFi is called and PayPal is not enabled, callback receives failure`() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 

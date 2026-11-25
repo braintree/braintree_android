@@ -145,15 +145,18 @@ class PayPalClient internal constructor(
      * @param context               Android Context
      * @param payPalCheckoutRequest a [PayPalCheckoutRequest] used to customize the request.
      * @param callback              [PayPalPaymentAuthCallback]
+     * @param buttonSessionId       the saved payment method component's render ID, sent on the analytics events.
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @JvmOverloads
     fun createPaymentAuthRequestForEditFi(
         context: Context,
         payPalCheckoutRequest: PayPalCheckoutRequest,
-        callback: PayPalPaymentAuthCallback
+        callback: PayPalPaymentAuthCallback,
+        buttonSessionId: String? = null
     ) {
         coroutineScope.launch {
-            val result = createPaymentAuthRequestForEditFi(context, payPalCheckoutRequest)
+            val result = createPaymentAuthRequestForEditFi(context, payPalCheckoutRequest, buttonSessionId)
             callback.onPayPalPaymentAuthRequest(result)
         }
     }
