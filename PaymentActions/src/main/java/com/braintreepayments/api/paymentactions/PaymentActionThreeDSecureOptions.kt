@@ -15,15 +15,16 @@ package com.braintreepayments.api.paymentactions
  * @property uiCustomization the look of the challenge screens. `null` keeps the default look.
  * @property requestorAppUrl the URL an out-of-band authentication app, such as a bank app, opens to return the
  *   customer to this app. `null` sends no URL. When set, an activity in this app must handle the URL: declare
- *   an intent filter with the `VIEW` action, the `DEFAULT` category and a `<data>` element that matches it.
+ *   an intent filter with the `VIEW` action, the `DEFAULT` category and a `<data>` element that matches it, on
+ *   an activity with `android:exported="true"` and no `android:permission`, so the other app can open it.
  *   Otherwise [PaymentActionsClient.handleNextAction] returns a [PaymentActionResult.Failure] with an
  *   [com.braintreepayments.api.core.InvalidArgumentException] before 3D Secure starts.
  */
-data class PaymentActionThreeDSecureOptions @JvmOverloads constructor(
-    var uiType: PaymentActionThreeDSecureUiType = PaymentActionThreeDSecureUiType.BOTH,
-    var renderTypes: List<PaymentActionThreeDSecureRenderType>? = null,
-    var uiCustomization: PaymentActionThreeDSecureUiCustomization? = null,
-    var requestorAppUrl: String? = null,
+class PaymentActionThreeDSecureOptions @JvmOverloads constructor(
+    val uiType: PaymentActionThreeDSecureUiType = PaymentActionThreeDSecureUiType.BOTH,
+    val renderTypes: List<PaymentActionThreeDSecureRenderType>? = null,
+    val uiCustomization: PaymentActionThreeDSecureUiCustomization? = null,
+    val requestorAppUrl: String? = null,
 )
 
 /**
@@ -55,12 +56,12 @@ enum class PaymentActionThreeDSecureRenderType {
  * @property textBoxCustomization customization for the text boxes.
  * @property toolbarCustomization customization for the toolbar.
  */
-data class PaymentActionThreeDSecureUiCustomization @JvmOverloads constructor(
-    var buttonCustomizations: Map<PaymentActionThreeDSecureButtonType, PaymentActionThreeDSecureButtonCustomization> =
+class PaymentActionThreeDSecureUiCustomization @JvmOverloads constructor(
+    val buttonCustomizations: Map<PaymentActionThreeDSecureButtonType, PaymentActionThreeDSecureButtonCustomization> =
         emptyMap(),
-    var labelCustomization: PaymentActionThreeDSecureLabelCustomization? = null,
-    var textBoxCustomization: PaymentActionThreeDSecureTextBoxCustomization? = null,
-    var toolbarCustomization: PaymentActionThreeDSecureToolbarCustomization? = null,
+    val labelCustomization: PaymentActionThreeDSecureLabelCustomization? = null,
+    val textBoxCustomization: PaymentActionThreeDSecureTextBoxCustomization? = null,
+    val toolbarCustomization: PaymentActionThreeDSecureToolbarCustomization? = null,
 )
 
 /**
@@ -84,12 +85,12 @@ enum class PaymentActionThreeDSecureButtonType {
  * @property backgroundColor the background color of the button.
  * @property cornerRadius the radius of the button corners.
  */
-data class PaymentActionThreeDSecureButtonCustomization @JvmOverloads constructor(
-    var textFontName: String? = null,
-    var textColor: String? = null,
-    var textFontSize: Int = 0,
-    var backgroundColor: String? = null,
-    var cornerRadius: Int = 0,
+class PaymentActionThreeDSecureButtonCustomization @JvmOverloads constructor(
+    val textFontName: String? = null,
+    val textColor: String? = null,
+    val textFontSize: Int = 0,
+    val backgroundColor: String? = null,
+    val cornerRadius: Int = 0,
 )
 
 /**
@@ -103,13 +104,13 @@ data class PaymentActionThreeDSecureButtonCustomization @JvmOverloads constructo
  * @property headingTextFontName the font of the heading text.
  * @property headingTextFontSize the font size of the heading text.
  */
-data class PaymentActionThreeDSecureLabelCustomization @JvmOverloads constructor(
-    var textFontName: String? = null,
-    var textColor: String? = null,
-    var textFontSize: Int = 0,
-    var headingTextColor: String? = null,
-    var headingTextFontName: String? = null,
-    var headingTextFontSize: Int = 0,
+class PaymentActionThreeDSecureLabelCustomization @JvmOverloads constructor(
+    val textFontName: String? = null,
+    val textColor: String? = null,
+    val textFontSize: Int = 0,
+    val headingTextColor: String? = null,
+    val headingTextFontName: String? = null,
+    val headingTextFontSize: Int = 0,
 )
 
 /**
@@ -123,13 +124,13 @@ data class PaymentActionThreeDSecureLabelCustomization @JvmOverloads constructor
  * @property borderColor the color of the text box border.
  * @property cornerRadius the radius of the text box corners.
  */
-data class PaymentActionThreeDSecureTextBoxCustomization @JvmOverloads constructor(
-    var textFontName: String? = null,
-    var textColor: String? = null,
-    var textFontSize: Int = 0,
-    var borderWidth: Int = 0,
-    var borderColor: String? = null,
-    var cornerRadius: Int = 0,
+class PaymentActionThreeDSecureTextBoxCustomization @JvmOverloads constructor(
+    val textFontName: String? = null,
+    val textColor: String? = null,
+    val textFontSize: Int = 0,
+    val borderWidth: Int = 0,
+    val borderColor: String? = null,
+    val cornerRadius: Int = 0,
 )
 
 /**
@@ -143,11 +144,11 @@ data class PaymentActionThreeDSecureTextBoxCustomization @JvmOverloads construct
  * @property headerText the header text.
  * @property buttonText the text of the toolbar button, such as "Cancel".
  */
-data class PaymentActionThreeDSecureToolbarCustomization @JvmOverloads constructor(
-    var textFontName: String? = null,
-    var textColor: String? = null,
-    var textFontSize: Int = 0,
-    var backgroundColor: String? = null,
-    var headerText: String? = null,
-    var buttonText: String? = null,
+class PaymentActionThreeDSecureToolbarCustomization @JvmOverloads constructor(
+    val textFontName: String? = null,
+    val textColor: String? = null,
+    val textFontSize: Int = 0,
+    val backgroundColor: String? = null,
+    val headerText: String? = null,
+    val buttonText: String? = null,
 )

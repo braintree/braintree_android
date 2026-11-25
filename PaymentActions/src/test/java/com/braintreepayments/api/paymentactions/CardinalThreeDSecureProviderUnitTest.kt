@@ -219,7 +219,7 @@ class CardinalThreeDSecureProviderUnitTest {
         val result = buildSut().collectDeviceData()
 
         val error = assertIs<BraintreeException>(assertIs<DeviceDataResult.Failed>(result).error)
-        assertEquals(CardinalThreeDSecureProvider.CARDINAL_SETUP_ERROR_MESSAGE, error.message)
+        assertEquals("${CardinalThreeDSecureProvider.CARDINAL_SETUP_ERROR_MESSAGE} bad input", error.message)
         assertSame(cause, error.cause)
         verify(exactly = 0) { cardinal.init(any(), any<CardinalInitService>()) }
     }
@@ -232,8 +232,22 @@ class CardinalThreeDSecureProviderUnitTest {
         val result = buildSut().collectDeviceData()
 
         val error = assertIs<BraintreeException>(assertIs<DeviceDataResult.Failed>(result).error)
-        assertEquals(CardinalThreeDSecureProvider.CARDINAL_SETUP_ERROR_MESSAGE, error.message)
+        assertEquals("${CardinalThreeDSecureProvider.CARDINAL_SETUP_ERROR_MESSAGE} init failed", error.message)
         assertSame(cause, error.cause)
+    }
+
+    @Test
+    fun `collectDeviceData reports the detail Cardinal puts on the cause`() = runTest {
+        every { cardinal.configure(any(), any()) } throws
+            InvalidInputException("InvalidInputException", Throwable("Caught in Cardinal.configure"))
+
+        val result = buildSut().collectDeviceData()
+
+        val error = assertIs<BraintreeException>(assertIs<DeviceDataResult.Failed>(result).error)
+        assertEquals(
+            "${CardinalThreeDSecureProvider.CARDINAL_SETUP_ERROR_MESSAGE} Caught in Cardinal.configure",
+            error.message,
+        )
     }
 
     @Test

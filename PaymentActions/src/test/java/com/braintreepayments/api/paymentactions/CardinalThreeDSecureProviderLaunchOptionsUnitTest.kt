@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ActivityInfo
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.InvalidArgumentException
@@ -84,15 +85,26 @@ class CardinalThreeDSecureProviderLaunchOptionsUnitTest {
         configureWith(PaymentActionThreeDSecureOptions(uiCustomization = uiCustomization)).uiCustomization
 
     /** Declares an activity in [packageName] whose intent filter matches [REQUESTOR_APP_URL]. */
-    private fun declareReturnActivity(packageName: String = context.packageName, withDefaultCategory: Boolean = true) {
+    private fun declareReturnActivity(
+        packageName: String = context.packageName,
+        withDefaultCategory: Boolean = true,
+        exported: Boolean = true,
+        permission: String? = null,
+    ) {
         val activity = ComponentName(packageName, "$packageName.ReturnActivity")
+        val activityInfo = ActivityInfo().apply {
+            this.packageName = packageName
+            name = activity.className
+            this.exported = exported
+            this.permission = permission
+        }
         val filter = IntentFilter(Intent.ACTION_VIEW).apply {
             if (withDefaultCategory) addCategory(Intent.CATEGORY_DEFAULT)
             addCategory(Intent.CATEGORY_BROWSABLE)
             addDataScheme(REQUESTOR_APP_SCHEME)
         }
         shadowOf(context.packageManager).apply {
-            addActivityIfNotPresent(activity)
+            addOrUpdateActivity(activityInfo)
             addIntentFilterForActivity(activity, filter)
         }
     }
@@ -329,6 +341,22 @@ class CardinalThreeDSecureProviderLaunchOptionsUnitTest {
     }
 
     @Test
+    fun `a UI customization Cardinal rejects fails naming it before Cardinal is configured`() = runTest {
+        // Cardinal rejects an empty color
+        val options = PaymentActionThreeDSecureOptions(
+            uiCustomization = PaymentActionThreeDSecureUiCustomization(
+                labelCustomization = PaymentActionThreeDSecureLabelCustomization(textColor = ""),
+            ),
+        )
+
+        val result = buildSut(options).collectDeviceData()
+
+        val error = assertIs<InvalidArgumentException>(assertIs<DeviceDataResult.Failed>(result).error)
+        assertEquals(CardinalThreeDSecureProvider.rejectedCustomizationMessage("labelCustomization"), error.message)
+        assertTrue(configured.isEmpty())
+    }
+
+    @Test
     fun `a requestor app URL that an activity in this app handles is sent to Cardinal`() = runTest {
         declareReturnActivity()
 
@@ -364,6 +392,26 @@ class CardinalThreeDSecureProviderLaunchOptionsUnitTest {
         val result = buildSut(PaymentActionThreeDSecureOptions(requestorAppUrl = REQUESTOR_APP_URL)).collectDeviceData()
 
         assertIs<InvalidArgumentException>(assertIs<DeviceDataResult.Failed>(result).error)
+    }
+
+    @Test
+    fun `a requestor app URL handled by an activity that isn't exported fails`() = runTest {
+        declareReturnActivity(exported = false)
+
+        val result = buildSut(PaymentActionThreeDSecureOptions(requestorAppUrl = REQUESTOR_APP_URL)).collectDeviceData()
+
+        assertIs<InvalidArgumentException>(assertIs<DeviceDataResult.Failed>(result).error)
+        assertTrue(configured.isEmpty())
+    }
+
+    @Test
+    fun `a requestor app URL handled by an activity that needs a permission fails`() = runTest {
+        declareReturnActivity(permission = "com.example.merchant.permission.RETURN")
+
+        val result = buildSut(PaymentActionThreeDSecureOptions(requestorAppUrl = REQUESTOR_APP_URL)).collectDeviceData()
+
+        assertIs<InvalidArgumentException>(assertIs<DeviceDataResult.Failed>(result).error)
+        assertTrue(configured.isEmpty())
     }
 
     @Test
