@@ -38,12 +38,12 @@ class PayPalCreditMessagingVisibilityUnitTest {
         @TestParameter payLater: PayLater,
         @TestParameter isEditCompleted: Boolean
     ) {
-        // The row shows only before an edit and next to a funding instrument that allows it. A failed fetch hides it.
-        // While the funding instrument loads, a message is held back behind the shimmer.
+        // The row shows only before an edit and next to a funding instrument that allows it. While the funding
+        // instrument loads, the row shimmers whatever its own state; after that a failed fetch hides it.
         val expected = when {
             isEditCompleted || !fundingInstrument.allowsPayLater -> PayPalCreditMessagingDisplayState.Hidden
-            payLater == PayLater.HIDDEN -> PayPalCreditMessagingDisplayState.Hidden
             fundingInstrument == FundingInstrument.LOADING -> PayPalCreditMessagingDisplayState.Loading
+            payLater == PayLater.HIDDEN -> PayPalCreditMessagingDisplayState.Hidden
             else -> payLater.state
         }
 
