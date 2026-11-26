@@ -226,8 +226,16 @@ internal class PayPalSavedPaymentMethodClient internal constructor(
     }
 
     /** Sends [eventName] with [params], this component's [buttonSessionId] and its UI type. */
-    fun sendAnalyticsEvent(eventName: String, params: AnalyticsEventParams = AnalyticsEventParams()) {
-        braintreeClient.sendAnalyticsEvent(eventName, params.copy(buttonSessionId = buttonSessionId, uiType = uiType))
+    fun sendAnalyticsEvent(
+        eventName: String,
+        params: AnalyticsEventParams = AnalyticsEventParams(),
+        sendImmediately: Boolean = true
+    ) {
+        braintreeClient.sendAnalyticsEvent(
+            eventName,
+            params.copy(buttonSessionId = buttonSessionId, uiType = uiType),
+            sendImmediately
+        )
     }
 
     private fun requireClientToken(): ClientToken =

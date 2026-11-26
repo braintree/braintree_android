@@ -480,6 +480,16 @@ class PayPalSavedPaymentMethodClientUnitTest {
     }
 
     @Test
+    fun `sendAnalyticsEvent passes sendImmediately through`() {
+        val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
+
+        sut.sendAnalyticsEvent("event", sendImmediately = false)
+
+        verify { braintreeClient.sendAnalyticsEvent("event", any(), false) }
+    }
+
+    @Test
     fun `tokenize returns the PayPal client's result`() = runTest {
         val authResult = mockk<PayPalPaymentAuthResult.Success>()
         val result = mockk<PayPalResult>()

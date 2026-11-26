@@ -74,6 +74,7 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         currentState = Lifecycle.State.RESUMED
     }
     private val events = mutableListOf<Pair<String, AnalyticsEventParams>>()
+    private val queuedEvents = mutableListOf<String>()
     private lateinit var sut: PayPalSavedPaymentMethodViewModel
 
     @Before
@@ -85,8 +86,9 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
         every { activity.isFinishing } returns false
         every { activity.isDestroyed } returns false
         every { client.buttonSessionId } returns BUTTON_SESSION_ID
-        every { client.sendAnalyticsEvent(any(), any()) } answers {
+        every { client.sendAnalyticsEvent(any(), any(), any()) } answers {
             events += firstArg<String>() to secondArg<AnalyticsEventParams>()
+            if (!thirdArg<Boolean>()) queuedEvents += firstArg<String>()
         }
         sut = newViewModel()
     }
@@ -821,6 +823,8 @@ class PayPalSavedPaymentMethodViewModelUnitTest {
 
         val params = eventsNamed(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_EDIT_SELECTED).single()
         assertSavedMethod(params)
+        // Queued, so it's sent in the same batch as, and ahead of, paypal:tokenize:started.
+        assertEquals(listOf(PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_EDIT_SELECTED), queuedEvents)
     }
 
     @Test

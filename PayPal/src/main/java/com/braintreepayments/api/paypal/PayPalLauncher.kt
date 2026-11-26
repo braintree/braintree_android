@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.ActivityResultRegistry
@@ -183,19 +184,22 @@ class PayPalLauncher internal constructor(
         isEditFiFlow: Boolean,
         buttonSessionId: String?
     ): PayPalPaymentAuthResult {
-        val contextId = intent.data?.getQueryParameter("ba_token") ?: intent.data?.getQueryParameter("token")
         val analyticsEventParams = AnalyticsEventParams(
-            contextId = contextId,
+            contextId = intent.data?.token(),
             appSwitchUrl = intent.data?.toString(),
             isEditFiFlow = isEditFiFlow,
             buttonSessionId = buttonSessionId
         )
+        val browserSwitchResult = browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)
 
-        analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, analyticsEventParams)
+        // An Auth Tab returns its URL through browser-switch, not the intent, so started reads it from the result.
+        val returnUrl = intent.data ?: (browserSwitchResult as? BrowserSwitchFinalResult.Success)?.returnUrl
+        analyticsClient.sendEvent(
+            PayPalAnalytics.HANDLE_RETURN_STARTED,
+            analyticsEventParams.copy(contextId = returnUrl?.token(), appSwitchUrl = returnUrl?.toString())
+        )
 
-        return when (
-            val browserSwitchResult = browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)
-        ) {
+        return when (browserSwitchResult) {
             is BrowserSwitchFinalResult.Success -> {
                 analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED, analyticsEventParams)
                 PayPalPaymentAuthResult.Success(browserSwitchResult)
@@ -285,3 +289,5 @@ class PayPalLauncher internal constructor(
         }
     }
 }
+
+private fun Uri.token(): String? = getQueryParameter("ba_token") ?: getQueryParameter("token")

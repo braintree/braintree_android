@@ -152,9 +152,12 @@ internal class PayPalSavedPaymentMethodViewModel(
         hostLifecycle: Lifecycle
     ): PayPalPendingRequest? {
         if (state.value.isEditing) return null
+        // Queued, so it goes out in the same batch as paypal:tokenize:started and ahead of it. Sent on its own, the
+        // two separate requests can reach FPTI in either order.
         client.sendAnalyticsEvent(
             PayPalSavedPaymentMethodAnalytics.FUNDING_INSTRUMENT_EDIT_SELECTED,
-            shownPaymentMethod().savedMethodParams()
+            shownPaymentMethod().savedMethodParams(),
+            sendImmediately = false
         )
         val activity = context.findActivity() as? ComponentActivity
             ?: return PayPalPendingRequest.Failure(BraintreeException(NO_COMPONENT_ACTIVITY_MESSAGE))
