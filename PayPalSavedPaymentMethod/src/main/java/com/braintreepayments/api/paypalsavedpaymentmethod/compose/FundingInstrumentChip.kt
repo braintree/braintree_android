@@ -44,7 +44,7 @@ import com.braintreepayments.api.paypalsavedpaymentmethod.styling.PayPalSavedPay
  * the edit target and screen readers read it as one element, for example "Visa, ending in 1 2 3 4", so its icons and
  * text are decorative. An editable chip gets a 48dp touch target and a fixed dark ripple, since the theme's ripple is
  * light on a dark theme and barely shows on the light chip. Card art shows a shimmer while it loads and the generic
- * icon if it fails; with no generic icon it leaves no space, as on iOS. The art's frame is capped, so square or
+ * icon if it fails; with no generic icon it leaves no space. The art's frame is capped, so square or
  * portrait art scales down instead of growing the chip, and a long label shrinks so the edit icon keeps its space.
  */
 @Composable
@@ -149,7 +149,7 @@ internal fun FundingInstrumentChip(
     }
 }
 
-/** The chip's text, in a fixed color as on iOS, so it stays readable on the chip's fixed background. */
+/** The chip's text, in a fixed color so it stays readable on the chip's fixed background. */
 @Composable
 private fun FundingInstrumentText(
     text: String,

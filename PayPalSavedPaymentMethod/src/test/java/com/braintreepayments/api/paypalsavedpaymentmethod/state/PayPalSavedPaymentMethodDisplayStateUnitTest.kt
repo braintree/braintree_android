@@ -22,13 +22,13 @@ import org.junit.Test
 class PayPalSavedPaymentMethodDisplayStateUnitTest {
 
     private val card = PayPalSavedPaymentMethod(
-        type = PayPalSavedPaymentMethodType.CARD,
+        rawType = PayPalSavedPaymentMethodType.CARD.rawValue,
         label = "Visa",
         imageUrl = "https://example.com/visa.png",
         lastDigits = "1234",
         subtype = null
     )
-    private val bank = card.copy(type = PayPalSavedPaymentMethodType.BANK, label = "CREDIT UNION 1")
+    private val bank = card.copy(rawType = PayPalSavedPaymentMethodType.BANK.rawValue, label = "CREDIT UNION 1")
     private val payer = PayPalPayer(email = "buyer@example.com", isEditable = true)
 
     @Test

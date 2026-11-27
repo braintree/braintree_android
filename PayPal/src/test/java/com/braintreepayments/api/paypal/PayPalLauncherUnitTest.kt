@@ -52,6 +52,7 @@ class PayPalLauncherUnitTest {
 
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         every { paymentAuthRequestParams.contextId } returns paymentToken
+        every { paymentAuthRequestParams.buttonSessionId } returns null
         every { paymentAuthRequestParams.approvalUrl } returns approvalUrl
         every { paymentAuthRequestParams.shouldRequestBillingAgreement } returns isBillingAgreement
         every { paymentAuthRequestParams.recurringBillingPlanType } returns recurringBillingPlanType
@@ -137,6 +138,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                 )
@@ -151,8 +153,54 @@ class PayPalLauncherUnitTest {
                     PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
                 },
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `launch for the edit flow sends is_edit_fi and the buttonSessionId`() {
+        every { paymentAuthRequestParams.isEditFiFlow } returns true
+        every { paymentAuthRequestParams.buttonSessionId } returns "button-session-id"
+        every { browserSwitchClient.start(activity, options, any()) } returns
+            BrowserSwitchStartResult.Started(pendingRequestString)
+        every { getAppSwitchUseCase() } returns false
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        val params = AnalyticsEventParams(
+            contextId = paymentToken,
+            appSwitchUrl = approvalUrl,
+            isEditFiFlow = true,
+            buttonSessionId = "button-session-id"
+        )
+        verify { analyticsClient.sendEvent(PayPalAnalytics.BROWSER_PRESENTATION_STARTED, params) }
+        verify { analyticsClient.sendEvent(PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED, params) }
+    }
+
+    @Test
+    fun `handleReturnToApp for the edit flow sends is_edit_fi and the buttonSessionId`() {
+        val returnUrl = "https://return.url?token=token"
+        every { intent.data } returns Uri.parse(returnUrl)
+
+        sut.handleReturnToApp(
+            PayPalPendingRequest.Started(pendingRequestString),
+            intent,
+            isEditFiFlow = true,
+            buttonSessionId = "button-session-id"
+        )
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.HANDLE_RETURN_STARTED,
+                AnalyticsEventParams(
+                    contextId = "token",
+                    appSwitchUrl = returnUrl,
+                    isEditFiFlow = true,
+                    buttonSessionId = "button-session-id"
                 )
             )
         }
@@ -174,6 +222,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                     isVaultRequest = true,
@@ -189,6 +238,7 @@ class PayPalLauncherUnitTest {
                     PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
                 },
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                     isVaultRequest = true,
@@ -213,6 +263,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                     isVaultRequest = false,
@@ -228,6 +279,7 @@ class PayPalLauncherUnitTest {
                     PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
                 },
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                     isVaultRequest = false,
@@ -253,6 +305,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                 )
@@ -263,6 +316,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_FAILED else PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                     errorDescription = "AndroidManifest.xml is incorrectly configured or another app " +
@@ -286,6 +340,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 PayPalAnalytics.APP_SWITCH_STARTED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                 )
@@ -296,6 +351,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 PayPalAnalytics.APP_SWITCH_FAILED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                     errorDescription = "BrowserSwitchOptions is null"
@@ -324,6 +380,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                 )
@@ -334,6 +391,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_FAILED else PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                     errorDescription = "BrowserSwitchOptions URL is null"
@@ -356,7 +414,30 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 PayPalAnalytics.HANDLE_RETURN_STARTED,
-                AnalyticsEventParams(contextId = token, appSwitchUrl = returnUrl)
+                AnalyticsEventParams(contextId = token, appSwitchUrl = returnUrl, isEditFiFlow = false)
+            )
+        }
+    }
+
+    @Test
+    fun `handleReturnToApp reads the return events' context ID from an Auth Tab result, not the empty intent`() {
+        val returnUrl = "https://return.url?token=EC-123"
+        every { intent.data } returns null
+        val authTabResult = mockk<BrowserSwitchFinalResult.Success> {
+            every { this@mockk.returnUrl } returns Uri.parse(returnUrl)
+        }
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns authTabResult
+
+        sut.handleReturnToApp(PayPalPendingRequest.Started(pendingRequestString), intent)
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.HANDLE_RETURN_STARTED,
+                AnalyticsEventParams(contextId = "EC-123", appSwitchUrl = returnUrl, isEditFiFlow = false)
+            )
+            analyticsClient.sendEvent(
+                PayPalAnalytics.HANDLE_RETURN_SUCCEEDED,
+                AnalyticsEventParams(contextId = "EC-123", appSwitchUrl = returnUrl, isEditFiFlow = false)
             )
         }
     }
@@ -442,6 +523,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 PayPalAnalytics.APP_SWITCH_STARTED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                 )
@@ -463,6 +545,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                 )
@@ -484,6 +567,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
                 AnalyticsEventParams(
+                    isEditFiFlow = false,
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                 )

@@ -23,6 +23,7 @@ import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodAnalytics
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodClient
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
@@ -99,8 +100,15 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     internal var viewModelFactory: (String, Uri, String?) -> ViewModelProvider.Factory =
         { authorization, returnUrl, deepLinkScheme ->
             val applicationContext = context.applicationContext
-            PayPalSavedPaymentMethodViewModel.Factory {
-                PayPalSavedPaymentMethodClient(applicationContext, authorization, returnUrl, deepLinkScheme)
+            PayPalSavedPaymentMethodViewModel.Factory { buttonSessionId ->
+                PayPalSavedPaymentMethodClient(
+                    applicationContext,
+                    authorization,
+                    returnUrl,
+                    deepLinkScheme,
+                    PayPalSavedPaymentMethodAnalytics.UI_TYPE_XML,
+                    buttonSessionId
+                )
             }
         }
 
@@ -129,7 +137,10 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
     init {
         addView(contentView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
         contentView.onEditClick = { startEdit() }
-        contentView.onLearnMoreClick = { learnMore -> context.openLearnMore(learnMore) }
+        contentView.onLearnMoreClick = { learnMore ->
+            viewModel?.onLearnMoreSelected()
+            context.openLearnMore(learnMore)
+        }
         render()
     }
 
@@ -311,6 +322,7 @@ class PayPalSavedPaymentMethodView @JvmOverloads constructor(
                         viewModel.state.collect {
                             state = it
                             render()
+                            viewModel.onRendered(style)
                         }
                     }
                     launch { viewModel.results.collect { tokenizeCallback?.onPayPalResult(it) } }

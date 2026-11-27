@@ -39,7 +39,7 @@ class PayPalCreditMessagingRequestUnitTest {
         assertEquals(4, attributes.length())
         assertEquals("BRAND_BRAINTREE", attributes.getString(0))
         assertEquals("EXPERIENCE_ANDROID_SDK", attributes.getString(1))
-        assertEquals("EXPERIENCE_VIEW_EDIT_FI", attributes.getString(2))
+        assertEquals("EXPERIENCE_VIEW_EDIT_FUNDING_INSTRUMENT", attributes.getString(2))
         assertEquals("EXPERIENCE_EXTERNAL_DIRECT", attributes.getString(3))
     }
 }

@@ -96,6 +96,25 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
+    fun `each rendered state is reported to the view model with the style`() {
+        initialize()
+        state.value = PayPalSavedPaymentMethodUiState(fundingInstrument = CARD_STATE)
+        idle()
+
+        verify { viewModel.onRendered(sut.style) }
+    }
+
+    @Test
+    fun `tapping Learn more reports it to the view model`() {
+        initialize()
+        val contentView = sut.getChildAt(0) as PayPalSavedPaymentMethodContentView
+
+        contentView.onLearnMoreClick(PayPalCreditMessagingContent.LearnMore("Learn more", LEARN_MORE_URL, false))
+
+        verify { viewModel.onLearnMoreSelected() }
+    }
+
+    @Test
     fun `a new request or turning the Pay Later message back on is passed to the view model`() {
         sut.style = PayPalSavedPaymentMethodViewStyle(showPayPalCreditMessaging = false)
         initialize()
@@ -530,7 +549,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
-    fun `a refreshed authorization keeps the view model, as on iOS`() {
+    fun `a refreshed authorization keeps the view model`() {
         initialize()
 
         initialize(authorization = "refreshed-client-token")
@@ -611,8 +630,9 @@ class PayPalSavedPaymentMethodViewUnitTest {
 
     private companion object {
         val RETURN_URL: Uri = Uri.parse("https://merchant.example.com")
+        const val LEARN_MORE_URL = "https://www.paypal.com/learn-more"
         val CARD_STATE = PayPalSavedPaymentMethodDisplayState.Content(
-            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD, "Visa", null, "1234", null)
+            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD.rawValue, "Visa", null, "1234", null)
         )
         val MESSAGE_STATE = PayPalCreditMessagingDisplayState.Content(PayPalCreditMessagingContent("Pay in 4.", null))
     }

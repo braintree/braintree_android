@@ -151,6 +151,14 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
+    fun `each rendered state is reported to the view model with the style`() {
+        state.value = state.value.copy(isEditing = false, isEditCompleted = true)
+        composeTestRule.waitForIdle()
+
+        verify(exactly = 2) { viewModel.onRendered(any()) }
+    }
+
+    @Test
     fun `a new request is passed to the view model`() {
         inputs.value = inputs.value.copy(request = PayPalSavedPaymentMethodRequest("20.00", "USD"))
         composeTestRule.waitForIdle()
@@ -171,7 +179,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
     }
 
     @Test
-    fun `a refreshed authorization keeps the view model, as on iOS`() {
+    fun `a refreshed authorization keeps the view model`() {
         inputs.value = inputs.value.copy(authorization = "refreshed-client-token")
         composeTestRule.waitForIdle()
 
@@ -398,7 +406,7 @@ class PayPalSavedPaymentMethodViewUnitTest {
         val REQUEST = PayPalSavedPaymentMethodRequest("10.00", "USD")
         val CHECKOUT = PayPalCheckoutRequest(amount = "10.00", hasUserLocationConsent = true)
         val CARD_STATE = PayPalSavedPaymentMethodDisplayState.Content(
-            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD, "Visa", null, "1234", null)
+            PayPalSavedPaymentMethod(PayPalSavedPaymentMethodType.CARD.rawValue, "Visa", null, "1234", null)
         )
     }
 }

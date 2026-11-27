@@ -1,9 +1,11 @@
 package com.braintreepayments.api.paypal
 
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.ActivityResultRegistry
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -89,6 +91,8 @@ class PayPalLauncher internal constructor(
             contextId = contextId,
             appSwitchUrl = paymentAuthRequest.requestParams.approvalUrl,
             isVaultRequest = paymentAuthRequest.requestParams.isVaultRequest,
+            isEditFiFlow = paymentAuthRequest.requestParams.isEditFiFlow,
+            buttonSessionId = paymentAuthRequest.requestParams.buttonSessionId,
         )
 
         setLaunchAnalyticAttributes(paymentAuthRequest.requestParams)
@@ -167,18 +171,32 @@ class PayPalLauncher internal constructor(
     fun handleReturnToApp(
         pendingRequest: PayPalPendingRequest.Started,
         intent: Intent
-    ): PayPalPaymentAuthResult {
-        val contextId = intent.data?.getQueryParameter("ba_token") ?: intent.data?.getQueryParameter("token")
-        val analyticsEventParams = AnalyticsEventParams(
-            contextId = contextId,
-            appSwitchUrl = intent.data?.toString()
-        )
+    ): PayPalPaymentAuthResult = handleReturnToApp(pendingRequest, intent, isEditFiFlow = false, buttonSessionId = null)
 
+    /**
+     * [handleReturnToApp] for the saved payment method edit flow, whose return events are sent with `is_edit_fi` and
+     * [buttonSessionId]. They're passed in, since the flow is only known from the request once the return is read.
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun handleReturnToApp(
+        pendingRequest: PayPalPendingRequest.Started,
+        intent: Intent,
+        isEditFiFlow: Boolean,
+        buttonSessionId: String?
+    ): PayPalPaymentAuthResult {
+        val browserSwitchResult = browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)
+
+        // An Auth Tab returns its URL through browser-switch, not the intent, so return events read it from the result.
+        val returnUrl = intent.data ?: (browserSwitchResult as? BrowserSwitchFinalResult.Success)?.returnUrl
+        val analyticsEventParams = AnalyticsEventParams(
+            contextId = returnUrl?.token(),
+            appSwitchUrl = returnUrl?.toString(),
+            isEditFiFlow = isEditFiFlow,
+            buttonSessionId = buttonSessionId
+        )
         analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, analyticsEventParams)
 
-        return when (
-            val browserSwitchResult = browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)
-        ) {
+        return when (browserSwitchResult) {
             is BrowserSwitchFinalResult.Success -> {
                 analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED, analyticsEventParams)
                 PayPalPaymentAuthResult.Success(browserSwitchResult)
@@ -268,3 +286,5 @@ class PayPalLauncher internal constructor(
         }
     }
 }
+
+private fun Uri.token(): String? = getQueryParameter("ba_token") ?: getQueryParameter("token")

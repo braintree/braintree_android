@@ -3,6 +3,7 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod
 
 import android.content.Context
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
@@ -25,14 +26,17 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -269,7 +273,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
             listOf(
                 "BRAND_BRAINTREE",
                 "EXPERIENCE_ANDROID_SDK",
-                "EXPERIENCE_VIEW_EDIT_FI",
+                "EXPERIENCE_VIEW_EDIT_FUNDING_INSTRUMENT",
                 "EXPERIENCE_EXTERNAL_DIRECT"
             ),
             flowContext.getJSONArray("attributes").toStringList()
@@ -362,10 +366,17 @@ class PayPalSavedPaymentMethodClientUnitTest {
     }
 
     @Test
-    fun `createEditFundingInstrumentAuthRequest wraps the PayPal request for a client token with a JWT`() = runTest {
+    fun `createEditFundingInstrumentAuthRequest wraps the PayPal request, sent with the buttonSessionId`() = runTest {
         val payPalRequest = mockk<PayPalPaymentAuthRequest.ReadyToLaunch>()
-        coEvery { payPalClient.createPaymentAuthRequestForEditFi(context, checkoutRequest) } returns payPalRequest
-        val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), payPalClient, clientTokenRepository)
+        coEvery {
+            payPalClient.createPaymentAuthRequestForEditFi(context, checkoutRequest, "button-session-id")
+        } returns payPalRequest
+        val sut = PayPalSavedPaymentMethodClient(
+            mockk(relaxed = true),
+            payPalClient,
+            clientTokenRepository,
+            buttonSessionId = "button-session-id"
+        )
 
         val result = sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest)
 
@@ -377,7 +388,9 @@ class PayPalSavedPaymentMethodClientUnitTest {
     fun `createEditFundingInstrumentAuthRequest returns Failure with the PayPal error`() = runTest {
         val payPalError = BraintreeException("PayPal failed")
         val payPalFailure = mockk<PayPalPaymentAuthRequest.Failure> { every { error } returns payPalError }
-        coEvery { payPalClient.createPaymentAuthRequestForEditFi(context, checkoutRequest) } returns payPalFailure
+        coEvery {
+            payPalClient.createPaymentAuthRequestForEditFi(context, checkoutRequest, any<String>())
+        } returns payPalFailure
         val sut = PayPalSavedPaymentMethodClient(mockk(relaxed = true), payPalClient, clientTokenRepository)
 
         val result = sut.createEditFundingInstrumentAuthRequest(context, checkoutRequest)
@@ -399,7 +412,7 @@ class PayPalSavedPaymentMethodClientUnitTest {
             assertIs<PayPalSavedPaymentMethodException.MissingPaymentMethodIdJwt>(
                 assertIs<PayPalSavedPaymentMethodAuthRequest.Failure>(result).error
             )
-            coVerify(exactly = 0) { payPalClient.createPaymentAuthRequestForEditFi(any(), any()) }
+            coVerify(exactly = 0) { payPalClient.createPaymentAuthRequestForEditFi(any(), any(), any<String>()) }
         }
 
     @Test
@@ -412,8 +425,69 @@ class PayPalSavedPaymentMethodClientUnitTest {
             assertIs<PayPalSavedPaymentMethodException.InvalidAuthorization>(
                 assertIs<PayPalSavedPaymentMethodAuthRequest.Failure>(result).error
             )
-            coVerify(exactly = 0) { payPalClient.createPaymentAuthRequestForEditFi(any(), any()) }
+            coVerify(exactly = 0) { payPalClient.createPaymentAuthRequestForEditFi(any(), any(), any<String>()) }
         }
+
+    @Test
+    fun `both fetch types send the component's buttonSessionId`() = runTest {
+        PayPalFundingInstrumentFetchType.entries.forEach { fetchType ->
+            val braintreeClient = graphQLClient(INSTRUMENT_RESPONSE)
+            val sut = PayPalSavedPaymentMethodClient(
+                braintreeClient,
+                payPalClient,
+                clientTokenRepository,
+                buttonSessionId = "button-session-id"
+            )
+
+            sut.fetchPaymentMethod(fetchType, orderId = "order-456")
+
+            assertEquals("button-session-id", capturedGraphQLInput(braintreeClient).getString("buttonSessionId"))
+        }
+    }
+
+    @Test
+    fun `each client gets its own buttonSessionId, a UUID without dashes`() {
+        val first = PayPalSavedPaymentMethodClient(mockk(), payPalClient, clientTokenRepository).buttonSessionId
+        val second = PayPalSavedPaymentMethodClient(mockk(), payPalClient, clientTokenRepository).buttonSessionId
+
+        assertTrue(first.matches(Regex("[0-9a-f]{32}")))
+        assertNotEquals(first, second)
+    }
+
+    @Test
+    fun `sendAnalyticsEvent adds the buttonSessionId and uiType to the params`() {
+        val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+        val sut = PayPalSavedPaymentMethodClient(
+            braintreeClient,
+            payPalClient,
+            clientTokenRepository,
+            buttonSessionId = "button-session-id",
+            uiType = "compose"
+        )
+
+        sut.sendAnalyticsEvent("event", AnalyticsEventParams(errorDescription = "error"))
+
+        verify {
+            braintreeClient.sendAnalyticsEvent(
+                "event",
+                AnalyticsEventParams(
+                    errorDescription = "error",
+                    buttonSessionId = "button-session-id",
+                    uiType = "compose"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `sendAnalyticsEvent passes sendImmediately through`() {
+        val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+        val sut = PayPalSavedPaymentMethodClient(braintreeClient, payPalClient, clientTokenRepository)
+
+        sut.sendAnalyticsEvent("event", sendImmediately = false)
+
+        verify { braintreeClient.sendAnalyticsEvent("event", any(), false) }
+    }
 
     @Test
     fun `tokenize returns the PayPal client's result`() = runTest {

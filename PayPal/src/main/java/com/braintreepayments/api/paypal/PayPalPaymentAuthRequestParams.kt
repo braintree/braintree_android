@@ -11,6 +11,8 @@ data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
     val clientMetadataId: String? = null,
     val contextId: String? = null,
     val successUrl: String? = null,
+    val isEditFiFlow: Boolean = false,
+    val buttonSessionId: String? = null,
 ) {
 
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)

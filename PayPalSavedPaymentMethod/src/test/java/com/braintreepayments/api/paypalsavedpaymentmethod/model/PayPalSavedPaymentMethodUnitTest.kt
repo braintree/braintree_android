@@ -18,6 +18,8 @@ class PayPalSavedPaymentMethodUnitTest {
             .put("lastDigits", "3357")
             .put("type", "PAYPAL_CREDIT")
             .put("subtype", "PAY_LATER_US")
+            .put("id", "BA-123")
+            .put("cardBrand", "VISA")
 
         val result = requireNotNull(PayPalSavedPaymentMethod.fromJson(json))
 
@@ -26,6 +28,9 @@ class PayPalSavedPaymentMethodUnitTest {
         assertEquals("3357", result.lastDigits)
         assertEquals(PayPalSavedPaymentMethodType.PAYPAL_CREDIT, result.type)
         assertEquals("PAY_LATER_US", result.subtype)
+        assertEquals("BA-123", result.id)
+        assertEquals("VISA", result.cardBrand)
+        assertEquals("PAYPAL_CREDIT", result.rawType)
     }
 
     @Test
@@ -35,6 +40,7 @@ class PayPalSavedPaymentMethodUnitTest {
         )
 
         assertNull(result.type)
+        assertEquals("SOMETHING_NEW", result.rawType)
         assertEquals("Visa", result.label)
     }
 
@@ -47,6 +53,8 @@ class PayPalSavedPaymentMethodUnitTest {
         assertNull(result.imageUrl)
         assertNull(result.lastDigits)
         assertNull(result.subtype)
+        assertNull(result.id)
+        assertNull(result.cardBrand)
     }
 
     @Test
@@ -65,13 +73,22 @@ class PayPalSavedPaymentMethodUnitTest {
     }
 
     @Test
-    fun `fromJson returns null when type is absent`() {
-        assertNull(PayPalSavedPaymentMethod.fromJson(JSONObject().put("label", "Visa")))
+    fun `fromJson keeps an entry without a type, with a null type`() {
+        val result = requireNotNull(PayPalSavedPaymentMethod.fromJson(JSONObject().put("label", "Visa")))
+
+        assertNull(result.rawType)
+        assertNull(result.type)
+        assertEquals("Visa", result.label)
     }
 
     @Test
-    fun `fromJson returns null when type is blank`() {
-        assertNull(PayPalSavedPaymentMethod.fromJson(JSONObject().put("type", "").put("label", "Visa")))
+    fun `fromJson keeps an entry with a blank type, with a null type`() {
+        val json = JSONObject().put("type", "").put("label", "Visa")
+
+        val result = requireNotNull(PayPalSavedPaymentMethod.fromJson(json))
+
+        assertEquals("", result.rawType)
+        assertNull(result.type)
     }
 
     @Test

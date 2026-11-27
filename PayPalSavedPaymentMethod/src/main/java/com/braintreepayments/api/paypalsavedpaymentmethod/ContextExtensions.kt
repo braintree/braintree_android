@@ -23,8 +23,8 @@ internal fun Context.findActivity(): Activity? {
 }
 
 /**
- * Opens the "Learn more" page. A page PayPal allows embedding opens in a Custom Tab, as iOS opens it in a Safari view
- * controller; any other page, or one with no Custom Tabs browser, opens in the browser. Outside an activity it starts
+ * Opens the "Learn more" page. A page PayPal allows embedding opens in a Custom Tab; any other page, or one with no
+ * Custom Tabs browser, opens in the browser. Outside an activity it starts
  * a new task. Does nothing if no app can open it.
  */
 internal fun Context.openLearnMore(learnMore: PayPalCreditMessagingContent.LearnMore) {

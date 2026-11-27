@@ -27,5 +27,17 @@ internal data class AnalyticsEvent(
     val didPayPalServerAttemptAppSwitch: Boolean? = null,
     val didSdkAttemptAppSwitch: Boolean? = null,
     val fundingSource: String? = null,
-    val uiType: String? = null
+    val uiType: String? = null,
+    val buttonSessionId: String? = null,
+    val isEditFiFlow: Boolean? = null,
+    val savedMethodType: String? = null,
+    val savedMethodId: String? = null,
+    val savedMethodBrand: String? = null,
+    val presentmentMessageType: String? = null,
+    val renderTrigger: String? = null,
+    val shownContent: String? = null,
+    val renderedLogo: Boolean? = null,
+    val renderedLabel: Boolean? = null,
+    val renderedEditTag: Boolean? = null,
+    val renderedMessageSlot: Boolean? = null
 )

@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypalsavedpaymentmethod.compose
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.LocalActivityResultRegistryOwner
@@ -28,6 +29,7 @@ import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
+import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodAnalytics
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodClient
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodRequest
 import com.braintreepayments.api.paypalsavedpaymentmethod.PayPalSavedPaymentMethodReturnResult
@@ -47,7 +49,7 @@ import java.util.UUID
  * Requires a client token generated with the buyer's payment method ID. The host activity must call
  * `setIntent(intent)` in `onNewIntent`. The PayPal return URL is removed from the intent once handled.
  *
- * The [authorization] and return URLs are read when the component first appears, as on iOS, so a refreshed client
+ * The [authorization] and return URLs are read when the component first appears, so a refreshed client
  * token doesn't lose the buyer's edit or a return from PayPal. To start over, for example for another buyer, key the
  * component on the authorization: `key(authorization) { PayPalSavedPaymentMethodView(...) }`. That creates a new
  * instance, so the previous buyer's edit and pending return are dropped.
@@ -94,23 +96,29 @@ fun PayPalSavedPaymentMethodView(
         deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme,
         style = style,
         paypalTokenizeCallback = paypalTokenizeCallback,
-        viewModelFactory = { factoryAuthorization, factoryAppLinkReturnUrl, factoryDeepLinkFallbackUrlScheme ->
-            PayPalSavedPaymentMethodViewModel.Factory {
-                PayPalSavedPaymentMethodClient(
-                    applicationContext,
-                    factoryAuthorization,
-                    factoryAppLinkReturnUrl,
-                    factoryDeepLinkFallbackUrlScheme
-                )
-            }
-        }
+        viewModelFactory = defaultViewModelFactory(applicationContext)
     )
 }
+
+/** The view model factory of the public component. Its client gets the application context and sends `compose`. */
+internal fun defaultViewModelFactory(applicationContext: Context): (String, Uri, String?) -> ViewModelProvider.Factory =
+    { authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme ->
+        PayPalSavedPaymentMethodViewModel.Factory { buttonSessionId ->
+            PayPalSavedPaymentMethodClient(
+                applicationContext,
+                authorization,
+                appLinkReturnUrl,
+                deepLinkFallbackUrlScheme,
+                PayPalSavedPaymentMethodAnalytics.UI_TYPE_COMPOSE,
+                buttonSessionId
+            )
+        }
+    }
 
 /**
  * The component with the view model injectable, for tests. The instance ID and the pending request of an edit are
  * saved, so the view model is found again and a return can still be completed after recreation or process death. The
- * authorization and return URLs are read once, as on iOS, so a refreshed authorization keeps the edit in progress.
+ * authorization and return URLs are read once, so a refreshed authorization keeps the edit in progress.
  * The first load fetches the funding instrument and the Pay Later message; later request changes reload only the
  * message. The pending request is forgotten once its result is delivered, a cancel included, since every resume passes
  * it to the view model and would deliver the cancel again. A resume with no PayPal result, such as the buyer closing
@@ -202,9 +210,15 @@ internal fun PayPalSavedPaymentMethodView(
                 }
             }
         },
-        onLearnMoreClick = { learnMore -> context.openLearnMore(learnMore) },
+        onLearnMoreClick = { learnMore ->
+            viewModel.onLearnMoreSelected()
+            context.openLearnMore(learnMore)
+        },
         modifier = modifier
     )
+    LaunchedEffect(viewModel, state) {
+        viewModel.onRendered(style)
+    }
 
     if (state.isEditing) {
         LoadingDialog()

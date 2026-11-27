@@ -97,7 +97,7 @@ internal class FundingInstrumentChipView @JvmOverloads constructor(
         })
     }
 
-    /** Shows [state]; states without a funding instrument clear the chip. The text color is fixed, as on iOS. */
+    /** Shows [state]; states without a funding instrument clear the chip. The text color is fixed. */
     fun bind(
         state: PayPalSavedPaymentMethodDisplayState,
         resolvedStyle: PayPalSavedPaymentMethodStyleResolver,

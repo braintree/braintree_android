@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
 
 /**
  * Fetches the Pay Later message and puts it in [state]. Only the latest [fetch] counts, so an older amount's message
- * can't land last. The message stays hidden after an edit, since the offer no longer applies.
+ * can't land last. The message stays hidden after an edit, since the offer no longer applies. Calls [onSettled] with
+ * why the message can't be shown, or `null` when it can.
  */
 @OptIn(ExperimentalBetaApi::class)
 // The client reports failures by throwing, so its calls catch Exception and rethrow cancellation, as CardClient does.
@@ -23,7 +24,8 @@ import kotlinx.coroutines.launch
 internal class CreditMessagingLoader(
     private val client: PayPalSavedPaymentMethodClient,
     private val state: MutableStateFlow<PayPalSavedPaymentMethodUiState>,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    private val onSettled: (failure: Exception?) -> Unit = {}
 ) {
 
     private data class Requested(val request: PayPalSavedPaymentMethodRequest, val showCreditMessaging: Boolean)
@@ -61,6 +63,7 @@ internal class CreditMessagingLoader(
             // Nothing is shown any more, so turning the message back on fetches it.
             loadedRequest = null
             state.update { it.copy(creditMessaging = hidden) }
+            onSettled(null)
             return
         }
         val request = requested.request
@@ -72,6 +75,7 @@ internal class CreditMessagingLoader(
             // Hidden, and not recorded as loaded, so the next view that binds retries it.
             loadedRequest = null
             state.update { it.copy(creditMessaging = hidden) }
+            onSettled(e)
             return
         } finally {
             inFlightRequest = null
@@ -80,5 +84,12 @@ internal class CreditMessagingLoader(
         if (state.value.isEditCompleted) return
         loadedRequest = request
         state.update { it.copy(creditMessaging = creditMessaging) }
+        onSettled(
+            if (creditMessaging is PayPalCreditMessagingDisplayState.Content) {
+                null
+            } else {
+                PayPalSavedPaymentMethodException.MissingPreferredMessage()
+            }
+        )
     }
 }

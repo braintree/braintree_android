@@ -18,7 +18,17 @@ internal enum class PayPalSavedPaymentMethodType(val rawValue: String) {
     /**
      * The buyer's PayPal Credit line.
      */
-    PAYPAL_CREDIT("PAYPAL_CREDIT");
+    PAYPAL_CREDIT("PAYPAL_CREDIT"),
+
+    /**
+     * The buyer's PayPal balance.
+     */
+    BALANCE("BALANCE"),
+
+    /**
+     * The buyer's PayPal Debit Card.
+     */
+    PAYPAL_DEBIT_CARD("PPDC");
 
     companion object {
 
