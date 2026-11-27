@@ -420,7 +420,7 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `handleReturnToApp reads started's context ID from an Auth Tab result, which leaves the intent empty`() {
+    fun `handleReturnToApp reads the return events' context ID from an Auth Tab result, not the empty intent`() {
         val returnUrl = "https://return.url?token=EC-123"
         every { intent.data } returns null
         val authTabResult = mockk<BrowserSwitchFinalResult.Success> {
@@ -433,6 +433,10 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 PayPalAnalytics.HANDLE_RETURN_STARTED,
+                AnalyticsEventParams(contextId = "EC-123", appSwitchUrl = returnUrl, isEditFiFlow = false)
+            )
+            analyticsClient.sendEvent(
+                PayPalAnalytics.HANDLE_RETURN_SUCCEEDED,
                 AnalyticsEventParams(contextId = "EC-123", appSwitchUrl = returnUrl, isEditFiFlow = false)
             )
         }

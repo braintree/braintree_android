@@ -184,20 +184,17 @@ class PayPalLauncher internal constructor(
         isEditFiFlow: Boolean,
         buttonSessionId: String?
     ): PayPalPaymentAuthResult {
+        val browserSwitchResult = browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)
+
+        // An Auth Tab returns its URL through browser-switch, not the intent, so return events read it from the result.
+        val returnUrl = intent.data ?: (browserSwitchResult as? BrowserSwitchFinalResult.Success)?.returnUrl
         val analyticsEventParams = AnalyticsEventParams(
-            contextId = intent.data?.token(),
-            appSwitchUrl = intent.data?.toString(),
+            contextId = returnUrl?.token(),
+            appSwitchUrl = returnUrl?.toString(),
             isEditFiFlow = isEditFiFlow,
             buttonSessionId = buttonSessionId
         )
-        val browserSwitchResult = browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)
-
-        // An Auth Tab returns its URL through browser-switch, not the intent, so started reads it from the result.
-        val returnUrl = intent.data ?: (browserSwitchResult as? BrowserSwitchFinalResult.Success)?.returnUrl
-        analyticsClient.sendEvent(
-            PayPalAnalytics.HANDLE_RETURN_STARTED,
-            analyticsEventParams.copy(contextId = returnUrl?.token(), appSwitchUrl = returnUrl?.toString())
-        )
+        analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, analyticsEventParams)
 
         return when (browserSwitchResult) {
             is BrowserSwitchFinalResult.Success -> {
